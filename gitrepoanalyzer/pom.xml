@@ -1,0 +1,207 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>fr.inria.coming</groupId>
+		<artifactId>parent</artifactId>
+		<version>0.0.2-SNAPSHOT</version>
+	</parent>
+	<groupId>fr.inria.coming</groupId>
+	<artifactId>gitrepoanalyzer</artifactId>
+	<version>0.0.2-SNAPSHOT</version>
+	<name>gitrepoanalyzer</name>
+	<url>http://maven.apache.org</url>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<developers>
+		<developer>
+			<id>matias</id>
+			<name>Matias Martinez</name>
+			<email>matias.martinez@inria.fr</email>
+		</developer>
+		<developer>
+			<id>maxence2012</id>
+			<name>Maxence G. de Montauzan</name>
+			<email>Maxence Montauzan@inria.fr</email>
+		</developer>
+
+		<developer>
+			<id>Sylvain2012</id>
+			<name> Sylvain Magnie</name>
+			<email>Sylvain Magnie@inria.fr</email>
+		</developer>
+
+
+	</developers>
+
+
+
+	<dependencies>
+
+
+		<dependency>
+			<groupId>fr.inria.sacha</groupId>
+			<artifactId>seed2</artifactId>
+			<version>0.1</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- -->
+
+		<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>jgit</artifactId>
+			<version>2.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>text</artifactId>
+			<version>3.5</version>
+		</dependency>
+
+		<dependency>
+			<groupId>gitective</groupId>
+			<artifactId>core</artifactId>
+			<version>0.9.10</version>
+		</dependency>
+
+
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+
+
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<mainClass>fully.qualified.MainClass</mainClass>
+						</manifest>
+					</archive>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>fr.inria.sacha.seed2</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>fr.inria.sacha</groupId>
+							<artifactId>seed2</artifactId>
+							<version>0.1</version>
+							<packaging>jar</packaging>
+							<file>${project.build.sourceDirectory}/../../../lib/seed2.jar</file>
+							<createChecksum>true</createChecksum>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+
+					<execution>
+						<id>org.eclipse.text</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>org.eclipse</groupId>
+							<artifactId>text</artifactId>
+							<version>3.5</version>
+							<packaging>jar</packaging>
+							<file>${project.basedir}/lib/org.eclipse.text_3.5.200.dist.jar</file>
+							<createChecksum>true</createChecksum>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+
+					<execution>
+						<id>org.eclipse.jgit</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>org.eclipse</groupId>
+							<artifactId>jgit</artifactId>
+							<version>2.2</version>
+							<packaging>jar</packaging>
+							<file>${project.basedir}/lib/org.eclipse.jgit-2.2.0.201212191850-r.jar</file>
+							<createChecksum>true</createChecksum>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+
+					<execution>
+						<id>ogitective.core</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>gitective</groupId>
+							<artifactId>core</artifactId>
+							<version>0.9.10</version>
+							<packaging>jar</packaging>
+							<file>${project.basedir}/lib/gitective-core-0.9.10.jar</file>
+							<createChecksum>true</createChecksum>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+
+
+				</executions>
+			</plugin>
+
+
+		</plugins>
+	</build>
+</project>
+
+

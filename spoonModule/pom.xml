@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>fr.inria.coming</groupId>
+		<artifactId>parent</artifactId>
+		<version>0.0.2-SNAPSHOT</version>
+	</parent>
+
+	<groupId>fr.inria.sacha.remining</groupId>
+	<artifactId>spoonModule</artifactId>
+	<version>0.0.2-SNAPSHOT</version>
+
+	<developers>
+		<developer>
+			<id>matias</id>
+			<name>Matias Martinez</name>
+			<email>matias.martinez@inria.fr</email>
+		</developer>
+
+	</developers>
+
+	<name>spoonModule</name>
+	<url>http://maven.apache.org</url>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<dependencies>
+
+		<dependency>
+			<groupId>fr.inria.coming</groupId>
+			<artifactId>ccore</artifactId>
+			<version>0.0.2-SNAPSHOT</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>fr.inria.gforge.spoon</groupId>
+			<artifactId>spoon-core</artifactId>
+			<version>4.0-SNAPSHOT</version>
+		</dependency>
+		<!-- Workaround: put this reference after that one of Spoon. Problems with 
+			jdt -->
+		<dependency>
+			<groupId>fr.inria.coming</groupId>
+			<artifactId>gitrepoanalyzer</artifactId>
+			<version>0.0.2-SNAPSHOT</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>eclipse</groupId>
+			<artifactId>org.eclipse.equinox.common</artifactId>
+			<version>3.6.0.v20110523</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/org.eclipse.equinox.common-3.6.0.v20110523.jar</systemPath>
+		</dependency>
+		
+	
+		<dependency>
+			<groupId>eclipse</groupId>
+			<artifactId>org.eclipse.osgi</artifactId>
+			<version>3.7.1.R37x_v20110808-1106</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/org.eclipse.osgi-3.7.1.R37x_v20110808-1106.jar</systemPath>
+		</dependency>
+		
+
+	</dependencies>
+</project>

@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<pattern>
+<entity id="1" type = "Assignement"/>
+<entity id="2" type = "MethodInvocation">
+	<parent parentId="1" distance="1" />
+</entity>
+<action entityId ="1" type = "INS" />
+</pattern>
