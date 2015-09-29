@@ -1,6 +1,6 @@
 Coming:
 ========= 
-##A java tool for mining git repositories from University of Lille and Inria
+##A java tool from University of Lille and Inria for mining git repositories
 
 If you use Coming, please cite this paper 
 
