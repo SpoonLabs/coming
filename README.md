@@ -29,10 +29,12 @@ Getting Started
 ------
 Coming is composed of 5 maven modules: the parent (without code) and 4 java modules.
 
-Execute `mvn clean install`.
+Execute `mvn clean initialize install`.
+
+(Phase `initialize` installs the dependencies in  folder `lib` in the local Maven repository).
 
 Let us present those modules:
-*  gitrepoanalyzer: provides the functionality for navigate a repository using jgit library from eclipse.
+* gitrepoanalyzer: provides the functionality for navigate a repository using jgit library from eclipse.
 * ccore: provides the core of coming. For instance, the functionality to mine change pattern. The core delagates abstracts representation of code such as AST from JDT or Spoon to the other two modules.
 * SpoonModule: provides the code to manipulate Spoon  model. 
 * JdtModule: provides the code to manipulate JDT model.
