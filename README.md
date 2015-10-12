@@ -28,7 +28,8 @@ Martin Monperrus http://www.monperrus.net/martin/
 Getting Started
 ------
 Coming is composed of 5 maven modules: the parent (without code) and 4 java modules.
-First, execute maven commands: 1) mvn clean  (it will install some dependencies) , 2) mvn install.
+
+Execute `mvn clean install`.
 
 Let us present those modules:
 *  gitrepoanalyzer: provides the functionality for navigate a repository using jgit library from eclipse.

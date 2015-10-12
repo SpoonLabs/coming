@@ -43,13 +43,6 @@
 	<dependencies>
 
 
-		<dependency>
-			<groupId>fr.inria.sacha</groupId>
-			<artifactId>seed2</artifactId>
-			<version>0.1</version>
-			<scope>compile</scope>
-		</dependency>
-
 		<!-- -->
 
 		<dependency>
@@ -70,6 +63,11 @@
 			<version>0.9.10</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>compare</artifactId>
+			<version>3.5.501</version>
+		</dependency>
 
 
 		<dependency>
@@ -123,27 +121,10 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-install-plugin</artifactId>
 				<executions>
-					<execution>
-						<id>fr.inria.sacha.seed2</id>
-						<phase>clean</phase>
-						<goals>
-							<goal>install-file</goal>
-						</goals>
-						<configuration>
-							<groupId>fr.inria.sacha</groupId>
-							<artifactId>seed2</artifactId>
-							<version>0.1</version>
-							<packaging>jar</packaging>
-							<file>${project.build.sourceDirectory}/../../../lib/seed2.jar</file>
-							<createChecksum>true</createChecksum>
-							<generatePom>true</generatePom>
-						</configuration>
-					</execution>
-
 
 					<execution>
 						<id>org.eclipse.text</id>
-						<phase>clean</phase>
+						<phase>initialize</phase>
 						<goals>
 							<goal>install-file</goal>
 						</goals>
@@ -152,7 +133,7 @@
 							<artifactId>text</artifactId>
 							<version>3.5</version>
 							<packaging>jar</packaging>
-							<file>${project.basedir}/lib/org.eclipse.text_3.5.200.dist.jar</file>
+							<file>../lib/org.eclipse.text_3.5.200.dist.jar</file>
 							<createChecksum>true</createChecksum>
 							<generatePom>true</generatePom>
 						</configuration>
@@ -161,7 +142,7 @@
 
 					<execution>
 						<id>org.eclipse.jgit</id>
-						<phase>clean</phase>
+						<phase>initialize</phase>
 						<goals>
 							<goal>install-file</goal>
 						</goals>
@@ -170,7 +151,7 @@
 							<artifactId>jgit</artifactId>
 							<version>2.2</version>
 							<packaging>jar</packaging>
-							<file>${project.basedir}/lib/org.eclipse.jgit-2.2.0.201212191850-r.jar</file>
+							<file>../lib/org.eclipse.jgit-2.2.0.201212191850-r.jar</file>
 							<createChecksum>true</createChecksum>
 							<generatePom>true</generatePom>
 						</configuration>
@@ -179,7 +160,7 @@
 
 					<execution>
 						<id>ogitective.core</id>
-						<phase>clean</phase>
+						<phase>initialize</phase>
 						<goals>
 							<goal>install-file</goal>
 						</goals>
@@ -188,14 +169,28 @@
 							<artifactId>core</artifactId>
 							<version>0.9.10</version>
 							<packaging>jar</packaging>
-							<file>${project.basedir}/lib/gitective-core-0.9.10.jar</file>
+							<file>../lib/gitective-core-0.9.10.jar</file>
 							<createChecksum>true</createChecksum>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
 
-
-
+					<execution>
+						<id>org.eclipse.compare</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>org.eclipse</groupId>
+							<artifactId>compare</artifactId>
+							<version>3.5.501</version>
+							<packaging>jar</packaging>
+							<file>../lib/org.eclipse.compare_3.5.501.v20140817-1445.jar</file>
+							<createChecksum>true</createChecksum>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 
