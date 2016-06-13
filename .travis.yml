@@ -1,7 +1,9 @@
 language: java
 
 install: 
-  - mvn --settings settings.xml install:install-file -Dfile=lib/gt-core-1.0-SNAPSHOT.jar -DgeneratePom=true  -DgroupId=fr.labri.gumtree -DartifactId=core -Dversion=1.0-SNAPSHOT.jar -Dpackaging=jar
-  - mvn --settings settings.xml install:install-file -Dfile=lib/genjdt.jar -DgeneratePom=true -DgroupId=fr.labri.gumtree -DartifactId=gen -Dversion=0.0.1-SNAPSHOT -Dpackaging=jar
-  - mvn --settings settings.xml compile
+  - sed -i -e 's|https://nexus.codehaus.org/snapshots/|https://oss.sonatype.org/content/repositories/codehaus-snapshots/|g' ~/.m2/settings.xml
+  - cat ~/.m2/settings.xml  
+  - mvn install:install-file -Dfile=lib/gt-core-1.0-SNAPSHOT.jar -DgeneratePom=true  -DgroupId=fr.labri.gumtree -DartifactId=core -Dversion=1.0-SNAPSHOT -Dpackaging=jar
+  - mvn install:install-file -Dfile=lib/genjdt.jar -DgeneratePom=true -DgroupId=fr.labri.gumtree -DartifactId=gen -Dversion=0.0.1-SNAPSHOT -Dpackaging=jar
+  - mvn compile
 
