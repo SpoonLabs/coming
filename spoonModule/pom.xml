@@ -23,7 +23,6 @@
 	</developers>
 
 	<name>spoonModule</name>
-	<url>http://maven.apache.org</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -44,19 +43,5 @@
 			<version>0.0.2-SNAPSHOT</version>
 		</dependency>
 		
-		<dependency>
-			<groupId>eclipse</groupId>
-			<artifactId>org.eclipse.equinox.common</artifactId>
-			<version>3.6.0.v20110523</version>
-		</dependency>
-		
-	
-		<dependency>
-			<groupId>eclipse</groupId>
-			<artifactId>org.eclipse.osgi</artifactId>
-			<version>3.7.1.R37x_v20110808-1106</version>
-		</dependency>
-		
-
 	</dependencies>
 </project>
