@@ -11,31 +11,18 @@ package comparison;
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 
-import org.eclipse.compare.contentmergeviewer.ITokenComparator;
 import org.eclipse.compare.rangedifferencer.IRangeComparator;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.compiler.IScanner;
 import org.eclipse.jdt.core.compiler.ITerminalSymbols;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
-//import org.eclipse.jdt.internal.corext.dom.TokenScanner;
+import org.eclipse.jdt.internal.core.dom.rewrite.TokenScanner;
 
 /**
  * A comparator for Java tokens.
  */
 public class SJavaTokenComparator implements Fragmentable {
 	
-  /**
-   * Factory to create text token comparators.
-   * This is a workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=183224 .
-   */
-  public static interface ITokenComparatorFactory {
-    /**
-     * @param text text to be tokenized
-     * @return a token comparator
-     */
-    public ITokenComparator createTokenComparator(String text);
-  }
 
   private static final boolean DEBUG= false;
 
@@ -54,7 +41,6 @@ public class SJavaTokenComparator implements Fragmentable {
    */
   public SJavaTokenComparator(String text) {
 
-    Assert.isLegal(text != null);
 
     fText= text;
 
@@ -73,9 +59,9 @@ public class SJavaTokenComparator implements Fragmentable {
         int start= scanner.getCurrentTokenStartPosition();
         int end= scanner.getCurrentTokenEndPosition()+1;
         // Comments are treated as a single token (see bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=78063)
-//        if (!TokenScanner.isComment(tokenType)) {
+        if (!TokenScanner.isComment(tokenType)) {
           recordTokenRange(start, end - start);
-//       }
+        }
         endPos= end;
       }
     } catch (InvalidInputException ex) {
@@ -226,6 +212,7 @@ public class SJavaTokenComparator implements Fragmentable {
     return true;
   }
 	
+	@Override
 	public String toString() {
 		String ret = "";
 		for (int i = 0; i < this.fTokens.length; i++)

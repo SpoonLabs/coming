@@ -25,15 +25,19 @@ Matias Martinez http://www.martinezmatias.com.ar/
 
 Martin Monperrus http://www.monperrus.net/martin/
 
-Getting Started
+Compile
 ------
-Coming is composed of 5 maven modules: the parent (without code) and 4 java modules.
 
-Execute `mvn clean initialize install`.
+```
+mvn install:install-file -Dfile=lib/gt-core-1.0-SNAPSHOT.jar -DgroupId=fr.labri.gumtree -DartifactId=core -Dversion=1.0-SNAPSHOT.jar -Dpackaging=jar
+mvn install:install-file -Dfile=lib/genjdt.jar -DgroupId=fr.labri.gumtree -DartifactId=gen -Dversion=0.0.1-SNAPSHOT -Dpackaging=jar
+mvn compile
+```
 
-(Phase `initialize` installs the dependencies in  folder `lib` in the local Maven repository).
+Architecture
+------
+Coming is composed of 5 maven modules: the parent (without code) and 4 java modules:
 
-Let us present those modules:
 * gitrepoanalyzer: provides the functionality for navigate a repository using jgit library from eclipse.
 * ccore: provides the core of coming. For instance, the functionality to mine change pattern. The core delagates abstracts representation of code such as AST from JDT or Spoon to the other two modules.
 * SpoonModule: provides the code to manipulate Spoon  model. 

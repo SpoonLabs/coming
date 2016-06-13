@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.eclipse.compare.rangedifferencer.RangeDifference;
 import org.eclipse.compare.rangedifferencer.RangeDifferencer;
-import org.eclipse.core.runtime.NullProgressMonitor;
 
 /** compares two files with different strategies */
 public class FragmentableComparator {
@@ -17,12 +16,12 @@ public class FragmentableComparator {
   }
 
   public RangeDifference[] compare(Fragmentable sbefore, Fragmentable safter) {
-    RangeDifference[] results = RangeDifferencer.findRanges(new NullProgressMonitor(), null, sbefore, safter);
+    RangeDifference[] results = RangeDifferencer.findRanges( null, sbefore, safter);
     return results;
   }
   
   public List<String> getAfterDifferences(Fragmentable sbefore, Fragmentable safter)  {
-	    RangeDifference[] results = RangeDifferencer.findRanges(new NullProgressMonitor(), null, sbefore, safter); 
+	    RangeDifference[] results = RangeDifferencer.findRanges(null, sbefore, safter); 
 	    List<String> l = new ArrayList<String>();
 //	    System.err.println("Diffs: " + results.length);
 	    
