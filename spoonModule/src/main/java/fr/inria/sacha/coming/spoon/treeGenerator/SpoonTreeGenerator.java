@@ -3,7 +3,7 @@ package fr.inria.sacha.coming.spoon.treeGenerator;
 import java.util.ArrayList;
 import java.util.List;
 
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import fr.inria.sacha.coming.analyzer.treeGenerator.TreeGenerator;
 import fr.inria.sacha.coming.entity.GranuralityType;
 import fr.labri.gumtree.tree.Tree;
@@ -17,7 +17,7 @@ public class SpoonTreeGenerator implements TreeGenerator {
 	@Override
 	public Tree generateTree(String content)  throws Exception {
 		SpoonDiffCalculator ds = new SpoonDiffCalculator(true);
-		CtSimpleType ctType = ds.getSpoonType(content);
+		CtType ctType = ds.getSpoonType(content);
 		return ds.getTree(ctType);
 	}
 

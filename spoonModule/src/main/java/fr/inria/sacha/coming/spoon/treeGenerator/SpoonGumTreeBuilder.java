@@ -209,25 +209,6 @@ public class SpoonGumTreeBuilder extends CtScanner {
 		super.enter(element);
 	}
 
-	@Override
-	public void enterReference(CtReference e) {
-
-		/*
-		 * createNode(e); super.enterReference(e);
-		 */
-
-	}
-
-	@Override
-	public void exitReference(CtReference e) {
-		/*
-		 * if (e instanceof CtTypeReference) { return; } else
-		 */
-		/*
-		 * nodes.pop(); super.exitReference(e);
-		 */
-
-	}
 
 	@Override
 	public void exit(CtElement element) {

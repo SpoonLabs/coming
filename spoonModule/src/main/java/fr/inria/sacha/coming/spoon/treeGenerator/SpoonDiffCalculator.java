@@ -17,7 +17,7 @@ import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.support.DefaultCoreFactory;
@@ -88,12 +88,12 @@ public class SpoonDiffCalculator {
 	@Deprecated
 	public DiffResult compare(String left, String right) {
 
-		CtSimpleType<?> clazz1;
+		CtType<?> clazz1;
 		try {
 			clazz1 = getCtType(left);
 	
 
-		CtSimpleType<?> clazz2 = getCtType(right);
+		CtType<?> clazz2 = getCtType(right);
 		//factory.Code().createCodeSnippetStatement(right)
 		//		.compile();
 
@@ -113,22 +113,20 @@ public class SpoonDiffCalculator {
 		compiler.addInputSource(sr1);
 		compiler.build();
 		CtClass<?> clazz1 = (CtClass<?>) factory.Type().getAll().get(0);
-		factory.Package().getAllRoots().clear();
 		return clazz1;
 	}
 
 	
-	public  CtSimpleType<?> getCtType(String content) throws Exception{
+	public  CtType<?> getCtType(String content) throws Exception{
 				
 		SpoonCompiler compiler = new JDTSnippetCompiler(factory, content);//new JDTBasedSpoonCompiler(factory);
 		//compiler.addInputSource(new VirtualFile(content,""));
 		compiler.build();
 		CtClass<?> clazz1 = (CtClass<?>) factory.Type().getAll().get(0);
-		factory.Package().getAllRoots().clear();
 		return clazz1;
 	}
 	
-	public  CtSimpleType<?> getCtType2(String content) throws Exception{
+	public  CtType<?> getCtType2(String content) throws Exception{
 		
 /*	factory.Package().getAllRoots().clear();
 	factory.Type().getAll().clear();*/
@@ -142,8 +140,7 @@ public class SpoonDiffCalculator {
 			e.printStackTrace();
 		}
 	
-		CtSimpleType<?> ret =  factory.Type().getAll().get(0);
-		factory.Package().getAllRoots().clear();
+		CtType<?> ret =  factory.Type().getAll().get(0);
 		return ret;
 	}
 	
@@ -262,12 +259,12 @@ public class SpoonDiffCalculator {
 			return false;
 	}
 	
-	public CtSimpleType getSpoonType(String contents, int compliance) throws IllegalStateException,SnippetCompilationError {
+	public CtType getSpoonType(String contents, int compliance) throws IllegalStateException,SnippetCompilationError {
 		this.factory.getEnvironment().setComplianceLevel(compliance);
 		return getSpoonType(contents);
 	}
 		
-	public CtSimpleType getSpoonType(String contents) throws IllegalStateException,SnippetCompilationError {
+	public CtType getSpoonType(String contents) throws IllegalStateException,SnippetCompilationError {
 		Exception exe = null;
 		try {
 			this.getCtClass(factory, contents);
@@ -280,12 +277,12 @@ public class SpoonDiffCalculator {
 			}
 			
 		}
-		List<CtSimpleType<?>> types = factory.Type().getAll();
+		List<CtType<?>> types = factory.Type().getAll();
 		if(types.isEmpty())
 		{
 			throw new IllegalStateException("No Type was created by spoon");
 		}
-		CtSimpleType spt = types.get(0);
+		CtType spt = types.get(0);
 		spt.getPackage().getTypes().remove(spt);
 		//System.out.println("Retreving "+spt.getQualifiedName());
 		return spt;
