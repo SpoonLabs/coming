@@ -163,7 +163,6 @@
 
 	<modules>
 		<module>spoonModule</module>
-		<module>jdtModule</module>
 		<module>ccore</module>
 		<module>gitrepoanalyzer</module>
 	</modules>

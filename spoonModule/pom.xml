@@ -9,7 +9,7 @@
 		<version>0.0.2-SNAPSHOT</version>
 	</parent>
 
-	<groupId>fr.inria.sacha.remining</groupId>
+	<groupId>fr.inria.coming</groupId>
 	<artifactId>spoonModule</artifactId>
 	<version>0.0.2-SNAPSHOT</version>
 
@@ -35,8 +35,6 @@
 		</dependency>
 
 
-		<!-- Workaround: put this reference after that one of Spoon. Problems with 
-			jdt -->
 		<dependency>
 			<groupId>fr.inria.coming</groupId>
 			<artifactId>gitrepoanalyzer</artifactId>

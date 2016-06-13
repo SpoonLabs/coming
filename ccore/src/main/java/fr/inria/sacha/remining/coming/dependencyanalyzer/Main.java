@@ -25,7 +25,6 @@ public class Main {
 	
 	public static void main(String[] args) throws IOException {
 		String previousVersion, nextVersion;
-		String message = "USAGE --parameters-- projectLocation [remoteRepositoryGitHubUrl]";
 		XMLOutputResFile xml = null;
 		String githubRepoUrl = null;
 		boolean hasGithubUrl = false;
@@ -35,16 +34,15 @@ public class Main {
 		classFound = classFoundBefore = classFoundAfter = null;
 		
 		/* HANDLES COMMAND PARAMETERS */
-		if(args == null){
-				System.out.println(message);
-				return;
+		if(args.length == 2) {
+			githubRepoUrl = args[1];
+			hasGithubUrl = true;
+		}	else if(args.length == 1) {
+			githubRepoUrl = args[1];
+			hasGithubUrl = true;
 		}
-		else {
-			if(args.length == 2) {
-				githubRepoUrl = args[1];
-				hasGithubUrl = true;
-			}
-		}
+
+
 		
 		xml = new XMLOutputResFile(hasGithubUrl);
 	    String projectLocation = args[0];
