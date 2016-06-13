@@ -36,11 +36,6 @@
 		</dependency>
 
 
-		<dependency>
-			<groupId>fr.inria.gforge.spoon</groupId>
-			<artifactId>spoon-core</artifactId>
-			<version>4.0-SNAPSHOT</version>
-		</dependency>
 		<!-- Workaround: put this reference after that one of Spoon. Problems with 
 			jdt -->
 		<dependency>
@@ -53,8 +48,6 @@
 			<groupId>eclipse</groupId>
 			<artifactId>org.eclipse.equinox.common</artifactId>
 			<version>3.6.0.v20110523</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/org.eclipse.equinox.common-3.6.0.v20110523.jar</systemPath>
 		</dependency>
 		
 	
@@ -62,8 +55,6 @@
 			<groupId>eclipse</groupId>
 			<artifactId>org.eclipse.osgi</artifactId>
 			<version>3.7.1.R37x_v20110808-1106</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/org.eclipse.osgi-3.7.1.R37x_v20110808-1106.jar</systemPath>
 		</dependency>
 		
 

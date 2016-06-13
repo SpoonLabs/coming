@@ -8,6 +8,7 @@
 		<artifactId>parent</artifactId>
 		<version>0.0.2-SNAPSHOT</version>
 	</parent>
+        
 	<groupId>fr.inria.coming</groupId>
 	<artifactId>gitrepoanalyzer</artifactId>
 	<version>0.0.2-SNAPSHOT</version>
@@ -44,6 +45,11 @@
 
 
 		<!-- -->
+            <dependency>
+                <groupId>org.eclipse</groupId>
+                <artifactId>compare</artifactId>
+                <version>3.3.0-I20070606</version>
+            </dependency>
 
 		<dependency>
 			<groupId>org.eclipse</groupId>
@@ -58,23 +64,15 @@
 		</dependency>
 
 		<dependency>
-			<groupId>gitective</groupId>
-			<artifactId>core</artifactId>
-			<version>0.9.10</version>
+			<groupId>org.gitective</groupId>
+			<artifactId>gitective-core</artifactId>
+			<version>0.9.9</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.eclipse</groupId>
-			<artifactId>compare</artifactId>
-			<version>3.5.501</version>
-		</dependency>
-
 
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>3.8.1</version>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

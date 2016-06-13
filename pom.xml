@@ -8,7 +8,7 @@
 	<version>0.0.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>coming</name>
+	<name>coming-parent</name>
 	<url>matias</url>
 
 	<developers>
@@ -64,7 +64,6 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
-			<scope>test</scope>
 		</dependency>
 
 
@@ -81,11 +80,22 @@
 		</dependency>
 
 		<dependency>
+			<groupId>fr.labri.gumtree</groupId>
+			<artifactId>core</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+
+                <dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
 		</dependency>
 
+		<dependency>
+			<groupId>fr.inria.gforge.spoon</groupId>
+			<artifactId>spoon-core</artifactId>
+			<version>5.1.0</version>
+		</dependency>
 
 
 	</dependencies>
@@ -125,79 +135,6 @@
 				</executions>
 			</plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-install-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>gt</id>
-						<phase>clean</phase>
-						<goals>
-							<goal>install-file</goal>
-						</goals>
-						<configuration>
-							<groupId>fr.labri.gumtree</groupId>
-							<artifactId>core</artifactId>
-							<version>0.0.1-SNAPSHOT</version>
-							<packaging>jar</packaging>
-							<file>${project.basedir}/lib/gt.jar</file>
-							<createChecksum>true</createChecksum>
-							<generatePom>true</generatePom>
-						</configuration>
-					</execution>
-					
-						<execution>
-						<id>gt-1.0</id>
-						<phase>clean</phase>
-						<goals>
-							<goal>install-file</goal>
-						</goals>
-						<configuration>
-							<groupId>fr.labri.gumtree</groupId>
-							<artifactId>core</artifactId>
-							<version>1.0-SNAPSHOT</version>
-							<packaging>jar</packaging>
-							<file>${project.basedir}/lib/gt-core-1.0-SNAPSHOT.jar</file>
-							<createChecksum>true</createChecksum>
-							<generatePom>true</generatePom>
-						</configuration>
-					</execution>
-
-					<execution>
-						<id>gtgen</id>
-						<phase>clean</phase>
-						<goals>
-							<goal>install-file</goal>
-						</goals>
-						<configuration>
-							<groupId>fr.labri.gumtree</groupId>
-							<artifactId>gen</artifactId>
-							<version>0.0.1-SNAPSHOT</version>
-							<packaging>jar</packaging>
-							<file>${project.basedir}/lib/genjdt.jar</file>
-							<createChecksum>true</createChecksum>
-							<generatePom>true</generatePom>
-						</configuration>
-					</execution>
-
-					<execution>
-						<id>org.eclipse.jdt</id>
-						<phase>clean</phase>
-						<goals>
-							<goal>install-file</goal>
-						</goals>
-						<configuration>
-							<groupId>org.eclipse.jdt</groupId>
-							<artifactId>core</artifactId>
-							<version>3.7.1</version>
-							<packaging>jar</packaging>
-							<file>${project.basedir}/lib/org.eclipse.jdt.core-3.7.1.v_B76_R37x.jar</file>
-							<createChecksum>true</createChecksum>
-							<generatePom>true</generatePom>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 
 
