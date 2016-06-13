@@ -1,1 +1,5 @@
 language: java
+
+install: 
+    mvn install:install-file -Dfile=lib/gt.jar -DgroupId=fr.labri.gumtree -DartifactId=core -Dversion=0.0.1-SNAPSHOT -Dpackaging=jar
+    mvn install:install-file -Dfile=lib/genjdt.jar -DgroupId=fr.labri.gumtree -DartifactId=gen -Dversion=0.0.1-SNAPSHOT -Dpackaging=jar
