@@ -43,14 +43,6 @@
 
 	<dependencies>
 
-
-		<!-- -->
-            <dependency>
-                <groupId>org.eclipse</groupId>
-                <artifactId>compare</artifactId>
-                <version>3.3.0-I20070606</version>
-            </dependency>
-
 <dependency>
     <groupId>org.eclipse.jgit</groupId>
     <artifactId>org.eclipse.jgit</artifactId>
