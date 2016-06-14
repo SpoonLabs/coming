@@ -324,4 +324,8 @@ public class XMLOutputResFile {
 			System.out.println("Impossible to display the result xml file");
 		}
 	}
+
+	public Element getRootNodeCommitList() {
+		return rootNodeCommitList;
+	}
 }
