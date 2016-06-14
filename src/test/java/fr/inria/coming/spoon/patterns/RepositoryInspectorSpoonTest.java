@@ -20,7 +20,6 @@ import fr.inria.sacha.coming.analyzer.commitAnalyzer.SimpleChangeFilter;
 import fr.inria.sacha.coming.analyzer.treeGenerator.PatternEntity;
 import fr.inria.sacha.coming.analyzer.treeGenerator.TreeGeneratorRegistry;
 import fr.inria.sacha.coming.entity.ActionType;
-import fr.inria.sacha.coming.entity.EntityType;
 import fr.inria.sacha.coming.entity.GranuralityType;
 import fr.inria.sacha.coming.spoon.treeGenerator.SpoonTreeGenerator;
 import fr.inria.sacha.coming.util.ConsoleOutput;

@@ -19,7 +19,7 @@ public class ConfigurationProperties {
 
 				properties.load(propFile);
 				} catch (Exception e) {
-					e.printStackTrace();
+					throw new RuntimeException(e);
 				}
 
 	}

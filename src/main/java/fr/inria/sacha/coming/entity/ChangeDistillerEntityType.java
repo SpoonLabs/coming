@@ -24,7 +24,7 @@ package fr.inria.sacha.coming.entity;
  * @author zubi
  * @see SourceCodeEntity
  */
-public enum EntityType {
+public enum ChangeDistillerEntityType {
     ANNOTATION_TYPE_DECLARATION(true),
     ANNOTATION_TYPE_MEMBER_DECLARATION(true),
     ARGUMENTS(false),
@@ -132,7 +132,7 @@ public enum EntityType {
 
     private final boolean fIsValidChange;
 
-    private EntityType(boolean isValidChange) {
+    private ChangeDistillerEntityType(boolean isValidChange) {
         fIsValidChange = isValidChange;
     }
 
@@ -162,7 +162,7 @@ public enum EntityType {
      * @param type to analyze
      * @return <code>true</code> if given entity type is a type, <code>false</code> otherwise.
      */
-    public static boolean isType(EntityType type) {
+    public static boolean isType(ChangeDistillerEntityType type) {
         switch (type) {
             case ARRAY_TYPE:
             case PARAMETERIZED_TYPE:
@@ -183,7 +183,7 @@ public enum EntityType {
      *            to analyze
      * @return <code>true</code> if given entity type is a statement, <code>false</code> otherwise.
      */
-    public static boolean isAtStatementLevel(EntityType type) {
+    public static boolean isAtStatementLevel(ChangeDistillerEntityType type) {
         switch (type) {
             case ASSERT_STATEMENT:
             case ASSIGNMENT:

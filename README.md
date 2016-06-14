@@ -1,3 +1,4 @@
+[![Travis Build Status](https://travis-ci.org/Spirals-Team/coming.svg?branch=master)](https://travis-ci.org/Spirals-Team/coming)
 
 Coming:
 ========= 
@@ -35,20 +36,24 @@ mvn install:install-file -Dfile=lib/genjdt.jar -DgroupId=fr.labri.gumtree -Darti
 mvn -Dskiptest compile
 ```
 
-Architecture
+Test
 ------
-Coming is composed of 5 maven modules: the parent (without code) and 4 java modules:
 
-* gitrepoanalyzer: provides the functionality for navigate a repository using jgit library from eclipse.
-* ccore: provides the core of coming. For instance, the functionality to mine change pattern. The core delagates abstracts representation of code such as AST from JDT or Spoon to the other two modules.
-* SpoonModule: provides the code to manipulate Spoon  model. 
-* JdtModule: provides the code to manipulate JDT model.
+```
+unzip ./src/main/resources/repogit4testv0.zip
+mvn test
+```
 
-###We recommend to see test cases from SpoonModule and JdtModule to observe how coming works.
+Run
+------
+
+Extract all commits of repogit4testv0 that insert a binary operator AST node
+```
+ComingMain.main(new String[]{"repogit4testv0", "BinaryOperator","INS"});
+```
 
 Other information
 ---------
-Examples of usage are in class MainTest.
 
 Most of the properties are configured in file "configuration.properties"
 

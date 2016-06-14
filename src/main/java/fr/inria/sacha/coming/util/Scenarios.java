@@ -24,7 +24,7 @@ import fr.inria.sacha.coming.analyzer.commitAnalyzer.PatternFilter;
 import fr.inria.sacha.coming.analyzer.treeGenerator.PatternAction;
 import fr.inria.sacha.coming.analyzer.treeGenerator.PatternEntity;
 import fr.inria.sacha.coming.entity.ActionType;
-import fr.inria.sacha.coming.entity.EntityType;
+import fr.inria.sacha.coming.entity.ChangeDistillerEntityType;
 import fr.inria.sacha.coming.entity.GranuralityType;
 import fr.inria.sacha.gitanalyzer.interfaces.FileCommit;
 import fr.labri.gumtree.matchers.Matcher;
@@ -135,9 +135,9 @@ public class Scenarios {
 		return pattern;
 	}
 	
-	public static Map<FileCommit, List> preconditionsCD(String messageHeuristic , String repoPath ){
+	public static Map<FileCommit, List> preconditions(String messageHeuristic , String repoPath,  GranuralityType gr){
 		
-		PatternEntity pentity = new PatternEntity(EntityType.IF_STATEMENT.name());
+		PatternEntity pentity = new PatternEntity(gr.ifType());
 		PatternAction pactionMain = new PatternAction(pentity, ActionType.INS);
 				
 		List<PatternAction> pac = new ArrayList<PatternAction>();
@@ -146,7 +146,7 @@ public class Scenarios {
 		
 		
 		
-		FineGrainChangeCommitAnalyzer 	fineGrainAnalyzer = new FineGrainChangeCommitAnalyzer(filter,GranuralityType.CD);
+		FineGrainChangeCommitAnalyzer 	fineGrainAnalyzer = new FineGrainChangeCommitAnalyzer(filter,gr);
 		
 		RepositoryInspector inspector = new RepositoryInspector();
 		Parameters.MAX_FILES_PER_COMMIT = 10;
@@ -159,20 +159,25 @@ public class Scenarios {
 	
 	return instancesFound;
 	}
+	
+	public static Map<FileCommit, List> preconditionsCD(String messageHeuristic , String repoPath ){
+		return preconditions(messageHeuristic, repoPath, GranuralityType.CD);
+	}
 
 
 public static Map<FileCommit, List> getAddIf2SCWithTest(String messageHeuristic , String repoPath ){
 	
-	
+	GranuralityType granularity = GranuralityType.CD;
+
 	List<PatternAction> pac = new ArrayList<PatternAction>();
 	//Insert of a If statement
-	pac.add(new PatternAction(new PatternEntity(EntityType.IF_STATEMENT.name()),ActionType.INS));
+	pac.add(new PatternAction(new PatternEntity(granularity.ifType()),ActionType.INS));
 	//Move over any entity, its parent is Then statement
 	//pac.add(new PatternAction(new PatternEntity("*", new PatternEntity(EntityType.THEN_STATEMENT.name()),1),ActionType.MOV));
 	
 	PatternFilter filter = new ChildParentFilter(pac);
 	
-	FineGrainChangeCommitAnalyzer 	fineGrainAnalyzer = new FineGrainChangeCommitAnalyzer(filter,GranuralityType.CD );
+	FineGrainChangeCommitAnalyzer 	fineGrainAnalyzer = new FineGrainChangeCommitAnalyzer(filter,granularity );
 	
 	RepositoryInspector inspector = new RepositoryInspector();
 	Parameters.MAX_FILES_PER_COMMIT = 2;

@@ -7,7 +7,7 @@ import org.apache.log4j.PatternLayout;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.inria.sacha.coming.analyzer.Main;
+import fr.inria.sacha.coming.analyzer.ComingMain;
 import fr.inria.sacha.coming.analyzer.treeGenerator.TreeGeneratorRegistry;
 import fr.inria.sacha.coming.spoon.treeGenerator.SpoonTreeGenerator;
 import fr.labri.gumtree.matchers.Matcher;
@@ -43,26 +43,19 @@ public class MainTest {
 	@Test
 	public void testListEntities() {
 		
-		Main.main(new String[]{"-e"});
+		ComingMain.main(new String[]{"-e"});
 	}
 	
 	@Test
 	public void testListActions() {
 		
-		Main.main(new String[]{"-a"});
+		ComingMain.main(new String[]{"-a"});
 	}
 	@Test
-	public void testMineIfs() {
-		
-		Main.main(new String[]{"repogit4testv0",
-				"IF_STATEMENT","UPD"});
+	public void testMineBinaryOperator() {		
+		ComingMain.main(new String[]{"repogit4testv0",
+				"BinaryOperator","INS"});
 	}
 
-	@Test
-	public void testMineIfsCommitsText() {
-		
-		Main.main(new String[]{"repogit4testv0",
-				"IF_STATEMENT","UPD","MATH-"});
-	}
 
 }

@@ -74,7 +74,7 @@ public class FineGrainChangeCommitAnalyzer implements CommitAnalyzer {
 		
 		//System.out.println("files "+javaFiles);
 		int nChanges = 0;
-		
+
 
 		// The result is divided by File from the commit.
 		Map<FileCommit, List> changeInstancesInCommit = new HashMap<FileCommit, List>();
@@ -96,13 +96,12 @@ public class FineGrainChangeCommitAnalyzer implements CommitAnalyzer {
 
 				try {
 					DiffResult diff =   this.compareContent(left, right, granularity);
-					if (diff ==null) continue;
 					//todo
 					actions = //diff.getAllActions();
 						diff.getRootActions();
 
 					String name = commit.getName();
-					
+//					System.out.println(name + actions);
 					if (actions == null
 							|| actions.size() > Parameters.MAX_AST_CHANGES_PER_FILE
 							|| actions.size() < Parameters.MIN_AST_CHANGES_PER_FILE) {

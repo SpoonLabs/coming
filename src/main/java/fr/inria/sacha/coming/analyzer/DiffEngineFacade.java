@@ -60,9 +60,6 @@ public class DiffEngineFacade {
 	public Tree createTree(String content, GranuralityType granularity) throws Exception {
 		
 		TreeGenerator treeGen = TreeGeneratorRegistry.getGenerator(granularity);
-		if (treeGen == null)
-			return null;
-		
 		return treeGen.generateTree(content);
 	
 	}
@@ -151,10 +148,10 @@ public class DiffEngineFacade {
 
 			tr = this.createTree(contentR, granularity);
 
-			if(tl == null || tr == null){
-				log.debug("Imposible to generate an ast");
-				return null;
-			}
+//			if(tl == null || tr == null){
+//				log.debug("Imposible to generate an ast");
+//				return null;
+//			}
 			
 			return  getActions(tl, tr);
 
@@ -184,20 +181,6 @@ public class DiffEngineFacade {
 	}
 
 	
-	
-	public static void main(String[] args) throws Exception {
-		if (args.length < 2)
-			throw new IllegalArgumentException("wrong # of parameters");
-
-		DiffEngineFacade c = new DiffEngineFacade();
-		List<Action> actions = c.compareFiles(new File(args[0]), new File(
-				args[1]), GranuralityType.CD, true);
-
-		for (Action action : actions) {
-			System.out.println("-->" + action);
-		}
-
-	}
 
 	
 	private static String readFileContent(File f) throws IOException {

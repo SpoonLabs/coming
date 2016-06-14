@@ -23,7 +23,6 @@ public class DependencyanalyzerTest {
 	@Test
 	public void test() throws Exception {
 		XMLOutputResFile result = DependencyAnalyzerMain.main("repogit4testv0", null);
-		result.save();
 		assertEquals(11, result.getRootNodeCommitList().getChildren().size());
 		assertEquals("ab71649c481971a9ad54f04797f5fd9cb133789b", result.getRootNodeCommitList().getChildren().get(0).getAttribute("number").getValue());
 		assertEquals(2, result.getRootNodeCommitList().getChildren().get(0).getChild("file").getChild("added-class").getChild("dependencies").getChildren().size());

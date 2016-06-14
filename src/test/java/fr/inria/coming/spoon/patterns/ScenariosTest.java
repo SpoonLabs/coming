@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import fr.inria.sacha.coming.analyzer.Parameters;
 import fr.inria.sacha.coming.analyzer.treeGenerator.TreeGeneratorRegistry;
+import fr.inria.sacha.coming.entity.GranuralityType;
 import fr.inria.sacha.coming.spoon.treeGenerator.SpoonTreeGenerator;
 import fr.inria.sacha.coming.util.ConsoleOutput;
 import fr.inria.sacha.coming.util.Scenarios;
@@ -55,13 +56,6 @@ public class ScenariosTest {
 		Matcher.LOGGER.setLevel(java.util.logging.Level.OFF);
 	}
 
-	@Before
-	public void registerSetUp() throws Exception {
-		
-		//Logger.getLogger(DiffSpoon.class).setLevel(Level.OFF);
-		TreeGeneratorRegistry.generators.clear();
-		TreeGeneratorRegistry.addGenerator(new SpoonTreeGenerator());
-	}
 		
 	@Test
 	public void searchArithBugsSpoon() throws Exception {
@@ -102,28 +96,13 @@ public class ScenariosTest {
 	
 	
 	}
-	
-	@Test
-	public void search1SC() throws Exception {
-		
-		String repoPath = //"/home/matias/develop/repositories/commons-lang";//
-		"repogit4testv0";//"/home/matias/develop/repositories/commons-math";
-		
-		Map<FileCommit, List> instancesFound = 	Scenarios.get1SC_CD("", repoPath);
 
-		ConsoleOutput.printResultDetails(instancesFound);
-		XMLOutput.print(instancesFound);
-		
-	}
-	
 	
 	@Test
 	public void searchPreconditions() throws Exception {
 		
 		String repoPath = "repogit4testv0";//"/home/matias/develop/repositories/analyzed/commons-math";
-		
-		Map<FileCommit, List> instancesFound = 	Scenarios.preconditionsCD("", repoPath);
-
+		Map<FileCommit, List> instancesFound = 	Scenarios.preconditions("", repoPath, GranuralityType.SPOON);
 		ConsoleOutput.printResultDetails(instancesFound);
 		XMLOutput.print(instancesFound);
 		
