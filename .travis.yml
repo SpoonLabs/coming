@@ -4,4 +4,6 @@ before_install:
   - sed -i -e 's|https://nexus.codehaus.org/snapshots/|https://oss.sonatype.org/content/repositories/codehaus-snapshots/|g' ~/.m2/settings.xml
   - mvn install:install-file -Dfile=lib/gt-core-1.0-SNAPSHOT.jar -DgeneratePom=true  -DgroupId=fr.labri.gumtree -DartifactId=core -Dversion=1.0-SNAPSHOT -Dpackaging=jar
   - mvn install:install-file -Dfile=lib/genjdt.jar -DgeneratePom=true -DgroupId=fr.labri.gumtree -DartifactId=gen -Dversion=0.0.1-SNAPSHOT -Dpackaging=jar
+  - git clone https://github.com/apache/commons-math.git spoonModule/commons-math.git
+  - git clone https://github.com/apache/commons-lang.git spoonModule/commons-lang.git
 

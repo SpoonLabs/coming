@@ -171,8 +171,7 @@ public static Map<FileCommit, List> getAddIf2SCWithTest(String messageHeuristic 
 	//Insert of a If statement
 	pac.add(new PatternAction(new PatternEntity(EntityType.IF_STATEMENT.name()),ActionType.INS));
 	//Move over any entity, its parent is Then statement
-	pac.add(new PatternAction(new PatternEntity("*", new PatternEntity(EntityType.THEN_STATEMENT.name()),1),
-			ActionType.MOV));
+	//pac.add(new PatternAction(new PatternEntity("*", new PatternEntity(EntityType.THEN_STATEMENT.name()),1),ActionType.MOV));
 	
 	PatternFilter filter = new ChildParentFilter(pac);
 	

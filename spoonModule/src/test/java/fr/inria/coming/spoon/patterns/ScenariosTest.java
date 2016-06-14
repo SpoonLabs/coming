@@ -71,7 +71,7 @@ public class ScenariosTest {
 		String messageHeuristic = "";
 				
 		
-		String path = "/home/matias/develop/repositories/commons-math";
+		String path = "commons-math.git";
 		
 		Map<FileCommit, List> instancesFound = 	Scenarios.getArithmetics_Spoon(messageHeuristic , path);
 		
@@ -93,7 +93,7 @@ public class ScenariosTest {
 		Parameters.ONLY_COMMIT_WITH_TEST_CASE = false;
 		Parameters.MAX_AST_CHANGES_PER_FILE = 5;
 		
-		String path = "/home/matias/develop/repositories/apache/commons-math";
+		String path = "commons-math.git";
 		
 		Map<FileCommit, List> instancesFound = 	Scenarios.getArithmeticsBinary(messageHeuristic , path);
 		
@@ -109,7 +109,7 @@ public class ScenariosTest {
 	public void search1SC() throws Exception {
 		
 		String repoPath = //"/home/matias/develop/repositories/commons-lang";//
-		"/home/matias/develop/repositories/apache/commons-collections";//"/home/matias/develop/repositories/commons-math";
+		"commons-math.git";//"/home/matias/develop/repositories/commons-math";
 		
 		Map<FileCommit, List> instancesFound = 	Scenarios.get1SC_CD("", repoPath);
 
@@ -122,7 +122,7 @@ public class ScenariosTest {
 	@Test
 	public void searchPreconditions() throws Exception {
 		
-		String repoPath = "/home/matias/develop/repositories/apache/commons-lang";//"/home/matias/develop/repositories/analyzed/commons-math";
+		String repoPath = "commons-math.git";//"/home/matias/develop/repositories/analyzed/commons-math";
 		
 		Map<FileCommit, List> instancesFound = 	Scenarios.preconditionsCD("", repoPath);
 
@@ -135,7 +135,7 @@ public class ScenariosTest {
 	public void searchIFAddMove() throws Exception {
 		
 		String repoPath = //"/home/matias/develop/repositories/analyzed/commons-lang";
-				"/home/matias/develop/repositories/apache//commons-math";
+				"commons-lang.git";
 		
 		Map<FileCommit, List> instancesFound = 	Scenarios.getAddIf2SCWithTest("", repoPath);
 		ConsoleOutput.printResultDetails(instancesFound);

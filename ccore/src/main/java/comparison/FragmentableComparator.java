@@ -3,6 +3,7 @@ package comparison;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.compare.internal.LCSSettings;
 import org.eclipse.compare.rangedifferencer.RangeDifference;
 import org.eclipse.compare.rangedifferencer.RangeDifferencer;
 
@@ -16,12 +17,12 @@ public class FragmentableComparator {
   }
 
   public RangeDifference[] compare(Fragmentable sbefore, Fragmentable safter) {
-    RangeDifference[] results = RangeDifferencer.findRanges( null, sbefore, safter);
+    RangeDifference[] results = RangeDifferencer.findRanges(new LCSSettings(), sbefore, safter, safter);
     return results;
   }
   
   public List<String> getAfterDifferences(Fragmentable sbefore, Fragmentable safter)  {
-	    RangeDifference[] results = RangeDifferencer.findRanges(null, sbefore, safter); 
+	    RangeDifference[] results = RangeDifferencer.findRanges(new LCSSettings(), sbefore, safter); 
 	    List<String> l = new ArrayList<String>();
 //	    System.err.println("Diffs: " + results.length);
 	    
