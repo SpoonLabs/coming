@@ -1,5 +1,7 @@
 package fr.inria.coming.spoon.patterns;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.List;
 import java.util.Map;
 
@@ -16,23 +18,23 @@ import fr.inria.sacha.coming.analyzer.Parameters;
 import fr.inria.sacha.coming.analyzer.RepositoryInspector;
 import fr.inria.sacha.coming.analyzer.commitAnalyzer.FineGrainChangeCommitAnalyzer;
 import fr.inria.sacha.coming.analyzer.commitAnalyzer.PatternFilter;
-import fr.inria.sacha.coming.analyzer.commitAnalyzer.SimpleChangeFilter;
+import fr.inria.sacha.coming.analyzer.filter.NbHunkFilter;
 import fr.inria.sacha.coming.analyzer.treeGenerator.PatternEntity;
 import fr.inria.sacha.coming.analyzer.treeGenerator.TreeGeneratorRegistry;
 import fr.inria.sacha.coming.entity.ActionType;
 import fr.inria.sacha.coming.entity.GranuralityType;
 import fr.inria.sacha.coming.spoon.treeGenerator.SpoonTreeGenerator;
 import fr.inria.sacha.coming.util.ConsoleOutput;
-import fr.inria.sacha.coming.util.Scenarios;
 import fr.inria.sacha.coming.util.XMLOutput;
-import fr.inria.sacha.gitanalyzer.interfaces.FileCommit;
+import fr.inria.sacha.gitanalyzer.filter.KeyWordsMessageFilter;
+import fr.inria.sacha.gitanalyzer.interfaces.Commit;
 
 /**
  *  
  * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
-public class RepositoryInspectorSpoonTest extends GitRepository4Test{
+public class RepositoryInspectorSpoonTest extends GitRepository4Test {
 
 	
 	@AfterClass
@@ -59,7 +61,47 @@ public class RepositoryInspectorSpoonTest extends GitRepository4Test{
 		TreeGeneratorRegistry.addGenerator(new SpoonTreeGenerator());
 	}
 
+	@Test
+	public void test1() throws Exception {
+		
+		RepositoryInspector c = new RepositoryInspector();
 
+		Map<Commit, List> instancesFound = c.analize(
+				repoPath,
+				new NullAnalyzer());
+	}
+	
+	@Test
+	public void testkeywordfilter() throws Exception {		
+		RepositoryInspector c = new RepositoryInspector();
+
+		Map<Commit, List> instancesFound = c.analize(
+				repoPath,
+				new NullAnalyzer(), new KeyWordsMessageFilter("precondition"));
+		ConsoleOutput.printResultDetails(instancesFound);
+		assertEquals(1, instancesFound.keySet().size());
+	}
+	
+	@Test
+	public void testHunkfilter() throws Exception {
+		
+		// two hunks
+		RepositoryInspector c = new RepositoryInspector();
+		Map<Commit, List> instancesFound = c.analize(
+				repoPath,
+				new NullAnalyzer(), new NbHunkFilter(2,2));
+		ConsoleOutput.printResultDetails(instancesFound);
+		assertEquals(1, instancesFound.keySet().size());
+
+		
+		// only additions
+		instancesFound = c.analize(
+				repoPath,
+				new NullAnalyzer(), new NbHunkFilter(0,0));
+		ConsoleOutput.printResultDetails(instancesFound);
+		assertEquals(2, instancesFound.keySet().size());
+	}
+	
 	@Test
 	public void searchConditionChangeSpoonParent() throws Exception {
 		
@@ -74,9 +116,8 @@ public class RepositoryInspectorSpoonTest extends GitRepository4Test{
 		Parameters.MAX_AST_CHANGES_PER_FILE = 2;
 		RepositoryInspector c = new RepositoryInspector();
 
-		Map<FileCommit, List> instancesFound = c.analize(
-				repoPath,
-				fineGrainAnalyzer, messageHeuristic);
+		Map<Commit, List> instancesFound = c.analize(
+				repoPath, fineGrainAnalyzer);
 		ConsoleOutput.printResultDetails(instancesFound);
 		XMLOutput.print(instancesFound);
 		
@@ -104,9 +145,9 @@ public class RepositoryInspectorSpoonTest extends GitRepository4Test{
 
 		RepositoryInspector c = new RepositoryInspector();
 
-		Map<FileCommit, List> instancesFound = c.analize(
+		Map<Commit, List> instancesFound = c.analize(
 				repoPath,
-				fineGrainAnalyzer, messageHeuristic);
+				fineGrainAnalyzer);
 		ConsoleOutput.printResultDetails(instancesFound);
 		XMLOutput.print(instancesFound);
 		
@@ -129,9 +170,9 @@ public class RepositoryInspectorSpoonTest extends GitRepository4Test{
 		
 		RepositoryInspector c = new RepositoryInspector();
 
-		Map<FileCommit, List> instancesFound = c.analize(
+		Map<Commit, List> instancesFound = c.analize(
 				repoPath,
-				fineGrainAnalyzer, messageHeuristic);
+				fineGrainAnalyzer);
 		ConsoleOutput.printResultDetails(instancesFound);
 		XMLOutput.print(instancesFound);
 		
@@ -156,9 +197,9 @@ public class RepositoryInspectorSpoonTest extends GitRepository4Test{
 		
 		RepositoryInspector c = new RepositoryInspector();
 
-		Map<FileCommit, List> instancesFound = c.analize(
+		Map<Commit, List> instancesFound = c.analize(
 				repoPath,
-				fineGrainAnalyzer, messageHeuristic);
+				fineGrainAnalyzer);
 		ConsoleOutput.printResultDetails(instancesFound);
 		XMLOutput.print(instancesFound);
 		
@@ -186,9 +227,9 @@ public class RepositoryInspectorSpoonTest extends GitRepository4Test{
 		
 		RepositoryInspector c = new RepositoryInspector();
 
-		Map<FileCommit, List> instancesFound = c.analize(
+		Map<Commit, List> instancesFound = c.analize(
 				repoPath,
-				fineGrainAnalyzer, messageHeuristic);
+				fineGrainAnalyzer);
 		ConsoleOutput.printResultDetails(instancesFound);
 		XMLOutput.print(instancesFound);
 		

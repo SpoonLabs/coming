@@ -1,9 +1,6 @@
 package fr.inria.coming.spoon.patterns;
 
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +19,7 @@ import fr.inria.sacha.coming.spoon.treeGenerator.SpoonTreeGenerator;
 import fr.inria.sacha.coming.util.ConsoleOutput;
 import fr.inria.sacha.coming.util.Scenarios;
 import fr.inria.sacha.coming.util.XMLOutput;
-import fr.inria.sacha.gitanalyzer.interfaces.FileCommit;
+import fr.inria.sacha.gitanalyzer.interfaces.Commit;
 import fr.labri.gumtree.matchers.Matcher;
 
 /**
@@ -65,7 +62,7 @@ public class ScenariosTest {
 		
 		String path = "repogit4testv0";
 		
-		Map<FileCommit, List> instancesFound = 	Scenarios.getArithmetics_Spoon(messageHeuristic , path);
+		Map<Commit, List>instancesFound = 	Scenarios.getArithmetics_Spoon(messageHeuristic , path);
 		
 		Parameters.printParameters();
 		
@@ -87,7 +84,7 @@ public class ScenariosTest {
 		
 		String path = "repogit4testv0";
 		
-		Map<FileCommit, List> instancesFound = 	Scenarios.getArithmeticsBinary(messageHeuristic , path);
+		Map<Commit, List>instancesFound = 	Scenarios.getArithmeticsBinary(messageHeuristic , path);
 		
 		Parameters.printParameters();
 		
@@ -102,7 +99,7 @@ public class ScenariosTest {
 	public void searchPreconditions() throws Exception {
 		
 		String repoPath = "repogit4testv0";//"/home/matias/develop/repositories/analyzed/commons-math";
-		Map<FileCommit, List> instancesFound = 	Scenarios.preconditions("", repoPath, GranuralityType.SPOON);
+		Map<Commit, List>instancesFound = 	Scenarios.preconditions("", repoPath, GranuralityType.SPOON);
 		ConsoleOutput.printResultDetails(instancesFound);
 		XMLOutput.print(instancesFound);
 		

@@ -24,9 +24,8 @@ import fr.inria.sacha.coming.analyzer.commitAnalyzer.PatternFilter;
 import fr.inria.sacha.coming.analyzer.treeGenerator.PatternAction;
 import fr.inria.sacha.coming.analyzer.treeGenerator.PatternEntity;
 import fr.inria.sacha.coming.entity.ActionType;
-import fr.inria.sacha.coming.entity.ChangeDistillerEntityType;
 import fr.inria.sacha.coming.entity.GranuralityType;
-import fr.inria.sacha.gitanalyzer.interfaces.FileCommit;
+import fr.inria.sacha.gitanalyzer.interfaces.Commit;
 import fr.labri.gumtree.matchers.Matcher;
 /**
  * 
@@ -41,7 +40,7 @@ public class Scenarios {
 	 * @param repoPath
 	 * @return
 	 */
-	public static Map<FileCommit, List> get1SC_CD(String messageHeuristic , String repoPath ){
+	public static Map<Commit, List>get1SC_CD(String repoPath ){
 		
 
 		PatternFilter pattern = new PatternFilter(
@@ -54,15 +53,15 @@ public class Scenarios {
 		Parameters.MAX_AST_CHANGES_PER_FILE = 1;
 		Parameters.ONLY_COMMIT_WITH_TEST_CASE = false;
 
-		Map<FileCommit, List> instancesFound = inspector.analize(
+		Map<Commit, List>instancesFound = inspector.analize(
 			repoPath,
-				fineGrainAnalyzer, messageHeuristic);
+				fineGrainAnalyzer, null);
 	
 	return instancesFound;
 	}
 	
 	
-	public static Map<FileCommit, List> get1SCWithTest_Spoon(String messageHeuristic , String repoPath ){
+	public static Map<Commit, List>get1SCWithTest_Spoon(String messageHeuristic , String repoPath ){
 		
 
 		PatternFilter pattern = new PatternFilter(
@@ -76,15 +75,15 @@ public class Scenarios {
 		Parameters.MAX_AST_CHANGES_PER_FILE = 1;
 		Parameters.ONLY_COMMIT_WITH_TEST_CASE = true;
 
-		Map<FileCommit, List> instancesFound = inspector.analize(
+		Map<Commit, List>instancesFound = inspector.analize(
 			repoPath,
-				fineGrainAnalyzer, messageHeuristic);
+				fineGrainAnalyzer);
 	
 	return instancesFound;
 	}
 	
 	
-	public static Map<FileCommit, List> getArithmetics_Spoon(String messageHeuristic , String repoPath ){
+	public static Map<Commit, List>getArithmetics_Spoon(String messageHeuristic , String repoPath ){
 		Parameters.MAX_FILES_PER_COMMIT = 1;
 		Parameters.ONLY_COMMIT_WITH_TEST_CASE = false;
 		Parameters.MAX_AST_CHANGES_PER_FILE = 1;
@@ -100,14 +99,14 @@ public class Scenarios {
 				
 		RepositoryInspector inspector = new RepositoryInspector();
 
-		Map<FileCommit, List> instancesFound = inspector.analize(
+		Map<Commit, List>instancesFound = inspector.analize(
 				repoPath,
-				fineGrainAnalyzer, messageHeuristic);	
+				fineGrainAnalyzer);	
 		
 		return instancesFound;
 	}
 	
-	public static Map<FileCommit, List> getArithmeticsBinary(String messageHeuristic , String repoPath ){
+	public static Map<Commit, List>getArithmeticsBinary(String messageHeuristic , String repoPath ){
 		
 		RepositoryInspector inspector = new RepositoryInspector();
 
@@ -120,9 +119,8 @@ public class Scenarios {
 				GranuralityType.SPOON );
 		
 		
-		Map<FileCommit, List> instancesFound = inspector.analize(
-				repoPath,fineGrainAnalyzer
-				, messageHeuristic);	
+		Map<Commit, List>instancesFound = inspector.analize(
+				repoPath,fineGrainAnalyzer);	
 		
 		return instancesFound;
 	}
@@ -135,7 +133,7 @@ public class Scenarios {
 		return pattern;
 	}
 	
-	public static Map<FileCommit, List> preconditions(String messageHeuristic , String repoPath,  GranuralityType gr){
+	public static Map<Commit, List>preconditions(String messageHeuristic , String repoPath,  GranuralityType gr){
 		
 		PatternEntity pentity = new PatternEntity(gr.ifType());
 		PatternAction pactionMain = new PatternAction(pentity, ActionType.INS);
@@ -153,19 +151,19 @@ public class Scenarios {
 		Parameters.MAX_AST_CHANGES_PER_FILE = 20;
 		Parameters.ONLY_COMMIT_WITH_TEST_CASE = false;
 
-		Map<FileCommit, List> instancesFound = inspector.analize(
+		Map<Commit, List>instancesFound = inspector.analize(
 			repoPath,
-				fineGrainAnalyzer, messageHeuristic);
+				fineGrainAnalyzer);
 	
 	return instancesFound;
 	}
 	
-	public static Map<FileCommit, List> preconditionsCD(String messageHeuristic , String repoPath ){
+	public static Map<Commit, List>preconditionsCD(String messageHeuristic , String repoPath ){
 		return preconditions(messageHeuristic, repoPath, GranuralityType.CD);
 	}
 
 
-public static Map<FileCommit, List> getAddIf2SCWithTest(String messageHeuristic , String repoPath ){
+public static Map<Commit, List>getAddIf2SCWithTest(String messageHeuristic , String repoPath ){
 	
 	GranuralityType granularity = GranuralityType.CD;
 
@@ -184,9 +182,9 @@ public static Map<FileCommit, List> getAddIf2SCWithTest(String messageHeuristic 
 	Parameters.MAX_AST_CHANGES_PER_FILE = 5;//2;//1 for the if, other for the move
 	Parameters.ONLY_COMMIT_WITH_TEST_CASE = false;
 
-	Map<FileCommit, List> instancesFound = inspector.analize(
+	Map<Commit, List>instancesFound = inspector.analize(
 		repoPath,
-			fineGrainAnalyzer, messageHeuristic);
+			fineGrainAnalyzer);
 
 return instancesFound;
 }
@@ -235,11 +233,11 @@ return instancesFound;
 		if(cmd.hasOption("1sc")){
 			String repo = cmd.getOptionValue("repo");
 			if(repo != null){
-				Map<FileCommit, List> instancesFound = null;
+				Map<Commit, List>instancesFound = null;
 				if(cmd.hasOption("t")){
 					instancesFound = Scenarios.get1SCWithTest_Spoon("", repo);
 				}else{
-					instancesFound = Scenarios.get1SC_CD("", repo);
+					instancesFound = Scenarios.get1SC_CD(repo);
 				}
 				
 				ConsoleOutput.printResultDetails(instancesFound);

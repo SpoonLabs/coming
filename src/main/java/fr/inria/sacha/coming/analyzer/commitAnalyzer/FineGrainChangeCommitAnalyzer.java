@@ -1,5 +1,6 @@
 package fr.inria.sacha.coming.analyzer.commitAnalyzer;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,7 +78,7 @@ public class FineGrainChangeCommitAnalyzer implements CommitAnalyzer {
 
 
 		// The result is divided by File from the commit.
-		Map<FileCommit, List> changeInstancesInCommit = new HashMap<FileCommit, List>();
+		List info = new ArrayList();
 
 		for (FileCommit fileCommit : javaFiles) {
 			if (fileCommit.getCompletePath().toLowerCase().contains("test")
@@ -114,8 +115,7 @@ public class FineGrainChangeCommitAnalyzer implements CommitAnalyzer {
 						nChanges += filterActions.size();
 
 						if (filterActions.size() > 0) 
-							changeInstancesInCommit.put(fileCommit,
-									filterActions); 
+							info.addAll(filterActions); 
 					}
 				} catch (Exception e) {
 					throw new RuntimeException(e);
@@ -124,7 +124,9 @@ public class FineGrainChangeCommitAnalyzer implements CommitAnalyzer {
 			}
 		}
 
-		return changeInstancesInCommit;
+		HashMap res = new HashMap();
+		res.put(commit, info);
+		return res;
 	}
 
 	private List<Action> processCommit(DiffResult diff) {

@@ -6,7 +6,7 @@ import fr.inria.sacha.gitanalyzer.interfaces.Commit;
 
 
 /**
- * A filter to search keywords ONLY in the first line of a commit message
+ * A filter to search keywords in the  commit message
  *
  */
 public class KeyWordsMessageFilter extends AbstractFilter {
@@ -32,10 +32,11 @@ public class KeyWordsMessageFilter extends AbstractFilter {
 	public boolean acceptCommit(Commit c) {
 		if (super.acceptCommit(c))
 		{
-			String title = c.getFullMessage();
+			String title = c.getShortMessage() +" "+c.getFullMessage();
 			for (String predicate : predicates) {
-				if (title.contains(predicate))
+				if (title.contains(predicate)) {
 					return true;
+				}
 			}
 		}
 		return false;

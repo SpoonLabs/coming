@@ -10,6 +10,5 @@ import fr.inria.sacha.gitanalyzer.interfaces.Commit;
  */
 public interface IFilter {
 	boolean acceptCommit(Commit c);
-	boolean acceptCommitFragments(List<String> fragments);
 	boolean acceptFragment(String fragment);
 }

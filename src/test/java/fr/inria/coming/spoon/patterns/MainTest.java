@@ -51,6 +51,7 @@ public class MainTest {
 		
 		ComingMain.main(new String[]{"-a"});
 	}
+	
 	@Test
 	public void testMineBinaryOperator() {		
 		ComingMain.main(new String[]{"repogit4testv0",

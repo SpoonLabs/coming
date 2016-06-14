@@ -48,13 +48,6 @@ public abstract class AbstractFilter implements IFilter {
 		return this.parentFilter.acceptCommit(c);
 	}
 
-	/**
-	 * Get the success or fail status of the stacked filter on the list of fragments
-	 */
-	@Override
-	public boolean acceptCommitFragments(List<String> fragments) {
-		return this.parentFilter.acceptCommitFragments(fragments);
-	}
 
 	/**
 	 * Get the success or fail status of the stacked filter on the alone fragment

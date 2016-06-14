@@ -15,6 +15,7 @@ import org.junit.After;
 import org.junit.Before;
 
 import fr.inria.sacha.coming.analyzer.Parameters;
+import fr.inria.sacha.gitanalyzer.interfaces.Commit;
 import fr.inria.sacha.gitanalyzer.interfaces.FileCommit;
 import fr.labri.gumtree.actions.model.Action;
 
@@ -62,21 +63,22 @@ public abstract class GitRepository4Test {
 	}
 	
 	
-	public static boolean containsCommit(Map<FileCommit, List> instancesFound,
+	public static boolean containsCommit(Map<Commit, List> instancesFound,
 			String commit) {
-		for (FileCommit fc : instancesFound.keySet()) {
-			if (fc.getCommit().getName().equals(commit))
-				return true;
+		for (Commit c : instancesFound.keySet()) {
+				if (c.getName().equals(commit))
+					return true;
+			
 		}
 		return false;
 	}
 
-	protected boolean containsCommit(Map<FileCommit, 
+	protected boolean containsCommit(Map<Commit, 
 			List> instancesFound,
 			String commit, String typeLabel) {
-		for (FileCommit fc : instancesFound.keySet()) {
-			if (fc.getCommit().getName().equals(commit)) {
-				List<Action> actions = instancesFound.get(fc);
+		for (Commit c : instancesFound.keySet()) {
+			for (FileCommit fc : c.getFileCommits()) {
+				List<Action> actions = instancesFound.get(c);
 				for (Action action : actions) {
 					if (action.getNode().getTypeLabel().equals(typeLabel))
 						return true;

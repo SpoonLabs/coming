@@ -10,48 +10,48 @@ import comparison.FragmentableComparator;
 import comparison.LineComparator;
 import fr.inria.sacha.coming.analyzer.Parameters;
 import fr.inria.sacha.gitanalyzer.filter.AbstractFilter;
+import fr.inria.sacha.gitanalyzer.filter.IFilter;
 import fr.inria.sacha.gitanalyzer.interfaces.Commit;
 import fr.inria.sacha.gitanalyzer.interfaces.FileCommit;
 
-public class SyntacticDiffFilter extends AbstractFilter {
+/** filters on the number of hunks per file */
+public class NbHunkFilter extends AbstractFilter {
 
 	FragmentableComparator comparator = new LineComparator(); // new JavaTokenComparator();
+	private int max_included;
+	private int min_included;
 	
-	public SyntacticDiffFilter(){
+	public NbHunkFilter(int min_included, int max_included){
 		super();
+		this.max_included = max_included;
+		this.min_included = min_included;
 	};
 	
-	public SyntacticDiffFilter(CommitSizeFilter sizeFilter) {
-		super(sizeFilter);
+	public NbHunkFilter(int min_included, int max_included, IFilter other) {
+		super(other);
+		this.max_included = max_included;
+		this.min_included = min_included;
 	}
+	
 	@Override
 	public boolean acceptCommit(Commit commit) {
 
 		if (super.acceptCommit(commit)) {
-			
+			int nbHunks = 0;
 			List<FileCommit> javaFiles = commit.getJavaFileCommits();
 			
 			for (FileCommit fileCommit : javaFiles) {
-				if (fileCommit.getCompletePath().toLowerCase().contains("test") ||
-						fileCommit.getCompletePath().toLowerCase().endsWith("package-info.java")) {
-					continue;
-				}
 				
-				List<RangeDifference> nChangesFile = getNumberChanges(
+				List<RangeDifference> hunks = getNumberChanges(
 						fileCommit.getPreviousVersion(),
 						fileCommit.getNextVersion());
-
-				// First filter by hunks.
-				if (nChangesFile.size() == 0) {
-					return false;
-				}
-				if (nChangesFile.size() > Parameters.MAX_HUNKS_PER_FILECOMMIT) {
-					return false;
-				}
-								
-			//
+				nbHunks+=hunks.size();
 			}
-		return true;
+
+
+			if (nbHunks >= min_included && nbHunks <= max_included ) {	
+				return true;
+			}
 			
 		}
 		

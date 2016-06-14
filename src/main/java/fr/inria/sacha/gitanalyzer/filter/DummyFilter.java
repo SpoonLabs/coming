@@ -17,11 +17,6 @@ public class DummyFilter implements IFilter {
 	}
 
 	@Override
-	public boolean acceptCommitFragments(List<String> fragments) {
-		return true;
-	}
-
-	@Override
 	public boolean acceptFragment(String fragment) {
 		return true;
 	}

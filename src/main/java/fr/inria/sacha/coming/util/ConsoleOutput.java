@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import fr.inria.sacha.coming.analyzer.Parameters;
+import fr.inria.sacha.gitanalyzer.interfaces.Commit;
 import fr.inria.sacha.gitanalyzer.interfaces.FileCommit;
 import fr.labri.gumtree.actions.model.Action;
 import fr.labri.gumtree.actions.model.Update;
@@ -20,14 +21,19 @@ public class ConsoleOutput {
 	 *
 	 * @param result
 	 */
-	public static void printResultDetails(Map<FileCommit, List> result) {
+	public static void printResultDetails(Map<Commit, List> result) {
 
 		Parameters.printParameters();
 		
 		log.info("End of processing: Result " + result.size());
-		for (FileCommit fc : result.keySet()) {
+		for (Object o : result.keySet()) {
+			if (! (o instanceof Commit)) continue;
+			for (Object o2 : ((Commit)o).getFileCommits()) {
+			FileCommit fc = (FileCommit)o2;
+			log.info("Commit: " + fc.getCommit().getName()+", "+fc.getCommit().getFullMessage().replace('\n', ' ') + ", file " + fc.getFileName());
+			if (! (result.get(fc) instanceof List)) continue;
 			List<Action> actionsfc = result.get(fc);
-			log.info("Commit: " + fc.getCommit().getName()+", "+fc.getCommit().getFullMessage().replace('\n', ' ') + ", file " + fc.getFileName() + " , instances  "
+			log.info(" , instances  "
 					+ actionsfc.size());
 			System.out.println("file: "+fc.getFileName());
 			System.out.println("Modifications: "+fc.getFileName());
@@ -49,6 +55,7 @@ public class ConsoleOutput {
 			}
 
 			System.out.println("---");
+		}
 		}
 	}
 	

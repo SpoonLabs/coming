@@ -21,7 +21,7 @@ import fr.inria.sacha.coming.entity.GranuralityType;
 import fr.inria.sacha.coming.spoon.treeGenerator.SpoonTreeGenerator;
 import fr.inria.sacha.coming.util.ConsoleOutput;
 import fr.inria.sacha.coming.util.PatternXMLParser;
-import fr.inria.sacha.gitanalyzer.interfaces.FileCommit;
+import fr.inria.sacha.gitanalyzer.interfaces.Commit;
 /**
  * 
  * @author Matias Martinez matias.martinez@inria.fr
@@ -70,8 +70,8 @@ public class XMLPatternSearchTest extends GitRepository4Test {
 			
 			
 			RepositoryInspector miner = new RepositoryInspector();
-			Map<FileCommit, List> instancesFound = miner.analize(repoPath,
-					fineGrainAnalyzer, messageHeuristic);
+			Map<Commit, List> instancesFound = miner.analize(repoPath,
+					fineGrainAnalyzer);
 			ConsoleOutput.printResultDetails(instancesFound);
 
 			Assert.assertTrue(instancesFound.keySet().size() > 0);

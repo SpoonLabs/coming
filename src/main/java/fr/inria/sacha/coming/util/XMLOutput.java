@@ -23,6 +23,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import fr.inria.sacha.gitanalyzer.interfaces.Commit;
 import fr.inria.sacha.gitanalyzer.interfaces.FileCommit;
 import fr.labri.gumtree.actions.model.Action;
 import fr.labri.gumtree.actions.model.Update;
@@ -38,7 +39,7 @@ public class XMLOutput {
 
 
 
-	public static void print(Map<FileCommit, List> result) {
+	public static void print(Map<Commit, List> result) {
 
 		try {
 
@@ -50,28 +51,28 @@ public class XMLOutput {
 			Element rootElement = root.createElement("data");
 			root.appendChild(rootElement);
 
-			for (FileCommit fc : result.keySet()) {
-				List<Action> actionsfc = result.get(fc);
+			for (Commit o : result.keySet()) {
+				List<Action> actionsfc = result.get(o);
 
 
 				Element commitfile = root.createElement("commitFile");
 				rootElement.appendChild(commitfile);
 
 				Attr attr = root.createAttribute("id");
-				attr.setValue(fc.getCommit().getName());
+				attr.setValue(o.getName());
 				commitfile.setAttributeNode(attr);
 
-				Attr attr2 = root.createAttribute("file");
-				attr2.setValue(fc.getFileName());
-				commitfile.setAttributeNode(attr2);
+//				Attr attr2 = root.createAttribute("file");
+//				attr2.setValue(fc.getFileName());
+//				commitfile.setAttributeNode(attr2);
 
 				Element commitmess = root.createElement("message");
 				commitfile.appendChild(commitmess);
-				commitmess.setTextContent(fc.getCommit().getFullMessage().replace('\n', ' '));
+				commitmess.setTextContent(o.getFullMessage().replace('\n', ' '));
 				
 				Element link = root.createElement("link");
 				commitfile.appendChild(link);
-				link.setTextContent("https://github.com/apache/commons-math/commit/"+fc.getCommit().getName());
+				link.setTextContent("https://github.com/apache/commons-math/commit/"+o.getName());
 
 				Element actions = root.createElement("actions");
 				commitfile.appendChild(actions);

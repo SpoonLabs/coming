@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import fr.inria.sacha.coming.analyzer.commitAnalyzer.FineGrainChangeCommitAnalyzer;
 import fr.inria.sacha.coming.analyzer.commitAnalyzer.SimpleChangeFilter;
 import fr.inria.sacha.coming.analyzer.filter.CommitSizeFilter;
-import fr.inria.sacha.coming.analyzer.filter.SyntacticDiffFilter;
+import fr.inria.sacha.coming.analyzer.filter.NbHunkFilter;
 import fr.inria.sacha.coming.entity.ActionType;
 import fr.inria.sacha.gitanalyzer.filter.DummyFilter;
 import fr.inria.sacha.gitanalyzer.filter.IFilter;
@@ -35,6 +35,7 @@ public class RepositoryInspector {
 	public static int PARAM_LABEL = 2;
 	public static int PARAM_OP_TYPE = 3;
 
+	public RepositoryInspector() {}
 	/**
 	 * By default, the main uses the "FineGrainChangeCommitAnalyzer"
 	 * @param args
@@ -52,37 +53,38 @@ public class RepositoryInspector {
 		FineGrainChangeCommitAnalyzer analyzer = new FineGrainChangeCommitAnalyzer(
 				new SimpleChangeFilter(label,ActionType.valueOf(optype)));
 
-		c.analize(repositoryPath, masterBranch, analyzer, "");
+		c.analize(repositoryPath, masterBranch, analyzer, null);
 	}
 
 
-	public Map<FileCommit, List> analize(String repositoryPath, CommitAnalyzer commitAnalyzer  , String keywordsMessageHeuristic) {
-		return this.analize(repositoryPath, "master", commitAnalyzer, keywordsMessageHeuristic);
+	public Map<Commit, List> analize(String repositoryPath, CommitAnalyzer commitAnalyzer) {
+		return this.analize(repositoryPath, "master", commitAnalyzer, new DummyFilter());
+	}
+
+	public Map<Commit, List> analize(String repositoryPath, CommitAnalyzer commitAnalyzer, IFilter filter) {
+		return this.analize(repositoryPath, "master", commitAnalyzer, filter);
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public Map<FileCommit, List> analize(String repositoryPath, String masterBranch, CommitAnalyzer commitAnalyzer  , String keywordsMessageHeuristic) {
+	public Map<Commit, List> analize(String repositoryPath, String masterBranch, CommitAnalyzer commitAnalyzer, IFilter filter) {
 
 		RepositoryP repo = new RepositoryPGit(repositoryPath, masterBranch);
 			
-		IFilter filter = null;
-		
-		filter = defineCommitFilters(keywordsMessageHeuristic);
-	
+		System.out.println(filter);
 		
 		// For each commit of a repository
 		List<Commit> history = repo.history();
 		int i = 0;
 
-		Map<FileCommit, List> allInstances = new HashMap<FileCommit, List>();
+		Map<Commit, List> allInstances = new HashMap<Commit, List>();
 		for (Commit c : history) {
 			//log.debug((i++)+"/"+history.size());
 			if (filter.acceptCommit(c)) {
 				
-				Map<FileCommit, List> resultCommit = (Map) commitAnalyzer.analyze(c);
+				Map<Commit, List> resultCommit = (Map) commitAnalyzer.analyze(c);
 				if (resultCommit != null && !resultCommit.isEmpty())
 					allInstances.putAll(resultCommit);
-			}else{
+			} else {
 			//	log.info("\n commits not accepted "+ c.getName());
 			}
 
@@ -95,18 +97,7 @@ public class RepositoryInspector {
 	}
 
 
-	private IFilter defineCommitFilters(
-			String keywordsMessageHeuristic) {
-		IFilter messageFilter = null;
-	//	if(keywordsMessageHeuristic == null || keywordsMessageHeuristic.isEmpty())
-			messageFilter = new DummyFilter();
-		//else
-			//messageFilter = new KeyWordsMessageFilter(keywordsMessageHeuristic);
-		
-		CommitSizeFilter sizeFilter = new CommitSizeFilter(messageFilter);
-		SyntacticDiffFilter sdiffFilter = new SyntacticDiffFilter(sizeFilter);
-		return sdiffFilter;
-	}
+
 
 	
 	/**

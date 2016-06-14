@@ -1,16 +1,15 @@
 package fr.inria.sacha.coming.analyzer;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import fr.inria.sacha.coming.analyzer.commitAnalyzer.FineGrainChangeCommitAnalyzer;
 import fr.inria.sacha.coming.analyzer.commitAnalyzer.SimpleChangeFilter;
 import fr.inria.sacha.coming.entity.ActionType;
-import fr.inria.sacha.coming.entity.ChangeDistillerEntityType;
 import fr.inria.sacha.coming.util.ConsoleOutput;
 import fr.inria.sacha.coming.util.XMLOutput;
-import fr.inria.sacha.gitanalyzer.interfaces.FileCommit;
+import fr.inria.sacha.gitanalyzer.filter.DummyFilter;
+import fr.inria.sacha.gitanalyzer.interfaces.Commit;
 /**
  * 
  * @author  Matias Martinez, matias.martinez@inria.fr
@@ -43,11 +42,10 @@ public class ComingMain {
 	    FineGrainChangeCommitAnalyzer analyzer = new FineGrainChangeCommitAnalyzer(
 	    		new SimpleChangeFilter(entity, ActionType.valueOf(action)));
 
-	    Map<FileCommit, List> instancesFound = c.analize(
+	    Map<Commit, List> instancesFound = c.analize(
 	    		projectLocation
 	    		, "master", 
-	    		analyzer
-	    		, messageHeuristic);
+	    		analyzer, new DummyFilter());
 	    ConsoleOutput.printResultDetails(instancesFound);
 	    XMLOutput.print(instancesFound);
 	}
