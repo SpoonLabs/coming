@@ -1,3 +1,4 @@
+
 Coming:
 ========= 
 ##A java tool from University of Lille and Inria for mining git repositories
@@ -15,7 +16,7 @@ URL: http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=6676914&isnumber=66
     year={2013}, 
     pages={388-391},
     doi={10.1109/ICSM.2013.54}, 
-    ISSN={1063-6773}, 
+    ISSN={1063-6773},  
     month={Sept},}
 
 
@@ -31,7 +32,7 @@ Compile
 ```
 mvn install:install-file -Dfile=lib/gt-core-1.0-SNAPSHOT.jar -DgroupId=fr.labri.gumtree -DartifactId=core -Dversion=1.0-SNAPSHOT.jar -Dpackaging=jar
 mvn install:install-file -Dfile=lib/genjdt.jar -DgroupId=fr.labri.gumtree -DartifactId=gen -Dversion=0.0.1-SNAPSHOT -Dpackaging=jar
-mvn compile
+mvn -Dskiptest compile
 ```
 
 Architecture
