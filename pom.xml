@@ -4,9 +4,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>fr.inria.coming</groupId>
-	<artifactId>parent</artifactId>
+	<artifactId>coming</artifactId>
 	<version>0.0.2-SNAPSHOT</version>
-	<packaging>pom</packaging>
+	<packaging>jar</packaging>
 
 	<name>coming-parent</name>
 	<url>matias</url>
@@ -166,9 +166,4 @@
 
 	</build>
 
-	<modules>
-		<module>spoonModule</module>
-		<module>ccore</module>
-		<module>gitrepoanalyzer</module>
-	</modules>
 </project>
