@@ -31,8 +31,7 @@ Compile
 ------
 
 ```
-mvn install:install-file -Dfile=lib/gt-core-1.0-SNAPSHOT.jar -DgroupId=fr.labri.gumtree -DartifactId=core -Dversion=1.0-SNAPSHOT.jar -Dpackaging=jar
-mvn install:install-file -Dfile=lib/genjdt.jar -DgroupId=fr.labri.gumtree -DartifactId=gen -Dversion=0.0.1-SNAPSHOT -Dpackaging=jar
+mvn install:install-file -Dfile=lib/gumtree-spoon-ast-diff-0.0.3-SNAPSHOT-jar-with-dependencies.jar -DgeneratePom=true -DgroupId=fr.inria.spirals -DartifactId=gumtree-spoon-ast-diff -Dversion=0.0.3-SNAPSHOT -Dpackaging=jar
 mvn -Dskiptest compile
 ```
 
