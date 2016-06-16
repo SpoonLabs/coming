@@ -26,7 +26,7 @@ import fr.inria.sacha.coming.analyzer.treeGenerator.PatternEntity;
 import fr.inria.sacha.coming.entity.ActionType;
 import fr.inria.sacha.coming.entity.GranuralityType;
 import fr.inria.sacha.gitanalyzer.interfaces.Commit;
-import fr.labri.gumtree.matchers.Matcher;
+import com.github.gumtreediff.matchers.Matcher;
 /**
  * 
  * @author Matias Martinez

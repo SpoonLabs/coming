@@ -14,10 +14,8 @@ import org.junit.Test;
 import fr.inria.sacha.coming.analyzer.RepositoryInspector;
 import fr.inria.sacha.coming.analyzer.commitAnalyzer.FineGrainChangeCommitAnalyzer;
 import fr.inria.sacha.coming.analyzer.commitAnalyzer.SimpleChangeFilter;
-import fr.inria.sacha.coming.analyzer.treeGenerator.TreeGeneratorRegistry;
 import fr.inria.sacha.coming.entity.ActionType;
 import fr.inria.sacha.coming.entity.GranuralityType;
-import fr.inria.sacha.coming.spoon.treeGenerator.SpoonTreeGenerator;
 import fr.inria.sacha.coming.util.ConsoleOutput;
 import fr.inria.sacha.gitanalyzer.interfaces.Commit;
 
@@ -42,12 +40,6 @@ public class PatternSearchTest extends GitRepository4Test{
 		Logger.getRootLogger().addAppender(console);
 	}
 
-	@Before
-	public void registerSetUp() throws Exception {
-		
-		TreeGeneratorRegistry.generators.clear();
-		TreeGeneratorRegistry.addGenerator(new SpoonTreeGenerator());
-	}
 		
 	@Test
 	public void spoonTestMI() throws Exception {

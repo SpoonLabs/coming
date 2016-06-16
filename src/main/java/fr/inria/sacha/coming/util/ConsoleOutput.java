@@ -8,8 +8,8 @@ import org.apache.log4j.Logger;
 import fr.inria.sacha.coming.analyzer.Parameters;
 import fr.inria.sacha.gitanalyzer.interfaces.Commit;
 import fr.inria.sacha.gitanalyzer.interfaces.FileCommit;
-import fr.labri.gumtree.actions.model.Action;
-import fr.labri.gumtree.actions.model.Update;
+import com.github.gumtreediff.actions.model.Action;
+import com.github.gumtreediff.actions.model.Update;
 
 
 public class ConsoleOutput {

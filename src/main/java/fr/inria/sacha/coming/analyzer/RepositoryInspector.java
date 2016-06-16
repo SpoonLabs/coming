@@ -8,8 +8,6 @@ import org.apache.log4j.Logger;
 
 import fr.inria.sacha.coming.analyzer.commitAnalyzer.FineGrainChangeCommitAnalyzer;
 import fr.inria.sacha.coming.analyzer.commitAnalyzer.SimpleChangeFilter;
-import fr.inria.sacha.coming.analyzer.filter.CommitSizeFilter;
-import fr.inria.sacha.coming.analyzer.filter.NbHunkFilter;
 import fr.inria.sacha.coming.entity.ActionType;
 import fr.inria.sacha.gitanalyzer.filter.DummyFilter;
 import fr.inria.sacha.gitanalyzer.filter.IFilter;
@@ -18,7 +16,7 @@ import fr.inria.sacha.gitanalyzer.interfaces.CommitAnalyzer;
 import fr.inria.sacha.gitanalyzer.interfaces.FileCommit;
 import fr.inria.sacha.gitanalyzer.interfaces.RepositoryP;
 import fr.inria.sacha.gitanalyzer.object.RepositoryPGit;
-import fr.labri.gumtree.actions.model.Action;
+import com.github.gumtreediff.actions.model.Action;
 /**
  *
  *This class navigates the history of a project: for each commit...

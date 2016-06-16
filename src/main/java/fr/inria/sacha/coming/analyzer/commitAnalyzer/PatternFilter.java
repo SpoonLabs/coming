@@ -2,13 +2,15 @@ package fr.inria.sacha.coming.analyzer.commitAnalyzer;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import fr.inria.sacha.coming.analyzer.DiffResult;
 import fr.inria.sacha.coming.analyzer.treeGenerator.PatternAction;
 import fr.inria.sacha.coming.analyzer.treeGenerator.PatternEntity;
 import fr.inria.sacha.coming.entity.ActionType;
-import fr.labri.gumtree.actions.model.Action;
-import fr.labri.gumtree.tree.Tree;
+import fr.inria.sacha.spoon.diffSpoon.CtDiff;
+import fr.inria.sacha.spoon.diffSpoon.SpoonGumTreeBuilder;
+
+import com.github.gumtreediff.actions.model.Action;
+import com.github.gumtreediff.tree.ITree;
+import com.github.gumtreediff.tree.Tree;
 
 /**
  * 
@@ -47,7 +49,7 @@ public class PatternFilter extends SimpleChangeFilter {
 	 * Filtre changes according to the pattern specification
 	 */
 	@Override
-	public List<Action> process(DiffResult diff) {
+	public List<Action> process(CtDiff  diff) {
 
 		List<Action> result = new ArrayList<Action>();
 
@@ -87,12 +89,12 @@ public class PatternFilter extends SimpleChangeFilter {
 			return true;
 		}
 
-		Tree parentNodeFromAction = affectedAction.getNode().getParent();
+		ITree parentNodeFromAction = affectedAction.getNode().getParent();
 		int i_levels = 1;
 
 		while (parentNodeFromAction != null && i_levels <= parentLevel) {
-
-			if (parentNodeFromAction.getTypeLabel().equals(parentEntityFromPattern.getEntityName())
+			String type = SpoonGumTreeBuilder.gtContext.getTypeLabel(parentNodeFromAction.getType());
+			if (type != null && type.equals(parentEntityFromPattern.getEntityName())
 					// Martin commented this
 					//&& !isNodeAffectedbyAction(allActions, parentNodeFromAction)
 					) {
@@ -114,7 +116,7 @@ public class PatternFilter extends SimpleChangeFilter {
 
 	}
 
-	protected boolean isNodeAffectedbyAction(List<Action> actions, Tree node) {
+	protected boolean isNodeAffectedbyAction(List<Action> actions, ITree node) {
 		for (Action action : actions) {
 
 			if (action.getNode().getId() == node.getId()) {

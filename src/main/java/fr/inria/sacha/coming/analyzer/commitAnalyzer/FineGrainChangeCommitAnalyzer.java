@@ -3,11 +3,9 @@ package fr.inria.sacha.coming.analyzer.commitAnalyzer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import fr.inria.sacha.coming.analyzer.DiffResult;
 import fr.inria.sacha.coming.analyzer.DiffEngineFacade;
 import fr.inria.sacha.coming.analyzer.Parameters;
 import fr.inria.sacha.coming.entity.GranuralityType;
@@ -15,7 +13,8 @@ import fr.inria.sacha.coming.util.ConfigurationProperties;
 import fr.inria.sacha.gitanalyzer.interfaces.Commit;
 import fr.inria.sacha.gitanalyzer.interfaces.CommitAnalyzer;
 import fr.inria.sacha.gitanalyzer.interfaces.FileCommit;
-import fr.labri.gumtree.actions.model.Action;
+import fr.inria.sacha.spoon.diffSpoon.CtDiff;
+import com.github.gumtreediff.actions.model.Action;
 
 /**
  * Commit analyzer: It searches fine grain changes.
@@ -96,7 +95,7 @@ public class FineGrainChangeCommitAnalyzer implements CommitAnalyzer {
 				List<Action> actions;
 
 				try {
-					DiffResult diff =   this.compareContent(left, right, granularity);
+					CtDiff diff =   this.compareContent(left, right, granularity);
 					//todo
 					actions = //diff.getAllActions();
 						diff.getRootActions();
@@ -129,7 +128,7 @@ public class FineGrainChangeCommitAnalyzer implements CommitAnalyzer {
 		return res;
 	}
 
-	private List<Action> processCommit(DiffResult diff) {
+	private List<Action> processCommit(CtDiff  diff) {
 		
 		if(this.processor == null)
 			return diff.getRootActions();
@@ -137,7 +136,7 @@ public class FineGrainChangeCommitAnalyzer implements CommitAnalyzer {
 		return this.processor.process(diff);
 	}
 
-	public DiffResult compareContent(String left, String right, GranuralityType granularity) throws Exception {
+	public CtDiff  compareContent(String left, String right, GranuralityType granularity) throws Exception {
 	
 		DiffEngineFacade cdiff = new DiffEngineFacade();
 		return cdiff.compareContent(left, right, granularity);

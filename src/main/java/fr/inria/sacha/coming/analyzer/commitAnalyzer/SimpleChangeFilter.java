@@ -4,15 +4,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import fr.inria.sacha.coming.analyzer.DiffResult;
 import fr.inria.sacha.coming.analyzer.treeGenerator.PatternAction;
 import fr.inria.sacha.coming.analyzer.treeGenerator.PatternEntity;
 import fr.inria.sacha.coming.entity.ActionType;
-import fr.labri.gumtree.actions.model.Action;
-import fr.labri.gumtree.actions.model.Delete;
-import fr.labri.gumtree.actions.model.Insert;
-import fr.labri.gumtree.actions.model.Move;
-import fr.labri.gumtree.actions.model.Update;
+import fr.inria.sacha.spoon.diffSpoon.CtDiff;
+import fr.inria.sacha.spoon.diffSpoon.SpoonGumTreeBuilder;
+
+import com.github.gumtreediff.actions.model.Action;
+import com.github.gumtreediff.actions.model.Delete;
+import com.github.gumtreediff.actions.model.Insert;
+import com.github.gumtreediff.actions.model.Move;
+import com.github.gumtreediff.actions.model.Update;
 
 /**
  * 
@@ -62,7 +64,7 @@ public class SimpleChangeFilter implements IChangesProcessor {
 	 * @param granularity2
 	 * @return
 	 */
-	public List<Action> process(DiffResult diff) {
+	public List<Action> process(CtDiff  diff) {
 		List<Action> actions = diff.getAllActions();
 		actions.removeAll(Collections.singleton(null));
 		List<Action> filter = new ArrayList<Action>();
@@ -72,8 +74,9 @@ public class SimpleChangeFilter implements IChangesProcessor {
 			boolean added = false;
 			for (Action action : actions) {
 				try {
-					if (action.getNode().getTypeLabel().equals("CompilationUnit"))
-						continue;
+					//Matias: not any more, only used in JDT
+					//if (action.getNode().getTypeLabel().equals("CompilationUnit"))
+					//	continue;
 
 					if (matchTypeLabel(action, getTypeLabel(patternAction)) && matchTypes(action, getOperationType(patternAction))){
 						filter.add(action);
@@ -99,7 +102,8 @@ public class SimpleChangeFilter implements IChangesProcessor {
 	}
 
 	protected boolean matchTypeLabel(Action action, String typeLabel) {
-		return "*".equals(typeLabel) || typeLabel.equals(action.getNode().getTypeLabel());
+		return "*".equals(typeLabel) || 
+				typeLabel.equals(SpoonGumTreeBuilder.gtContext.getTypeLabel(action.getNode().getType()));
 	}
 
 	public ActionType getOperationType(PatternAction patternAction) {

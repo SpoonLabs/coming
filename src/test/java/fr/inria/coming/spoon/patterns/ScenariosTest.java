@@ -13,14 +13,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import fr.inria.sacha.coming.analyzer.Parameters;
-import fr.inria.sacha.coming.analyzer.treeGenerator.TreeGeneratorRegistry;
 import fr.inria.sacha.coming.entity.GranuralityType;
-import fr.inria.sacha.coming.spoon.treeGenerator.SpoonTreeGenerator;
 import fr.inria.sacha.coming.util.ConsoleOutput;
 import fr.inria.sacha.coming.util.Scenarios;
 import fr.inria.sacha.coming.util.XMLOutput;
 import fr.inria.sacha.gitanalyzer.interfaces.Commit;
-import fr.labri.gumtree.matchers.Matcher;
+import com.github.gumtreediff.matchers.Matcher;
 
 /**
  *  
@@ -44,8 +42,6 @@ public class ScenariosTest {
 		console.activateOptions();
 		Logger.getRootLogger().getLoggerRepository().resetConfiguration();
 		Logger.getRootLogger().addAppender(console);
-		
-		TreeGeneratorRegistry.addGenerator(new SpoonTreeGenerator());
 		
 		//Logger.getLogger(DiffSpoon.class).setLevel(Level.OFF);
 		java.util.logging.Logger.getLogger("fr.labri.gumtree.matchers").setLevel(java.util.logging.Level.OFF);

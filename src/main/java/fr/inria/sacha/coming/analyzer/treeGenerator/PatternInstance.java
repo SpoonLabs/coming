@@ -2,7 +2,7 @@ package fr.inria.sacha.coming.analyzer.treeGenerator;
 
 import java.util.List;
 
-import fr.labri.gumtree.actions.model.Action;
+import com.github.gumtreediff.actions.model.Action;
 /**
  * 
  * @author Matias Martinez matias.martinez@inria.fr

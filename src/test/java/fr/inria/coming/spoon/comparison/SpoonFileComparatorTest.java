@@ -1,8 +1,6 @@
 package fr.inria.coming.spoon.comparison;
 
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -12,45 +10,34 @@ import org.junit.Before;
 import org.junit.Test;
 
 import fr.inria.sacha.coming.analyzer.DiffEngineFacade;
-import fr.inria.sacha.coming.analyzer.treeGenerator.TreeGeneratorRegistry;
 import fr.inria.sacha.coming.entity.GranuralityType;
-import fr.inria.sacha.coming.spoon.treeGenerator.SpoonTreeGenerator;
-import fr.labri.gumtree.actions.model.Action;
+import fr.inria.sacha.spoon.diffSpoon.CtDiff;
 
+import com.github.gumtreediff.actions.model.Action;
 
 /**
  * 
- *  @author Matias Martinez, matias.martinez@inria.fr
+ * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
 public class SpoonFileComparatorTest {
 
-
-	@Before
-	public void registerSetUp() throws Exception {
-		
-		TreeGeneratorRegistry.generators.clear();
-		TreeGeneratorRegistry.addGenerator(new SpoonTreeGenerator());
-	}
-		
 	@Test
-	public void testSpoonCompareFiles() throws URISyntaxException {
-		
-	
-	
+	public void testSpoonCompareFiles() throws Exception {
+
 		DiffEngineFacade gt = new DiffEngineFacade();
-		File fl = new File(getClass().
-				getResource("/test1_left.txt").getFile());
-		File fr = new File(getClass().
-				getResource("/test1_right.txt").getFile());
+		File fl = new File(getClass().getResource("/test1_left.java").getFile());
+		File fr = new File(getClass().getResource("/test1_right.java").getFile());
+
+		CtDiff diff = gt.compareFiles(fl, fr, GranuralityType.SPOON);
+
+		assertNotNull(diff);
 		
-		
-		List<Action> actionsCD = gt.compareFiles(fl, fr, GranuralityType.SPOON, true);
-		System.out.println(actionsCD);
+		List<Action> actionsCD = diff.getAllActions();
+
 		assertNotNull(actionsCD);
-		//assertEquals(3,actionsCD.size());
+		assertTrue(actionsCD.size() > 0);
+		// assertEquals(3,actionsCD.size());
 	}
 
-
-	
 }

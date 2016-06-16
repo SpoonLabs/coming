@@ -24,9 +24,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import fr.inria.sacha.gitanalyzer.interfaces.Commit;
-import fr.inria.sacha.gitanalyzer.interfaces.FileCommit;
-import fr.labri.gumtree.actions.model.Action;
-import fr.labri.gumtree.actions.model.Update;
+import com.github.gumtreediff.actions.model.Action;
+import com.github.gumtreediff.actions.model.Update;
 
 
 /**

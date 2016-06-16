@@ -60,11 +60,6 @@
       <version>1.3.2</version>
     </dependency>
     <dependency>
-      <groupId>fr.labri.gumtree</groupId>
-      <artifactId>core</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <version>2.4</version>
@@ -74,6 +69,13 @@
       <artifactId>spoon-core</artifactId>
       <version>5.2.0-SNAPSHOT</version>
     </dependency>
+    
+      <dependency>
+      <groupId>fr.inria.spirals</groupId>
+      <artifactId>gumtree-spoon-ast-diff</artifactId>
+      <version>0.0.3-SNAPSHOT</version>
+    </dependency>
+    
     <dependency>
       <groupId>org.eclipse.jgit</groupId>
       <artifactId>org.eclipse.jgit</artifactId>

@@ -17,7 +17,9 @@ import org.junit.Before;
 import fr.inria.sacha.coming.analyzer.Parameters;
 import fr.inria.sacha.gitanalyzer.interfaces.Commit;
 import fr.inria.sacha.gitanalyzer.interfaces.FileCommit;
-import fr.labri.gumtree.actions.model.Action;
+import fr.inria.sacha.spoon.diffSpoon.SpoonGumTreeBuilder;
+
+import com.github.gumtreediff.actions.model.Action;
 
 /**
  * 
@@ -77,10 +79,11 @@ public abstract class GitRepository4Test {
 			List> instancesFound,
 			String commit, String typeLabel) {
 		for (Commit c : instancesFound.keySet()) {
-			for (FileCommit fc : c.getFileCommits()) {
+			for (FileCommit fc : c.getFileCommits()) {//TODO: Matias: FC not used??
 				List<Action> actions = instancesFound.get(c);
 				for (Action action : actions) {
-					if (action.getNode().getTypeLabel().equals(typeLabel))
+					String type = SpoonGumTreeBuilder.gtContext.getTypeLabel(action.getNode().getType());
+					if (type != null && type.equals(typeLabel))
 						return true;
 
 				}

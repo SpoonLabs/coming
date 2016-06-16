@@ -8,9 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import fr.inria.sacha.coming.analyzer.ComingMain;
-import fr.inria.sacha.coming.analyzer.treeGenerator.TreeGeneratorRegistry;
-import fr.inria.sacha.coming.spoon.treeGenerator.SpoonTreeGenerator;
-import fr.labri.gumtree.matchers.Matcher;
+import com.github.gumtreediff.matchers.Matcher;
 /**
  * 
  * @author  Matias Martinez, matias.martinez@inria.fr
@@ -30,13 +28,9 @@ public class MainTest {
 		Logger.getRootLogger().getLoggerRepository().resetConfiguration();
 		Logger.getRootLogger().addAppender(console);
 		
-		TreeGeneratorRegistry.addGenerator(new SpoonTreeGenerator());
-
-		//Parameters.setUpProperties();
 		
 		
 		java.util.logging.Logger.getLogger("fr.labri.gumtree.matchers").setLevel(java.util.logging.Level.OFF);
-		//java.util.logging.Logger.getRootLogger().addAppender(new NullAppender());
 		Matcher.LOGGER.setLevel(java.util.logging.Level.OFF);
 	}
 	

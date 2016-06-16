@@ -16,9 +16,7 @@ import fr.inria.sacha.coming.analyzer.RepositoryInspector;
 import fr.inria.sacha.coming.analyzer.commitAnalyzer.FineGrainChangeCommitAnalyzer;
 import fr.inria.sacha.coming.analyzer.commitAnalyzer.SimpleChangeFilter;
 import fr.inria.sacha.coming.analyzer.treeGenerator.ChangePattern;
-import fr.inria.sacha.coming.analyzer.treeGenerator.TreeGeneratorRegistry;
 import fr.inria.sacha.coming.entity.GranuralityType;
-import fr.inria.sacha.coming.spoon.treeGenerator.SpoonTreeGenerator;
 import fr.inria.sacha.coming.util.ConsoleOutput;
 import fr.inria.sacha.coming.util.PatternXMLParser;
 import fr.inria.sacha.gitanalyzer.interfaces.Commit;
@@ -43,13 +41,6 @@ public class XMLPatternSearchTest extends GitRepository4Test {
 	}
 	
 	
-
-	@Before
-	public void registerSetUp() throws Exception {
-		
-		TreeGeneratorRegistry.generators.clear();
-		TreeGeneratorRegistry.addGenerator(new SpoonTreeGenerator());
-	}
 	
 	@Test
 	public void searchPatternFromFile(){

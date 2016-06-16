@@ -2,8 +2,8 @@ package fr.inria.sacha.coming.analyzer.commitAnalyzer;
 
 import java.util.List;
 
-import fr.inria.sacha.coming.analyzer.DiffResult;
-import fr.labri.gumtree.actions.model.Action;
+import fr.inria.sacha.spoon.diffSpoon.CtDiff;
+import com.github.gumtreediff.actions.model.Action;
 
 public interface IChangesProcessor {
 
@@ -17,7 +17,7 @@ public interface IChangesProcessor {
 	 * @param diff
 	 * @return
 	 */
-	public List<Action> process(DiffResult diff);
+	public List<Action> process(CtDiff  diff);
 
 	/**
 	 * Method called at the ending of the process 

@@ -20,10 +20,8 @@ import fr.inria.sacha.coming.analyzer.commitAnalyzer.FineGrainChangeCommitAnalyz
 import fr.inria.sacha.coming.analyzer.commitAnalyzer.PatternFilter;
 import fr.inria.sacha.coming.analyzer.filter.NbHunkFilter;
 import fr.inria.sacha.coming.analyzer.treeGenerator.PatternEntity;
-import fr.inria.sacha.coming.analyzer.treeGenerator.TreeGeneratorRegistry;
 import fr.inria.sacha.coming.entity.ActionType;
 import fr.inria.sacha.coming.entity.GranuralityType;
-import fr.inria.sacha.coming.spoon.treeGenerator.SpoonTreeGenerator;
 import fr.inria.sacha.coming.util.ConsoleOutput;
 import fr.inria.sacha.coming.util.XMLOutput;
 import fr.inria.sacha.gitanalyzer.filter.KeyWordsMessageFilter;
@@ -54,12 +52,6 @@ public class RepositoryInspectorSpoonTest extends GitRepository4Test {
 		java.util.logging.Logger.getLogger("fr.labri.gumtree.matchers").setLevel(java.util.logging.Level.OFF);
 	}
 	
-	@Before
-	public void registerSetUp() throws Exception {
-		
-		TreeGeneratorRegistry.generators.clear();
-		TreeGeneratorRegistry.addGenerator(new SpoonTreeGenerator());
-	}
 
 	@Test
 	public void test1() throws Exception {

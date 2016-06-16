@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import fr.inria.sacha.gitanalyzer.interfaces.Commit;
 import fr.inria.sacha.gitanalyzer.interfaces.CommitAnalyzer;
-import fr.inria.sacha.gitanalyzer.interfaces.FileCommit;
 
 public class NullAnalyzer implements CommitAnalyzer {
 	@Override
