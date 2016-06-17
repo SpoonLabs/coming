@@ -30,6 +30,8 @@ Martin Monperrus http://www.monperrus.net/martin/
 Compile
 ------
 
+Please install a JDK 1.8 and configure Maven or your IDE to use it.
+
 ```
 mvn install:install-file -Dfile=lib/gumtree-spoon-ast-diff-0.0.3-SNAPSHOT-jar-with-dependencies.jar -DgeneratePom=true -DgroupId=fr.inria.spirals -DartifactId=gumtree-spoon-ast-diff -Dversion=0.0.3-SNAPSHOT -Dpackaging=jar
 mvn -Dskiptest compile
