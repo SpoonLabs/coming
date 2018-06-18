@@ -1,19 +1,17 @@
 package fr.inria.coming.spoon.comparison;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import fr.inria.sacha.coming.analyzer.DiffEngineFacade;
 import fr.inria.sacha.coming.entity.GranuralityType;
-import fr.inria.sacha.spoon.diffSpoon.CtDiff;
-
-import com.github.gumtreediff.actions.model.Action;
+import gumtree.spoon.diff.Diff;
+import gumtree.spoon.diff.operations.Operation;
 
 /**
  * 
@@ -29,11 +27,11 @@ public class SpoonFileComparatorTest {
 		File fl = new File(getClass().getResource("/test1_left.java").getFile());
 		File fr = new File(getClass().getResource("/test1_right.java").getFile());
 
-		CtDiff diff = gt.compareFiles(fl, fr, GranuralityType.SPOON);
+		Diff diff = gt.compareFiles(fl, fr, GranuralityType.SPOON);
 
 		assertNotNull(diff);
-		
-		List<Action> actionsCD = diff.getAllActions();
+
+		List<Operation> actionsCD = diff.getAllOperations();
 
 		assertNotNull(actionsCD);
 		assertTrue(actionsCD.size() > 0);

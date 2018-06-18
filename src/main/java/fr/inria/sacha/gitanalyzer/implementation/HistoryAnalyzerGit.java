@@ -1,8 +1,8 @@
 package fr.inria.sacha.gitanalyzer.implementation;
 
 import fr.inria.sacha.gitanalyzer.interfaces.CommitAnalyzer;
-import fr.inria.sacha.gitanalyzer.interfaces.HistoryAnalyzer;
 import fr.inria.sacha.gitanalyzer.interfaces.Filter;
+import fr.inria.sacha.gitanalyzer.interfaces.HistoryAnalyzer;
 
 public class HistoryAnalyzerGit implements HistoryAnalyzer {
 

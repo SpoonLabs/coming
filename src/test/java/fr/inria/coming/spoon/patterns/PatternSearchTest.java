@@ -13,11 +13,11 @@ import org.junit.Test;
 
 import fr.inria.sacha.coming.analyzer.RepositoryInspector;
 import fr.inria.sacha.coming.analyzer.commitAnalyzer.FineGrainChangeCommitAnalyzer;
-import fr.inria.sacha.coming.analyzer.commitAnalyzer.SimpleChangeFilter;
+import fr.inria.sacha.coming.analyzer.commitAnalyzer.filters.SimpleChangeFilter;
 import fr.inria.sacha.coming.entity.ActionType;
 import fr.inria.sacha.coming.entity.GranuralityType;
-import fr.inria.sacha.coming.util.ConsoleOutput;
 import fr.inria.sacha.gitanalyzer.interfaces.Commit;
+import gumtree.spoon.diff.operations.Operation;
 
 /**
  * 
@@ -25,8 +25,7 @@ import fr.inria.sacha.gitanalyzer.interfaces.Commit;
  * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
-public class PatternSearchTest extends GitRepository4Test{
-
+public class PatternSearchTest extends GitRepository4Test {
 
 	@Before
 	public void setUp() throws Exception {
@@ -40,28 +39,25 @@ public class PatternSearchTest extends GitRepository4Test{
 		Logger.getRootLogger().addAppender(console);
 	}
 
-		
 	@Test
 	public void spoonTestMI() throws Exception {
-		String messageHeuristic = "";
-		
-		SimpleChangeFilter  pattern= new SimpleChangeFilter (
-				"Invocation", ActionType.INS);
 
-		FineGrainChangeCommitAnalyzer 	fineGrainAnalyzer = new FineGrainChangeCommitAnalyzer(pattern,GranuralityType.SPOON );
-		
-		
+		SimpleChangeFilter pattern = new SimpleChangeFilter("Invocation", ActionType.INS);
+
+		FineGrainChangeCommitAnalyzer fineGrainAnalyzer = new FineGrainChangeCommitAnalyzer(pattern,
+				GranuralityType.SPOON);
+
 		RepositoryInspector miner = new RepositoryInspector();
-		Map<Commit, List> instancesFound = miner.analize(repoPath,
-				fineGrainAnalyzer);
-		ConsoleOutput.printResultDetails(instancesFound);
+		Map<Commit, List<Operation>> instancesFound = miner.analize(repoPath, fineGrainAnalyzer);
+		// ConsoleOutput.printResultDetails(instancesFound);
+
+		for (List vales : instancesFound.values()) {
+			System.out.println("Values: " + vales);
+		}
 
 		Assert.assertTrue(instancesFound.keySet().size() > 0);
-		Assert.assertTrue(containsCommit(instancesFound,
-				"4120ab0c714911a9c9f26b591cb3222eaf57d127", "Invocation"));
+		Assert.assertTrue(containsCommit(instancesFound, "4120ab0c714911a9c9f26b591cb3222eaf57d127", "Invocation"));
 
 	}
-
-	
 
 }

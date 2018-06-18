@@ -1,7 +1,5 @@
 package fr.inria.sacha.remining.coming.dependencyanalyzer.spoonanalyzer;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,13 +11,9 @@ import org.apache.log4j.Logger;
 import fr.inria.sacha.remining.coming.dependencyanalyzer.entity.Class;
 import fr.inria.sacha.remining.coming.dependencyanalyzer.util.io.ResourceFile;
 import spoon.Launcher;
-import spoon.OutputType;
 import spoon.compiler.Environment;
-import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResource;
-import spoon.processing.ProcessingManager;
 import spoon.reflect.factory.Factory;
-import spoon.support.QueueProcessingManager;
 import spoon.support.compiler.FileSystemFile;
 
 /**

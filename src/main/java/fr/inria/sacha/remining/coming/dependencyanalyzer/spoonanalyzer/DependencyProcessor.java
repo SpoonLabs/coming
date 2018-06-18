@@ -4,12 +4,12 @@ import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 
-import spoon.processing.AbstractProcessor;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.reference.CtTypeReference;
 import fr.inria.sacha.remining.coming.dependencyanalyzer.entity.Class;
 import fr.inria.sacha.remining.coming.dependencyanalyzer.entity.Class.ClassType;
 import fr.inria.sacha.remining.coming.dependencyanalyzer.entity.Dependency;
+import spoon.processing.AbstractProcessor;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.reference.CtTypeReference;
 
 /**
  * Analyzes a JAVA class to list all (non-static) dependencies

@@ -8,13 +8,14 @@ import org.apache.log4j.Logger;
 
 import fr.inria.sacha.coming.analyzer.DiffEngineFacade;
 import fr.inria.sacha.coming.analyzer.Parameters;
+import fr.inria.sacha.coming.analyzer.commitAnalyzer.filters.SimpleChangeFilter;
 import fr.inria.sacha.coming.entity.GranuralityType;
 import fr.inria.sacha.coming.util.ConfigurationProperties;
 import fr.inria.sacha.gitanalyzer.interfaces.Commit;
 import fr.inria.sacha.gitanalyzer.interfaces.CommitAnalyzer;
 import fr.inria.sacha.gitanalyzer.interfaces.FileCommit;
-import fr.inria.sacha.spoon.diffSpoon.CtDiff;
-import com.github.gumtreediff.actions.model.Action;
+import gumtree.spoon.diff.Diff;
+import gumtree.spoon.diff.operations.Operation;
 
 /**
  * Commit analyzer: It searches fine grain changes.
@@ -24,14 +25,12 @@ import com.github.gumtreediff.actions.model.Action;
  */
 public class FineGrainChangeCommitAnalyzer implements CommitAnalyzer {
 
-	Logger log = Logger
-			.getLogger(FineGrainChangeCommitAnalyzer.class.getName());
+	Logger log = Logger.getLogger(FineGrainChangeCommitAnalyzer.class.getName());
 
 	protected GranuralityType granularity;
 
-	
-	IChangesProcessor processor; 
-	
+	IChangesProcessor processor;
+
 	public FineGrainChangeCommitAnalyzer(SimpleChangeFilter filter, GranuralityType granularity) {
 
 		this.processor = filter;
@@ -42,11 +41,10 @@ public class FineGrainChangeCommitAnalyzer implements CommitAnalyzer {
 	public FineGrainChangeCommitAnalyzer(SimpleChangeFilter filter) {
 
 		this.processor = filter;
-		
-		granularity = GranuralityType.valueOf(ConfigurationProperties
-				.getProperty("GRANULARITY"));
+
+		granularity = GranuralityType.valueOf(ConfigurationProperties.getProperty("GRANULARITY"));
 	}
-	
+
 	/**
 	 * 
 	 * @param typeLabel
@@ -56,10 +54,8 @@ public class FineGrainChangeCommitAnalyzer implements CommitAnalyzer {
 	 */
 	public FineGrainChangeCommitAnalyzer() {
 
-		granularity = GranuralityType.valueOf(ConfigurationProperties
-				.getProperty("GRANULARITY"));
+		granularity = GranuralityType.valueOf(ConfigurationProperties.getProperty("GRANULARITY"));
 	}
-
 
 	/**
 	 * Analyze a commit finding instances of changes return a Map<FileCommit,
@@ -68,21 +64,21 @@ public class FineGrainChangeCommitAnalyzer implements CommitAnalyzer {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Object analyze(Commit commit) {
-				
+
 		// Retrieve a list of file affected by the commit
 		List<FileCommit> javaFiles = commit.getJavaFileCommits();
-		
-		//System.out.println("files "+javaFiles);
-		int nChanges = 0;
 
+		// System.out.println("files "+javaFiles);
+		int nChanges = 0;
 
 		// The result is divided by File from the commit.
 		List info = new ArrayList();
 
+		System.out.println("\n*****\nCommit: " + commit.getName());
+
 		for (FileCommit fileCommit : javaFiles) {
 			if (fileCommit.getCompletePath().toLowerCase().contains("test")
-					|| fileCommit.getCompletePath().toLowerCase()
-							.endsWith("package-info.java")) {
+					|| fileCommit.getCompletePath().toLowerCase().endsWith("package-info.java")) {
 
 				continue;
 			}
@@ -92,31 +88,32 @@ public class FineGrainChangeCommitAnalyzer implements CommitAnalyzer {
 
 			if (!left.trim().isEmpty()) {
 
-				List<Action> actions;
+				List<Operation> operations;
 
 				try {
-					CtDiff diff =   this.compareContent(left, right, granularity);
-					//todo
-					actions = //diff.getAllActions();
-						diff.getRootActions();
-
+					Diff diff = this.compareContent(left, right, granularity);
+					// todo
+					operations = // diff.getAllActions();
+							// diff.getAllOperations();
+							diff.getRootOperations();
 					String name = commit.getName();
-//					System.out.println(name + actions);
-					if (actions == null
-							|| actions.size() > Parameters.MAX_AST_CHANGES_PER_FILE
-							|| actions.size() < Parameters.MIN_AST_CHANGES_PER_FILE) {
+					// System.out.println(name + actions);
+					if (operations == null || operations.size() > Parameters.MAX_AST_CHANGES_PER_FILE
+							|| operations.size() < Parameters.MIN_AST_CHANGES_PER_FILE) {
 						continue;
 					}
 
-					if (actions.size() > 0) {
-						
-						List<Action> filterActions = processCommit(diff);
+					if (operations.size() > 0) {
+
+						List<Operation> filterActions = processCommit(diff);
 						nChanges += filterActions.size();
 
-						if (filterActions.size() > 0) 
-							info.addAll(filterActions); 
+						if (filterActions.size() > 0)
+							info.addAll(filterActions);
 					}
 				} catch (Exception e) {
+					log.error("Exception e: " + e);
+					e.printStackTrace();
 					throw new RuntimeException(e);
 
 				}
@@ -128,20 +125,19 @@ public class FineGrainChangeCommitAnalyzer implements CommitAnalyzer {
 		return res;
 	}
 
-	private List<Action> processCommit(CtDiff  diff) {
-		
-		if(this.processor == null)
-			return diff.getRootActions();
-		
+	private List<Operation> processCommit(Diff diff) {
+
+		if (this.processor == null)
+			return diff.getRootOperations();
+
 		return this.processor.process(diff);
 	}
 
-	public CtDiff  compareContent(String left, String right, GranuralityType granularity) throws Exception {
-	
+	public Diff compareContent(String left, String right, GranuralityType granularity) throws Exception {
+
 		DiffEngineFacade cdiff = new DiffEngineFacade();
 		return cdiff.compareContent(left, right, granularity);
 
 	}
-
 
 }

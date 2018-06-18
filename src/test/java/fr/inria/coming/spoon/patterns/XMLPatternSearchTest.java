@@ -14,12 +14,14 @@ import org.junit.Test;
 
 import fr.inria.sacha.coming.analyzer.RepositoryInspector;
 import fr.inria.sacha.coming.analyzer.commitAnalyzer.FineGrainChangeCommitAnalyzer;
-import fr.inria.sacha.coming.analyzer.commitAnalyzer.SimpleChangeFilter;
+import fr.inria.sacha.coming.analyzer.commitAnalyzer.filters.SimpleChangeFilter;
 import fr.inria.sacha.coming.analyzer.treeGenerator.ChangePattern;
 import fr.inria.sacha.coming.entity.GranuralityType;
 import fr.inria.sacha.coming.util.ConsoleOutput;
 import fr.inria.sacha.coming.util.PatternXMLParser;
 import fr.inria.sacha.gitanalyzer.interfaces.Commit;
+import gumtree.spoon.diff.operations.Operation;
+
 /**
  * 
  * @author Matias Martinez matias.martinez@inria.fr
@@ -27,7 +29,6 @@ import fr.inria.sacha.gitanalyzer.interfaces.Commit;
  */
 public class XMLPatternSearchTest extends GitRepository4Test {
 
-	
 	@Before
 	public void setUp() throws Exception {
 
@@ -39,37 +40,28 @@ public class XMLPatternSearchTest extends GitRepository4Test {
 		Logger.getRootLogger().getLoggerRepository().resetConfiguration();
 		Logger.getRootLogger().addAppender(console);
 	}
-	
-	
-	
+
 	@Test
-	public void searchPatternFromFile(){
-		File fl = new File(getClass().
-				getResource("/pattern_test_1.xml").getFile());
-		
-		
-			ChangePattern patternParsed = PatternXMLParser.parseFile(fl.getAbsolutePath());
-		
-			Assert.assertNotNull(patternParsed );
-			Assert.assertTrue(patternParsed.getChanges().size() == 1);
-			
-			String messageHeuristic = "";
-			
-			SimpleChangeFilter  patternFilter= new SimpleChangeFilter (patternParsed.getChanges().get(0));
+	public void searchPatternFromFile() {
+		File fl = new File(getClass().getResource("/pattern_test_1.xml").getFile());
 
-			FineGrainChangeCommitAnalyzer 	fineGrainAnalyzer = new FineGrainChangeCommitAnalyzer(patternFilter,GranuralityType.SPOON );
-			
-			
-			RepositoryInspector miner = new RepositoryInspector();
-			Map<Commit, List> instancesFound = miner.analize(repoPath,
-					fineGrainAnalyzer);
-			ConsoleOutput.printResultDetails(instancesFound);
+		ChangePattern patternParsed = PatternXMLParser.parseFile(fl.getAbsolutePath());
 
-			Assert.assertTrue(instancesFound.keySet().size() > 0);
-			Assert.assertTrue(containsCommit(instancesFound,
-					"4120ab0c714911a9c9f26b591cb3222eaf57d127", "Invocation"));
+		Assert.assertNotNull(patternParsed);
+		Assert.assertTrue(patternParsed.getChanges().size() == 1);
 
-	
+		SimpleChangeFilter patternFilter = new SimpleChangeFilter(patternParsed.getChanges().get(0));
+
+		FineGrainChangeCommitAnalyzer fineGrainAnalyzer = new FineGrainChangeCommitAnalyzer(patternFilter,
+				GranuralityType.SPOON);
+
+		RepositoryInspector miner = new RepositoryInspector();
+		Map<Commit, List<Operation>> instancesFound = miner.analize(repoPath, fineGrainAnalyzer);
+		ConsoleOutput.printResultDetails(instancesFound);
+
+		Assert.assertTrue(instancesFound.keySet().size() > 0);
+		Assert.assertTrue(containsCommit(instancesFound, "4120ab0c714911a9c9f26b591cb3222eaf57d127", "Invocation"));
+
 	}
-	
+
 }

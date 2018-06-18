@@ -1,16 +1,17 @@
-package fr.inria.sacha.coming.analyzer.commitAnalyzer;
+package fr.inria.sacha.coming.analyzer.commitAnalyzer.filters;
 
 import java.util.ArrayList;
 import java.util.List;
-import fr.inria.sacha.coming.analyzer.treeGenerator.PatternAction;
-import fr.inria.sacha.coming.analyzer.treeGenerator.PatternEntity;
-import fr.inria.sacha.coming.entity.ActionType;
-import fr.inria.sacha.spoon.diffSpoon.CtDiff;
-import fr.inria.sacha.spoon.diffSpoon.SpoonGumTreeBuilder;
 
 import com.github.gumtreediff.actions.model.Action;
 import com.github.gumtreediff.tree.ITree;
-import com.github.gumtreediff.tree.Tree;
+
+import fr.inria.sacha.coming.analyzer.treeGenerator.PatternAction;
+import fr.inria.sacha.coming.analyzer.treeGenerator.PatternEntity;
+import fr.inria.sacha.coming.entity.ActionType;
+import gumtree.spoon.diff.Diff;
+import gumtree.spoon.diff.operations.Operation;
+import spoon.reflect.declaration.CtElement;
 
 /**
  * 
@@ -48,20 +49,21 @@ public class PatternFilter extends SimpleChangeFilter {
 	/**
 	 * Filtre changes according to the pattern specification
 	 */
+	@SuppressWarnings("rawtypes")
 	@Override
-	public List<Action> process(CtDiff  diff) {
+	public List<Operation> process(Diff diff) {
 
-		List<Action> result = new ArrayList<Action>();
+		List<Operation> result = new ArrayList<>();
 
-		List<Action> filtered = super.process(diff);
+		List<Operation> filtered = super.process(diff);
 
-		List<Action> all = diff.getAllActions();
+		List<Operation> all = diff.getAllOperations();
 
 		for (PatternAction patternaction : this.patternActions) {
 			boolean keepsRelation = false;
-			for (Action action : filtered) {
-				keepsRelation |= checkparent(patternaction.getAffectedEntity().getParent(), patternaction
-						.getAffectedEntity().getParentLevel(), filtered, action, all);
+			for (Operation action : filtered) {
+				keepsRelation |= checkparent(patternaction.getAffectedEntity().getParent(),
+						patternaction.getAffectedEntity().getParentLevel(), filtered, action, all);
 
 				if (keepsRelation) {
 					result.add(action);
@@ -82,22 +84,30 @@ public class PatternFilter extends SimpleChangeFilter {
 	 * @param allActions
 	 * @return
 	 */
-	protected boolean checkparent(PatternEntity parentEntityFromPattern, int parentLevel, List<Action> filtered,
-			Action affectedAction, List<Action> allActions) {
+	protected boolean checkparent(PatternEntity parentEntityFromPattern, int parentLevel, List<Operation> filtered,
+			Operation affectedOperation, List<Operation> allActions) {
 
 		if (parentEntityFromPattern == null) {
 			return true;
 		}
 
-		ITree parentNodeFromAction = affectedAction.getNode().getParent();
+		// ITree parentNodeFromAction =
+		// affectedOperation.getAction().getNode().getParent();
+		// TODO: here we navigate the hierarchy of spoon model instead of
+		// gumtree
+
+		CtElement parentNodeFromAction = affectedOperation.getNode().getParent();
+
 		int i_levels = 1;
 
 		while (parentNodeFromAction != null && i_levels <= parentLevel) {
-			String type = SpoonGumTreeBuilder.gtContext.getTypeLabel(parentNodeFromAction.getType());
+			String type = getNodeLabelFromCtElement(parentNodeFromAction);
+			// SpoonGumTreeBuilder.gtContext.getTypeLabel(parentNodeFromAction.getType());
+
 			if (type != null && type.equals(parentEntityFromPattern.getEntityName())
-					// Martin commented this
-					//&& !isNodeAffectedbyAction(allActions, parentNodeFromAction)
-					) {
+			// Martin commented this
+			// && !isNodeAffectedbyAction(allActions, parentNodeFromAction)
+			) {
 				i_levels = 1;
 				parentLevel = parentEntityFromPattern.getParentLevel();
 				parentEntityFromPattern = parentEntityFromPattern.getParent();

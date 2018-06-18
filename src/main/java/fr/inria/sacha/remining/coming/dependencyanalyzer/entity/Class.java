@@ -1,7 +1,5 @@
 package fr.inria.sacha.remining.coming.dependencyanalyzer.entity;
 
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 /**

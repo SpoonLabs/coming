@@ -1,22 +1,10 @@
 package fr.inria.sacha.remining.coming.dependencyanalyzer;
 
-import static org.junit.Assert.*;
-
-import java.io.IOException;
-import java.util.List;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import fr.inria.sacha.coming.entity.ActionType;
-import fr.inria.sacha.gitanalyzer.interfaces.Commit;
-import fr.inria.sacha.gitanalyzer.interfaces.FileCommit;
-import fr.inria.sacha.gitanalyzer.object.RepositoryPGit;
-import fr.inria.sacha.remining.coming.dependencyanalyzer.entity.Class;
-import fr.inria.sacha.remining.coming.dependencyanalyzer.entity.Class.ClassType;
-import fr.inria.sacha.remining.coming.dependencyanalyzer.spoonanalyzer.Analyzer;
-import fr.inria.sacha.remining.coming.dependencyanalyzer.util.io.ResourceFile;
 import fr.inria.sacha.remining.coming.dependencyanalyzer.util.io.XMLOutputResFile;
-import fr.inria.sacha.remining.coming.dependencyanalyzer.util.tool.DepTool;
 
 
 public class DependencyanalyzerTest {

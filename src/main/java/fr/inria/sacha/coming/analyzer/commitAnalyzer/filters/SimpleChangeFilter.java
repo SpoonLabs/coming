@@ -1,14 +1,9 @@
-package fr.inria.sacha.coming.analyzer.commitAnalyzer;
+package fr.inria.sacha.coming.analyzer.commitAnalyzer.filters;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import fr.inria.sacha.coming.analyzer.treeGenerator.PatternAction;
-import fr.inria.sacha.coming.analyzer.treeGenerator.PatternEntity;
-import fr.inria.sacha.coming.entity.ActionType;
-import fr.inria.sacha.spoon.diffSpoon.CtDiff;
-import fr.inria.sacha.spoon.diffSpoon.SpoonGumTreeBuilder;
+import org.apache.log4j.Logger;
 
 import com.github.gumtreediff.actions.model.Action;
 import com.github.gumtreediff.actions.model.Delete;
@@ -16,13 +11,21 @@ import com.github.gumtreediff.actions.model.Insert;
 import com.github.gumtreediff.actions.model.Move;
 import com.github.gumtreediff.actions.model.Update;
 
+import fr.inria.sacha.coming.analyzer.commitAnalyzer.IChangesProcessor;
+import fr.inria.sacha.coming.analyzer.treeGenerator.PatternAction;
+import fr.inria.sacha.coming.analyzer.treeGenerator.PatternEntity;
+import fr.inria.sacha.coming.entity.ActionType;
+import gumtree.spoon.diff.Diff;
+import gumtree.spoon.diff.operations.Operation;
+import spoon.reflect.declaration.CtElement;
+
 /**
  * 
  * @author Matias Martinez
  *
  */
 public class SimpleChangeFilter implements IChangesProcessor {
-
+	Logger log = Logger.getLogger(SimpleChangeFilter.class.getName());
 	List<PatternAction> patternActions = null;
 
 	public SimpleChangeFilter(List<PatternAction> patternAction) {
@@ -64,29 +67,32 @@ public class SimpleChangeFilter implements IChangesProcessor {
 	 * @param granularity2
 	 * @return
 	 */
-	public List<Action> process(CtDiff  diff) {
-		List<Action> actions = diff.getAllActions();
-		actions.removeAll(Collections.singleton(null));
-		List<Action> filter = new ArrayList<Action>();
-		
-		
+	@Override
+	public List<Operation> process(Diff diff) {
+
+		List<Operation> operations = diff.getAllOperations();
+
+		// actions.removeAll(Collections.singleton(null));
+		List<Operation> filter = new ArrayList<Operation>();
+
 		for (PatternAction patternAction : this.patternActions) {
 			boolean added = false;
-			for (Action action : actions) {
-				try {
-					//Matias: not any more, only used in JDT
-					//if (action.getNode().getTypeLabel().equals("CompilationUnit"))
-					//	continue;
+			for (Operation operation : operations) {
 
-					if (matchTypeLabel(action, getTypeLabel(patternAction)) && matchTypes(action, getOperationType(patternAction))){
-						filter.add(action);
+				// for (Action action : actions) {
+				Action action = operation.getAction();
+				try {
+
+					if (matchTypeLabel(operation, getTypeLabel(patternAction))
+							&& matchTypes(action, getOperationType(patternAction))) {
+						filter.add(operation);
 						added = true;
-					}	
+					}
 				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
 			}
-			if(!added) 
+			if (!added)
 				return new ArrayList<>();
 
 		}
@@ -101,9 +107,17 @@ public class SimpleChangeFilter implements IChangesProcessor {
 				|| (type.equals(ActionType.UPD) && (action instanceof Update));
 	}
 
-	protected boolean matchTypeLabel(Action action, String typeLabel) {
-		return "*".equals(typeLabel) || 
-				typeLabel.equals(SpoonGumTreeBuilder.gtContext.getTypeLabel(action.getNode().getType()));
+	protected boolean matchTypeLabel(Operation operation, String typeLabel) {
+		log.debug("-->>" + operation.getNode().getClass().getSimpleName() + "<->" + typeLabel);
+		return "*".equals(typeLabel)
+				// ||
+				// typeLabel.equals(diff.ge,.getTypeLabel(action.getNode().getType()));
+				// TODO:
+				|| operation.getNode() != null && getNodeLabelFromCtElement(operation.getNode()).equals(typeLabel)
+				|| (operation.getDstNode() != null
+						&& getNodeLabelFromCtElement(operation.getDstNode()).equals(typeLabel))
+				|| (operation.getSrcNode() != null
+						&& getNodeLabelFromCtElement(operation.getSrcNode()).equals(typeLabel));
 	}
 
 	public ActionType getOperationType(PatternAction patternAction) {
@@ -122,6 +136,13 @@ public class SimpleChangeFilter implements IChangesProcessor {
 	@Override
 	public void end() {
 
+	}
+
+	public String getNodeLabelFromCtElement(CtElement element) {
+		String typeFromCt = element.getClass().getSimpleName();
+		if (typeFromCt.trim().isEmpty())
+			return typeFromCt;
+		return typeFromCt.substring(2, typeFromCt.length() - 4);
 	}
 
 }
