@@ -4,10 +4,9 @@ import java.rmi.NoSuchObjectException;
 import java.util.HashSet;
 import java.util.Set;
 
-import fr.inria.sacha.remining.coming.dependencyanalyzer.entity.Dependency;
 import fr.inria.sacha.remining.coming.dependencyanalyzer.entity.AddedDependency;
 import fr.inria.sacha.remining.coming.dependencyanalyzer.entity.DeletedDependency;
-import fr.inria.sacha.remining.coming.dependencyanalyzer.entity.SameDependency;
+import fr.inria.sacha.remining.coming.dependencyanalyzer.entity.Dependency;
 
 /**
  * Is a class providing methods to do operations on dependencies instances

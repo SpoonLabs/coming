@@ -1,7 +1,5 @@
 package fr.inria.sacha.gitanalyzer.filter;
 
-import java.util.List;
-
 import fr.inria.sacha.gitanalyzer.interfaces.Commit;
 
 /**

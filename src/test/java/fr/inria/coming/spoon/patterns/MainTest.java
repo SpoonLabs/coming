@@ -7,8 +7,9 @@ import org.apache.log4j.PatternLayout;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.inria.sacha.coming.analyzer.ComingMain;
 import com.github.gumtreediff.matchers.Matcher;
+
+import fr.inria.sacha.coming.analyzer.ComingMain;
 /**
  * 
  * @author  Matias Martinez, matias.martinez@inria.fr
