@@ -53,7 +53,7 @@ public class FineGrainChangeCommitAnalyzer implements CommitAnalyzer {
 	 *            operation type to mine
 	 */
 	public FineGrainChangeCommitAnalyzer() {
-
+		this.processor = null;
 		granularity = GranuralityType.valueOf(ConfigurationProperties.getProperty("GRANULARITY"));
 	}
 
