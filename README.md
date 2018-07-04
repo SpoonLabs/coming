@@ -20,7 +20,7 @@ URL: http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=6676914&isnumber=66
     ISSN={1063-6773},  
     month={Sept},}
 
-**[long]** [Accurate Extraction of Bug Fix Pattern Occurrences using Abstract Syntax Tree Analysis]() (Matias Martinez, Laurence Duchien and Martin Monperrus), Technical report hal-01075938, Inria, 2014
+**[long version]** [Accurate Extraction of Bug Fix Pattern Occurrences using Abstract Syntax Tree Analysis](https://hal.archives-ouvertes.fr/hal-01075938/file/bug-fix-pattern-identification.pdf) (Matias Martinez, Laurence Duchien and Martin Monperrus), Technical report hal-01075938, Inria, 2014
 
     @techreport{martinez:hal-01075938,
     title = {{Accurate Extraction of Bug Fix Pattern Occurrences using Abstract Syntax Tree Analysis}},
