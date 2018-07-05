@@ -1,11 +1,14 @@
 package fr.inria.coming.spoon;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.List;
 
+import org.json.simple.JSONObject;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.coming.spoon.patterns.GitRepository4Test;
@@ -18,6 +21,7 @@ import fr.inria.sacha.coming.util.ConfigurationProperties;
  * @author Matias Martinez
  *
  */
+@Ignore
 public class LangInspectorTest extends GitRepository4Test {
 
 	@Test
@@ -26,11 +30,17 @@ public class LangInspectorTest extends GitRepository4Test {
 		LangAnalyzer analyzer = new LangAnalyzer();
 
 		List<CommitInfo> ci = (List<CommitInfo>) analyzer.navigateRepo(this.repoPath, "master");
+
+		assertTrue(ci.size() > 0);
 		System.out.println("Results: ");
 		for (CommitInfo commitInfo : ci) {
 			System.out.println("--> " + commitInfo);
-
 		}
+
+		JSONObject json = analyzer.resultToJSON();
+		assertNotNull(json);
+
+		System.out.println(json);
 
 		CommitInfo cfe = getCommit(ci, "fe76");
 
@@ -84,6 +94,11 @@ public class LangInspectorTest extends GitRepository4Test {
 		assertEquals(37, (int) ce1ba4.getStats().get("Markdown")[3]);
 		assertEquals(10, (int) ce1ba4.getStats().get("Kotlin")[3]);
 		assertEquals(2, ce1ba4.getStats().keySet().size());
+
+		JSONObject json = analyzer.resultToJSON();
+		assertNotNull(json);
+
+		System.out.println(json);
 
 	}
 

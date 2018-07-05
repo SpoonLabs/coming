@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import fr.inria.sacha.gitanalyzer.interfaces.Commit;
 import fr.inria.sacha.gitanalyzer.interfaces.CommitAnalyzer;
@@ -35,6 +37,7 @@ public class LangAnalyzer implements CommitAnalyzer {
 	public List<CommitInfo> navigateRepo(String repositoryPath, String masterBranch) {
 
 		RepositoryP repo = new RepositoryPGit(repositoryPath, masterBranch);
+		this.commitsProcessed.clear();
 
 		// For each commit of a repository
 		List<Commit> history = repo.history();
@@ -56,7 +59,7 @@ public class LangAnalyzer implements CommitAnalyzer {
 
 		CommitGit c = (CommitGit) commit;
 		String repositoryPath = c.getRepository().getRepository().getDirectory().getAbsolutePath();
-		System.out.println("Commit ->:  " + c.getName());
+		log.debug("Commit ->:  " + c.getName());
 		try {
 			run(repositoryPath, "git reset --hard master".split(" "));
 			File diro = new File(output + prefix + c.getName());
@@ -203,5 +206,50 @@ public class LangAnalyzer implements CommitAnalyzer {
 			return s;
 		}
 
+		@SuppressWarnings("unchecked")
+		public JSONObject toJSON() {
+
+			JSONObject root = new JSONObject();
+			root.put("commitid", commitid);
+
+			JSONArray languages = new JSONArray();
+			root.put("languages", languages);
+
+			for (String lang : this.stats.keySet()) {
+				JSONObject language = new JSONObject();
+				languages.add(language);
+				language.put("langname", lang);
+				// files blank comment code
+				language.put("files", this.stats.get(lang)[0]);
+				language.put("blank", this.stats.get(lang)[1]);
+				language.put("comment", this.stats.get(lang)[2]);
+				language.put("code", this.stats.get(lang)[3]);
+
+			}
+			return root;
+		}
+
 	}
+
+	public List<CommitInfo> getCommitsProcessed() {
+		return commitsProcessed;
+	}
+
+	public void setCommitsProcessed(List<CommitInfo> commitsProcessed) {
+		this.commitsProcessed = commitsProcessed;
+	}
+
+	@SuppressWarnings("unchecked")
+	public JSONObject resultToJSON() {
+
+		JSONObject root = new JSONObject();
+		JSONArray commits = new JSONArray();
+		root.put("commits", commits);
+
+		for (CommitInfo commitInfo : commitsProcessed) {
+			commits.add(commitInfo.toJSON());
+		}
+		return root;
+	}
+
 }
