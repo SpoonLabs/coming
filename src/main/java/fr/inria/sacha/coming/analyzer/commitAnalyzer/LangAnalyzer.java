@@ -69,7 +69,7 @@ public class LangAnalyzer implements CommitAnalyzer {
 
 			List<String> ls = run(repositoryPath, new String[] { cloc_path, diro.getAbsolutePath() });
 			Map<String, Integer[]> langcommit = getLanguages(ls);
-			this.commitsProcessed.add(new CommitInfo(c.getName(), langcommit));
+			this.commitsProcessed.add(new CommitInfo(c.getName(), langcommit, this.commitsProcessed.size()));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -171,12 +171,20 @@ public class LangAnalyzer implements CommitAnalyzer {
 
 	public class CommitInfo {
 		String commitid;
+		int nrCommit = 0;
 		Map<String, Integer[]> stats;
 
 		public CommitInfo(String commitid, Map<String, Integer[]> stats) {
 			super();
 			this.commitid = commitid;
 			this.stats = stats;
+		}
+
+		public CommitInfo(String commitid, Map<String, Integer[]> stats, int nr) {
+			super();
+			this.commitid = commitid;
+			this.stats = stats;
+			this.nrCommit = nr;
 		}
 
 		public String getCommitid() {
@@ -210,8 +218,8 @@ public class LangAnalyzer implements CommitAnalyzer {
 		public JSONObject toJSON() {
 
 			JSONObject root = new JSONObject();
-			root.put("commitid", commitid);
-
+			root.put("commitid", this.commitid);
+			root.put("numbercommit", this.nrCommit);
 			JSONArray languages = new JSONArray();
 			root.put("languages", languages);
 
@@ -227,6 +235,14 @@ public class LangAnalyzer implements CommitAnalyzer {
 
 			}
 			return root;
+		}
+
+		public int getNrCommit() {
+			return nrCommit;
+		}
+
+		public void setNrCommit(int nrCommit) {
+			this.nrCommit = nrCommit;
 		}
 
 	}

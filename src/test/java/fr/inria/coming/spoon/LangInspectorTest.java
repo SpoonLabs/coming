@@ -48,14 +48,17 @@ public class LangInspectorTest extends GitRepository4Test {
 
 		CommitInfo c60b5 = getCommit(ci, "60b5");
 		assertTrue(c60b5.getStats().isEmpty());
+		assertEquals(0, c60b5.getNrCommit());
 
 		CommitInfo cab71 = getCommit(ci, "ab71");
 
 		assertEquals(84, (int) cab71.getStats().get("Java")[3]);
+		assertEquals(1, cab71.getNrCommit());
 
 		CommitInfo cab4120 = getCommit(ci, "4120");
 
 		assertEquals(85, (int) cab4120.getStats().get("Java")[3]);
+		assertEquals(3, cab4120.getNrCommit());
 
 		CommitInfo cabc6b1 = getCommit(ci, "c6b1");
 
