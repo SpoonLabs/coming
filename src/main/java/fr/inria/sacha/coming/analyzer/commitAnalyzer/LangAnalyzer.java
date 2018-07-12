@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -71,7 +72,7 @@ public class LangAnalyzer implements CommitAnalyzer {
 			List<String> ls = runCommand(repositoryPath, new String[] { cloc_path, diro.getAbsolutePath() });
 			Map<String, Integer[]> langcommit = getLanguages(ls);
 			this.commitsProcessed.add(new CommitInfo(c.getName(), langcommit, this.commitsProcessed.size()));
-			diro.delete();// todo
+			FileUtils.deleteDirectory(diro);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
