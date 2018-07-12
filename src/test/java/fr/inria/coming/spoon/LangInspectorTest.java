@@ -67,7 +67,7 @@ public class LangInspectorTest extends GitRepository4Test {
 	}
 
 	@Test
-	public void testLangInspectorKotlinTutorialsRepo() {
+	public void testLangInspectorKTutorialsRepo() {
 		// https://github.com/enbandari/Kotlin-Tutorials
 		/// Users/matias/develop/testkotlin/Kotlin-Tutorials
 		// d5a487298d55197329acaa2bbfcdd922555457c6
