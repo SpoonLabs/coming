@@ -45,6 +45,7 @@ public class LangAnalyzer implements CommitAnalyzer {
 
 		for (Commit c : history) {
 
+			log.debug("Analyzing commit " + i + " out of " + history.size());
 			this.analyze(c);
 
 			i++;
@@ -61,15 +62,16 @@ public class LangAnalyzer implements CommitAnalyzer {
 		String repositoryPath = c.getRepository().getRepository().getDirectory().getAbsolutePath();
 		log.debug("Commit ->:  " + c.getName());
 		try {
-			run(repositoryPath, "git reset --hard master".split(" "));
+			runCommand(repositoryPath, "git reset --hard master".split(" "));
 			File diro = new File(output + prefix + c.getName());
 			diro.mkdirs();
-			run(repositoryPath,
+			runCommand(repositoryPath,
 					("git --work-tree=" + diro.getAbsolutePath() + " checkout " + c.getName() + " .").split(" "));
 
-			List<String> ls = run(repositoryPath, new String[] { cloc_path, diro.getAbsolutePath() });
+			List<String> ls = runCommand(repositoryPath, new String[] { cloc_path, diro.getAbsolutePath() });
 			Map<String, Integer[]> langcommit = getLanguages(ls);
 			this.commitsProcessed.add(new CommitInfo(c.getName(), langcommit, this.commitsProcessed.size()));
+			diro.delete();// todo
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -77,7 +79,7 @@ public class LangAnalyzer implements CommitAnalyzer {
 		return commitsProcessed;
 	}
 
-	private List<String> run(String repositoryPath, String[] command) throws Exception {
+	private List<String> runCommand(String repositoryPath, String[] command) throws Exception {
 		Process p = null;
 		// ProcessBuilder pb = new ProcessBuilder("/bin/bash");
 		ProcessBuilder pb = new ProcessBuilder();
