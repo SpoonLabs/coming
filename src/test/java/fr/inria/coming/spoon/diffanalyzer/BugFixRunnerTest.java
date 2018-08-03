@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.sacha.coming.analyzer.bfdiff.BugFixRunner;
@@ -37,7 +38,6 @@ public class BugFixRunnerTest {
 		BugFixRunner r = new BugFixRunner();
 		Diff diffOut = r.getdiff(s, t);
 		System.out.println("Output: " + diffOut);
-		// Assert.assertEquals(1, diffOut.getRootOperations().size());
 		Assert.assertTrue(diffOut.getRootOperations().size() > 0);
 	}
 
@@ -48,7 +48,6 @@ public class BugFixRunnerTest {
 		BugFixRunner r = new BugFixRunner();
 		Diff diffOut = r.getdiff(s, t);
 		System.out.println("Output: " + diffOut);
-		// Assert.assertEquals(1, diffOut.getRootOperations().size());
 		Assert.assertTrue(diffOut.getRootOperations().size() > 0);
 	}
 
@@ -145,6 +144,7 @@ public class BugFixRunnerTest {
 	}
 
 	@Test
+	@Ignore
 	public void testDiff150611() throws Exception {
 		File s = getFile("diffcases/150611/QueryParser/150611_QueryParser_0_s.java");
 		File t = getFile("diffcases/150611/QueryParser/150611_QueryParser_0_t.java");

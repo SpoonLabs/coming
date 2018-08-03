@@ -25,10 +25,6 @@ public class DiffEngineFacade {
 
 		AstComparator comparator = new AstComparator();
 		return comparator.compare(contentL, contentR);
-		// final SpoonGumTreeBuilder scanner = new SpoonGumTreeBuilder();
-		// Diff diffEngine = new DiffImpl(contentL, contentR);
-
-		// return diffEngine.compare(contentL, contentR);
 
 	};
 
