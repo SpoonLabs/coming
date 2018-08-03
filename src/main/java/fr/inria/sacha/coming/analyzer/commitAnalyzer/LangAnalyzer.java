@@ -26,6 +26,21 @@ import fr.inria.sacha.gitanalyzer.object.RepositoryPGit;
  *
  */
 public class LangAnalyzer implements CommitAnalyzer {
+
+	/**
+	 * 
+	 */
+	private int commitWindows = 1;
+
+	public LangAnalyzer(int commitWindows) {
+		super();
+		this.commitWindows = commitWindows;
+	}
+
+	public LangAnalyzer() {
+		super();
+	}
+
 	Logger log = Logger.getLogger(LangAnalyzer.class.getName());
 
 	public String output = "/tmp/";
@@ -46,9 +61,10 @@ public class LangAnalyzer implements CommitAnalyzer {
 
 		for (Commit c : history) {
 
-			log.debug("Analyzing commit " + i + " out of " + history.size());
-			this.analyze(c);
-
+			if (i % this.commitWindows == 0) {
+				log.debug("Analyzing commit " + i + " out of " + history.size());
+				this.analyze(c);
+			}
 			i++;
 		}
 
