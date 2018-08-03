@@ -1,4 +1,4 @@
-package fr.inria.coming.spoon.comparison;
+package fr.inria.sacha.coming.analyzer.bfdiff;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
