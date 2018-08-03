@@ -12,7 +12,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.Ignore;
 
-import fr.inria.coming.spoon.comparison.MapCounter;
 import fr.inria.sacha.coming.analyzer.DiffEngineFacade;
 import fr.inria.sacha.coming.entity.GranuralityType;
 import gumtree.spoon.diff.Diff;
