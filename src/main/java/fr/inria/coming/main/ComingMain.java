@@ -1,8 +1,9 @@
-package fr.inria.coming.changeminer.analyzer;
+package fr.inria.coming.main;
 
 import java.util.List;
 import java.util.Map;
 
+import fr.inria.coming.changeminer.analyzer.RepositoryInspector;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainChangeCommitAnalyzer;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.filters.SimpleChangeFilter;
 import fr.inria.coming.changeminer.entity.ActionType;
