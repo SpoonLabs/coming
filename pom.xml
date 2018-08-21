@@ -9,9 +9,6 @@
 	<name>coming-parent</name>
 	<url>matias</url>
 
-
-
-
 	<developers>
 
 		<developer>
@@ -19,9 +16,6 @@
 			<name>Matias Martinez</name>
 			<email>matias.martinez@inria.fr</email>
 		</developer>
-
-
-
 
 	</developers>
 	<properties>

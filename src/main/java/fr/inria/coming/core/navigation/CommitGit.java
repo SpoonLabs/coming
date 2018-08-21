@@ -1,4 +1,4 @@
-package fr.inria.coming.core.object;
+package fr.inria.coming.core.navigation;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;

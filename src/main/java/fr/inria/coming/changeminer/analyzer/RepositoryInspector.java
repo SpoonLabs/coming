@@ -17,7 +17,7 @@ import fr.inria.coming.core.interfaces.Commit;
 import fr.inria.coming.core.interfaces.CommitAnalyzer;
 import fr.inria.coming.core.interfaces.FileCommit;
 import fr.inria.coming.core.interfaces.RepositoryP;
-import fr.inria.coming.core.object.RepositoryPGit;
+import fr.inria.coming.core.navigation.RepositoryPGit;
 import gumtree.spoon.diff.operations.Operation;
 
 /**

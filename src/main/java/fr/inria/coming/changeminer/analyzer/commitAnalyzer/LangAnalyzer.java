@@ -17,8 +17,8 @@ import org.json.simple.JSONObject;
 import fr.inria.coming.core.interfaces.Commit;
 import fr.inria.coming.core.interfaces.CommitAnalyzer;
 import fr.inria.coming.core.interfaces.RepositoryP;
-import fr.inria.coming.core.object.CommitGit;
-import fr.inria.coming.core.object.RepositoryPGit;
+import fr.inria.coming.core.navigation.CommitGit;
+import fr.inria.coming.core.navigation.RepositoryPGit;
 
 /**
  * 

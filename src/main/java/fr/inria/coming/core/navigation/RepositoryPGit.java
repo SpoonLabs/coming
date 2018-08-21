@@ -1,4 +1,4 @@
-package fr.inria.coming.core.object;
+package fr.inria.coming.core.navigation;
 
 import java.io.File;
 import java.io.IOException;
@@ -96,8 +96,8 @@ public class RepositoryPGit implements RepositoryP {
 	 * @throws IncorrectObjectTypeException
 	 * @throws IOException
 	 */
-	private void loadCommits() throws RevisionSyntaxException, AmbiguousObjectException, IncorrectObjectTypeException,
-			IOException {
+	private void loadCommits()
+			throws RevisionSyntaxException, AmbiguousObjectException, IncorrectObjectTypeException, IOException {
 		RevWalk revWalk = new RevWalk(repository);
 		ObjectId from = repository.resolve(masterBranch);
 		revWalk.markStart(revWalk.parseCommit(from));
@@ -109,13 +109,11 @@ public class RepositoryPGit implements RepositoryP {
 			revWalk.setTreeFilter(filter);
 		}
 		revWalk.sort(RevSort.REVERSE, true);
-		
+
 		for (RevCommit c : revWalk) {
-			//detectRenames(c.getTree()); 
+			// detectRenames(c.getTree());
 			Commit commit = new CommitGit(this, c);
 			commits.add(commit);
-			// System.out.println("IN REPO LOADING");
-			// System.out.println(c.getId().getName());
 		}
 		Git git = new Git(repository);
 		List<Ref> call;
@@ -141,8 +139,8 @@ public class RepositoryPGit implements RepositoryP {
 
 	}
 
-	protected void detectRenames(RevTree revTree) throws MissingObjectException, IncorrectObjectTypeException, CorruptObjectException,
-			IOException {
+	protected void detectRenames(RevTree revTree)
+			throws MissingObjectException, IncorrectObjectTypeException, CorruptObjectException, IOException {
 		TreeWalk tw = new TreeWalk(repository);
 		tw.setRecursive(true);
 		tw.addTree(revTree);
@@ -150,11 +148,11 @@ public class RepositoryPGit implements RepositoryP {
 		RenameDetector rd = new RenameDetector(repository);
 		rd.addAll(DiffEntry.scan(tw));
 
-		List<DiffEntry> lde = rd.compute(/*tw.getObjectReader(), null*/);
+		List<DiffEntry> lde = rd.compute(/* tw.getObjectReader(), null */);
 		for (DiffEntry de : lde) {
-		    if (de.getScore() >= rd.getRenameScore()) {
-		        System.out.println("file: " + de.getOldPath() + " copied/moved to: " + de.getNewPath()+ " ");
-		    }
+			if (de.getScore() >= rd.getRenameScore()) {
+				System.out.println("file: " + de.getOldPath() + " copied/moved to: " + de.getNewPath() + " ");
+			}
 		}
 	}
 
