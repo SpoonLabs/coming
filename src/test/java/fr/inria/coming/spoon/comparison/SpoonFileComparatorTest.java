@@ -8,8 +8,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import fr.inria.coming.analyzer.DiffEngineFacade;
-import fr.inria.coming.entity.GranuralityType;
+import fr.inria.coming.changeminer.analyzer.DiffEngineFacade;
+import fr.inria.coming.changeminer.entity.GranuralityType;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
 

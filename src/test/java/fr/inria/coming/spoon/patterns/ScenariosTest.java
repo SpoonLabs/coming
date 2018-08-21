@@ -13,12 +13,12 @@ import org.junit.Test;
 
 import com.github.gumtreediff.matchers.Matcher;
 
-import fr.inria.coming.analyzer.Parameters;
-import fr.inria.coming.entity.GranuralityType;
-import fr.inria.coming.util.ConsoleOutput;
-import fr.inria.coming.util.Scenarios;
-import fr.inria.coming.util.XMLOutput;
-import fr.inria.gitanalyzer.interfaces.Commit;
+import fr.inria.coming.changeminer.analyzer.Parameters;
+import fr.inria.coming.changeminer.entity.GranuralityType;
+import fr.inria.coming.changeminer.util.ConsoleOutput;
+import fr.inria.coming.changeminer.util.Scenarios;
+import fr.inria.coming.changeminer.util.XMLOutput;
+import fr.inria.coming.core.interfaces.Commit;
 import gumtree.spoon.diff.operations.Operation;
 
 /**

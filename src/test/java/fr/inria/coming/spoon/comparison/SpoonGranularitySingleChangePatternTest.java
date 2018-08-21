@@ -7,11 +7,11 @@ import java.util.List;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import fr.inria.coming.analyzer.commitAnalyzer.FineGrainChangeCommitAnalyzer;
-import fr.inria.coming.analyzer.commitAnalyzer.filters.PatternFilter;
-import fr.inria.coming.analyzer.treeGenerator.PatternEntity;
-import fr.inria.coming.entity.ActionType;
-import fr.inria.coming.entity.GranuralityType;
+import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainChangeCommitAnalyzer;
+import fr.inria.coming.changeminer.analyzer.commitAnalyzer.filters.PatternFilter;
+import fr.inria.coming.changeminer.analyzer.treeGenerator.PatternEntity;
+import fr.inria.coming.changeminer.entity.ActionType;
+import fr.inria.coming.changeminer.entity.GranuralityType;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
 
