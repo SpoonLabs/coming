@@ -12,11 +12,11 @@ import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainChangeCommit
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.filters.SimpleChangeFilter;
 import fr.inria.coming.changeminer.entity.ActionType;
 import fr.inria.coming.core.filter.DummyFilter;
-import fr.inria.coming.core.filter.IFilter;
 import fr.inria.coming.core.implementation.RepositoryPGit;
 import fr.inria.coming.core.interfaces.Commit;
 import fr.inria.coming.core.interfaces.CommitAnalyzer;
 import fr.inria.coming.core.interfaces.FileCommit;
+import fr.inria.coming.core.interfaces.IFilter;
 import fr.inria.coming.core.interfaces.RepositoryP;
 import gumtree.spoon.diff.operations.Operation;
 

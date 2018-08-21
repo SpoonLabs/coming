@@ -10,9 +10,9 @@ import comparison.FragmentableComparator;
 import comparison.LineComparator;
 import fr.inria.coming.changeminer.analyzer.Parameters;
 import fr.inria.coming.core.filter.AbstractFilter;
-import fr.inria.coming.core.filter.IFilter;
 import fr.inria.coming.core.interfaces.Commit;
 import fr.inria.coming.core.interfaces.FileCommit;
+import fr.inria.coming.core.interfaces.IFilter;
 
 /** filters on the number of hunks per file */
 public class NbHunkFilter extends AbstractFilter {

@@ -1,5 +1,7 @@
 package fr.inria.coming.core.filter;
 
+import fr.inria.coming.core.interfaces.IFilter;
+
 /**
  * A filter which accepts only commits with a supposed bugfix purpose
  *

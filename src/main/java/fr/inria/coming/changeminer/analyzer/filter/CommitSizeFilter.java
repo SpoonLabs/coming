@@ -4,9 +4,9 @@ import java.util.List;
 
 import fr.inria.coming.changeminer.analyzer.Parameters;
 import fr.inria.coming.core.filter.AbstractFilter;
-import fr.inria.coming.core.filter.IFilter;
 import fr.inria.coming.core.interfaces.Commit;
 import fr.inria.coming.core.interfaces.FileCommit;
+import fr.inria.coming.core.interfaces.IFilter;
 
 public class CommitSizeFilter extends AbstractFilter {
 

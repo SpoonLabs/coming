@@ -1,6 +1,7 @@
 package fr.inria.coming.core.filter;
 
 import fr.inria.coming.core.interfaces.Commit;
+import fr.inria.coming.core.interfaces.IFilter;
 
 
 

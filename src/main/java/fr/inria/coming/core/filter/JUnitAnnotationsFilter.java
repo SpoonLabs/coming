@@ -1,7 +1,6 @@
 package fr.inria.coming.core.filter;
 
-
-
+import fr.inria.coming.core.interfaces.IFilter;
 
 /**
  * Filter ignoring a fragment when its a test method prefix (like '@setup','@before',...)

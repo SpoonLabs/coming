@@ -1,5 +1,6 @@
 package fr.inria.coming.core.filter;
 
+import fr.inria.coming.core.interfaces.IFilter;
 
 /**
  * A filter to allow only fragments <b>containing</b> expected word(s)
