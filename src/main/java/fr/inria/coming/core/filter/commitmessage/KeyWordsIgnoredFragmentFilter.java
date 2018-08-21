@@ -1,12 +1,13 @@
-package fr.inria.coming.core.filter;
+package fr.inria.coming.core.filter.commitmessage;
 
+import fr.inria.coming.core.filter.AbstractChainedFilter;
 import fr.inria.coming.core.interfaces.IFilter;
 
 /**
  * A filter to ignore fragment containing one of the specified keywords
  *
  */
-public class KeyWordsIgnoredFragmentFilter extends AbstractFilter {
+public class KeyWordsIgnoredFragmentFilter extends AbstractChainedFilter {
 
 	private String [] keywords;
 	

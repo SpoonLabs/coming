@@ -9,7 +9,7 @@ import fr.inria.coming.core.interfaces.IFilter;
  * A model of filter allowing filter stacking
  *
  */
-public abstract class AbstractFilter implements IFilter {
+public abstract class AbstractChainedFilter implements IFilter {
 
 	protected IFilter parentFilter;
 	
@@ -17,7 +17,7 @@ public abstract class AbstractFilter implements IFilter {
 	 * Simply define a parent filter for this filter
 	 * @param parentFilter
 	 */
-	public AbstractFilter(IFilter parentFilter){
+	public AbstractChainedFilter(IFilter parentFilter){
 		this.parentFilter = parentFilter;
 	}
 	
@@ -25,7 +25,7 @@ public abstract class AbstractFilter implements IFilter {
 	/**
 	 * Define a filter which don't have any parent
 	 */
-	public AbstractFilter(){
+	public AbstractChainedFilter(){
 		this.parentFilter = new DummyFilter(); // empty object for a safe use of filters chain
 	}
 	

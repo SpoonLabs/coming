@@ -7,13 +7,13 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import fr.inria.coming.changeminer.analyzer.DiffEngineFacade;
-import fr.inria.coming.changeminer.analyzer.Parameters;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.filters.SimpleChangeFilter;
 import fr.inria.coming.changeminer.entity.GranuralityType;
-import fr.inria.coming.changeminer.util.ConfigurationProperties;
+import fr.inria.coming.core.Parameters;
 import fr.inria.coming.core.interfaces.Commit;
 import fr.inria.coming.core.interfaces.CommitAnalyzer;
 import fr.inria.coming.core.interfaces.FileCommit;
+import fr.inria.coming.main.ConfigurationProperties;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
 

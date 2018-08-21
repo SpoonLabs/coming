@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.LangAnalyzer;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.LangAnalyzer.CommitInfo;
-import fr.inria.coming.changeminer.util.ConfigurationProperties;
+import fr.inria.coming.main.ConfigurationProperties;
 import fr.inria.coming.spoon.patterns.GitRepository4Test;
 
 /**

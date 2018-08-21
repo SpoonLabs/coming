@@ -1,4 +1,4 @@
-package fr.inria.coming.changeminer.analyzer.filter;
+package fr.inria.coming.core.filter.diff;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,14 +8,14 @@ import org.eclipse.compare.rangedifferencer.RangeDifference;
 import comparison.Fragmentable;
 import comparison.FragmentableComparator;
 import comparison.LineComparator;
-import fr.inria.coming.changeminer.analyzer.Parameters;
-import fr.inria.coming.core.filter.AbstractFilter;
+import fr.inria.coming.core.Parameters;
+import fr.inria.coming.core.filter.AbstractChainedFilter;
 import fr.inria.coming.core.interfaces.Commit;
 import fr.inria.coming.core.interfaces.FileCommit;
 import fr.inria.coming.core.interfaces.IFilter;
 
 /** filters on the number of hunks per file */
-public class NbHunkFilter extends AbstractFilter {
+public class NbHunkFilter extends AbstractChainedFilter {
 
 	FragmentableComparator comparator = new LineComparator(); // new JavaTokenComparator();
 	private int max_included;

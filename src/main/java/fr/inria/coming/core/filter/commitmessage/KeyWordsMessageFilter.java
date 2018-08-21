@@ -1,5 +1,6 @@
-package fr.inria.coming.core.filter;
+package fr.inria.coming.core.filter.commitmessage;
 
+import fr.inria.coming.core.filter.AbstractChainedFilter;
 import fr.inria.coming.core.interfaces.Commit;
 import fr.inria.coming.core.interfaces.IFilter;
 
@@ -10,7 +11,7 @@ import fr.inria.coming.core.interfaces.IFilter;
  * A filter to search keywords in the  commit message
  *
  */
-public class KeyWordsMessageFilter extends AbstractFilter {
+public class KeyWordsMessageFilter extends AbstractChainedFilter {
 	
 	
 	protected String [] predicates;

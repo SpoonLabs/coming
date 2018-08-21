@@ -17,7 +17,6 @@ import org.apache.log4j.PatternLayout;
 
 import com.github.gumtreediff.matchers.Matcher;
 
-import fr.inria.coming.changeminer.analyzer.Parameters;
 import fr.inria.coming.changeminer.analyzer.RepositoryInspector;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainChangeCommitAnalyzer;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.filters.ChildParentFilter;
@@ -26,6 +25,7 @@ import fr.inria.coming.changeminer.analyzer.treeGenerator.PatternAction;
 import fr.inria.coming.changeminer.analyzer.treeGenerator.PatternEntity;
 import fr.inria.coming.changeminer.entity.ActionType;
 import fr.inria.coming.changeminer.entity.GranuralityType;
+import fr.inria.coming.core.Parameters;
 import fr.inria.coming.core.interfaces.Commit;
 import gumtree.spoon.diff.operations.Operation;
 

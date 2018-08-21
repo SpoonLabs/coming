@@ -1,5 +1,6 @@
-package fr.inria.coming.core.filter;
+package fr.inria.coming.core.filter.commitmessage;
 
+import fr.inria.coming.core.filter.AbstractChainedFilter;
 import fr.inria.coming.core.interfaces.IFilter;
 
 /**
@@ -7,7 +8,7 @@ import fr.inria.coming.core.interfaces.IFilter;
  * Apply on lone fragment level
  *
  */
-public class KeyWordsFragmentFilter extends AbstractFilter {
+public class KeyWordsFragmentFilter extends AbstractChainedFilter {
 	
 	private String [] keywords;
 	

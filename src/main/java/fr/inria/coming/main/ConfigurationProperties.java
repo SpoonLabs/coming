@@ -1,4 +1,4 @@
-package fr.inria.coming.changeminer.util;
+package fr.inria.coming.main;
 
 import java.io.FileInputStream;
 import java.util.Properties;

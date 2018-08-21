@@ -12,7 +12,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 
-import fr.inria.coming.changeminer.analyzer.Parameters;
+import fr.inria.coming.core.Parameters;
 import fr.inria.coming.core.interfaces.Commit;
 import fr.inria.coming.core.interfaces.FileCommit;
 import gumtree.spoon.diff.operations.Operation;

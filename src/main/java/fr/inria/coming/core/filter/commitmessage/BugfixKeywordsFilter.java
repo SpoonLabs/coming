@@ -1,4 +1,4 @@
-package fr.inria.coming.core.filter;
+package fr.inria.coming.core.filter.commitmessage;
 
 import fr.inria.coming.core.interfaces.IFilter;
 

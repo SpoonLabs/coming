@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import com.github.gumtreediff.actions.model.Action;
 import com.github.gumtreediff.actions.model.Update;
 
-import fr.inria.coming.changeminer.analyzer.Parameters;
+import fr.inria.coming.core.Parameters;
 import fr.inria.coming.core.interfaces.Commit;
 import fr.inria.coming.core.interfaces.FileCommit;
 import gumtree.spoon.diff.operations.Operation;

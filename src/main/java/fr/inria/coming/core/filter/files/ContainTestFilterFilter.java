@@ -1,21 +1,21 @@
-package fr.inria.coming.changeminer.analyzer.filter;
+package fr.inria.coming.core.filter.files;
 
 import java.util.List;
 
-import fr.inria.coming.changeminer.analyzer.Parameters;
-import fr.inria.coming.core.filter.AbstractFilter;
+import fr.inria.coming.core.Parameters;
+import fr.inria.coming.core.filter.AbstractChainedFilter;
 import fr.inria.coming.core.interfaces.Commit;
 import fr.inria.coming.core.interfaces.FileCommit;
 import fr.inria.coming.core.interfaces.IFilter;
 
-public class CommitSizeFilter extends AbstractFilter {
+public class ContainTestFilterFilter extends AbstractChainedFilter {
 
-	public CommitSizeFilter() {
+	public ContainTestFilterFilter() {
 		super();
 	
 	}
 
-	public CommitSizeFilter(IFilter parentFilter) {
+	public ContainTestFilterFilter(IFilter parentFilter) {
 		super(parentFilter);
 		
 	}
@@ -35,12 +35,6 @@ public class CommitSizeFilter extends AbstractFilter {
 				if (fileCommit.getCompletePath().toLowerCase().contains("test"))
 					nTests++;
 
-			}
-
-			if (countJava > Parameters.MAX_FILES_PER_COMMIT) {
-				// System.out.println("Commit not accepted, many files in the commit");
-				// log.info("-----");
-				return false;
 			}
 			
 			if (Parameters.ONLY_COMMIT_WITH_TEST_CASE && nTests == 0){

@@ -14,17 +14,17 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.inria.coming.changeminer.analyzer.Parameters;
 import fr.inria.coming.changeminer.analyzer.RepositoryInspector;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainChangeCommitAnalyzer;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.filters.PatternFilter;
-import fr.inria.coming.changeminer.analyzer.filter.NbHunkFilter;
 import fr.inria.coming.changeminer.analyzer.treeGenerator.PatternEntity;
 import fr.inria.coming.changeminer.entity.ActionType;
 import fr.inria.coming.changeminer.entity.GranuralityType;
 import fr.inria.coming.changeminer.util.ConsoleOutput;
 import fr.inria.coming.changeminer.util.XMLOutput;
-import fr.inria.coming.core.filter.KeyWordsMessageFilter;
+import fr.inria.coming.core.Parameters;
+import fr.inria.coming.core.filter.commitmessage.KeyWordsMessageFilter;
+import fr.inria.coming.core.filter.diff.NbHunkFilter;
 import fr.inria.coming.core.interfaces.Commit;
 import gumtree.spoon.diff.operations.Operation;
 

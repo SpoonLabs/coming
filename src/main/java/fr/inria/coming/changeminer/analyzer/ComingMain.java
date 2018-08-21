@@ -8,6 +8,7 @@ import fr.inria.coming.changeminer.analyzer.commitAnalyzer.filters.SimpleChangeF
 import fr.inria.coming.changeminer.entity.ActionType;
 import fr.inria.coming.changeminer.util.ConsoleOutput;
 import fr.inria.coming.changeminer.util.XMLOutput;
+import fr.inria.coming.core.Parameters;
 import fr.inria.coming.core.filter.DummyFilter;
 import fr.inria.coming.core.interfaces.Commit;
 import gumtree.spoon.diff.operations.Operation;
