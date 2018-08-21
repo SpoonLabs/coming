@@ -11,10 +11,10 @@ import org.json.simple.JSONObject;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import fr.inria.coming.changeminer.analyzer.commitAnalyzer.LangAnalyzer;
+import fr.inria.coming.changeminer.analyzer.commitAnalyzer.LangAnalyzer.CommitInfo;
+import fr.inria.coming.main.ConfigurationProperties;
 import fr.inria.coming.spoon.patterns.GitRepository4Test;
-import fr.inria.sacha.coming.analyzer.commitAnalyzer.LangAnalyzer;
-import fr.inria.sacha.coming.analyzer.commitAnalyzer.LangAnalyzer.CommitInfo;
-import fr.inria.sacha.coming.util.ConfigurationProperties;
 
 /**
  * 

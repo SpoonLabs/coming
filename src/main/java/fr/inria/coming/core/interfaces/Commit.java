@@ -1,0 +1,33 @@
+package fr.inria.coming.core.interfaces;
+
+import java.util.List;
+
+public interface Commit {
+
+	/**
+	 * Return a list of FileCommit affected by commit
+	 * 
+	 * @return list of pFileCommit
+	 */
+	public List<FileCommit> getFileCommits();
+
+	public List<FileCommit> getJavaFileCommits();
+
+	/**
+	 * Get the name of the commit (SHA-1)
+	 * 
+	 * @return the commint name (SHA-1 code)
+	 */
+	public String getName();
+
+	public boolean containsJavaFile();
+
+	public String getShortMessage();
+
+	public String getFullMessage();
+
+	public int getRevCommitTime();
+
+	public String getRevDate();
+
+}

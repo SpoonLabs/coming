@@ -9,7 +9,7 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import fr.inria.sacha.coming.analyzer.bfdiff.BugFixRunner;
+import fr.inria.coming.changeminer.analyzer.bfdiff.BugFixRunner;
 import gumtree.spoon.AstComparator;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
