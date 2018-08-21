@@ -1,4 +1,4 @@
-package comparison;
+package fr.inria.coming.core.filter.diff.syntcomparison;
 
 import java.util.ArrayList;
 import java.util.List;

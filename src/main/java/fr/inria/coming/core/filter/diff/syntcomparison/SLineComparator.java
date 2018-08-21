@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package comparison;
+package fr.inria.coming.core.filter.diff.syntcomparison;
 
 import java.io.BufferedReader;
 import java.io.IOException;

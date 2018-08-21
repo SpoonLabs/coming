@@ -10,6 +10,7 @@ import fr.inria.coming.core.interfaces.IFilter;
 
 public class CommitSizeFilter extends AbstractChainedFilter {
 
+	
 	public CommitSizeFilter() {
 		super();
 	

@@ -1,4 +1,4 @@
-package comparison;
+package fr.inria.coming.core.filter.diff.syntcomparison;
 
 
 public class LineComparator extends FragmentableComparator {

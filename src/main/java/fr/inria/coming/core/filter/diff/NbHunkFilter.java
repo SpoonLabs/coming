@@ -5,11 +5,11 @@ import java.util.List;
 
 import org.eclipse.compare.rangedifferencer.RangeDifference;
 
-import comparison.Fragmentable;
-import comparison.FragmentableComparator;
-import comparison.LineComparator;
 import fr.inria.coming.core.Parameters;
 import fr.inria.coming.core.filter.AbstractChainedFilter;
+import fr.inria.coming.core.filter.diff.syntcomparison.Fragmentable;
+import fr.inria.coming.core.filter.diff.syntcomparison.FragmentableComparator;
+import fr.inria.coming.core.filter.diff.syntcomparison.LineComparator;
 import fr.inria.coming.core.interfaces.Commit;
 import fr.inria.coming.core.interfaces.FileCommit;
 import fr.inria.coming.core.interfaces.IFilter;
