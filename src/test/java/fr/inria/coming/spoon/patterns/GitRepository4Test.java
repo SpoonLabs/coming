@@ -12,9 +12,9 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 
-import fr.inria.sacha.coming.analyzer.Parameters;
-import fr.inria.sacha.gitanalyzer.interfaces.Commit;
-import fr.inria.sacha.gitanalyzer.interfaces.FileCommit;
+import fr.inria.coming.analyzer.Parameters;
+import fr.inria.gitanalyzer.interfaces.Commit;
+import fr.inria.gitanalyzer.interfaces.FileCommit;
 import gumtree.spoon.diff.operations.Operation;
 import net.lingala.zip4j.core.ZipFile;
 

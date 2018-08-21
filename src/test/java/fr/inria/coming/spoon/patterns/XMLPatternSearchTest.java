@@ -12,14 +12,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.inria.sacha.coming.analyzer.RepositoryInspector;
-import fr.inria.sacha.coming.analyzer.commitAnalyzer.FineGrainChangeCommitAnalyzer;
-import fr.inria.sacha.coming.analyzer.commitAnalyzer.filters.SimpleChangeFilter;
-import fr.inria.sacha.coming.analyzer.treeGenerator.ChangePattern;
-import fr.inria.sacha.coming.entity.GranuralityType;
-import fr.inria.sacha.coming.util.ConsoleOutput;
-import fr.inria.sacha.coming.util.PatternXMLParser;
-import fr.inria.sacha.gitanalyzer.interfaces.Commit;
+import fr.inria.coming.analyzer.RepositoryInspector;
+import fr.inria.coming.analyzer.commitAnalyzer.FineGrainChangeCommitAnalyzer;
+import fr.inria.coming.analyzer.commitAnalyzer.filters.SimpleChangeFilter;
+import fr.inria.coming.analyzer.treeGenerator.ChangePattern;
+import fr.inria.coming.entity.GranuralityType;
+import fr.inria.coming.util.ConsoleOutput;
+import fr.inria.coming.util.PatternXMLParser;
+import fr.inria.gitanalyzer.interfaces.Commit;
 import gumtree.spoon.diff.operations.Operation;
 
 /**

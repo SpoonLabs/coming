@@ -2,8 +2,8 @@ package fr.inria.coming.spoon.patterns;
 
 import java.util.HashMap;
 
-import fr.inria.sacha.gitanalyzer.interfaces.Commit;
-import fr.inria.sacha.gitanalyzer.interfaces.CommitAnalyzer;
+import fr.inria.gitanalyzer.interfaces.Commit;
+import fr.inria.gitanalyzer.interfaces.CommitAnalyzer;
 
 public class NullAnalyzer implements CommitAnalyzer {
 	@Override

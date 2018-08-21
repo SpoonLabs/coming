@@ -6,11 +6,11 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
+import fr.inria.coming.analyzer.RepositoryInspector;
+import fr.inria.coming.analyzer.bfdiff.MapCounter;
+import fr.inria.coming.analyzer.commitAnalyzer.FineGrainChangeCommitAnalyzer;
 import fr.inria.coming.spoon.patterns.GitRepository4Test;
-import fr.inria.sacha.coming.analyzer.RepositoryInspector;
-import fr.inria.sacha.coming.analyzer.bfdiff.MapCounter;
-import fr.inria.sacha.coming.analyzer.commitAnalyzer.FineGrainChangeCommitAnalyzer;
-import fr.inria.sacha.gitanalyzer.interfaces.Commit;
+import fr.inria.gitanalyzer.interfaces.Commit;
 import gumtree.spoon.diff.operations.Operation;
 
 /**

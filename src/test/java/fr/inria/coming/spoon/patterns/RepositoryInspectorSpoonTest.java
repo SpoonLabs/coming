@@ -14,18 +14,18 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.inria.sacha.coming.analyzer.Parameters;
-import fr.inria.sacha.coming.analyzer.RepositoryInspector;
-import fr.inria.sacha.coming.analyzer.commitAnalyzer.FineGrainChangeCommitAnalyzer;
-import fr.inria.sacha.coming.analyzer.commitAnalyzer.filters.PatternFilter;
-import fr.inria.sacha.coming.analyzer.filter.NbHunkFilter;
-import fr.inria.sacha.coming.analyzer.treeGenerator.PatternEntity;
-import fr.inria.sacha.coming.entity.ActionType;
-import fr.inria.sacha.coming.entity.GranuralityType;
-import fr.inria.sacha.coming.util.ConsoleOutput;
-import fr.inria.sacha.coming.util.XMLOutput;
-import fr.inria.sacha.gitanalyzer.filter.KeyWordsMessageFilter;
-import fr.inria.sacha.gitanalyzer.interfaces.Commit;
+import fr.inria.coming.analyzer.Parameters;
+import fr.inria.coming.analyzer.RepositoryInspector;
+import fr.inria.coming.analyzer.commitAnalyzer.FineGrainChangeCommitAnalyzer;
+import fr.inria.coming.analyzer.commitAnalyzer.filters.PatternFilter;
+import fr.inria.coming.analyzer.filter.NbHunkFilter;
+import fr.inria.coming.analyzer.treeGenerator.PatternEntity;
+import fr.inria.coming.entity.ActionType;
+import fr.inria.coming.entity.GranuralityType;
+import fr.inria.coming.util.ConsoleOutput;
+import fr.inria.coming.util.XMLOutput;
+import fr.inria.gitanalyzer.filter.KeyWordsMessageFilter;
+import fr.inria.gitanalyzer.interfaces.Commit;
 import gumtree.spoon.diff.operations.Operation;
 
 /**

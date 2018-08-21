@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import com.github.gumtreediff.matchers.Matcher;
 
-import fr.inria.sacha.coming.analyzer.ComingMain;
+import fr.inria.coming.analyzer.ComingMain;
 /**
  * 
  * @author  Matias Martinez, matias.martinez@inria.fr
