@@ -1,4 +1,4 @@
-package fr.inria.coming.core.navigation;
+package fr.inria.coming.core.implementation;
 
 import java.io.File;
 import java.io.IOException;

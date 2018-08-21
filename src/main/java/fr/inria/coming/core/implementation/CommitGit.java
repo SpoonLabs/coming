@@ -1,4 +1,4 @@
-package fr.inria.coming.core.navigation;
+package fr.inria.coming.core.implementation;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -22,7 +22,6 @@ import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.gitective.core.BlobUtils;
 
-import fr.inria.coming.core.implementation.FileCommitGit;
 import fr.inria.coming.core.interfaces.Commit;
 import fr.inria.coming.core.interfaces.FileCommit;
 import fr.inria.coming.core.interfaces.RepositoryP;
@@ -39,7 +38,7 @@ public class CommitGit implements Commit {
 
 	@Override
 	public List<FileCommit> getFileCommits() {
-		List<FileCommit> ret = new ArrayList<FileCommit>();
+		List<FileCommit> resultFileCommits = new ArrayList<FileCommit>();
 
 		RevWalk rw = new RevWalk(this.repo.getRepository());
 		try {
@@ -53,10 +52,10 @@ public class CommitGit implements Commit {
 					// To retrieve file name
 					String fileNextVersion = getFileContent(this.revCommit.getId(), tw.getPathString());
 					FileCommit file = new FileCommitGit("", "", tw.getPathString(), fileNextVersion, this);
-					ret.add(file);
+					resultFileCommits.add(file);
 				}
 				tw.release();
-				return ret;
+				return resultFileCommits;
 			} else {
 				for (RevCommit rc : revCommit.getParents()) {
 					tw.addTree(rc.getTree());
@@ -89,22 +88,17 @@ public class CommitGit implements Commit {
 					 */
 					// --
 					for (DiffEntry diff : diffs) {
-						//
-						// System.out.println(diff.getChangeType()+"
-						// "+diff.getNewPath());
 
-						//
 						if (!diff.getChangeType().equals(ChangeType.DELETE)) {
 							if (tmp.contains(diff.getNewPath())) {
-								// System.out.println("score "+diff.getScore() +
-								// " "+ diff.getNewPath());
+
 								String previousCommitName = this.revCommit.getParent(0).getName();
 								String filePrevVersion = getFileContent(this.revCommit.getParent(0).getId(),
 										diff.getOldPath());
 								String fileNextVersion = getFileContent(this.revCommit.getId(), diff.getNewPath());
 								FileCommit file = new FileCommitGit(diff.getOldPath(), filePrevVersion,
 										diff.getNewPath(), fileNextVersion, this, previousCommitName);
-								ret.add(file);
+								resultFileCommits.add(file);
 							}
 						}
 					}
@@ -116,7 +110,7 @@ public class CommitGit implements Commit {
 			rw.dispose();
 		}
 
-		return ret;
+		return resultFileCommits;
 	}
 
 	@Override

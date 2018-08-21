@@ -14,11 +14,11 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import fr.inria.coming.core.implementation.CommitGit;
+import fr.inria.coming.core.implementation.RepositoryPGit;
 import fr.inria.coming.core.interfaces.Commit;
 import fr.inria.coming.core.interfaces.CommitAnalyzer;
 import fr.inria.coming.core.interfaces.RepositoryP;
-import fr.inria.coming.core.navigation.CommitGit;
-import fr.inria.coming.core.navigation.RepositoryPGit;
 
 /**
  * 
