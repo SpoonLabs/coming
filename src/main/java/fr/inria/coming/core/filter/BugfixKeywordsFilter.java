@@ -4,16 +4,16 @@ package fr.inria.coming.core.filter;
  * A filter which accepts only commits with a supposed bugfix purpose
  *
  */
-public class BugfixOnlyFilter extends KeyWordsTitleFilter {
+public class BugfixKeywordsFilter extends KeyWordsTitleFilter {
 	
 	private final static String [] keywords = 
 			new String[] {"fix","solve","correct", "patch", "bug"};
 	
-	public BugfixOnlyFilter(){
+	public BugfixKeywordsFilter(){
 		super(keywords);
 	}
 	
-	public BugfixOnlyFilter(IFilter parentFilter){
+	public BugfixKeywordsFilter(IFilter parentFilter){
 		super(parentFilter, keywords);
 	}
 }
