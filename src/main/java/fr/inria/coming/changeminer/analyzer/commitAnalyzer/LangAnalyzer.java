@@ -19,6 +19,7 @@ import fr.inria.coming.core.implementation.RepositoryPGit;
 import fr.inria.coming.core.interfaces.Commit;
 import fr.inria.coming.core.interfaces.CommitAnalyzer;
 import fr.inria.coming.core.interfaces.RepositoryP;
+import fr.inria.coming.main.ConfigurationProperties;
 
 /**
  * 
@@ -32,6 +33,14 @@ public class LangAnalyzer implements CommitAnalyzer {
 	 */
 	private int commitWindows = 1;
 
+	protected Logger log = Logger.getLogger(LangAnalyzer.class.getName());
+
+	private String output = ConfigurationProperties.getProperty("temporal_directory");
+	private String prefix = "v";
+	private String cloc_path = ConfigurationProperties.getProperty("path_to_cloc");
+
+	protected List<CommitInfo> commitsProcessed = new ArrayList<>();
+
 	public LangAnalyzer(int commitWindows) {
 		super();
 		this.commitWindows = commitWindows;
@@ -40,14 +49,6 @@ public class LangAnalyzer implements CommitAnalyzer {
 	public LangAnalyzer() {
 		super();
 	}
-
-	Logger log = Logger.getLogger(LangAnalyzer.class.getName());
-
-	public String output = "/tmp/";
-	public String prefix = "v";
-	public String cloc_path = "/usr/local/bin/cloc";
-
-	List<CommitInfo> commitsProcessed = new ArrayList<>();
 
 	@SuppressWarnings("rawtypes")
 	public List<CommitInfo> navigateRepo(String repositoryPath, String masterBranch) {
@@ -98,7 +99,6 @@ public class LangAnalyzer implements CommitAnalyzer {
 
 	private List<String> runCommand(String repositoryPath, String[] command) throws Exception {
 		Process p = null;
-		// ProcessBuilder pb = new ProcessBuilder("/bin/bash");
 		ProcessBuilder pb = new ProcessBuilder();
 
 		pb.directory(new File(repositoryPath));
