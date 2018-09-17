@@ -7,17 +7,6 @@
 	<version>0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>coming-parent</name>
-	<url>matias</url>
-
-	<developers>
-
-		<developer>
-			<id>matias</id>
-			<name>Matias Martinez</name>
-			<email>matias.martinez@inria.fr</email>
-		</developer>
-
-	</developers>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jdk.version>1.8</jdk.version>
@@ -111,6 +100,13 @@
 			<artifactId>trove4j</artifactId>
 			<version>3.0.3</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.inria.sacha.automaticRepair</groupId>
+			<artifactId>astor</artifactId>
+			<version>0.0.2-SNAPSHOT</version>
+		</dependency>
+		
 	</dependencies>
 	<repositories>
 		<repository>
