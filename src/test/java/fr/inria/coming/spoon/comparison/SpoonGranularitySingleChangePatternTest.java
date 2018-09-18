@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainChangeCommitAnalyzer;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.filters.PatternFilter;
+import fr.inria.coming.changeminer.analyzer.treeGenerator.ParentPatternEntity;
 import fr.inria.coming.changeminer.analyzer.treeGenerator.PatternEntity;
 import fr.inria.coming.changeminer.entity.ActionType;
 import fr.inria.coming.changeminer.entity.GranuralityType;
@@ -39,7 +40,7 @@ public class SpoonGranularitySingleChangePatternTest {
 
 		PatternEntity parent_e = new PatternEntity("Assignment");
 
-		PatternEntity affected_e = new PatternEntity("*", parent_e, 1);
+		PatternEntity affected_e = new PatternEntity("*", new ParentPatternEntity(parent_e, 1));
 
 		PatternFilter patternFilter = new PatternFilter(affected_e, ActionType.ANY);
 

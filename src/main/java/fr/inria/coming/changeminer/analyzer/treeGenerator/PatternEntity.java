@@ -29,13 +29,6 @@ public class PatternEntity {
 		this.entityName = entity;
 	}
 
-	public PatternEntity(String entity, PatternEntity parent, int level) {
-		super();
-		this.entityName = entity;
-		this.parent.parent = parent;
-		this.parent.parentLevel = level;
-	}
-
 	public String getEntityName() {
 		return entityName;
 	}

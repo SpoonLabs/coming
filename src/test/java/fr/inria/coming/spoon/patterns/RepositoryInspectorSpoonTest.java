@@ -18,6 +18,7 @@ import org.junit.Test;
 import fr.inria.coming.changeminer.analyzer.RepositoryInspector;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainChangeCommitAnalyzer;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.filters.PatternFilter;
+import fr.inria.coming.changeminer.analyzer.treeGenerator.ParentPatternEntity;
 import fr.inria.coming.changeminer.analyzer.treeGenerator.PatternEntity;
 import fr.inria.coming.changeminer.entity.ActionType;
 import fr.inria.coming.changeminer.entity.GranuralityType;
@@ -163,7 +164,9 @@ public class RepositoryInspectorSpoonTest extends GitRepository4Test {
 
 		PatternEntity parent_e = new PatternEntity("Assignment");
 
-		PatternEntity affected_e = new PatternEntity("*", parent_e, 1);
+		ParentPatternEntity parent = new ParentPatternEntity(parent_e, 1);
+
+		PatternEntity affected_e = new PatternEntity("*", parent);
 
 		PatternFilter pattern = new PatternFilter(affected_e, ActionType.ANY);
 
@@ -197,11 +200,16 @@ public class RepositoryInspectorSpoonTest extends GitRepository4Test {
 
 		String messageHeuristic = "";
 
-		PatternEntity grand_parent_e = new PatternEntity("Assignment");
+		ParentPatternEntity grand_parent1 = new ParentPatternEntity(new PatternEntity("Assignment"), 10);
 
-		PatternEntity parent_e1 = new PatternEntity("BinaryOperator", grand_parent_e, 10);
+		// ParentPatternEntityparent_e1 = new ParentPatternEntity( new
+		// PatternEntity("BinaryOperator", grand_parent1);
 
-		PatternEntity affected_e = new PatternEntity("*", parent_e1, 1);
+		PatternEntity parent_e1 = new PatternEntity("BinaryOperator", grand_parent1);
+
+		ParentPatternEntity parent_of_change = new ParentPatternEntity(parent_e1, 1);
+
+		PatternEntity affected_e = new PatternEntity("*", parent_of_change);
 
 		PatternFilter pattern = new PatternFilter(affected_e, ActionType.ANY);
 
