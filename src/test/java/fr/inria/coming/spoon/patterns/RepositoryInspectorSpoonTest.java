@@ -1,6 +1,7 @@
 package fr.inria.coming.spoon.patterns;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import fr.inria.coming.core.filter.commitmessage.KeyWordsMessageFilter;
 import fr.inria.coming.core.filter.diff.NbHunkFilter;
 import fr.inria.coming.core.interfaces.Commit;
 import gumtree.spoon.diff.operations.Operation;
+import spoon.reflect.declaration.CtMethod;
 
 /**
  * 
@@ -176,16 +178,28 @@ public class RepositoryInspectorSpoonTest extends GitRepository4Test {
 
 		Assert.assertTrue(instancesFound.keySet().size() > 0);
 		Assert.assertTrue(containsCommit(instancesFound, "8c0e7110c9ebc3ba5158e8de0f73c80ec69e1001"));
+
+		Commit cWithinstances = getCommit(instancesFound, "8c0e7110c9ebc3ba5158e8de0f73c80ec69e1001");
+		assertNotNull(cWithinstances);
+		List<Operation> ops = instancesFound.get(cWithinstances);
+
+		assertNotNull(ops);
+		Assert.assertTrue(ops.size() > 0);
+
+		Operation op = ops.get(0);
+		System.out.println("Operator " + op.getSrcNode().getParent(CtMethod.class));
+		// Assert.assertTrue(op.getSrcNode().getParent().getClass().getSimpleName().contains("BinaryOperator"));
+		Assert.assertTrue(op.getSrcNode().getParent().getClass().getSimpleName().contains("Assignment"));
 	}
 
-	// @Test
+	@Test
 	public void searchMultipleParentSpoon2() throws Exception {
 
 		String messageHeuristic = "";
 
-		PatternEntity parent_e = new PatternEntity("Assignment");
+		PatternEntity grand_parent_e = new PatternEntity("Assignment");
 
-		PatternEntity parent_e1 = new PatternEntity("BinaryOperator", parent_e, 10);
+		PatternEntity parent_e1 = new PatternEntity("BinaryOperator", grand_parent_e, 10);
 
 		PatternEntity affected_e = new PatternEntity("*", parent_e1, 1);
 
@@ -202,6 +216,27 @@ public class RepositoryInspectorSpoonTest extends GitRepository4Test {
 
 		Assert.assertTrue(instancesFound.keySet().size() > 0);
 		Assert.assertTrue(containsCommit(instancesFound, "656aaf4049092218f99d035450ee59c40a0e1fbc"));
+
+		Commit cWithinstances = getCommit(instancesFound, "656aaf4049092218f99d035450ee59c40a0e1fbc");
+		assertNotNull(cWithinstances);
+		List<Operation> ops = instancesFound.get(cWithinstances);
+
+		assertNotNull(ops);
+		Assert.assertTrue(ops.size() > 0);
+
+		Operation op = ops.get(0);
+		System.out.println("Operator " + op.getSrcNode().getParent(CtMethod.class));
+
+		System.out.println("Changed " + op.getSrcNode());
+
+		Assert.assertTrue(op.getSrcNode().getParent().getClass().getSimpleName().contains("BinaryOperator"));
+
+		Assert.assertTrue(op.getSrcNode().getParent().getParent().getClass().getSimpleName(),
+				op.getSrcNode().getParent().getParent().getClass().getSimpleName().contains("Invocation"));
+
+		Assert.assertTrue(op.getSrcNode().getParent().getParent().getClass().getSimpleName(),
+				op.getSrcNode().getParent().getParent().getParent().getClass().getSimpleName().contains("Assignment"));
+
 	}
 
 }

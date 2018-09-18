@@ -60,6 +60,21 @@ public abstract class GitRepository4Test {
 
 	}
 
+	public static Commit getCommit(Map<Commit, List<Operation>> instancesFound, String commit) {
+		for (Commit c : instancesFound.keySet()) {
+			if (c.getName().equals(commit)) {
+				// return true;
+				List<Operation> ops = instancesFound.get(c);
+				if ((ops != null && !ops.isEmpty())) {
+					return c;
+				}
+
+			}
+
+		}
+		return null;
+	}
+
 	public static boolean containsCommit(Map<Commit, List<Operation>> instancesFound, String commit) {
 		for (Commit c : instancesFound.keySet()) {
 			if (c.getName().equals(commit)) {
