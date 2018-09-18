@@ -1,62 +1,66 @@
 package fr.inria.coming.changeminer.analyzer.treeGenerator;
+
 /**
  * 
  * @author Matias Martinez
  *
  */
 public class PatternEntity {
-	
+
 	protected String entityName;
 	protected String value;
-	protected PatternEntity parent;
-	protected int parentLevel;
-	
+	protected ParentPatternEntity parent = new ParentPatternEntity();
+
 	public static PatternEntity ANY_ENTITY = new PatternEntity("*");
-	
-	
+
 	public PatternEntity(String entity) {
 		super();
 		this.entityName = entity;
-	}	
-	
-	public PatternEntity(String entity,String value) {
+	}
+
+	public PatternEntity(String entity, String value) {
 		super();
 		this.entityName = entity;
 		this.value = value;
-	}	
-	
+	}
+
+	public PatternEntity(String entity, ParentPatternEntity data) {
+		super();
+		this.entityName = entity;
+	}
+
 	public PatternEntity(String entity, PatternEntity parent, int level) {
 		super();
 		this.entityName = entity;
-		this.parent = parent;
-		this.parentLevel = level;
+		this.parent.parent = parent;
+		this.parent.parentLevel = level;
 	}
+
 	public String getEntityName() {
 		return entityName;
 	}
+
 	public void setEntity(String entity) {
 		this.entityName = entity;
 	}
+
 	public PatternEntity getParent() {
-		return parent;
-	}
-	
-	public void setParent(PatternEntity parent,int level) {
-		this.parent = parent;
-		this.parentLevel = level;
-	}
-	
-	public int getParentLevel() {
-		return parentLevel;
+		return parent.parent;
 	}
 
+	public void setParent(PatternEntity parent, int level) {
+		this.parent.parent = parent;
+		this.parent.parentLevel = level;
+	}
+
+	public int getParentLevel() {
+		return parent.parentLevel;
+	}
 
 	@Override
 	public String toString() {
-		return "PatternEntity [entityName=" + entityName + ", parent=" + parent
-				+ ", parentLevel=" + parentLevel + "]";
+		return "PatternEntity [entityName=" + entityName + ", parent=" + parent.parent + ", parentLevel="
+				+ parent.parentLevel + "]";
 	}
-	
-	
 
 }

@@ -26,9 +26,10 @@ import fr.inria.coming.changeminer.entity.ActionType;
  */
 
 public class PatternXMLParser {
-	static final String ENTITY = "entity";
-	static final String ACTION = "action";
-	static final String PARENT = "parent";
+
+	public static final String ENTITY = "entity";
+	public static final String ACTION = "action";
+	public static final String PARENT = "parent";
 
 	@SuppressWarnings({ "unchecked", "null" })
 

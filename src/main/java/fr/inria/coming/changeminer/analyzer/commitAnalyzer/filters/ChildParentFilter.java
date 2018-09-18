@@ -33,21 +33,15 @@ public class ChildParentFilter extends PatternFilter {
 
 		List<Operation> filtered = super.process(diff);
 
-		List<Operation> all = diff.getAllOperations();// Matias, I dont
-														// remerber
-														// why
-														// we filter
-														// //diff.getAllFilterDuplicate(diff.getAllActions());
+		List<Operation> all = diff.getAllOperations();
 
 		for (Operation operation : filtered) {
 			Action action = operation.getAction();
 			if (action instanceof Insert) {
-				// ITree insert = action.getNode();
 				CtElement insertCtElement = operation.getNode();
 
 				for (Operation acall : all) {
 					if (acall.getAction() instanceof Move) {
-						// Move m = (Move) acall;
 						MoveOperation moveOp = (MoveOperation) acall;
 						if (isParent(insertCtElement, moveOp.getNode().getParent())) {
 							result.add(operation);
