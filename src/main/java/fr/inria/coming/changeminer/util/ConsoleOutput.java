@@ -13,6 +13,11 @@ import fr.inria.coming.core.interfaces.Commit;
 import fr.inria.coming.core.interfaces.FileCommit;
 import gumtree.spoon.diff.operations.Operation;
 
+/**
+ * 
+ * @author Matias Martinez
+ *
+ */
 public class ConsoleOutput {
 
 	public static Logger log = Logger.getLogger(ConsoleOutput.class.getName());
