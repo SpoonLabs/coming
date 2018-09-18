@@ -1,4 +1,4 @@
-package fr.inria.coming.changeminer.util;
+package fr.inria.coming.spoon.patterns;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +25,7 @@ import fr.inria.coming.changeminer.analyzer.treeGenerator.PatternAction;
 import fr.inria.coming.changeminer.analyzer.treeGenerator.PatternEntity;
 import fr.inria.coming.changeminer.entity.ActionType;
 import fr.inria.coming.changeminer.entity.GranuralityType;
+import fr.inria.coming.changeminer.util.XMLOutput;
 import fr.inria.coming.core.Parameters;
 import fr.inria.coming.core.interfaces.Commit;
 import gumtree.spoon.diff.operations.Operation;

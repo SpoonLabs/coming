@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.inria.coming</groupId>
@@ -7,17 +8,6 @@
 	<version>0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>coming-parent</name>
-	<url>matias</url>
-
-	<developers>
-
-		<developer>
-			<id>matias</id>
-			<name>Matias Martinez</name>
-			<email>matias.martinez@inria.fr</email>
-		</developer>
-
-	</developers>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jdk.version>1.8</jdk.version>
@@ -111,13 +101,42 @@
 			<artifactId>trove4j</artifactId>
 			<version>3.0.3</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.inria.sacha.automaticRepair</groupId>
+			<artifactId>astor</artifactId>
+			<version>0.0.2-SNAPSHOT</version>
+		</dependency>
+
 	</dependencies>
 	<repositories>
+	<repository>
+			<id>inria</id>
+			<url>http://spoon.gforge.inria.fr/repositories/releases/</url>
+		</repository>
 		<repository>
 			<id>gforge.inria.fr-snapshot</id>
 			<name>Maven Repository for Spoon Snapshot</name>
 			<url>http://spoon.gforge.inria.fr/repositories/snapshots/</url>
 			<snapshots />
+		</repository>
+		<repository>
+			<id>gforge.inria.fr-release</id>
+			<name>Maven Repository for Spoon Release</name>
+			<url>http://sachaproject.gforge.inria.fr/repositories/releases/</url>
+			<snapshots />
+		</repository>
+		<repository>
+			<id>sachaproject.gforge.inria.fr-release</id>
+			<name>Maven Repository for Spoon Release</name>
+			<url>http://sachaproject.gforge.inria.fr/repositories/releases/</url>
+			<snapshots />
+		</repository>
+
+		<repository>
+			<id>tdurieux.github.io/maven-repository/snapshots/</id>
+			<name>tdurieux.github.io maven-repository</name>
+			<url>https://tdurieux.github.io/maven-repository/snapshots/</url>
 		</repository>
 	</repositories>
 	<build>

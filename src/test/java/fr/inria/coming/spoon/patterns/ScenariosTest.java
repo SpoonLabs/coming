@@ -15,7 +15,6 @@ import com.github.gumtreediff.matchers.Matcher;
 
 import fr.inria.coming.changeminer.entity.GranuralityType;
 import fr.inria.coming.changeminer.util.ConsoleOutput;
-import fr.inria.coming.changeminer.util.Scenarios;
 import fr.inria.coming.changeminer.util.XMLOutput;
 import fr.inria.coming.core.Parameters;
 import fr.inria.coming.core.interfaces.Commit;
@@ -89,7 +88,7 @@ public class ScenariosTest {
 	@Test
 	public void searchPreconditions() throws Exception {
 
-		String repoPath = "repogit4testv0";// "/home/matias/develop/repositories/analyzed/commons-math";
+		String repoPath = "repogit4testv0";
 		Map<Commit, List<Operation>> instancesFound = Scenarios.preconditions("", repoPath, GranuralityType.SPOON);
 		ConsoleOutput.printResultDetails(instancesFound);
 		XMLOutput.print(instancesFound);
