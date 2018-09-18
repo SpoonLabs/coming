@@ -26,121 +26,118 @@ import fr.inria.coming.changeminer.entity.ActionType;
  */
 
 public class PatternXMLParser {
-  static final String ELEMENT= "element";
-  static final String ACTION = "action";
-  static final String PARENT = "parent";
+	static final String ENTITY = "entity";
+	static final String ACTION = "action";
+	static final String PARENT = "parent";
 
+	@SuppressWarnings({ "unchecked", "null" })
 
-  @SuppressWarnings({ "unchecked", "null" })
+	public static ChangePattern parseFile(String patternFile) {
 
-  
-  public static ChangePattern parseFile(String configFile) {
-  
-	  try {
-		  
-			File fXmlFile = new File(configFile);
+		try {
+
+			File fXmlFile = new File(patternFile);
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(fXmlFile);
-		 	doc.getDocumentElement().normalize();
-				 
-			NodeList nList = doc.getElementsByTagName("entity");
-		
-		 
+			doc.getDocumentElement().normalize();
+
+			// Get all entities tags
+			NodeList nList = doc.getElementsByTagName(ENTITY);
+
+			// Temporal structure to store parent of a node id.
 			Map<String, List> elementParents = new HashMap<String, List>();
 			Map<String, PatternEntity> idEntities = new HashMap<String, PatternEntity>();
 			ChangePattern pattern = new ChangePattern();
-			
+
+			// Collecting ENTITIES
+			// For each entity tag
 			for (int temp = 0; temp < nList.getLength(); temp++) {
-		 
+
 				Node nNode = nList.item(temp);
-		 		//System.out.println("\nCurrent Element :" + nNode.getNodeName());
-		 
+
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-		 
+
 					Element eElement = (Element) nNode;
-					String id = eElement.getAttribute("id");
+					String idEntity = eElement.getAttribute("id");
 					String type = eElement.getAttribute("type");
 					String value = eElement.getAttribute("value");
-							
-					PatternEntity pEntity = new PatternEntity(type,value );
-					idEntities.put(id, pEntity);
-												
-					NodeList nListParent =	eElement.getElementsByTagName("parent");
-					List<String> parents = new ArrayList<String>();
-										
-					//
+
+					PatternEntity pEntity = new PatternEntity(type, value);
+					idEntities.put(idEntity, pEntity);
+
+					NodeList nListParent = eElement.getElementsByTagName(PARENT);
+					List<String> parentsOfTheElement = new ArrayList<String>();
+
+					// For each parent tag inside the entity tag:
 					for (int ptemp = 0; ptemp < nListParent.getLength(); ptemp++) {
-							 
-							System.out.println("parent ");
-							Node nNodeParent = nListParent.item(ptemp);
-							Element eParentElement = (Element) nNodeParent;
-							String idParent = eParentElement.getAttribute("parentId");
-							String distanceParent = eParentElement.getAttribute("distance");
-							parents.add(idParent+"@"+distanceParent);
-							elementParents.put(id, parents);
+
+						// Take the tag parent.
+						System.out.println("parent ");
+						Node nNodeParent = nListParent.item(ptemp);
+						Element eParentElement = (Element) nNodeParent;
+						// Get Attributes of the parent
+						String idParent = eParentElement.getAttribute("parentId");
+						String distanceParent = eParentElement.getAttribute("distance");
+						// We save the information of the parents
+						parentsOfTheElement.add(idParent + "@" + distanceParent);
+						// We save all parents info of the entity to be processed once all entities are
+						// parser
+						elementParents.put(idEntity, parentsOfTheElement);
 					}
-							
-				
+
+				}
 			}
-			}
-			//
-			for(String idEntity : elementParents.keySet()){
+			// Parent reification
+			// Now, for each entity, let's find the entities that correspond to its parents.
+			for (String idEntity : elementParents.keySet()) {
 				PatternEntity entity = idEntities.get(idEntity);
 				List<String> parents = elementParents.get(idEntity);
 				for (String parent : parents) {
 					String[] pspl = parent.split("@");
+					// Let's find the entity according to the id.
 					PatternEntity entParent = idEntities.get(pspl[0]);
-					if(entParent == null){
+					if (entParent == null) {
 						throw new Exception("Parent not identified");
 					}
-					entity.setParent(entParent,Integer.valueOf(pspl[1]));
+					entity.setParent(entParent, Integer.valueOf(pspl[1]));
 				}
-				
+
 			}
-			
-			//System.out.println("Result: "+idEntities.values() );
-			
-			NodeList nActionList = doc.getElementsByTagName("action");
+
+			// Collecting ACTIONS
+			NodeList nActionList = doc.getElementsByTagName(ACTION);
 			for (int temp = 0; temp < nActionList.getLength(); temp++) {
-				 
+
 				Node nNode = nActionList.item(temp);
-		 
+
 				System.out.println("\nCurrent Element :" + nNode.getNodeName());
-		 
+
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-		 			Element eElement = (Element) nNode;
-		 			String idEnt = eElement.getAttribute("entityId");
+					Element eElement = (Element) nNode;
+					String idEnt = eElement.getAttribute("entityId");
 					String action = eElement.getAttribute("type");
-					
+
 					ActionType type = ActionType.valueOf(action);
-					if(type == null)
+					if (type == null)
 						throw new Exception("Action Type not identified");
-					
+
 					PatternEntity entity = idEntities.get(idEnt);
-					if(entity  == null){
+					if (entity == null) {
 						throw new Exception("Parent not identified");
 					}
-					
+
 					PatternAction patternAction = new PatternAction(entity, type);
 					pattern.addChange(patternAction);
 				}
 			}
 			return pattern;
-		    } catch (Exception e) {
+		} catch (Exception e) {
+			System.err.println("Problems parsing file " + patternFile);
 			e.printStackTrace();
-		    }
-	  		return null;
-		  }
-  
-	  
-	  public static void main(String args[]){
-		  PatternXMLParser x = new PatternXMLParser();
-		  ChangePattern cp =  x.parseFile("/home/matias/Desktop/test.xml");
-		  if(cp != null){
-			  System.out.println(cp);
-		  }
-	  }
-  }
+			return null;
+		}
 
- 
+	}
+
+}
