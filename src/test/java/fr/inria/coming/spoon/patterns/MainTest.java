@@ -10,14 +10,14 @@ import org.junit.Test;
 import com.github.gumtreediff.matchers.Matcher;
 
 import fr.inria.coming.main.ComingMain;
+
 /**
  * 
- * @author  Matias Martinez, matias.martinez@inria.fr
+ * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
 public class MainTest {
 
-	
 	@Before
 	public void setUp() throws Exception {
 
@@ -28,30 +28,26 @@ public class MainTest {
 		console.activateOptions();
 		Logger.getRootLogger().getLoggerRepository().resetConfiguration();
 		Logger.getRootLogger().addAppender(console);
-		
-		
-		
+
 		java.util.logging.Logger.getLogger("fr.labri.gumtree.matchers").setLevel(java.util.logging.Level.OFF);
 		Matcher.LOGGER.setLevel(java.util.logging.Level.OFF);
 	}
-	
+
 	@Test
 	public void testListEntities() {
-		
-		ComingMain.main(new String[]{"-e"});
-	}
-	
-	@Test
-	public void testListActions() {
-		
-		ComingMain.main(new String[]{"-a"});
-	}
-	
-	@Test
-	public void testMineBinaryOperator() {		
-		ComingMain.main(new String[]{"repogit4testv0",
-				"BinaryOperator","INS"});
+
+		ComingMain.main(new String[] { "-showentities" });// todo
 	}
 
+	@Test
+	public void testListActions() {
+
+		ComingMain.main(new String[] { "-showactions" });
+	}
+
+	@Test
+	public void testMineBinaryOperator() {
+		ComingMain.main(new String[] { "-location", "repogit4testv0", "-entity", "BinaryOperator", "-action", "INS" });
+	}
 
 }

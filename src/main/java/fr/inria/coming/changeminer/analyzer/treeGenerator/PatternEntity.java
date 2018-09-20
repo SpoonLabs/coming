@@ -11,7 +11,7 @@ public class PatternEntity {
 	protected String value;
 	protected ParentPatternEntity parent = new ParentPatternEntity();
 
-	public static PatternEntity ANY_ENTITY = new PatternEntity("*");
+	public final static PatternEntity ANY_ENTITY = new PatternEntity("*");
 
 	public PatternEntity(String entity) {
 		super();

@@ -47,10 +47,8 @@ public class SimpleChangeFilter implements IChangesProcessor {
 
 	/**
 	 * 
-	 * @param typeLabel
-	 *            node label to mine
-	 * @param operationType
-	 *            operation type to mine
+	 * @param typeLabel     node label to mine
+	 * @param operationType operation type to mine
 	 */
 	public SimpleChangeFilter(String typeLabel, ActionType operationType) {
 
@@ -99,7 +97,7 @@ public class SimpleChangeFilter implements IChangesProcessor {
 		return filter;
 	}
 
-	protected boolean matchTypes(Action action, ActionType type) {
+	public static boolean matchTypes(Action action, ActionType type) {
 
 		return ActionType.ANY.equals(type) || (type.equals(ActionType.INS) && (action instanceof Insert))
 				|| (type.equals(ActionType.DEL) && (action instanceof Delete))
