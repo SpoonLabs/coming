@@ -54,16 +54,18 @@ public class PatternFilter extends SimpleChangeFilter {
 	public List<Operation> process(Diff diff) {
 
 		List<Operation> result = new ArrayList<>();
-
+		// Get the filter elements according to Change type and affected entity
 		List<Operation> filtered = super.process(diff);
 
 		List<Operation> all = diff.getAllOperations();
 
 		for (PatternAction patternaction : this.patternActions) {
 			boolean keepsRelation = false;
+			// For the others,
 			for (Operation action : filtered) {
-				keepsRelation |= checkparent(patternaction.getAffectedEntity().getParent(),
-						patternaction.getAffectedEntity().getParentLevel(), filtered, action, all);
+				keepsRelation |= checkparent(patternaction.getAffectedEntity().getParentPatternEntity().getParent(),
+						patternaction.getAffectedEntity().getParentPatternEntity().getParentLevel(), filtered, action,
+						all);
 
 				if (keepsRelation) {
 					result.add(action);
@@ -90,27 +92,18 @@ public class PatternFilter extends SimpleChangeFilter {
 		if (parentEntityFromPattern == null) {
 			return true;
 		}
-
-		// ITree parentNodeFromAction =
-		// affectedOperation.getAction().getNode().getParent();
-		// TODO: here we navigate the hierarchy of spoon model instead of
-		// gumtree
-
+		// Let's get the parent of the affected
 		CtElement parentNodeFromAction = affectedOperation.getNode().getParent();
 
 		int i_levels = 1;
-
+		// Scale the hierarchie and check types.
 		while (parentNodeFromAction != null && i_levels <= parentLevel) {
 			String type = getNodeLabelFromCtElement(parentNodeFromAction);
-			// SpoonGumTreeBuilder.gtContext.getTypeLabel(parentNodeFromAction.getType());
 
-			if (type != null && type.equals(parentEntityFromPattern.getEntityName())
-			// Martin commented this
-			// && !isNodeAffectedbyAction(allActions, parentNodeFromAction)
-			) {
+			if (type != null && type.equals(parentEntityFromPattern.getEntityType())) {
 				i_levels = 1;
-				parentLevel = parentEntityFromPattern.getParentLevel();
-				parentEntityFromPattern = parentEntityFromPattern.getParent();
+				parentLevel = parentEntityFromPattern.getParentPatternEntity().getParentLevel();
+				parentEntityFromPattern = parentEntityFromPattern.getParentPatternEntity().getParent();
 
 				if (parentEntityFromPattern == null) {
 					return true;

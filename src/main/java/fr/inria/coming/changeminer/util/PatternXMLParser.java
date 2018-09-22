@@ -125,7 +125,7 @@ public class PatternXMLParser {
 
 					PatternEntity entity = idEntities.get(idEnt);
 					if (entity == null) {
-						throw new Exception("Parent not identified");
+						throw new Exception("Entity not identified");
 					}
 
 					PatternAction patternAction = new PatternAction(entity, type);

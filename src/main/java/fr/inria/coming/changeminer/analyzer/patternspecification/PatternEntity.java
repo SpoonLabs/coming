@@ -7,53 +7,56 @@ package fr.inria.coming.changeminer.analyzer.patternspecification;
  */
 public class PatternEntity {
 
-	protected String entityName;
-	protected String value;
-	protected ParentPatternEntity parent = new ParentPatternEntity();
+	protected String entityType = null;
+	protected String value = null;
+	protected ParentPatternEntity parent = null;
 
 	public final static PatternEntity ANY_ENTITY = new PatternEntity("*");
 
-	public PatternEntity(String entity) {
+	public PatternEntity(String entityType) {
 		super();
-		this.entityName = entity;
+		this.entityType = entityType;
 	}
 
 	public PatternEntity(String entity, String value) {
 		super();
-		this.entityName = entity;
+		this.entityType = entity;
 		this.value = value;
 	}
 
 	public PatternEntity(String entity, ParentPatternEntity data) {
 		super();
-		this.entityName = entity;
+		this.entityType = entity;
 	}
 
-	public String getEntityName() {
-		return entityName;
+	public String getEntityType() {
+		return entityType;
 	}
 
-	public void setEntity(String entity) {
-		this.entityName = entity;
+	public void setEntityType(String entity) {
+		this.entityType = entity;
 	}
 
-	public PatternEntity getParent() {
-		return parent.parent;
+	public ParentPatternEntity getParentPatternEntity() {
+		return parent;
 	}
 
 	public void setParent(PatternEntity parent, int level) {
-		this.parent.parent = parent;
-		this.parent.parentLevel = level;
-	}
+		this.parent = new ParentPatternEntity(parent, level);
 
-	public int getParentLevel() {
-		return parent.parentLevel;
 	}
 
 	@Override
 	public String toString() {
-		return "PatternEntity [entityName=" + entityName + ", parent=" + parent.parent + ", parentLevel="
-				+ parent.parentLevel + "]";
+		return "PatternEntity [entityName=" + entityType + ", parent=" + parent + "]";
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
 	}
 
 }

@@ -123,7 +123,7 @@ public class SimpleChangeFilter implements IChangesProcessor {
 	}
 
 	public String getTypeLabel(PatternAction patternAction) {
-		return patternAction.getAffectedEntity().getEntityName();
+		return patternAction.getAffectedEntity().getEntityType();
 	}
 
 	@Override

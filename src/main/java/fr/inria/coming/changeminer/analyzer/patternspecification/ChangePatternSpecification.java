@@ -18,7 +18,7 @@ public class ChangePatternSpecification {
 		return name;
 	}
 
-	public List<PatternAction> getChanges() {
+	public List<PatternAction> getAbstractChanges() {
 		return changes;
 	}
 

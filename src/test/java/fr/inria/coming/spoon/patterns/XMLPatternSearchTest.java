@@ -48,9 +48,9 @@ public class XMLPatternSearchTest extends GitRepository4Test {
 		ChangePatternSpecification patternParsed = PatternXMLParser.parseFile(fl.getAbsolutePath());
 
 		Assert.assertNotNull(patternParsed);
-		Assert.assertTrue(patternParsed.getChanges().size() == 1);
+		Assert.assertTrue(patternParsed.getAbstractChanges().size() == 1);
 
-		SimpleChangeFilter patternFilter = new SimpleChangeFilter(patternParsed.getChanges().get(0));
+		SimpleChangeFilter patternFilter = new SimpleChangeFilter(patternParsed.getAbstractChanges().get(0));
 
 		FineGrainChangeCommitAnalyzer fineGrainAnalyzer = new FineGrainChangeCommitAnalyzer(patternFilter,
 				GranuralityType.SPOON);
