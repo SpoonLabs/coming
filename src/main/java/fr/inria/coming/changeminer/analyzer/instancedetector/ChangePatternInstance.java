@@ -2,42 +2,40 @@ package fr.inria.coming.changeminer.analyzer.instancedetector;
 
 import java.util.List;
 
-import com.github.gumtreediff.actions.model.Action;
-
 import fr.inria.coming.changeminer.analyzer.treeGenerator.ChangePatternSpecification;
+import gumtree.spoon.diff.operations.Operation;
 
 /**
  * 
  * @author Matias Martinez matias.martinez@inria.fr
  *
  */
-@Deprecated
-public class PatternInstance {
 
-	List<Action> actions;
-	ChangePatternSpecification relatedPattern;
+public class ChangePatternInstance {
 
-	// Map<PatternAction, >
-	public PatternInstance(List<Action> actions, ChangePatternSpecification relatedPattern) {
+	protected List<Operation> actions;
+	protected ChangePatternSpecification pattern;
+
+	public ChangePatternInstance(List<Operation> actions, ChangePatternSpecification relatedPattern) {
 		super();
 		this.actions = actions;
-		this.relatedPattern = relatedPattern;
+		this.pattern = relatedPattern;
 	}
 
-	public List<Action> getActions() {
+	public List<Operation> getActions() {
 		return actions;
 	}
 
-	public void setActions(List<Action> actions) {
+	public void setActions(List<Operation> actions) {
 		this.actions = actions;
 	}
 
 	public ChangePatternSpecification getRelatedPattern() {
-		return relatedPattern;
+		return pattern;
 	}
 
 	public void setRelatedPattern(ChangePatternSpecification relatedPattern) {
-		this.relatedPattern = relatedPattern;
+		this.pattern = relatedPattern;
 	}
 
 }
