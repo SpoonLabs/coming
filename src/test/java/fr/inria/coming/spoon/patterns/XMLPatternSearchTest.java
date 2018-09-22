@@ -15,7 +15,7 @@ import org.junit.Test;
 import fr.inria.coming.changeminer.analyzer.RepositoryInspector;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainChangeCommitAnalyzer;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.filters.SimpleChangeFilter;
-import fr.inria.coming.changeminer.analyzer.treeGenerator.ChangePatternSpecification;
+import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.entity.GranuralityType;
 import fr.inria.coming.changeminer.util.ConsoleOutput;
 import fr.inria.coming.changeminer.util.PatternXMLParser;

@@ -8,7 +8,7 @@ import com.github.gumtreediff.actions.model.Insert;
 import com.github.gumtreediff.actions.model.Move;
 import com.github.gumtreediff.tree.ITree;
 
-import fr.inria.coming.changeminer.analyzer.treeGenerator.PatternAction;
+import fr.inria.coming.changeminer.analyzer.patternspecification.PatternAction;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.MoveOperation;
 import gumtree.spoon.diff.operations.Operation;

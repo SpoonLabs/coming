@@ -14,9 +14,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import fr.inria.coming.changeminer.analyzer.treeGenerator.ChangePatternSpecification;
-import fr.inria.coming.changeminer.analyzer.treeGenerator.PatternAction;
-import fr.inria.coming.changeminer.analyzer.treeGenerator.PatternEntity;
+import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
+import fr.inria.coming.changeminer.analyzer.patternspecification.PatternAction;
+import fr.inria.coming.changeminer.analyzer.patternspecification.PatternEntity;
 import fr.inria.coming.changeminer.entity.ActionType;
 
 /**

@@ -9,8 +9,8 @@ import org.junit.Test;
 
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainChangeCommitAnalyzer;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.filters.PatternFilter;
-import fr.inria.coming.changeminer.analyzer.treeGenerator.ParentPatternEntity;
-import fr.inria.coming.changeminer.analyzer.treeGenerator.PatternEntity;
+import fr.inria.coming.changeminer.analyzer.patternspecification.ParentPatternEntity;
+import fr.inria.coming.changeminer.analyzer.patternspecification.PatternEntity;
 import fr.inria.coming.changeminer.entity.ActionType;
 import fr.inria.coming.changeminer.entity.GranuralityType;
 import gumtree.spoon.diff.Diff;

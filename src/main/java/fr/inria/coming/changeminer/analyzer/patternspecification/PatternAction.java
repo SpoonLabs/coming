@@ -1,4 +1,4 @@
-package fr.inria.coming.changeminer.analyzer.treeGenerator;
+package fr.inria.coming.changeminer.analyzer.patternspecification;
 
 import fr.inria.coming.changeminer.entity.ActionType;
 

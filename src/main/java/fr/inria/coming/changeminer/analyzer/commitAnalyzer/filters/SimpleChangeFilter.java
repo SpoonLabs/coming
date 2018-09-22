@@ -12,8 +12,8 @@ import com.github.gumtreediff.actions.model.Move;
 import com.github.gumtreediff.actions.model.Update;
 
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.IChangesProcessor;
-import fr.inria.coming.changeminer.analyzer.treeGenerator.PatternAction;
-import fr.inria.coming.changeminer.analyzer.treeGenerator.PatternEntity;
+import fr.inria.coming.changeminer.analyzer.patternspecification.PatternAction;
+import fr.inria.coming.changeminer.analyzer.patternspecification.PatternEntity;
 import fr.inria.coming.changeminer.entity.ActionType;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;

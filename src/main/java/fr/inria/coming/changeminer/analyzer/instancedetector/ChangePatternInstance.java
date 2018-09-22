@@ -2,7 +2,7 @@ package fr.inria.coming.changeminer.analyzer.instancedetector;
 
 import java.util.List;
 
-import fr.inria.coming.changeminer.analyzer.treeGenerator.ChangePatternSpecification;
+import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import gumtree.spoon.diff.operations.Operation;
 
 /**
