@@ -17,7 +17,6 @@ import com.google.gson.JsonParser;
 
 import fr.inria.astor.core.entities.Cntx;
 import fr.inria.astor.core.entities.CntxResolver;
-import fr.inria.coming.main.ConfigurationProperties;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
 
@@ -30,7 +29,7 @@ public class DiffICSE15ContextAnalyzer extends BugFixRunner {
 
 	public DiffICSE15ContextAnalyzer() {
 		super();
-		ConfigurationProperties.properties.setProperty("maxdifftoanalyze", "5");
+		// ConfigurationProperties.properties.setProperty("maxdifftoanalyze", "5");
 	}
 
 	Map<String, List<Operation>> opsOfcommit = new HashMap();
@@ -51,7 +50,7 @@ public class DiffICSE15ContextAnalyzer extends BugFixRunner {
 		JSONObject statsjsonRoot = new JSONObject();
 		statsjsonRoot.put("diffid", difffile.getName());
 		JSONArray sublistJSon = new JSONArray();
-		statsjsonRoot.put("contexts", sublistJSon);
+		statsjsonRoot.put("info", sublistJSon);
 
 		for (String key : this.opsOfcommit.keySet()) {
 

@@ -88,9 +88,9 @@ public class BugFixRunner {
 						singlediff.put("operations", operationsArray);
 						singlediff.put("allop", diff.getAllOperations().size());
 
-						if (diff.getAllOperations().size() > 0) {
+						processDiff(fileModif, diff);
 
-							processDiff(fileModif, diff);
+						if (diff.getAllOperations().size() > 0) {
 
 							withactions++;
 							log.debug("-file->" + fileModif + " actions " + diff.getRootOperations().size());
