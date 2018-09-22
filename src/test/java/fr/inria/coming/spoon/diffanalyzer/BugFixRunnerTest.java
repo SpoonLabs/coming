@@ -154,6 +154,16 @@ public class BugFixRunnerTest {
 	}
 
 	@Test
+	public void testDiff919148_Future() throws Exception {
+		File s = getFile("diffcases/919148/ReplicationRun/919148_ReplicationRun_0_s.java");
+		File t = getFile("diffcases/919148/ReplicationRun/919148_ReplicationRun_0_t.java");
+		BugFixRunner r = new BugFixRunner();
+		Diff diffOut = r.getdiffFuture(s, t);
+		System.out.println("Output Root: (" + diffOut.getRootOperations().size() + "): " + diffOut.getRootOperations());
+		Assert.assertTrue(diffOut.getRootOperations().size() > 0);
+	}
+
+	@Test
 	@Ignore
 	public void testDiff150611() throws Exception {
 		File s = getFile("diffcases/150611/QueryParser/150611_QueryParser_0_s.java");

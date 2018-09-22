@@ -5,6 +5,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -47,10 +53,11 @@ public class BugFixRunner {
 				continue;
 
 			if (diffanalyzed % 100 == 0) {
-				System.out.println(diffanalyzed + "/" + dir.listFiles().length);
+				// System.out.println(diffanalyzed + "/" + dir.listFiles().length);
 			}
 
 			log.debug("-commit->" + difffile);
+			System.out.println(diffanalyzed + "/" + dir.listFiles().length + ": " + difffile.getName());
 			JSONObject jsondiff = new JSONObject();
 			firstArray.add(jsondiff);
 			jsondiff.put("diffid", difffile.getName());
@@ -78,7 +85,12 @@ public class BugFixRunner {
 					i_hunk++;
 					try {
 
-						Diff diff = getdiff(previousVersion, postVersion);
+						Diff diff = getdiffFuture(previousVersion, postVersion);
+						if (diff == null) {
+							file.put("status", "differror");
+							continue;
+						}
+
 						JSONObject singlediff = new JSONObject();
 						changesArray.add(singlediff);
 						// singlediff.put("filename", fileModif.getName());
@@ -111,13 +123,12 @@ public class BugFixRunner {
 							zero++;
 							log.debug("-file->" + fileModif + " zero actions ");
 						}
-
+						file.put("status", "ok");
 					} catch (Throwable e) {
 						System.out.println("error with " + previousVersion);
-						// System.out.println("error with " + t);
 						e.printStackTrace();
 						error++;
-						// System.exit(1);
+						file.put("status", "exception");
 					}
 				} while (true);
 			}
@@ -240,5 +251,39 @@ public class BugFixRunner {
 		String path = args[0];
 		BugFixRunner runner = new BugFixRunner();
 		runner.run(path);
+	}
+
+	private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+	private Future<Diff> getfutureResult(File left, File right) {
+
+		Future<Diff> future = executorService.submit(() -> {
+			DiffEngineFacade cdiff = new DiffEngineFacade();
+			// Diff d = cdiff.compareContent(left, right, GranuralityType.SPOON);
+			Diff d = cdiff.compareFiles(left, right, GranuralityType.SPOON);
+			// System.out.println("-->" + d.getAllOperations().size());
+			return d;
+		});
+		return future;
+	}
+
+	public Diff getdiffFuture(File left, File right) throws Exception {
+
+		Future<Diff> future = getfutureResult(left, right);
+
+		Diff resukltDiff = null;
+		try {
+			resukltDiff = future.get(30, TimeUnit.SECONDS);
+		} catch (InterruptedException e) { // <-- possible error cases
+			System.out.println("job was interrupted");
+		} catch (ExecutionException e) {
+			System.out.println("caught exception: " + e.getCause());
+		} catch (TimeoutException e) {
+			System.out.println("timeout");
+		}
+
+		// executorService.shutdown();
+		return resukltDiff;
+
 	}
 }
