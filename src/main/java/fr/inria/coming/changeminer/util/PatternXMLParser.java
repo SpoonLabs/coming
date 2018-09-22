@@ -14,7 +14,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import fr.inria.coming.changeminer.analyzer.treeGenerator.ChangePattern;
+import fr.inria.coming.changeminer.analyzer.treeGenerator.ChangePatternSpecification;
 import fr.inria.coming.changeminer.analyzer.treeGenerator.PatternAction;
 import fr.inria.coming.changeminer.analyzer.treeGenerator.PatternEntity;
 import fr.inria.coming.changeminer.entity.ActionType;
@@ -33,7 +33,7 @@ public class PatternXMLParser {
 
 	@SuppressWarnings({ "unchecked", "null" })
 
-	public static ChangePattern parseFile(String patternFile) {
+	public static ChangePatternSpecification parseFile(String patternFile) {
 
 		try {
 
@@ -49,7 +49,7 @@ public class PatternXMLParser {
 			// Temporal structure to store parent of a node id.
 			Map<String, List> elementParents = new HashMap<String, List>();
 			Map<String, PatternEntity> idEntities = new HashMap<String, PatternEntity>();
-			ChangePattern pattern = new ChangePattern();
+			ChangePatternSpecification pattern = new ChangePatternSpecification();
 
 			// Collecting ENTITIES
 			// For each entity tag

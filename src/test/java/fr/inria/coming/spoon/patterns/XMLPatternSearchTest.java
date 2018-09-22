@@ -15,7 +15,7 @@ import org.junit.Test;
 import fr.inria.coming.changeminer.analyzer.RepositoryInspector;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainChangeCommitAnalyzer;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.filters.SimpleChangeFilter;
-import fr.inria.coming.changeminer.analyzer.treeGenerator.ChangePattern;
+import fr.inria.coming.changeminer.analyzer.treeGenerator.ChangePatternSpecification;
 import fr.inria.coming.changeminer.entity.GranuralityType;
 import fr.inria.coming.changeminer.util.ConsoleOutput;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
@@ -45,7 +45,7 @@ public class XMLPatternSearchTest extends GitRepository4Test {
 	public void searchPatternFromFile() {
 		File fl = new File(getClass().getResource("/pattern_test_1.xml").getFile());
 
-		ChangePattern patternParsed = PatternXMLParser.parseFile(fl.getAbsolutePath());
+		ChangePatternSpecification patternParsed = PatternXMLParser.parseFile(fl.getAbsolutePath());
 
 		Assert.assertNotNull(patternParsed);
 		Assert.assertTrue(patternParsed.getChanges().size() == 1);

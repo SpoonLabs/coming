@@ -1,8 +1,10 @@
-package fr.inria.coming.changeminer.analyzer.treeGenerator;
+package fr.inria.coming.changeminer.analyzer.instancedetector;
 
 import java.util.List;
 
 import com.github.gumtreediff.actions.model.Action;
+
+import fr.inria.coming.changeminer.analyzer.treeGenerator.ChangePatternSpecification;
 
 /**
  * 
@@ -13,10 +15,10 @@ import com.github.gumtreediff.actions.model.Action;
 public class PatternInstance {
 
 	List<Action> actions;
-	PatternSpecification relatedPattern;
+	ChangePatternSpecification relatedPattern;
 
 	// Map<PatternAction, >
-	public PatternInstance(List<Action> actions, PatternSpecification relatedPattern) {
+	public PatternInstance(List<Action> actions, ChangePatternSpecification relatedPattern) {
 		super();
 		this.actions = actions;
 		this.relatedPattern = relatedPattern;
@@ -30,11 +32,11 @@ public class PatternInstance {
 		this.actions = actions;
 	}
 
-	public PatternSpecification getRelatedPattern() {
+	public ChangePatternSpecification getRelatedPattern() {
 		return relatedPattern;
 	}
 
-	public void setRelatedPattern(PatternSpecification relatedPattern) {
+	public void setRelatedPattern(ChangePatternSpecification relatedPattern) {
 		this.relatedPattern = relatedPattern;
 	}
 

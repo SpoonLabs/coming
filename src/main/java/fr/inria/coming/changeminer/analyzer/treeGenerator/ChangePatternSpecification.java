@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Specification of a Pattern
  * 
  * @author Matias Martinez
  *
  */
-public class ChangePattern {
+public class ChangePatternSpecification {
 
 	private String name;
 	private List<PatternAction> changes;
@@ -21,16 +22,16 @@ public class ChangePattern {
 		return changes;
 	}
 
-	public ChangePattern() {
+	public ChangePatternSpecification() {
 		changes = new ArrayList<PatternAction>();
 	}
 
-	public ChangePattern(String name) {
+	public ChangePatternSpecification(String name) {
 		this.name = name;
 		changes = new ArrayList<PatternAction>();
 	}
 
-	public ChangePattern(List<PatternAction> changes) {
+	public ChangePatternSpecification(List<PatternAction> changes) {
 
 		this.changes = new ArrayList<PatternAction>();
 	}
