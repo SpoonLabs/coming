@@ -26,10 +26,14 @@ import gumtree.spoon.diff.operations.Operation;
  *
  */
 public class DiffICSE15ContextAnalyzer extends BugFixRunner {
+	File out = null;
 
 	public DiffICSE15ContextAnalyzer() {
 		super();
 		// ConfigurationProperties.properties.setProperty("maxdifftoanalyze", "5");
+
+		out = new File("./outDiffAnalysis/");
+		out.mkdirs();
 	}
 
 	Map<String, List<Operation>> opsOfcommit = new HashMap();
@@ -41,6 +45,13 @@ public class DiffICSE15ContextAnalyzer extends BugFixRunner {
 		String key = fileModif.getParentFile().getName() + "_" + fileModif.getName();
 		this.opsOfcommit.put(key, ops);
 
+	}
+
+	@Override
+	protected boolean acceptFile(File fileModif) {
+		File f = new File(out.getAbsolutePath() + File.separator + fileModif.getName() + ".json");
+		// If the json file does not exist, we process it
+		return !f.exists();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -72,8 +83,6 @@ public class DiffICSE15ContextAnalyzer extends BugFixRunner {
 		}
 		opsOfcommit.clear();
 		try {
-			File out = new File("./outDiffAnalysis/");
-			out.mkdirs();
 
 			FileWriter fw = new FileWriter(out.getAbsolutePath() + File.separator + difffile.getName() + ".json");
 

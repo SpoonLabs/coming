@@ -30,18 +30,22 @@ import gumtree.spoon.diff.operations.Operation;
  */
 public class BugFixRunner {
 	private Logger log = Logger.getLogger(DiffEngineFacade.class.getName());
+	int error = 0;
+	int zero = 0;
+	int withactions = 0;
 
 	@SuppressWarnings("unchecked")
 	public void run(String path) throws Exception {
 
+		error = 0;
+		zero = 0;
+		withactions = 0;
 		MapCounter<String> counter = new MapCounter<>();
 		MapCounter<String> counterParent = new MapCounter<>();
 		JSONObject root = new JSONObject();
 		JSONArray firstArray = new JSONArray();
 		root.put("diffs", firstArray);
-		int error = 0;
-		int zero = 0;
-		int withactions = 0;
+
 		File dir = new File(path);
 
 		beforeStart();
@@ -52,88 +56,29 @@ public class BugFixRunner {
 			if (difffile.isFile() || difffile.listFiles() == null)
 				continue;
 
+			diffanalyzed++;
+
 			if (diffanalyzed % 100 == 0) {
 				// System.out.println(diffanalyzed + "/" + dir.listFiles().length);
 			}
 
 			log.debug("-commit->" + difffile);
 			System.out.println(diffanalyzed + "/" + dir.listFiles().length + ": " + difffile.getName());
+
+			if (!acceptFile(difffile)) {
+				System.out.println("existing json for: " + difffile.getName());
+				continue;
+			}
+
 			JSONObject jsondiff = new JSONObject();
 			firstArray.add(jsondiff);
 			jsondiff.put("diffid", difffile.getName());
-			JSONArray filesArray = new JSONArray();
+
+			JSONArray filesArray = processDiff(counter, counterParent, difffile);
+
 			jsondiff.put("files", filesArray);
-
-			for (File fileModif : difffile.listFiles()) {
-				int i_hunk = 0;
-				do {
-
-					String pathname = fileModif.getAbsolutePath() + File.separator + difffile.getName() + "_"
-							+ fileModif.getName() + "_" + i_hunk;
-					File previousVersion = new File(pathname + "_s.java");
-					if (!previousVersion.exists()) {
-						break;
-					}
-
-					JSONObject file = new JSONObject();
-					filesArray.add(file);
-					file.put("name", fileModif.getName());
-					JSONArray changesArray = new JSONArray();
-					file.put("changes", changesArray);
-
-					File postVersion = new File(pathname + "_t.java");
-					i_hunk++;
-					try {
-
-						Diff diff = getdiffFuture(previousVersion, postVersion);
-						if (diff == null) {
-							file.put("status", "differror");
-							continue;
-						}
-
-						JSONObject singlediff = new JSONObject();
-						changesArray.add(singlediff);
-						// singlediff.put("filename", fileModif.getName());
-						singlediff.put("rootop", diff.getRootOperations().size());
-						JSONArray operationsArray = new JSONArray();
-
-						singlediff.put("operations", operationsArray);
-						singlediff.put("allop", diff.getAllOperations().size());
-
-						processDiff(fileModif, diff);
-
-						if (diff.getAllOperations().size() > 0) {
-
-							withactions++;
-							log.debug("-file->" + fileModif + " actions " + diff.getRootOperations().size());
-							for (Operation operation : diff.getRootOperations()) {
-
-								log.debug("-op->" + operation);
-								counter.add(operation.getNode().getClass().getSimpleName());
-								counterParent.add(operation.getAction().getName() + "_"
-										+ operation.getNode().getClass().getSimpleName() + "_"
-										+ operation.getNode().getParent().getClass().getSimpleName());
-
-								JSONObject op = getJSONFromOperator(operation);
-
-								operationsArray.add(op);
-							}
-
-						} else {
-							zero++;
-							log.debug("-file->" + fileModif + " zero actions ");
-						}
-						file.put("status", "ok");
-					} catch (Throwable e) {
-						System.out.println("error with " + previousVersion);
-						e.printStackTrace();
-						error++;
-						file.put("status", "exception");
-					}
-				} while (true);
-			}
 			atEndCommit(difffile);
-			diffanalyzed++;
+
 			if (diffanalyzed == ConfigurationProperties.getPropertyInteger("maxdifftoanalyze")) {
 				System.out.println("max-break");
 				break;
@@ -168,6 +113,87 @@ public class BugFixRunner {
 		// fw.close();
 
 		beforeEnd();
+	}
+
+	@SuppressWarnings("unchecked")
+	public JSONArray processDiff(MapCounter<String> counter, MapCounter<String> counterParent, File difffile) {
+		JSONArray filesArray = new JSONArray();
+		for (File fileModif : difffile.listFiles()) {
+			int i_hunk = 0;
+
+			if (".DS_Store".equals(fileModif.getName()))
+				continue;
+
+			String pathname = fileModif.getAbsolutePath() + File.separator + difffile.getName() + "_"
+					+ fileModif.getName() + "_" + i_hunk;
+			File previousVersion = new File(pathname + "_s.java");
+			if (!previousVersion.exists()) {
+				break;
+			}
+
+			JSONObject file = new JSONObject();
+			filesArray.add(file);
+			file.put("name", fileModif.getName());
+			JSONArray changesArray = new JSONArray();
+			file.put("changes", changesArray);
+
+			File postVersion = new File(pathname + "_t.java");
+			i_hunk++;
+			try {
+
+				Diff diff = getdiffFuture(previousVersion, postVersion);
+				if (diff == null) {
+					file.put("status", "differror");
+					continue;
+				}
+
+				JSONObject singlediff = new JSONObject();
+				changesArray.add(singlediff);
+				// singlediff.put("filename", fileModif.getName());
+				singlediff.put("rootop", diff.getRootOperations().size());
+				JSONArray operationsArray = new JSONArray();
+
+				singlediff.put("operations", operationsArray);
+				singlediff.put("allop", diff.getAllOperations().size());
+
+				processDiff(fileModif, diff);
+
+				if (diff.getAllOperations().size() > 0) {
+
+					withactions++;
+					log.debug("-file->" + fileModif + " actions " + diff.getRootOperations().size());
+					for (Operation operation : diff.getRootOperations()) {
+
+						log.debug("-op->" + operation);
+						counter.add(operation.getNode().getClass().getSimpleName());
+						counterParent.add(
+								operation.getAction().getName() + "_" + operation.getNode().getClass().getSimpleName()
+										+ "_" + operation.getNode().getParent().getClass().getSimpleName());
+
+						JSONObject op = getJSONFromOperator(operation);
+
+						operationsArray.add(op);
+					}
+
+				} else {
+					zero++;
+					log.debug("-file->" + fileModif + " zero actions ");
+				}
+				file.put("status", "ok");
+			} catch (Throwable e) {
+				System.out.println("error with " + previousVersion);
+				e.printStackTrace();
+				error++;
+				file.put("status", "exception");
+			}
+
+		}
+		return filesArray;
+	}
+
+	protected boolean acceptFile(File fileModif) {
+		// By default, it processes the file
+		return true;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -253,9 +279,7 @@ public class BugFixRunner {
 		runner.run(path);
 	}
 
-	private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
-
-	private Future<Diff> getfutureResult(File left, File right) {
+	private Future<Diff> getfutureResult(ExecutorService executorService, File left, File right) {
 
 		Future<Diff> future = executorService.submit(() -> {
 			DiffEngineFacade cdiff = new DiffEngineFacade();
@@ -268,8 +292,8 @@ public class BugFixRunner {
 	}
 
 	public Diff getdiffFuture(File left, File right) throws Exception {
-
-		Future<Diff> future = getfutureResult(left, right);
+		ExecutorService executorService = Executors.newSingleThreadExecutor();
+		Future<Diff> future = getfutureResult(executorService, left, right);
 
 		Diff resukltDiff = null;
 		try {
@@ -282,7 +306,7 @@ public class BugFixRunner {
 			System.out.println("timeout");
 		}
 
-		// executorService.shutdown();
+		executorService.shutdown();
 		return resukltDiff;
 
 	}
