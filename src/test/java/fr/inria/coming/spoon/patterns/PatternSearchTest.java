@@ -37,7 +37,8 @@ import spoon.reflect.declaration.CtElement;
  *
  */
 public class PatternSearchTest {
-	Diff diffToAnalyze = null;
+	Diff diffUpdate = null;
+	Diff diffInsert = null;
 
 	@Before
 	public void setUp() throws Exception {
@@ -53,9 +54,16 @@ public class PatternSearchTest {
 		File s = getFile("patterns_examples/case1/1205753_EmbedPooledConnection_0_s.java");
 		File t = getFile("patterns_examples/case1/1205753_EmbedPooledConnection_0_t.java");
 		BugFixRunner r = new BugFixRunner();
-		diffToAnalyze = r.getdiff(s, t);
-		System.out.println("Output: " + diffToAnalyze);
-		Assert.assertEquals(1, diffToAnalyze.getRootOperations().size());
+		diffUpdate = r.getdiff(s, t);
+		System.out.println("Output: " + diffUpdate);
+		Assert.assertEquals(1, diffUpdate.getRootOperations().size());
+
+		s = getFile("patterns_examples/case2/1205753_EmbedPooledConnection_0_s.java");
+		t = getFile("patterns_examples/case2/1205753_EmbedPooledConnection_0_t.java");
+		diffInsert = r.getdiff(s, t);
+		System.out.println("Output: " + diffInsert);
+		Assert.assertEquals(1, diffInsert.getRootOperations().size());
+
 	}
 
 	@Test
@@ -115,7 +123,7 @@ public class PatternSearchTest {
 		ChangePatternSpecification pattern = new ChangePatternSpecification();
 		PatternEntity entity = new PatternEntity("*");
 		pattern.addChange(new PatternAction(entity, ActionType.UPD));
-		assertPattern(diffToAnalyze, pattern);
+		assertPattern(diffUpdate, pattern);
 
 	}
 
@@ -126,7 +134,7 @@ public class PatternSearchTest {
 		ChangePatternSpecification pattern = new ChangePatternSpecification();
 		PatternEntity entity = new PatternEntity("VariableRead");
 		pattern.addChange(new PatternAction(entity, ActionType.UPD));
-		assertPattern(diffToAnalyze, pattern);
+		assertPattern(diffUpdate, pattern);
 	}
 
 	@Test
@@ -138,7 +146,7 @@ public class PatternSearchTest {
 		ParentPatternEntity parentWrapper = new ParentPatternEntity(parentEntity, 1);
 		PatternEntity entity = new PatternEntity("*", parentWrapper);
 		pattern.addChange(new PatternAction(entity, ActionType.UPD));
-		assertPattern(diffToAnalyze, pattern);
+		assertPattern(diffUpdate, pattern);
 	}
 
 	@Test
@@ -150,7 +158,7 @@ public class PatternSearchTest {
 		ParentPatternEntity parentWrapper = new ParentPatternEntity(parentEntity, 1);
 		PatternEntity entity = new PatternEntity("*", parentWrapper);
 		pattern.addChange(new PatternAction(entity, ActionType.UPD));
-		assertNoPattern(diffToAnalyze, pattern);
+		assertNoPattern(diffUpdate, pattern);
 
 	}
 
@@ -163,7 +171,7 @@ public class PatternSearchTest {
 		ParentPatternEntity parentWrapper = new ParentPatternEntity(parentEntity, 2);
 		PatternEntity entity = new PatternEntity("*", parentWrapper);
 		pattern.addChange(new PatternAction(entity, ActionType.UPD));
-		assertPattern(diffToAnalyze, pattern);
+		assertPattern(diffUpdate, pattern);
 	}
 
 	@Test
@@ -176,7 +184,7 @@ public class PatternSearchTest {
 		ParentPatternEntity parentWrapper = new ParentPatternEntity(parentEntity, 1);
 		PatternEntity entity = new PatternEntity("*", parentWrapper);
 		pattern.addChange(new PatternAction(entity, ActionType.UPD));
-		assertNoPattern(diffToAnalyze, pattern);
+		assertNoPattern(diffUpdate, pattern);
 	}
 
 	@Test
@@ -188,7 +196,7 @@ public class PatternSearchTest {
 		ParentPatternEntity parentWrapper = new ParentPatternEntity(parentEntity, 3);
 		PatternEntity entity = new PatternEntity("*", parentWrapper);
 		pattern.addChange(new PatternAction(entity, ActionType.UPD));
-		assertPattern(diffToAnalyze, pattern);
+		assertPattern(diffUpdate, pattern);
 	}
 
 	@Test
@@ -204,7 +212,7 @@ public class PatternSearchTest {
 		ParentPatternEntity parentWrapper = new ParentPatternEntity(parentEntity, 2);
 		PatternEntity entity = new PatternEntity("*", parentWrapper);
 		pattern.addChange(new PatternAction(entity, ActionType.UPD));
-		assertPattern(diffToAnalyze, pattern);
+		assertPattern(diffUpdate, pattern);
 	}
 
 	@Test
@@ -220,7 +228,7 @@ public class PatternSearchTest {
 		ParentPatternEntity parentWrapper = new ParentPatternEntity(parentEntity, 2);
 		PatternEntity entity = new PatternEntity("*", parentWrapper);
 		pattern.addChange(new PatternAction(entity, ActionType.UPD));
-		assertNoPattern(diffToAnalyze, pattern);
+		assertNoPattern(diffUpdate, pattern);
 	}
 
 	@Test
@@ -239,7 +247,7 @@ public class PatternSearchTest {
 		ParentPatternEntity parentWrapper = new ParentPatternEntity(parentEntity, 2);
 		PatternEntity entity = new PatternEntity("*", parentWrapper);
 		pattern.addChange(new PatternAction(entity, ActionType.UPD));
-		assertPattern(diffToAnalyze, pattern);
+		assertPattern(diffUpdate, pattern);
 	}
 
 	@Test
@@ -258,7 +266,33 @@ public class PatternSearchTest {
 		ParentPatternEntity parentWrapper = new ParentPatternEntity(parentEntity, 2);
 		PatternEntity entity = new PatternEntity("*", parentWrapper);
 		pattern.addChange(new PatternAction(entity, ActionType.UPD));
-		assertNoPattern(diffToAnalyze, pattern);
+		assertNoPattern(diffUpdate, pattern);
+	}
+
+	@Test
+	public void testDiff1MapingsMultipleValues1() throws Exception {
+
+		System.out.println("Case 2a");
+		ChangePatternSpecification pattern = new ChangePatternSpecification();
+		// TODO: it's the old value
+		PatternEntity parentEntity = new PatternEntity("Assignment", "username = u");
+		ParentPatternEntity parentWrapper = new ParentPatternEntity(parentEntity, 2);
+		PatternEntity entity = new PatternEntity("*", parentWrapper);
+		pattern.addChange(new PatternAction(entity, ActionType.UPD));
+		assertPattern(diffUpdate, pattern);
+	}
+
+	@Test
+	public void testDiff1MapingsMultipleValues2() throws Exception {
+
+		System.out.println("Case 2a");
+		ChangePatternSpecification pattern = new ChangePatternSpecification();
+
+		PatternEntity parentEntity = new PatternEntity("Assignment", "usernameOther = p");
+		ParentPatternEntity parentWrapper = new ParentPatternEntity(parentEntity, 2);
+		PatternEntity entity = new PatternEntity("*", parentWrapper);
+		pattern.addChange(new PatternAction(entity, ActionType.UPD));
+		assertNoPattern(diffUpdate, pattern);
 	}
 
 	@Test
@@ -270,7 +304,80 @@ public class PatternSearchTest {
 		ParentPatternEntity parentWrapper = new ParentPatternEntity(parentEntity, 2);
 		PatternEntity entity = new PatternEntity("*", parentWrapper);
 		pattern.addChange(new PatternAction(entity, ActionType.UPD));
-		assertNoPattern(diffToAnalyze, pattern);
+		assertNoPattern(diffUpdate, pattern);
+	}
+
+	@Test
+	public void testDiff2() throws Exception {
+
+		System.out.println("Case 2a");
+		ChangePatternSpecification pattern = new ChangePatternSpecification();
+
+		PatternEntity grandparentEntity = new PatternEntity("Class");
+		ParentPatternEntity gradparentWrapper = new ParentPatternEntity(grandparentEntity, 4);
+
+		PatternEntity middleparentEntity = new PatternEntity("Constructor", gradparentWrapper);
+		ParentPatternEntity middleparentWrapper = new ParentPatternEntity(middleparentEntity, 3);
+
+		PatternEntity parentEntity = new PatternEntity("If", middleparentWrapper);
+		ParentPatternEntity parentWrapper = new ParentPatternEntity(parentEntity, 2);
+		PatternEntity entity = new PatternEntity("*", parentWrapper);
+
+		pattern.addChange(new PatternAction(entity, ActionType.INS));
+		assertPattern(diffInsert, pattern);
+	}
+
+	@Test
+	public void testDiff2Invocation() throws Exception {
+
+		System.out.println("Case 2a");
+		ChangePatternSpecification pattern = new ChangePatternSpecification();
+
+		PatternEntity grandparentEntity = new PatternEntity("Class");
+		ParentPatternEntity gradparentWrapper = new ParentPatternEntity(grandparentEntity, 5);
+
+		PatternEntity parentEntity = new PatternEntity("If", gradparentWrapper);
+		ParentPatternEntity parentWrapper = new ParentPatternEntity(parentEntity, 2);
+		PatternEntity entity = new PatternEntity("FieldRead", parentWrapper);
+
+		pattern.addChange(new PatternAction(entity, ActionType.INS));
+		assertPattern(diffInsert, pattern);
+	}
+
+	@Test
+	public void testDiff2IValue() throws Exception {
+
+		System.out.println("Case 2a");
+		ChangePatternSpecification pattern = new ChangePatternSpecification();
+
+		PatternEntity grandparentEntity = new PatternEntity("Class");
+		ParentPatternEntity gradparentWrapper = new ParentPatternEntity(grandparentEntity, 5);
+
+		PatternEntity parentEntity = new PatternEntity("If", gradparentWrapper);
+		ParentPatternEntity parentWrapper = new ParentPatternEntity(parentEntity, 2);
+		PatternEntity entity = new PatternEntity("FieldRead", parentWrapper);
+		entity.setValue("isActive");
+
+		pattern.addChange(new PatternAction(entity, ActionType.INS));
+		assertPattern(diffInsert, pattern);
+	}
+
+	@Test
+	public void testDiff2NoValue() throws Exception {
+
+		System.out.println("Case 2a");
+		ChangePatternSpecification pattern = new ChangePatternSpecification();
+
+		PatternEntity grandparentEntity = new PatternEntity("Class");
+		ParentPatternEntity gradparentWrapper = new ParentPatternEntity(grandparentEntity, 5);
+
+		PatternEntity parentEntity = new PatternEntity("If", gradparentWrapper);
+		ParentPatternEntity parentWrapper = new ParentPatternEntity(parentEntity, 2);
+		PatternEntity entity = new PatternEntity("FieldRead", parentWrapper);
+		entity.setValue("NotisActive");// wrong value
+
+		pattern.addChange(new PatternAction(entity, ActionType.INS));
+		assertNoPattern(diffInsert, pattern);
 	}
 
 	public void assertPattern(Diff diffToAnalyze, ChangePatternSpecification pattern) {
