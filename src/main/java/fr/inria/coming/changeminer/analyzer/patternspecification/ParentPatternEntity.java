@@ -35,4 +35,9 @@ public class ParentPatternEntity {
 	public void setParent(PatternEntity parent) {
 		this.parent = parent;
 	}
+
+	@Override
+	public String toString() {
+		return "ParentPatternEntity [parent=" + parent + ", parentLevel=" + parentLevel + "]";
+	}
 }

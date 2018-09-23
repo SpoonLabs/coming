@@ -7,8 +7,12 @@ package fr.inria.coming.changeminer.analyzer.patternspecification;
  */
 public class PatternEntity {
 
-	protected String entityType = "*";
-	protected String value = "*";
+	public final static String ANY = "*";
+
+	protected String entityType = ANY;
+	protected String newValue = null;
+	protected String oldValue = null;
+
 	protected ParentPatternEntity parent = null;
 
 	public final static PatternEntity ANY_ENTITY = new PatternEntity("*");
@@ -16,18 +20,29 @@ public class PatternEntity {
 	public PatternEntity(String entityType) {
 		super();
 		this.entityType = entityType;
+		this.newValue = ANY;
+		this.oldValue = ANY;
 	}
 
-	public PatternEntity(String entity, String value) {
+	public PatternEntity(String entity, String newValue) {
 		super();
 		this.entityType = entity;
-		this.value = value;
+		this.newValue = newValue;
+		this.oldValue = null;
 	}
 
-	public PatternEntity(String entity, ParentPatternEntity parent) {
+	public PatternEntity(String entity, String newValue, String oldValue) {
 		super();
 		this.entityType = entity;
+		this.newValue = newValue;
+		this.oldValue = oldValue;
+	}
+
+	public PatternEntity(String entityType, ParentPatternEntity parent) {
+		super();
+		this.entityType = entityType;
 		this.parent = parent;
+		this.newValue = ANY;
 	}
 
 	public String getEntityType() {
@@ -52,12 +67,20 @@ public class PatternEntity {
 		return "PatternEntity [entityName=" + entityType + ", parent=" + parent + "]";
 	}
 
-	public String getValue() {
-		return value;
+	public String getNewValue() {
+		return newValue;
 	}
 
-	public void setValue(String value) {
-		this.value = value;
+	public void setNewValue(String value) {
+		this.newValue = value;
+	}
+
+	public String getOldValue() {
+		return oldValue;
+	}
+
+	public void setOldValue(String oldValue) {
+		this.oldValue = oldValue;
 	}
 
 }
