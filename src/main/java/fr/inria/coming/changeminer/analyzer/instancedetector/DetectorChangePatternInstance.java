@@ -10,12 +10,14 @@ import com.github.gumtreediff.actions.model.Update;
 
 import fr.inria.astor.util.MapList;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
+import fr.inria.coming.changeminer.analyzer.patternspecification.EntityRelation;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ParentPatternEntity;
 import fr.inria.coming.changeminer.analyzer.patternspecification.PatternAction;
 import fr.inria.coming.changeminer.analyzer.patternspecification.PatternEntity;
 import fr.inria.coming.changeminer.entity.ActionType;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
+import gumtree.spoon.diff.operations.UpdateOperation;
 import spoon.reflect.declaration.CtElement;
 
 /**
@@ -34,6 +36,13 @@ public class DetectorChangePatternInstance {
 
 		return null;
 
+	}
+
+	public List<ChangePatternInstance> s2Linking(ChangePatternSpecification changePatternSpecification,
+			MapList<PatternAction, Operation<Action>> mapping) {
+
+		List<EntityRelation> relations = changePatternSpecification.calculateRelations();
+		return null;
 	}
 
 	/**
@@ -56,10 +65,8 @@ public class DetectorChangePatternInstance {
 
 				Action action = operation.getAction();
 
-				if (matchValues(operation, patternAction.getAffectedEntity().getValue())
-						&& matchTypeLabel(operation, getTypeLabel(patternAction))
-						&& matchActionTypes(action, getOperationType(patternAction))
-						&& matchParentElements(operation, patternAction.getAffectedEntity())) {
+				if (matchActionTypes(action, getOperationType(patternAction))
+						&& matchElements(operation, patternAction.getAffectedEntity())) {
 					mapped = true;
 					mapping.add(patternAction, operation);
 				}
@@ -71,49 +78,56 @@ public class DetectorChangePatternInstance {
 		return mapping;
 	}
 
-	private boolean matchParentElements(Operation affectedOperation, PatternEntity affectedEntity) {
+	private boolean matchElements(Operation affectedOperation, PatternEntity affectedEntity) {
 
-		ParentPatternEntity parentEntityFromPattern = affectedEntity.getParentPatternEntity();
-
-		if (parentEntityFromPattern == null) {
-			return true;
-		}
-		int parentLevel = parentEntityFromPattern.getParentLevel();
-		PatternEntity parentEntity = parentEntityFromPattern.getParent();
+		int parentLevel = 1;
+		PatternEntity parentEntity = affectedEntity;
 		// Let's get the parent of the affected
-		CtElement parentNodeFromAction = affectedOperation.getNode().getParent();
+		CtElement currentNodeFromAction = null;
+		boolean matchnewvalue = false;
+
+		if (affectedOperation.getDstNode() != null && affectedEntity.getNewValue() != null) {
+			currentNodeFromAction = affectedOperation.getDstNode();
+			matchnewvalue = true;
+		} else if (affectedOperation instanceof UpdateOperation && (affectedEntity.getOldValue() != null)) {
+			currentNodeFromAction = affectedOperation.getSrcNode();
+			matchnewvalue = false;
+		} else {
+			matchnewvalue = true;
+			currentNodeFromAction = affectedOperation.getNode();
+		}
 
 		int i_levels = 1;
 		// Scale the hierarchie and check types.
-		while (parentNodeFromAction != null && i_levels <= parentLevel) {
-			String typeOfNode = getNodeLabelFromCtElement(parentNodeFromAction);
-			String valueOfNode = parentNodeFromAction.toString();
+		while (currentNodeFromAction != null && i_levels <= parentLevel) {
+			String typeOfNode = getNodeLabelFromCtElement(currentNodeFromAction);
+			String valueOfNode = currentNodeFromAction.toString();
 
+			String patternEntityValue = (matchnewvalue) ? parentEntity.getNewValue() : parentEntity.getOldValue();
 			if ( // type
-			"*".equals(parentEntity.getEntityType())
-					|| (typeOfNode != null && typeOfNode.equals(parentEntity.getEntityType()))
-
-							&& // value
-
-							"*".equals(parentEntity.getValue())
-					|| (valueOfNode != null && valueOfNode.equals(parentEntity.getValue()))
+			("*".equals(parentEntity.getEntityType())
+					|| (typeOfNode != null && typeOfNode.equals(parentEntity.getEntityType()))) &&
+			// value
+			// matchValues(operation, parentEntity.getValue()) ;
+					"*".equals(patternEntityValue) || (valueOfNode != null && valueOfNode.equals(patternEntityValue))
 
 			) {
 
-				parentEntityFromPattern = parentEntity.getParentPatternEntity();
+				ParentPatternEntity parentEntityFromPattern = parentEntity.getParentPatternEntity();
 
 				if (parentEntityFromPattern == null) {
 					return true;
 				}
 				i_levels = 1;
-
 				parentLevel = parentEntityFromPattern.getParentLevel();
 				parentEntity = parentEntityFromPattern.getParent();
 
 			} else {
+				// Not matching
+
 				i_levels++;
 			}
-			parentNodeFromAction = parentNodeFromAction.getParent();
+			currentNodeFromAction = currentNodeFromAction.getParent();
 		}
 
 		return false;
