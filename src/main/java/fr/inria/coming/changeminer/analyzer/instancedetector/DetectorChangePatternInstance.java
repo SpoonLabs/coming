@@ -107,6 +107,7 @@ public class DetectorChangePatternInstance {
 				if (parentEntityFromPattern == null) {
 					return true;
 				}
+				parentEntity = parentEntityFromPattern.getParent();
 
 			} else {
 				i_levels++;
