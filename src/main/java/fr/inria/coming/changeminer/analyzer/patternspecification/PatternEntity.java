@@ -7,8 +7,8 @@ package fr.inria.coming.changeminer.analyzer.patternspecification;
  */
 public class PatternEntity {
 
-	protected String entityType = null;
-	protected String value = null;
+	protected String entityType = "*";
+	protected String value = "*";
 	protected ParentPatternEntity parent = null;
 
 	public final static PatternEntity ANY_ENTITY = new PatternEntity("*");
@@ -24,9 +24,10 @@ public class PatternEntity {
 		this.value = value;
 	}
 
-	public PatternEntity(String entity, ParentPatternEntity data) {
+	public PatternEntity(String entity, ParentPatternEntity parent) {
 		super();
 		this.entityType = entity;
+		this.parent = parent;
 	}
 
 	public String getEntityType() {
