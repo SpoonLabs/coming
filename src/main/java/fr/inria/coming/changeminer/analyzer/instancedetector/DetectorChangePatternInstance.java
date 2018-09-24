@@ -3,6 +3,8 @@ package fr.inria.coming.changeminer.analyzer.instancedetector;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.github.gumtreediff.actions.model.Action;
 import com.github.gumtreediff.actions.model.Delete;
 import com.github.gumtreediff.actions.model.Insert;
@@ -15,7 +17,7 @@ import fr.inria.coming.changeminer.analyzer.patternspecification.EntityRelation;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ParentPatternEntity;
 import fr.inria.coming.changeminer.analyzer.patternspecification.PatternAction;
 import fr.inria.coming.changeminer.analyzer.patternspecification.PatternEntity;
-import fr.inria.coming.changeminer.analyzer.patternspecification.Relations;
+import fr.inria.coming.changeminer.analyzer.patternspecification.PatternRelations;
 import fr.inria.coming.changeminer.entity.ActionType;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
@@ -29,35 +31,36 @@ import spoon.reflect.declaration.CtElement;
  */
 public class DetectorChangePatternInstance {
 
+	Logger log = Logger.getLogger(this.getClass().getName());
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public List<ChangePatternInstance> findPatternInstances(ChangePatternSpecification changePatternSpecification,
 			Diff diffToAnalyze) {
 
-		ResultMapping mapping = s1mappingActions(changePatternSpecification, diffToAnalyze);
-		// Now, Parent analysis:
-
-		return null;
+		ResultMapping mapping = mappingActions(changePatternSpecification, diffToAnalyze);
+		List<ChangePatternInstance> instances = calculateValidInstancesFromMapping(changePatternSpecification,
+				mapping.getMappings());
+		return instances;
 
 	}
 
-	public List<ChangePatternInstance> s2Linking(ChangePatternSpecification changePatternSpecification,
-			MapList<PatternAction, MatchingAction> matching) {
+	public List<ChangePatternInstance> calculateValidInstancesFromMapping(
+			ChangePatternSpecification changePatternSpecification, MapList<PatternAction, MatchingAction> matching) {
+
 		List<ChangePatternInstance> instancesFinalSet = new ArrayList<>();
 
 		// All Combinations
 		List<ChangePatternInstance> instancesAllCombinations = allCombinations(changePatternSpecification, matching);
 
-		// Discarting illegal relations
-		Relations relations = changePatternSpecification.calculateRelations();
+		// Discarding illegal relations
+		// First, get relations between elements of the pattern
+		PatternRelations relations = changePatternSpecification.calculateRelations();
 
-		List<EntityRelation> entityRelations = relations.getRelations();
-		MapList<PatternAction, EntityRelation> paEntity = relations.getPaEntity();
-
-		// For each instace
+		// For each instance
 		for (ChangePatternInstance instance : instancesAllCombinations) {
 
-			System.out.println("Analyzing \n" + instance);
-			if (checkRelationsOnInstance(entityRelations, paEntity, instance)) {
+			log.debug("Analyzing  instance: \n" + instance);
+			if (checkPatternRelationsOnInstance(instance, relations)) {
 				instancesFinalSet.add(instance);
 			}
 
@@ -103,22 +106,32 @@ public class DetectorChangePatternInstance {
 
 	}
 
-	public boolean checkRelationsOnInstance(List<EntityRelation> entityRelations,
-			MapList<PatternAction, EntityRelation> paEntity, ChangePatternInstance instance
-	// MapList<PatternAction, MatchingAction> matching
-	) {
-		// for each paction, let's check if respect the entity relation
+	/**
+	 * Returns true if the instance of a pattern respect the relation between the
+	 * elements of the pattern.
+	 * 
+	 * @param instance
+	 * @param relations
+	 * @return
+	 */
+	public boolean checkPatternRelationsOnInstance(ChangePatternInstance instance, PatternRelations relations) {
+
+		MapList<PatternAction, EntityRelation> entitiesByAction = relations.getPaEntity();
+
+		// for each patter action, let's check if the elements that it points respect
+		// the relation defined by the pattern
 		for (PatternAction paction : instance.actionOperation.keySet()) {
 			// if the pattern action has a relation
-			if (paEntity.containsKey(paction)) {
+			if (entitiesByAction.containsKey(paction)) {
 				// It has relation:
-				// for (EntityRelation entityRelation : entityRelations) {
-				List<EntityRelation> relationsOfPatternAction = paEntity.get(paction);
+				List<EntityRelation> relationsOfPatternAction = entitiesByAction.get(paction);
 				for (EntityRelation entityRelation : relationsOfPatternAction) {
 
+					// Get the two actions related by the Relation (one of them is paction)
 					PatternAction actionA = entityRelation.getAction1();
 					PatternAction actionB = entityRelation.getAction2();
 
+					// get the matching of each action
 					MatchingEntity meA = instance.getMapping().get(actionA).getMatching().stream()
 							.filter(e -> e.patternEntity == entityRelation.getEntity()).findFirst().get();
 
@@ -127,15 +140,11 @@ public class DetectorChangePatternInstance {
 
 					// == comparing objects.
 					// if the Object referenced by an action is the same than that one referenced by
-					// the related action B, then continue, otherwise discard instance
+					// the related action B, then continue, otherwise discard instance, the relation
+					// is not respected in that instance
 					CtElement affectedNodeA = meA.getAffectedNode();
 					CtElement affectedNodeB = meB.getAffectedNode();
-					if (affectedNodeA == affectedNodeB) {
-						// if (instance.getActionOperation().get(actionA) ==
-						// instance.getActionOperation().get(actionB)) {
-						// it's ok
-
-					} else {
+					if (affectedNodeA != affectedNodeB) {
 						// Discard instance
 						return false;
 					}
@@ -148,14 +157,16 @@ public class DetectorChangePatternInstance {
 	}
 
 	/**
+	 * Receives a pattern specification and a diff and creates a mapping between
+	 * elements from the pattern and those affected by the diff
 	 * 
 	 * @param changePatternSpecification
 	 * @param diffToAnalyze
 	 * @return
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public ResultMapping s1mappingActions(ChangePatternSpecification changePatternSpecification, Diff diffToAnalyze) {
-		List<Operation> operations = diffToAnalyze.getAllOperations();
+	public ResultMapping mappingActions(ChangePatternSpecification changePatternSpecification, Diff diffToAnalyze) {
+		List<Operation> operationsFromDiff = diffToAnalyze.getAllOperations();
 
 		MapList<PatternAction, MatchingAction> mapping = new MapList<>();
 		List<PatternAction> notMapped = new ArrayList();
@@ -163,14 +174,15 @@ public class DetectorChangePatternInstance {
 		// For each abstract change in the pattern
 		for (PatternAction patternAction : changePatternSpecification.getAbstractChanges()) {
 			boolean mapped = false;
-			// For each operation
-			for (Operation operation : operations) {
+			// For each operation in the diff
+			for (Operation operation : operationsFromDiff) {
 
 				Action action = operation.getAction();
-
+				// First, match the type of the action
 				if (matchActionTypes(action, getOperationType(patternAction))) {
-
+					// when, match the elements affected by the action.
 					List<MatchingEntity> matching = matchElements(operation, patternAction.getAffectedEntity());
+
 					if (matching != null && !matching.isEmpty()) {
 						mapped = true;
 						MatchingAction maction = new MatchingAction(operation, patternAction, matching);
@@ -179,13 +191,21 @@ public class DetectorChangePatternInstance {
 				}
 			}
 			if (!mapped) {
-				System.out.println("Abstract change not mapped: " + patternAction);
+				log.debug("Abstract change not mapped: " + patternAction);
 				notMapped.add(patternAction);
 			}
 		}
 		return new ResultMapping(mapping, notMapped);
 	}
 
+	/**
+	 * Match the element affected by an operation from the diff and the elements in
+	 * the pattern specification
+	 * 
+	 * @param affectedOperation
+	 * @param affectedEntity
+	 * @return
+	 */
 	private List<MatchingEntity> matchElements(Operation affectedOperation, PatternEntity affectedEntity) {
 
 		List<MatchingEntity> matching = new ArrayList<>();
@@ -196,6 +216,7 @@ public class DetectorChangePatternInstance {
 		CtElement currentNodeFromAction = null;
 		boolean matchnewvalue = false;
 
+		// Search the node to select according to the type of operation and the pattern
 		if (affectedOperation.getDstNode() != null && affectedEntity.getNewValue() != null) {
 			currentNodeFromAction = affectedOperation.getDstNode();
 			matchnewvalue = true;
@@ -208,17 +229,16 @@ public class DetectorChangePatternInstance {
 		}
 
 		int i_levels = 1;
-		// Scale the hierarchie and check types.
+		// Scale the parent hierarchy and check types.
 		while (currentNodeFromAction != null && i_levels <= parentLevel) {
 			String typeOfNode = getNodeLabelFromCtElement(currentNodeFromAction);
 			String valueOfNode = currentNodeFromAction.toString();
 
 			String patternEntityValue = (matchnewvalue) ? parentEntity.getNewValue() : parentEntity.getOldValue();
-			if ( // type
+			if ( // type of element
 			("*".equals(parentEntity.getEntityType())
 					|| (typeOfNode != null && typeOfNode.equals(parentEntity.getEntityType()))) &&
-			// value
-			// matchValues(operation, parentEntity.getValue()) ;
+			// value of element
 					"*".equals(patternEntityValue) || (valueOfNode != null && valueOfNode.equals(patternEntityValue))
 
 			) {
@@ -234,8 +254,7 @@ public class DetectorChangePatternInstance {
 				parentEntity = parentEntityFromPattern.getParent();
 
 			} else {
-				// Not matching
-
+				// Not match
 				i_levels++;
 			}
 			currentNodeFromAction = currentNodeFromAction.getParent();
@@ -245,7 +264,7 @@ public class DetectorChangePatternInstance {
 
 	}
 
-	public static boolean matchActionTypes(Action action, ActionType type) {
+	private boolean matchActionTypes(Action action, ActionType type) {
 
 		return ActionType.ANY.equals(type) || (type.equals(ActionType.INS) && (action instanceof Insert))
 				|| (type.equals(ActionType.DEL) && (action instanceof Delete))

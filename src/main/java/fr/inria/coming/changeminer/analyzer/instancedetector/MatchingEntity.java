@@ -9,8 +9,13 @@ import spoon.reflect.declaration.CtElement;
  *
  */
 public class MatchingEntity {
-
+	/**
+	 * An affected node from a revision
+	 */
 	protected CtElement affectedNode;
+	/**
+	 * An element from a pattern
+	 */
 	protected PatternEntity patternEntity;
 
 	public MatchingEntity(CtElement currentNodeFromAction, PatternEntity patternEntity) {

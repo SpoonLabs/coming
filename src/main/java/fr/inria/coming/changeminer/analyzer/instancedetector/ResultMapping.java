@@ -11,9 +11,15 @@ import fr.inria.coming.changeminer.analyzer.patternspecification.PatternAction;
  *
  */
 public class ResultMapping {
-	// Mapping between pattern and a tree
+
+	/**
+	 * Mapping between pattern and a tree
+	 */
 	MapList<PatternAction, MatchingAction> mappings;
-	// Elements from the pattern not matched
+
+	/**
+	 * Elements from the pattern not matched
+	 */
 	List<PatternAction> notMapped;
 
 	public ResultMapping(MapList<PatternAction, MatchingAction> mappings, List<PatternAction> notMapped) {

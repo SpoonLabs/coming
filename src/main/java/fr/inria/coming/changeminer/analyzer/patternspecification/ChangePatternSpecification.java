@@ -47,7 +47,7 @@ public class ChangePatternSpecification {
 		return "ChangePattern [" + ((name == null) ? "" : "name=") + name + ", changes=" + changes + "]";
 	}
 
-	public Relations calculateRelations() {
+	public PatternRelations calculateRelations() {
 		MapList<PatternEntity, PatternAction> commonEntitiesByPattern = new MapList<>();
 		// Store all relations between Actions i.e., hare an object
 		List<EntityRelation> relations = new ArrayList<>();
@@ -82,7 +82,7 @@ public class ChangePatternSpecification {
 				}
 			}
 		}
-		return new Relations(relations, paEntity);
+		return new PatternRelations(relations, paEntity);
 	}
 
 }

@@ -9,12 +9,12 @@ import fr.inria.astor.util.MapList;
  * @author Matias Martinez
  *
  */
-public class Relations {
+public class PatternRelations {
 
 	List<EntityRelation> relations;
 	MapList<PatternAction, EntityRelation> paEntity;
 
-	public Relations(List<EntityRelation> relations, MapList<PatternAction, EntityRelation> paEntity) {
+	public PatternRelations(List<EntityRelation> relations, MapList<PatternAction, EntityRelation> paEntity) {
 		super();
 		this.relations = relations;
 		this.paEntity = paEntity;

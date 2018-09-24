@@ -27,7 +27,7 @@ import fr.inria.coming.changeminer.analyzer.patternspecification.EntityRelation;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ParentPatternEntity;
 import fr.inria.coming.changeminer.analyzer.patternspecification.PatternAction;
 import fr.inria.coming.changeminer.analyzer.patternspecification.PatternEntity;
-import fr.inria.coming.changeminer.analyzer.patternspecification.Relations;
+import fr.inria.coming.changeminer.analyzer.patternspecification.PatternRelations;
 import fr.inria.coming.changeminer.entity.ActionType;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
@@ -461,7 +461,7 @@ public class PatternSearchTest {
 		assertEquals(1, relations.size());
 
 		DetectorChangePatternInstance detector = new DetectorChangePatternInstance();
-		ResultMapping mappings = detector.s1mappingActions(pattern, diffInsert);
+		ResultMapping mappings = detector.mappingActions(pattern, diffInsert);
 		assertFalse(mappings.getMappings().isEmpty());
 		List<ChangePatternInstance> allcom = detector.allCombinations(pattern, mappings.getMappings());
 		System.out.println("all com " + allcom);
@@ -489,9 +489,9 @@ public class PatternSearchTest {
 		assertEquals(1, relations.size());
 
 		DetectorChangePatternInstance detector = new DetectorChangePatternInstance();
-		ResultMapping mappings = detector.s1mappingActions(pattern, diffInsert);
+		ResultMapping mappings = detector.mappingActions(pattern, diffInsert);
 		assertFalse(mappings.getMappings().isEmpty());
-		List<ChangePatternInstance> linkedInstances = detector.s2Linking(pattern, mappings.getMappings());
+		List<ChangePatternInstance> linkedInstances = detector.calculateValidInstancesFromMapping(pattern, mappings.getMappings());
 		System.out.println("all com " + linkedInstances);
 		assertTrue(linkedInstances.size() > 0);
 		assertEquals(2, linkedInstances.get(0).getActions().size());
@@ -529,10 +529,10 @@ public class PatternSearchTest {
 		assertEquals(1, relations.size());
 
 		DetectorChangePatternInstance detector = new DetectorChangePatternInstance();
-		ResultMapping mappings = detector.s1mappingActions(pattern, diffInsertUpdate);
+		ResultMapping mappings = detector.mappingActions(pattern, diffInsertUpdate);
 		assertFalse(mappings.getMappings().isEmpty());
 		assertTrue(mappings.getNotMapped().isEmpty());
-		List<ChangePatternInstance> linkedInstances = detector.s2Linking(pattern, mappings.getMappings());
+		List<ChangePatternInstance> linkedInstances = detector.calculateValidInstancesFromMapping(pattern, mappings.getMappings());
 		System.out.println("all com " + linkedInstances);
 		assertTrue(linkedInstances.size() > 0);
 		assertEquals(3, linkedInstances.get(0).getActions().size());
@@ -562,7 +562,7 @@ public class PatternSearchTest {
 		pattern.addChange(new PatternAction(entityPassword, ActionType.UPD));
 
 		DetectorChangePatternInstance detector = new DetectorChangePatternInstance();
-		ResultMapping mappings = detector.s1mappingActions(pattern, diffInsertUpdate);
+		ResultMapping mappings = detector.mappingActions(pattern, diffInsertUpdate);
 		assertFalse(mappings.getMappings().isEmpty());
 		assertFalse(mappings.getNotMapped().isEmpty());
 
@@ -589,13 +589,13 @@ public class PatternSearchTest {
 		PatternAction paInsertIf = new PatternAction(parentEntity, ActionType.INS);
 		pattern.addChange(paInsertIf);
 
-		Relations calculateRelations = pattern.calculateRelations();
+		PatternRelations calculateRelations = pattern.calculateRelations();
 		assertEquals(2, calculateRelations.getPaEntity().size());
 		assertEquals(1, calculateRelations.getPaEntity().get(paInsertRf).size());
 		assertEquals(1, calculateRelations.getPaEntity().get(paInsertIf).size());
 
 		DetectorChangePatternInstance detector = new DetectorChangePatternInstance();
-		ResultMapping mappings = detector.s1mappingActions(pattern, diff2Inserts);
+		ResultMapping mappings = detector.mappingActions(pattern, diff2Inserts);
 		assertFalse(mappings.getMappings().isEmpty());
 		assertTrue(mappings.getNotMapped().isEmpty());
 
@@ -606,7 +606,7 @@ public class PatternSearchTest {
 		// 2 X 2
 		assertEquals(4, allCombinations.size());
 
-		List<ChangePatternInstance> linkedInstances = detector.s2Linking(pattern, mappings.getMappings());
+		List<ChangePatternInstance> linkedInstances = detector.calculateValidInstancesFromMapping(pattern, mappings.getMappings());
 		// Instances
 		assertEquals(2, linkedInstances.size());
 		// Actions per instance
@@ -641,13 +641,13 @@ public class PatternSearchTest {
 		PatternAction paInsertIf = new PatternAction(entityIf, ActionType.INS);
 		pattern.addChange(paInsertIf);
 
-		Relations calculateRelations = pattern.calculateRelations();
+		PatternRelations calculateRelations = pattern.calculateRelations();
 		assertEquals(2, calculateRelations.getPaEntity().size());
 		assertEquals(1, calculateRelations.getPaEntity().get(paInsertRf).size());
 		assertEquals(1, calculateRelations.getPaEntity().get(paInsertIf).size());
 
 		DetectorChangePatternInstance detector = new DetectorChangePatternInstance();
-		ResultMapping mappings = detector.s1mappingActions(pattern, diff2Inserts);
+		ResultMapping mappings = detector.mappingActions(pattern, diff2Inserts);
 		assertFalse(mappings.getMappings().isEmpty());
 		assertTrue(mappings.getNotMapped().isEmpty());
 
@@ -658,7 +658,7 @@ public class PatternSearchTest {
 		// 2 X 2
 		assertEquals(4, allCombinations.size());
 
-		List<ChangePatternInstance> linkedInstances = detector.s2Linking(pattern, mappings.getMappings());
+		List<ChangePatternInstance> linkedInstances = detector.calculateValidInstancesFromMapping(pattern, mappings.getMappings());
 		// Instances
 		assertEquals(2, linkedInstances.size());
 		// Actions per instance
@@ -693,13 +693,13 @@ public class PatternSearchTest {
 		PatternAction paInsertIf = new PatternAction(entityIf, ActionType.INS);
 		pattern.addChange(paInsertIf);
 
-		Relations calculateRelations = pattern.calculateRelations();
+		PatternRelations calculateRelations = pattern.calculateRelations();
 		assertEquals(2, calculateRelations.getPaEntity().size());
 		assertEquals(1, calculateRelations.getPaEntity().get(paInsertAssignment).size());
 		assertEquals(1, calculateRelations.getPaEntity().get(paInsertIf).size());
 
 		DetectorChangePatternInstance detector = new DetectorChangePatternInstance();
-		ResultMapping mappings = detector.s1mappingActions(pattern, diff2Inserts);
+		ResultMapping mappings = detector.mappingActions(pattern, diff2Inserts);
 		assertFalse(mappings.getMappings().isEmpty());
 		assertTrue(mappings.getNotMapped().isEmpty());
 
@@ -708,7 +708,7 @@ public class PatternSearchTest {
 			System.out.println("-->" + changePatternInstance.getActions());
 		}
 
-		List<ChangePatternInstance> linkedInstances = detector.s2Linking(pattern, mappings.getMappings());
+		List<ChangePatternInstance> linkedInstances = detector.calculateValidInstancesFromMapping(pattern, mappings.getMappings());
 		// Instances
 		assertEquals(1, linkedInstances.size());
 		// Actions per instance
@@ -745,13 +745,13 @@ public class PatternSearchTest {
 		PatternAction paInsertIf = new PatternAction(entityIf, ActionType.INS);
 		pattern.addChange(paInsertIf);
 
-		Relations calculateRelations = pattern.calculateRelations();
+		PatternRelations calculateRelations = pattern.calculateRelations();
 		assertEquals(2, calculateRelations.getPaEntity().size());
 		assertEquals(1, calculateRelations.getPaEntity().get(paInsertInvocation).size());
 		assertEquals(1, calculateRelations.getPaEntity().get(paInsertIf).size());
 
 		DetectorChangePatternInstance detector = new DetectorChangePatternInstance();
-		ResultMapping mappings = detector.s1mappingActions(pattern, diff2Inserts);
+		ResultMapping mappings = detector.mappingActions(pattern, diff2Inserts);
 		assertFalse(mappings.getMappings().isEmpty());
 		assertTrue(mappings.getNotMapped().isEmpty());
 
@@ -760,7 +760,7 @@ public class PatternSearchTest {
 			System.out.println("-->" + changePatternInstance.getActions());
 		}
 
-		List<ChangePatternInstance> linkedInstances = detector.s2Linking(pattern, mappings.getMappings());
+		List<ChangePatternInstance> linkedInstances = detector.calculateValidInstancesFromMapping(pattern, mappings.getMappings());
 		// Instances
 		assertEquals(1, linkedInstances.size());
 		// Actions per instance
@@ -798,13 +798,13 @@ public class PatternSearchTest {
 		PatternAction paInsertIf = new PatternAction(entityIf, ActionType.INS);
 		pattern.addChange(paInsertIf);
 
-		Relations calculateRelations = pattern.calculateRelations();
+		PatternRelations calculateRelations = pattern.calculateRelations();
 		assertEquals(2, calculateRelations.getPaEntity().size());
 		assertEquals(1, calculateRelations.getPaEntity().get(paInsertAssignment).size());
 		assertEquals(1, calculateRelations.getPaEntity().get(paInsertIf).size());
 
 		DetectorChangePatternInstance detector = new DetectorChangePatternInstance();
-		ResultMapping mappings = detector.s1mappingActions(pattern, diff2Inserts);
+		ResultMapping mappings = detector.mappingActions(pattern, diff2Inserts);
 		assertFalse(mappings.getMappings().isEmpty());
 		assertTrue(mappings.getNotMapped().isEmpty());
 
@@ -813,7 +813,7 @@ public class PatternSearchTest {
 			System.out.println("-->" + changePatternInstance.getActions());
 		}
 
-		List<ChangePatternInstance> linkedInstancesPattern1 = detector.s2Linking(pattern, mappings.getMappings());
+		List<ChangePatternInstance> linkedInstancesPattern1 = detector.calculateValidInstancesFromMapping(pattern, mappings.getMappings());
 		// Instances
 		assertEquals(1, linkedInstancesPattern1.size());
 		// Actions per instance
@@ -837,11 +837,11 @@ public class PatternSearchTest {
 		pattern2.addChange(paAnotherInsertIf);
 
 		detector = new DetectorChangePatternInstance();
-		ResultMapping mappingsp2 = detector.s1mappingActions(pattern2, diff2Inserts);
+		ResultMapping mappingsp2 = detector.mappingActions(pattern2, diff2Inserts);
 		assertFalse(mappingsp2.getMappings().isEmpty());
 		assertTrue(mappingsp2.getNotMapped().isEmpty());
 
-		List<ChangePatternInstance> linkedInstancesPattern2 = detector.s2Linking(pattern2, mappingsp2.getMappings());
+		List<ChangePatternInstance> linkedInstancesPattern2 = detector.calculateValidInstancesFromMapping(pattern2, mappingsp2.getMappings());
 		assertEquals(1, linkedInstancesPattern2.size());
 
 		/// Now, checking entities
@@ -867,14 +867,14 @@ public class PatternSearchTest {
 
 	public void assertPattern(Diff diffToAnalyze, ChangePatternSpecification pattern) {
 		DetectorChangePatternInstance detector = new DetectorChangePatternInstance();
-		ResultMapping mappings = detector.s1mappingActions(pattern, diffToAnalyze);
+		ResultMapping mappings = detector.mappingActions(pattern, diffToAnalyze);
 		assertTrue(mappings.getMappings().size() > 0);
 		System.out.println(mappings);
 	}
 
 	public void assertNoPattern(Diff diffToAnalyze, ChangePatternSpecification pattern) {
 		DetectorChangePatternInstance detector = new DetectorChangePatternInstance();
-		ResultMapping mappings = detector.s1mappingActions(pattern, diffToAnalyze);
+		ResultMapping mappings = detector.mappingActions(pattern, diffToAnalyze);
 		assertTrue(mappings.getMappings().isEmpty());
 
 	}

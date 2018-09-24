@@ -11,8 +11,17 @@ import gumtree.spoon.diff.operations.Operation;
  *
  */
 public class MatchingAction {
+	/**
+	 * The operation from the diff
+	 */
 	private Operation operation;
+	/**
+	 * the action from the pattern mapped to operation
+	 */
 	private PatternAction patternAction;
+	/**
+	 * A list with all entities mapped (affected entity and all its parents)
+	 */
 	private List<MatchingEntity> matching;
 
 	public MatchingAction(Operation operation, PatternAction patternAction, List<MatchingEntity> matching) {

@@ -16,10 +16,18 @@ import gumtree.spoon.diff.operations.Operation;
  */
 
 public class ChangePatternInstance {
-
+	/**
+	 * The pattern that this instance belongs
+	 */
+	protected ChangePatternSpecification pattern;
+	/**
+	 * The mapping between all actions and operators from the diff
+	 */
 	protected Map<PatternAction, Operation> actionOperation;
 	protected List<Operation> actions;
-	protected ChangePatternSpecification pattern;
+	/**
+	 * The mapping of the elements
+	 */
 	protected Map<PatternAction, MatchingAction> mapping = new HashMap<>();
 
 	public ChangePatternInstance(ChangePatternSpecification relatedPattern) {
