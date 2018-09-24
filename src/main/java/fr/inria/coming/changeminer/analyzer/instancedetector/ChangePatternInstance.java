@@ -1,8 +1,12 @@
 package fr.inria.coming.changeminer.analyzer.instancedetector;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
+import fr.inria.coming.changeminer.analyzer.patternspecification.PatternAction;
 import gumtree.spoon.diff.operations.Operation;
 
 /**
@@ -13,13 +17,28 @@ import gumtree.spoon.diff.operations.Operation;
 
 public class ChangePatternInstance {
 
+	protected Map<PatternAction, Operation> actionOperation;
 	protected List<Operation> actions;
 	protected ChangePatternSpecification pattern;
+	protected Map<PatternAction, MatchingAction> mapping = new HashMap<>();
+
+	public ChangePatternInstance(ChangePatternSpecification relatedPattern) {
+		super();
+		this.actions = new ArrayList();
+		this.actionOperation = new HashMap();
+		this.pattern = relatedPattern;
+	}
 
 	public ChangePatternInstance(List<Operation> actions, ChangePatternSpecification relatedPattern) {
 		super();
 		this.actions = actions;
 		this.pattern = relatedPattern;
+		this.actionOperation = new HashMap();
+	}
+
+	public void addInstance(PatternAction pa, Operation op) {
+		this.actions.add(op);
+		this.actionOperation.put(pa, op);
 	}
 
 	public List<Operation> getActions() {
@@ -36,6 +55,35 @@ public class ChangePatternInstance {
 
 	public void setRelatedPattern(ChangePatternSpecification relatedPattern) {
 		this.pattern = relatedPattern;
+	}
+
+	public Map<PatternAction, Operation> getActionOperation() {
+		return actionOperation;
+	}
+
+	public void setActionOperation(Map<PatternAction, Operation> actionOperation) {
+		this.actionOperation = actionOperation;
+	}
+
+	public ChangePatternSpecification getPattern() {
+		return pattern;
+	}
+
+	public void setPattern(ChangePatternSpecification pattern) {
+		this.pattern = pattern;
+	}
+
+	@Override
+	public String toString() {
+		return "ChangePatternInstance [actions=" + actions + "]";
+	}
+
+	public Map<PatternAction, MatchingAction> getMapping() {
+		return mapping;
+	}
+
+	public void setMapping(Map<PatternAction, MatchingAction> actionMatchAction) {
+		this.mapping = actionMatchAction;
 	}
 
 }

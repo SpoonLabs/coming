@@ -3,6 +3,8 @@ package fr.inria.coming.changeminer.analyzer.patternspecification;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.inria.astor.util.MapList;
+
 /**
  * Specification of a Pattern
  * 
@@ -43,6 +45,44 @@ public class ChangePatternSpecification {
 	@Override
 	public String toString() {
 		return "ChangePattern [" + ((name == null) ? "" : "name=") + name + ", changes=" + changes + "]";
+	}
+
+	public Relations calculateRelations() {
+		MapList<PatternEntity, PatternAction> commonEntitiesByPattern = new MapList<>();
+		// Store all relations between Actions i.e., hare an object
+		List<EntityRelation> relations = new ArrayList<>();
+		MapList<PatternAction, EntityRelation> paEntity = new MapList<>();
+
+		for (PatternAction patternAction : changes) {
+
+			PatternEntity pe = patternAction.getAffectedEntity();
+			do {
+				// Get Actions of an Entity
+				commonEntitiesByPattern.add(pe, patternAction);
+				pe = (pe.getParentPatternEntity() != null) ? pe.getParentPatternEntity().getParent() : null;
+			} while (pe != null);
+		}
+		// For each entity
+		for (PatternEntity sharedEntity : commonEntitiesByPattern.keySet()) {
+			List<PatternAction> pl = commonEntitiesByPattern.get(sharedEntity);
+			if (pl.size() > 1) {
+				// each combination
+				for (int i = 0; i < pl.size(); i++) {
+
+					PatternAction pA = pl.get(i);
+					// Create a relation with the other Actions that are pointed by the same Entity
+					for (int j = i + 1; j < pl.size(); j++) {
+						PatternAction pB = pl.get(j);
+
+						EntityRelation r = new EntityRelation(sharedEntity, pA, pB);
+						relations.add(r);
+						paEntity.add(pA, r);
+						paEntity.add(pB, r);
+					}
+				}
+			}
+		}
+		return new Relations(relations, paEntity);
 	}
 
 }
