@@ -1,7 +1,7 @@
 package fr.inria.coming.core.filter.commitmessage;
 
-import fr.inria.coming.core.interfaces.Commit;
-import fr.inria.coming.core.interfaces.IFilter;
+import fr.inria.coming.core.entities.interfaces.Commit;
+import fr.inria.coming.core.entities.interfaces.IFilter;
 
 
 
@@ -22,8 +22,8 @@ public class BugfixIgnoredFilter extends KeyWordsTitleFilter{
 	}
 
 	@Override
-	public boolean acceptCommit(Commit c) {
-		if (this.parentFilter.acceptCommit(c))
+	public boolean accept(Commit c) {
+		if (this.parentFilter.accept(c))
 		{
 			String message = c.getShortMessage().toLowerCase();
 			for (String predicate : predicates) {

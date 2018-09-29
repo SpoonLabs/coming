@@ -16,8 +16,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import fr.inria.coming.changeminer.analyzer.RepositoryInspector;
-import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainChangeCommitAnalyzer;
+import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.filters.PatternFilter;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.filters.SimpleChangeFilter;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ParentPatternEntity;
@@ -27,9 +26,10 @@ import fr.inria.coming.changeminer.entity.GranuralityType;
 import fr.inria.coming.changeminer.util.ConsoleOutput;
 import fr.inria.coming.changeminer.util.XMLOutput;
 import fr.inria.coming.core.Parameters;
+import fr.inria.coming.core.engine.git.GITRepositoryInspector;
+import fr.inria.coming.core.entities.interfaces.Commit;
 import fr.inria.coming.core.filter.commitmessage.KeyWordsMessageFilter;
 import fr.inria.coming.core.filter.diff.NbHunkFilter;
-import fr.inria.coming.core.interfaces.Commit;
 import gumtree.spoon.diff.operations.Operation;
 import spoon.reflect.declaration.CtMethod;
 
@@ -60,14 +60,14 @@ public class RepositoryInspectorSpoonTest extends GitRepository4Test {
 	@Test
 	public void test1() throws Exception {
 
-		RepositoryInspector c = new RepositoryInspector();
+		GITRepositoryInspector c = new GITRepositoryInspector();
 
 		Map<Commit, List<Operation>> instancesFound = c.analize(repoPath, new NullAnalyzer());
 	}
 
 	@Test
 	public void testkeywordfilter() throws Exception {
-		RepositoryInspector c = new RepositoryInspector();
+		GITRepositoryInspector c = new GITRepositoryInspector();
 
 		Map<Commit, List<Operation>> instancesFound = c.analize(repoPath, new NullAnalyzer(),
 				new KeyWordsMessageFilter("precondition"));
@@ -79,7 +79,7 @@ public class RepositoryInspectorSpoonTest extends GitRepository4Test {
 	public void testHunkfilter() throws Exception {
 
 		// two hunks
-		RepositoryInspector c = new RepositoryInspector();
+		GITRepositoryInspector c = new GITRepositoryInspector();
 		Map<Commit, List<Operation>> instancesFound = c.analize(repoPath, new NullAnalyzer(), new NbHunkFilter(2, 2));
 		ConsoleOutput.printResultDetails(instancesFound);
 		assertEquals(1, instancesFound.keySet().size());
@@ -97,11 +97,10 @@ public class RepositoryInspectorSpoonTest extends GitRepository4Test {
 
 		PatternFilter pattern = new PatternFilter("BinaryOperator", ActionType.UPD, "If", 10);
 
-		FineGrainChangeCommitAnalyzer fineGrainAnalyzer = new FineGrainChangeCommitAnalyzer(pattern,
-				GranuralityType.SPOON);
+		FineGrainDifftAnalyzer fineGrainAnalyzer = new FineGrainDifftAnalyzer(pattern, GranuralityType.SPOON);
 
 		Parameters.MAX_AST_CHANGES_PER_FILE = 2;
-		RepositoryInspector c = new RepositoryInspector();
+		GITRepositoryInspector c = new GITRepositoryInspector();
 
 		Map<Commit, List<Operation>> instancesFound = c.analize(repoPath, fineGrainAnalyzer);
 		ConsoleOutput.printResultDetails(instancesFound);
@@ -110,25 +109,6 @@ public class RepositoryInspectorSpoonTest extends GitRepository4Test {
 		Assert.assertTrue(instancesFound.keySet().size() > 0);
 		Assert.assertTrue(containsCommit(instancesFound, "8d94514f4d888b7b4e8abd0d77b974a0c8e3baad"));
 	}
-
-	@Test
-	public void spoonTestMI() throws Exception {
-
-		SimpleChangeFilter pattern = new SimpleChangeFilter("Invocation", ActionType.INS);
-
-		FineGrainChangeCommitAnalyzer fineGrainAnalyzer = new FineGrainChangeCommitAnalyzer(pattern,
-				GranuralityType.SPOON);
-
-		RepositoryInspector miner = new RepositoryInspector();
-		Map<Commit, List<Operation>> instancesFound = miner.analize(repoPath, fineGrainAnalyzer);
-		// ConsoleOutput.printResultDetails(instancesFound);
-
-		for (List vales : instancesFound.values()) {
-			System.out.println("Values: " + vales);
-		}
-
-		Assert.assertTrue(instancesFound.keySet().size() > 0);
-		Assert.assertTrue(containsCommit(instancesFound, "4120ab0c714911a9c9f26b591cb3222eaf57d127", "Invocation"));
 
 	}
 
@@ -138,83 +118,6 @@ public class RepositoryInspectorSpoonTest extends GitRepository4Test {
 	 * 
 	 * @throws Exception
 	 */
-	@Test
-	public void searchConditionChangeSpoonParentStar() throws Exception {
-
-		String messageHeuristic = "";
-
-		PatternFilter pattern = new PatternFilter("*", ActionType.ANY, "If", 10);
-
-		FineGrainChangeCommitAnalyzer fineGrainAnalyzer = new FineGrainChangeCommitAnalyzer(pattern,
-				GranuralityType.SPOON);
-
-		Parameters.MAX_AST_CHANGES_PER_FILE = 2;
-
-		RepositoryInspector c = new RepositoryInspector();
-
-		Map<Commit, List<Operation>> instancesFound = c.analize(repoPath, fineGrainAnalyzer);
-		ConsoleOutput.printResultDetails(instancesFound);
-		XMLOutput.print(instancesFound);
-
-		Assert.assertTrue(instancesFound.keySet().size() > 0);
-		Assert.assertTrue(containsCommit(instancesFound, "8d94514f4d888b7b4e8abd0d77b974a0c8e3baad"));
-	}
-
-	@Test
-	public void searchChangeAssignmentSpoon() throws Exception {
-
-		String messageHeuristic = "";
-
-		PatternFilter pattern = new PatternFilter("*", ActionType.ANY, "Assignment", 10);
-
-		FineGrainChangeCommitAnalyzer fineGrainAnalyzer = new FineGrainChangeCommitAnalyzer(pattern,
-				GranuralityType.SPOON);
-
-		RepositoryInspector c = new RepositoryInspector();
-
-		Map<Commit, List<Operation>> instancesFound = c.analize(repoPath, fineGrainAnalyzer);
-		ConsoleOutput.printResultDetails(instancesFound);
-		XMLOutput.print(instancesFound);
-
-		Assert.assertTrue(instancesFound.keySet().size() > 0);
-		Assert.assertTrue(containsCommit(instancesFound, "8c0e7110c9ebc3ba5158e8de0f73c80ec69e1001"));
-	}
-
-	@Test
-	public void searchMultipleParentSpoon1() throws Exception {
-
-		PatternEntity parent_e = new PatternEntity("Assignment");
-
-		ParentPatternEntity parent = new ParentPatternEntity(parent_e, 1);
-
-		PatternEntity affected_e = new PatternEntity("*", parent);
-
-		PatternFilter pattern = new PatternFilter(affected_e, ActionType.ANY);
-
-		FineGrainChangeCommitAnalyzer fineGrainAnalyzer = new FineGrainChangeCommitAnalyzer(pattern,
-				GranuralityType.SPOON);
-
-		RepositoryInspector c = new RepositoryInspector();
-
-		Map<Commit, List<Operation>> instancesFound = c.analize(repoPath, fineGrainAnalyzer);
-		ConsoleOutput.printResultDetails(instancesFound);
-		XMLOutput.print(instancesFound);
-
-		Assert.assertTrue(instancesFound.keySet().size() > 0);
-		Assert.assertTrue(containsCommit(instancesFound, "8c0e7110c9ebc3ba5158e8de0f73c80ec69e1001"));
-
-		Commit cWithinstances = getCommit(instancesFound, "8c0e7110c9ebc3ba5158e8de0f73c80ec69e1001");
-		assertNotNull(cWithinstances);
-		List<Operation> ops = instancesFound.get(cWithinstances);
-
-		assertNotNull(ops);
-		Assert.assertTrue(ops.size() > 0);
-
-		Operation op = ops.get(0);
-		System.out.println("Operator " + op.getSrcNode().getParent(CtMethod.class));
-		// Assert.assertTrue(op.getSrcNode().getParent().getClass().getSimpleName().contains("BinaryOperator"));
-		Assert.assertTrue(op.getSrcNode().getParent().getClass().getSimpleName().contains("Assignment"));
-	}
 
 	@Test
 	public void searchMultipleParentSpoon2() throws Exception {
@@ -229,10 +132,9 @@ public class RepositoryInspectorSpoonTest extends GitRepository4Test {
 
 		PatternFilter pattern = new PatternFilter(affected_e, ActionType.ANY);
 
-		FineGrainChangeCommitAnalyzer fineGrainAnalyzer = new FineGrainChangeCommitAnalyzer(pattern,
-				GranuralityType.SPOON);
+		FineGrainDifftAnalyzer fineGrainAnalyzer = new FineGrainDifftAnalyzer(pattern, GranuralityType.SPOON);
 
-		RepositoryInspector c = new RepositoryInspector();
+		GITRepositoryInspector c = new GITRepositoryInspector();
 
 		Map<Commit, List<Operation>> instancesFound = c.analize(repoPath, fineGrainAnalyzer);
 		ConsoleOutput.printResultDetails(instancesFound);
@@ -277,10 +179,9 @@ public class RepositoryInspectorSpoonTest extends GitRepository4Test {
 
 		PatternFilter pattern = new PatternFilter(affected_e, ActionType.ANY);
 
-		FineGrainChangeCommitAnalyzer fineGrainAnalyzer = new FineGrainChangeCommitAnalyzer(pattern,
-				GranuralityType.SPOON);
+		FineGrainDifftAnalyzer fineGrainAnalyzer = new FineGrainDifftAnalyzer(pattern, GranuralityType.SPOON);
 
-		RepositoryInspector c = new RepositoryInspector();
+		GITRepositoryInspector c = new GITRepositoryInspector();
 
 		Map<Commit, List<Operation>> instancesFound = c.analize(repoPath, fineGrainAnalyzer);
 		ConsoleOutput.printResultDetails(instancesFound);
@@ -295,49 +196,4 @@ public class RepositoryInspectorSpoonTest extends GitRepository4Test {
 		Assert.assertTrue(ops.isEmpty());
 	}
 
-	@Test
-	@Ignore
-	public void searchMultipleParentBuggy() throws Exception {
-
-		PatternEntity parent_e = new PatternEntity("Assignment");
-
-		ParentPatternEntity parent = new ParentPatternEntity(parent_e, 1);
-
-		PatternEntity affected_e = new PatternEntity("*", parent);
-
-		PatternFilter pattern = new PatternFilter(affected_e, ActionType.INS);
-
-		FineGrainChangeCommitAnalyzer fineGrainAnalyzer = new FineGrainChangeCommitAnalyzer(pattern,
-				GranuralityType.SPOON);
-
-		RepositoryInspector c = new RepositoryInspector();
-
-		Map<Commit, List<Operation>> instancesFound = c.analize(repoPath, fineGrainAnalyzer);
-		ConsoleOutput.printResultDetails(instancesFound);
-		XMLOutput.print(instancesFound);
-
-		Assert.assertTrue(instancesFound.keySet().size() > 0);
-		Assert.assertTrue(containsCommit(instancesFound, "8c0e7110c9ebc3ba5158e8de0f73c80ec69e1001"));
-
-		Commit cWithinstances = getCommit(instancesFound, "8c0e7110c9ebc3ba5158e8de0f73c80ec69e1001");
-		assertNotNull(cWithinstances);
-		List<Operation> ops = instancesFound.get(cWithinstances);
-
-		assertNotNull(ops);
-		Assert.assertTrue(ops.size() > 0);
-
-		Operation op = ops.get(0);
-		System.out.println("Operator " + op.getSrcNode().getParent(CtMethod.class));
-		// Assert.assertTrue(op.getSrcNode().getParent().getClass().getSimpleName().contains("BinaryOperator"));
-		Assert.assertTrue(op.getSrcNode().getParent().getClass().getSimpleName().contains("Assignment"));
-
-		boolean hasInsert = false;
-		for (Operation operation : ops) {
-			if (SimpleChangeFilter.matchTypes(operation.getAction(), ActionType.INS)) {
-				hasInsert = true;
-			}
-		}
-
-		Assert.assertTrue(hasInsert);
-	}
 }

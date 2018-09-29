@@ -2,29 +2,28 @@ package fr.inria.coming.core.filter.files;
 
 import java.util.List;
 
-import fr.inria.coming.core.Parameters;
+import fr.inria.coming.core.entities.interfaces.Commit;
+import fr.inria.coming.core.entities.interfaces.FileCommit;
+import fr.inria.coming.core.entities.interfaces.IFilter;
 import fr.inria.coming.core.filter.AbstractChainedFilter;
-import fr.inria.coming.core.interfaces.Commit;
-import fr.inria.coming.core.interfaces.FileCommit;
-import fr.inria.coming.core.interfaces.IFilter;
+import fr.inria.coming.main.ComingProperties;
 
-public class CommitSizeFilter extends AbstractChainedFilter {
+public class CommitSizeFilter extends AbstractChainedFilter<Commit> {
 
-	
 	public CommitSizeFilter() {
 		super();
-	
+
 	}
 
 	public CommitSizeFilter(IFilter parentFilter) {
 		super(parentFilter);
-		
+
 	}
 
 	@Override
-	public boolean acceptCommit(Commit commit) {
+	public boolean accept(Commit commit) {
 
-		if (super.acceptCommit(commit)) {
+		if (super.accept(commit)) {
 
 			// Retrieve a list of file affected by the commit
 			List<FileCommit> javaFiles = commit.getJavaFileCommits();
@@ -38,16 +37,16 @@ public class CommitSizeFilter extends AbstractChainedFilter {
 
 			}
 
-			if (countJava > Parameters.MAX_FILES_PER_COMMIT) {
+			if (countJava > ComingProperties.getPropertyInteger("MAX_FILES_PER_COMMIT")) {
 				// System.out.println("Commit not accepted, many files in the commit");
 				// log.info("-----");
 				return false;
 			}
-			
-			if (Parameters.ONLY_COMMIT_WITH_TEST_CASE && nTests == 0){
-				return false; 
+
+			if (ComingProperties.getPropertyBoolean("ONLY_COMMIT_WITH_TEST_CASE") && nTests == 0) {
+				return false;
 			}
-			//Finally, we accept the commit.
+			// Finally, we accept the commit.
 			return true;
 		}
 		return false;

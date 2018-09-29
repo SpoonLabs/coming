@@ -64,6 +64,9 @@ public class PatternXMLParser {
 					String type = eElement.getAttribute("type");
 					String value = eElement.getAttribute("value");
 
+					type = (type != null && !type.trim().isEmpty()) ? type : PatternEntity.ANY;
+					value = (value != null && !"".equals(value.trim())) ? value : PatternEntity.ANY;
+
 					PatternEntity pEntity = new PatternEntity(type, value);
 					idEntities.put(idEntity, pEntity);
 
@@ -74,7 +77,6 @@ public class PatternXMLParser {
 					for (int ptemp = 0; ptemp < nListParent.getLength(); ptemp++) {
 
 						// Take the tag parent.
-						System.out.println("parent ");
 						Node nNodeParent = nListParent.item(ptemp);
 						Element eParentElement = (Element) nNodeParent;
 						// Get Attributes of the parent
@@ -111,8 +113,6 @@ public class PatternXMLParser {
 			for (int temp = 0; temp < nActionList.getLength(); temp++) {
 
 				Node nNode = nActionList.item(temp);
-
-				System.out.println("\nCurrent Element :" + nNode.getNodeName());
 
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nNode;

@@ -1,6 +1,6 @@
 package fr.inria.coming.core.filter.commitmessage;
 
-import fr.inria.coming.core.interfaces.IFilter;
+import fr.inria.coming.core.entities.interfaces.IFilter;
 
 /**
  * A filter which accepts only commits with a supposed bugfix purpose

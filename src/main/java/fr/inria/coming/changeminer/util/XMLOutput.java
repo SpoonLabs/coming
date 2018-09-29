@@ -26,7 +26,7 @@ import org.w3c.dom.NodeList;
 import com.github.gumtreediff.actions.model.Action;
 import com.github.gumtreediff.actions.model.Update;
 
-import fr.inria.coming.core.interfaces.Commit;
+import fr.inria.coming.core.entities.interfaces.Commit;
 import gumtree.spoon.diff.operations.Operation;
 
 /**
@@ -92,11 +92,11 @@ public class XMLOutput {
 						post.setTextContent(up.getValue());
 
 						/*
-						 * Element pattern = root.createElement("pattern");
-						 * ae.appendChild(pattern); pattern.setTextContent("-");
+						 * Element pattern = root.createElement("pattern"); ae.appendChild(pattern);
+						 * pattern.setTextContent("-");
 						 * 
-						 * Element order = root.createElement("order");
-						 * ae.appendChild(order); order.setTextContent("-");
+						 * Element order = root.createElement("order"); ae.appendChild(order);
+						 * order.setTextContent("-");
 						 */
 
 					}
@@ -146,9 +146,6 @@ public class XMLOutput {
 		for (int temp = 0; temp < nList.getLength(); temp++) {
 
 			Node nNode = nList.item(temp);
-
-			// System.out.println("\nCurrent Element :" + nNode.getNodeName()+"
-			// "+temp);
 
 			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 
@@ -207,9 +204,6 @@ public class XMLOutput {
 
 			Node nNode = nList.item(temp);
 			String commit = nNode.getAttributes().getNamedItem("id").getNodeValue();
-
-			// System.out.println("\nCurrent Element :" + nNode.getNodeName()+"
-			// "+temp);
 
 			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 
