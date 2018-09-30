@@ -72,11 +72,14 @@ public abstract class RevisionNavigationExperiment<Data extends IRevision> {
 		for (Iterator<Data> iterator = it; iterator.hasNext();) {
 
 			Data element = iterator.next();
+
+			if (!accept(element)) {
+				continue;
+			}
+
 			RevisionResult resultAllAnalyzed = new RevisionResult();
 			for (Analyzer analyzer : analyzers) {
-				if (!accept(element)) {
-					continue;
-				}
+
 				AnalysisResult resultAnalyzer = analyzer.analyze(element, resultAllAnalyzed);
 				resultAllAnalyzed.put(analyzer.getClass().getSimpleName(), resultAnalyzer);
 				if (!resultAnalyzer.sucessful())
