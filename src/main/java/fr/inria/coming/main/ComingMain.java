@@ -1,7 +1,9 @@
 package fr.inria.coming.main;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
@@ -22,6 +24,9 @@ import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
 import fr.inria.coming.core.engine.RevisionNavigationExperiment;
 import fr.inria.coming.core.engine.git.GITRepositoryInspector;
+import fr.inria.coming.core.entities.interfaces.IFilter;
+import fr.inria.coming.core.filter.commitmessage.BugfixKeywordsFilter;
+import fr.inria.coming.core.filter.commitmessage.KeyWordsMessageFilter;
 
 /**
  * 
@@ -53,6 +58,10 @@ public class ComingMain {
 
 		options.addOption("showactions", false, "show all actions");
 		options.addOption("showentities", false, "show all entities");
+
+		// Revision filter
+		options.addOption("filter", true, "Names of filter");
+		options.addOption("filtervalue", true, "Values");
 
 		// In case of git
 		options.addOption("branch", true, "branch");
@@ -153,11 +162,25 @@ public class ComingMain {
 
 		}
 
+		experiment.setFilters(createFilters());
+
 		FinalResult result = experiment.analyze();
 
 		System.out.println(result.toString());
 
 		return result;
+	}
+
+	private List<IFilter> createFilters() {
+		List<IFilter> filters = new ArrayList<IFilter>();
+		String filterProperty = ComingProperties.getProperty("filter");
+		if ("bugfix".equals(filterProperty)) {
+			filters.add(new BugfixKeywordsFilter());
+		} else if ("keywords".equals(filterProperty)) {
+			filters.add(new KeyWordsMessageFilter(ComingProperties.getProperty("filtervalue")));
+		}
+
+		return filters;
 	}
 
 	private ChangePatternSpecification loadPattern() {

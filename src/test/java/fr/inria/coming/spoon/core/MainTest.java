@@ -1,8 +1,11 @@
 package fr.inria.coming.spoon.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.ConsoleAppender;
@@ -19,6 +22,9 @@ import fr.inria.coming.changeminer.entity.CommitFinalResult;
 import fr.inria.coming.core.entities.DiffResult;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.core.entities.interfaces.Commit;
+import fr.inria.coming.core.entities.interfaces.IFilter;
+import fr.inria.coming.core.filter.commitmessage.BugfixKeywordsFilter;
+import fr.inria.coming.core.filter.commitmessage.KeyWordsMessageFilter;
 import fr.inria.coming.main.ComingMain;
 import gumtree.spoon.diff.Diff;
 
@@ -58,7 +64,8 @@ public class MainTest {
 
 	@Test
 	public void testMineBinaryOperatorMain() {
-		ComingMain.main(new String[] { "-location", "repogit4testv0", "-entity", "BinaryOperator", "-action", "INS" });
+		ComingMain.main(
+				new String[] { "-location", "repogit4testv0", "-entitytype", "BinaryOperator", "-action", "INS" });
 	}
 
 	@SuppressWarnings("unchecked")
@@ -85,6 +92,70 @@ public class MainTest {
 		}
 		assertTrue(hasRootOp);
 
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public void testFilter_bugfix() throws Exception {
+		ComingMain cm = new ComingMain();
+		Object result = cm.run(new String[] { "-location", "repogit4testv0", });
+		assertNotNull(result);
+		assertTrue(result instanceof CommitFinalResult);
+		CommitFinalResult cfres = (CommitFinalResult) result;
+
+		List<IFilter> filters = cm.getExperiment().getFilters();
+
+		assertTrue(filters.isEmpty());
+
+		result = cm.run(new String[] { "-location", "repogit4testv0", "-filter", "bugfix" });
+		assertNotNull(result);
+		assertTrue(result instanceof CommitFinalResult);
+		cfres = (CommitFinalResult) result;
+
+		filters = cm.getExperiment().getFilters();
+
+		assertFalse(filters.isEmpty());
+		assertEquals(1, filters.size());
+		BugfixKeywordsFilter bffilter = (BugfixKeywordsFilter) filters.stream()
+				.filter(e -> e instanceof BugfixKeywordsFilter).findFirst().get();
+		assertNotNull(bffilter);
+
+		for (Commit c : cfres.getAllResults().keySet()) {
+			assertTrue(bffilter.accept(c));
+		}
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public void testFilter_keyword() throws Exception {
+		ComingMain cm = new ComingMain();
+		Object result = cm.run(new String[] { "-location", "repogit4testv0", });
+		assertNotNull(result);
+		assertTrue(result instanceof CommitFinalResult);
+		CommitFinalResult cfres = (CommitFinalResult) result;
+
+		List<IFilter> filters = cm.getExperiment().getFilters();
+
+		assertTrue(filters.isEmpty());
+
+		result = cm.run(
+				new String[] { "-location", "repogit4testv0", "-filter", "keywords", "-filtervalue", "precondition" });
+		assertNotNull(result);
+		assertTrue(result instanceof CommitFinalResult);
+		cfres = (CommitFinalResult) result;
+
+		filters = cm.getExperiment().getFilters();
+
+		assertFalse(filters.isEmpty());
+		assertEquals(1, filters.size());
+		KeyWordsMessageFilter kwfilter = (KeyWordsMessageFilter) filters.stream()
+				.filter(e -> e instanceof KeyWordsMessageFilter).findFirst().get();
+		assertNotNull(kwfilter);
+
+		for (Commit c : cfres.getAllResults().keySet()) {
+			assertTrue(kwfilter.accept(c));
+			assertEquals("fe76517014e580ddcb40ac04ea824d54ba741c8b", (c.getName().toString()));
+		}
 	}
 
 }
