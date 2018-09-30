@@ -2,6 +2,7 @@ package fr.inria.coming.spoon.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -25,7 +26,11 @@ import fr.inria.coming.core.entities.interfaces.Commit;
 import fr.inria.coming.core.entities.interfaces.IFilter;
 import fr.inria.coming.core.filter.commitmessage.BugfixKeywordsFilter;
 import fr.inria.coming.core.filter.commitmessage.KeyWordsMessageFilter;
+import fr.inria.coming.core.filter.diff.NbHunkFilter;
+import fr.inria.coming.core.filter.files.CommitSizeFilter;
 import fr.inria.coming.main.ComingMain;
+import fr.inria.coming.main.ComingProperties;
+import fr.inria.main.CommandSummary;
 import gumtree.spoon.diff.Diff;
 
 /**
@@ -156,6 +161,147 @@ public class MainTest {
 			assertTrue(kwfilter.accept(c));
 			assertEquals("fe76517014e580ddcb40ac04ea824d54ba741c8b", (c.getName().toString()));
 		}
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public void testFilter_hunks() throws Exception {
+		ComingMain cm = new ComingMain();
+		Object result = cm.run(new String[] { "-location", "repogit4testv0", });
+		assertNotNull(result);
+		assertTrue(result instanceof CommitFinalResult);
+		CommitFinalResult cfres = (CommitFinalResult) result;
+
+		List<IFilter> filters = cm.getExperiment().getFilters();
+
+		assertTrue(filters.isEmpty());
+
+		String[] args = new String[] { "-location", "repogit4testv0", //
+				"-filter", "numberhunks",
+				//
+				"-parameters", "min_nb_hunks:2:max_nb_hunks:2" };
+
+		CommandSummary cs = new CommandSummary(args);
+		result = cm.run(cs.flat());
+		assertNotNull(result);
+		assertTrue(result instanceof CommitFinalResult);
+		cfres = (CommitFinalResult) result;
+
+		filters = cm.getExperiment().getFilters();
+
+		assertEquals(2, ComingProperties.getPropertyInteger("min_nb_hunks").intValue());
+		assertEquals(2, ComingProperties.getPropertyInteger("max_nb_hunks").intValue());
+		assertFalse(filters.isEmpty());
+		assertEquals(1, filters.size());
+		NbHunkFilter kwfilter = (NbHunkFilter) filters.stream().filter(e -> e instanceof NbHunkFilter).findFirst()
+				.get();
+		assertNotNull(kwfilter);
+
+		for (Commit c : cfres.getAllResults().keySet()) {
+			assertTrue(kwfilter.accept(c));
+			assertEquals("6dac8ae81bd03bcae1e1fade064d3bb03de472c0", (c.getName().toString()));
+		}
+
+		// Let's check the nr lines hunks per hunk
+		cs.command.put("-parameters", "min_nb_hunks:1:max_nb_hunks:3:max_lines_per_hunk:1");
+
+		result = cm.run(cs.flat());
+		assertEquals(1, ComingProperties.getPropertyInteger("min_nb_hunks").intValue());
+		assertEquals(3, ComingProperties.getPropertyInteger("max_nb_hunks").intValue());
+		assertEquals(1, ComingProperties.getPropertyInteger("max_lines_per_hunk").intValue());
+		cfres = (CommitFinalResult) result;
+		for (Commit c : cfres.getAllResults().keySet()) {
+
+			assertNotEquals("c6b1cd8204b10c324b92cdc3e44fe3ab6cfb1f5e", (c.getName().toString()));
+		}
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public void testFilter_maxfiles() throws Exception {
+		ComingMain cm = new ComingMain();
+		Object result = cm.run(new String[] { "-location", "repogit4testv0", });
+		assertNotNull(result);
+		assertTrue(result instanceof CommitFinalResult);
+		CommitFinalResult cfres = (CommitFinalResult) result;
+
+		List<IFilter> filters = cm.getExperiment().getFilters();
+
+		assertTrue(filters.isEmpty());
+
+		String[] args = new String[] { "-location", "repogit4testv0", //
+				"-filter", "maxfiles",
+				//
+				"-parameters", "max_files_per_commit:1" };
+
+		CommandSummary cs = new CommandSummary(args);
+		result = cm.run(cs.flat());
+		assertNotNull(result);
+		assertTrue(result instanceof CommitFinalResult);
+		cfres = (CommitFinalResult) result;
+
+		filters = cm.getExperiment().getFilters();
+
+		assertEquals(1, ComingProperties.getPropertyInteger("max_files_per_commit").intValue());
+
+		assertFalse(filters.isEmpty());
+		assertEquals(1, filters.size());
+		CommitSizeFilter kwfilter = (CommitSizeFilter) filters.stream().filter(e -> e instanceof CommitSizeFilter)
+				.findFirst().get();
+		assertNotNull(kwfilter);
+
+		for (Commit c : cfres.getAllResults().keySet()) {
+			assertTrue(kwfilter.accept(c));
+			assertNotEquals("01dd29c37f6044d9d1126d9db55a961cccaccfb7", (c.getName().toString()));
+		}
+
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public void testFilter_2Filters() throws Exception {
+		ComingMain cm = new ComingMain();
+		Object result = cm.run(new String[] { "-location", "repogit4testv0", });
+		assertNotNull(result);
+		assertTrue(result instanceof CommitFinalResult);
+		CommitFinalResult cfres = (CommitFinalResult) result;
+
+		List<IFilter> filters = cm.getExperiment().getFilters();
+
+		assertTrue(filters.isEmpty());
+
+		String[] args = new String[] { "-location", "repogit4testv0", //
+				"-filter", "maxfiles:numberhunks",
+				//
+				"-parameters", "max_files_per_commit:1:min_nb_hunks:1:max_nb_hunks:3:max_lines_per_hunk:1" };
+
+		CommandSummary cs = new CommandSummary(args);
+		result = cm.run(cs.flat());
+		assertNotNull(result);
+		assertTrue(result instanceof CommitFinalResult);
+		cfres = (CommitFinalResult) result;
+
+		filters = cm.getExperiment().getFilters();
+
+		assertEquals(1, ComingProperties.getPropertyInteger("max_files_per_commit").intValue());
+
+		assertFalse(filters.isEmpty());
+		assertEquals(2, filters.size());
+		CommitSizeFilter cmfilter = (CommitSizeFilter) filters.stream().filter(e -> e instanceof CommitSizeFilter)
+				.findFirst().get();
+		assertNotNull(cmfilter);
+
+		NbHunkFilter kwfilter = (NbHunkFilter) filters.stream().filter(e -> e instanceof NbHunkFilter).findFirst()
+				.get();
+		assertNotNull(kwfilter);
+
+		for (Commit c : cfres.getAllResults().keySet()) {
+			assertTrue(cmfilter.accept(c));
+			assertTrue(kwfilter.accept(c));
+			assertNotEquals("01dd29c37f6044d9d1126d9db55a961cccaccfb7", (c.getName().toString()));
+			assertNotEquals("c6b1cd8204b10c324b92cdc3e44fe3ab6cfb1f5e", (c.getName().toString()));
+		}
+
 	}
 
 }

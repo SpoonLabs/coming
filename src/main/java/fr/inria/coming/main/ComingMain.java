@@ -27,6 +27,8 @@ import fr.inria.coming.core.engine.git.GITRepositoryInspector;
 import fr.inria.coming.core.entities.interfaces.IFilter;
 import fr.inria.coming.core.filter.commitmessage.BugfixKeywordsFilter;
 import fr.inria.coming.core.filter.commitmessage.KeyWordsMessageFilter;
+import fr.inria.coming.core.filter.diff.NbHunkFilter;
+import fr.inria.coming.core.filter.files.CommitSizeFilter;
 
 /**
  * 
@@ -161,7 +163,7 @@ public class ComingMain {
 			// TODO: LOAD Analyzers from command
 
 		}
-
+		// TODO: maybe move to git engine
 		experiment.setFilters(createFilters());
 
 		FinalResult result = experiment.analyze();
@@ -174,12 +176,22 @@ public class ComingMain {
 	private List<IFilter> createFilters() {
 		List<IFilter> filters = new ArrayList<IFilter>();
 		String filterProperty = ComingProperties.getProperty("filter");
-		if ("bugfix".equals(filterProperty)) {
-			filters.add(new BugfixKeywordsFilter());
-		} else if ("keywords".equals(filterProperty)) {
-			filters.add(new KeyWordsMessageFilter(ComingProperties.getProperty("filtervalue")));
-		}
+		if (filterProperty == null || filterProperty.isEmpty())
+			return filters;
 
+		String[] filter = filterProperty.split(File.pathSeparator);
+
+		for (String singlefilter : filter) {
+
+			if ("bugfix".equals(singlefilter)) {
+				filters.add(new BugfixKeywordsFilter());
+			} else if ("keywords".equals(singlefilter)) {
+				filters.add(new KeyWordsMessageFilter(ComingProperties.getProperty("filtervalue")));
+			} else if ("numberhunks".equals(singlefilter))
+				filters.add(new NbHunkFilter());
+			else if ("maxfiles".equals(singlefilter))
+				filters.add(new CommitSizeFilter());
+		}
 		return filters;
 	}
 

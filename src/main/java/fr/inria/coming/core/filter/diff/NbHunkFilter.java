@@ -21,6 +21,10 @@ public class NbHunkFilter extends AbstractChainedFilter<Commit> {
 	private int max_included;
 	private int min_included;
 
+	public NbHunkFilter() {
+		this(ComingProperties.getPropertyInteger("min_nb_hunks"), ComingProperties.getPropertyInteger("max_nb_hunks"));
+	}
+
 	public NbHunkFilter(int min_included, int max_included) {
 		super();
 		this.max_included = max_included;
@@ -73,7 +77,7 @@ public class NbHunkFilter extends AbstractChainedFilter<Commit> {
 		for (RangeDifference diff : results) {
 			if (diff.kind() != RangeDifference.NOCHANGE) {
 				int length = diff.rightEnd() - diff.rightStart();
-				if (length <= ComingProperties.getPropertyInteger("MAX_LINES_PER_HUNK"))
+				if (length <= ComingProperties.getPropertyInteger("max_lines_per_hunk"))
 					ranges.add(diff);
 
 			}

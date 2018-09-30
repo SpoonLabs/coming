@@ -37,7 +37,7 @@ public class CommitSizeFilter extends AbstractChainedFilter<Commit> {
 
 			}
 
-			if (countJava > ComingProperties.getPropertyInteger("MAX_FILES_PER_COMMIT")) {
+			if (countJava > ComingProperties.getPropertyInteger("max_files_per_commit")) {
 				// System.out.println("Commit not accepted, many files in the commit");
 				// log.info("-----");
 				return false;
