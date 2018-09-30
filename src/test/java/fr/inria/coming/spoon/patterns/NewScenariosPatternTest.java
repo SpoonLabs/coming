@@ -146,18 +146,18 @@ public class NewScenariosPatternTest {
 		System.out.println("FinalResults: \n" + finalResult);
 		for (Commit commit : commitResult.getAllResults().keySet()) {
 
-			DiffResult<Commit> diffs = (DiffResult<Commit>) commitResult.getAllResults().get(commit)
+			DiffResult<Commit, Diff> diffs = (DiffResult<Commit, Diff>) commitResult.getAllResults().get(commit)
 					.getResultFromClass(FineGrainDifftAnalyzer.class);
 			assertNotNull(diffs);
 
 			if ("60b54977abe45f662daaa80ebfdf63ab4fe3a9b2".equals(commit.getName())
 					|| "ab71649c481971a9ad54f04797f5fd9cb133789b".equals(commit.getName())) {
 				// firsts commits, no changes, file introduction
-				assertTrue(diffs.getAllOps().isEmpty());
+				assertTrue(diffs.getAll().isEmpty());
 			} else
-				assertTrue("Not changes at: " + commit.getName(), diffs.getAllOps().size() > 0);
+				assertTrue("Not changes at: " + commit.getName(), diffs.getAll().size() > 0);
 
-			for (Diff diff : diffs.getAllOps()) {
+			for (Diff diff : diffs.getAll()) {
 				assertTrue(diff.getRootOperations().size() > 0);
 			}
 		}
@@ -369,7 +369,7 @@ public class NewScenariosPatternTest {
 
 	@Test
 	public void testXMLPattern1_INS_INV_FromFile() throws Exception {
-		File fl = new File(getClass().getResource("/pattern_test_INS_INV.xml").getFile());
+		File fl = new File(getClass().getResource("/pattern_test_1_INS_INV.xml").getFile());
 
 		ChangePatternSpecification patternParsed = PatternXMLParser.parseFile(fl.getAbsolutePath());
 

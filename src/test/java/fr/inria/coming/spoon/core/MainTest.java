@@ -19,8 +19,10 @@ import org.junit.Test;
 import com.github.gumtreediff.matchers.Matcher;
 
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
+import fr.inria.coming.changeminer.analyzer.commitAnalyzer.HunkDifftAnalyzer;
 import fr.inria.coming.changeminer.entity.CommitFinalResult;
 import fr.inria.coming.core.entities.DiffResult;
+import fr.inria.coming.core.entities.HunkDiff;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.core.entities.interfaces.Commit;
 import fr.inria.coming.core.entities.interfaces.IFilter;
@@ -75,7 +77,7 @@ public class MainTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testUsingRun() throws Exception {
+	public void testDiffAnalysis() throws Exception {
 		ComingMain cm = new ComingMain();
 		Object result = cm.run(new String[] { "-location", "repogit4testv0", });
 		assertNotNull(result);
@@ -85,18 +87,54 @@ public class MainTest {
 
 		Commit c1 = commits.keySet().stream()
 				.filter(e -> e.getName().equals("4120ab0c714911a9c9f26b591cb3222eaf57d127")).findFirst().get();
-		DiffResult<Commit> diff1 = (DiffResult<Commit>) commits.get(c1)
+		DiffResult<Commit, Diff> diff1 = (DiffResult<Commit, Diff>) commits.get(c1)
 				.getResultFromClass(FineGrainDifftAnalyzer.class);
 
-		assertTrue(diff1.getAllOps().size() > 0);
+		assertTrue(diff1.getAll().size() > 0);
 
 		boolean hasRootOp = false;
 		// Assert one diff with +1 root op.
-		for (Diff diff : diff1.getAllOps()) {
+		for (Diff diff : diff1.getAll()) {
 			hasRootOp |= !(diff.getRootOperations().isEmpty());
 		}
 		assertTrue(hasRootOp);
 
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testHunkAnalysis() throws Exception {
+		ComingMain cm = new ComingMain();
+		Object result = cm.run(new String[] { "-location", "repogit4testv0", "-hunkanalysis", "true" });
+		assertNotNull(result);
+		assertTrue(result instanceof CommitFinalResult);
+		CommitFinalResult cfres = (CommitFinalResult) result;
+		Map<Commit, RevisionResult> commits = cfres.getAllResults();
+
+		// Case 1
+		int nrHunks = 2;
+		String commitId = "6dac8ae81bd03bcae1e1fade064d3bb03de472c0";
+		assertCommit(commits, nrHunks, commitId);
+
+		nrHunks = 1;
+		commitId = "4120ab0c714911a9c9f26b591cb3222eaf57d127";
+		assertCommit(commits, nrHunks, commitId);
+
+	}
+
+	@SuppressWarnings("unchecked")
+	public void assertCommit(Map<Commit, RevisionResult> commits, int nrHunks, String commitId) {
+		Commit c1 = commits.keySet().stream().filter(e -> e.getName().equals(commitId)).findFirst().get();
+
+		DiffResult<Commit, HunkDiff> diff1 = (DiffResult<Commit, HunkDiff>) commits.get(c1)
+				.getResultFromClass(HunkDifftAnalyzer.class);
+
+		assertNotNull(diff1);
+		assertTrue(diff1.getAll().size() > 0);
+		for (HunkDiff hunkdiff : diff1.getAll()) {
+
+			assertEquals(nrHunks, hunkdiff.size());
+		}
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

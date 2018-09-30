@@ -53,13 +53,6 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 		System.out.println("\n*****\nCommit: " + revision.getName());
 
 		for (IRevisionPair<String> fileFromRevision : javaFiles) {
-			// Move to filter
-			// if (fileCommit.getCompletePath().toLowerCase().contains("test")
-			// || fileCommit.getCompletePath().toLowerCase().endsWith("package-info.java"))
-			// {
-
-			// continue;
-			// }
 
 			String left = fileFromRevision.getPreviousVersion();
 			String right = fileFromRevision.getNextVersion();
@@ -70,7 +63,7 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 			}
 		}
 
-		return new DiffResult<IRevision>(revision, diffOfFiles);
+		return new DiffResult<IRevision, Diff>(revision, diffOfFiles);
 	}
 
 	@Override
@@ -86,9 +79,10 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 
 			try {
 				Diff diff = this.compareContent(left, right, granularity);
-				// todo
+
 				operations = diff.getRootOperations();
 
+				// TODO: Move to filter?
 				if (operations == null
 						|| operations.size() > ComingProperties.getPropertyInteger("MAX_AST_CHANGES_PER_FILE")
 						|| operations.size() < ComingProperties.getPropertyInteger("MIN_AST_CHANGES_PER_FILE")) {

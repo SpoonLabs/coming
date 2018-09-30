@@ -15,6 +15,7 @@ import org.apache.commons.cli.UnrecognizedOptionException;
 import org.apache.log4j.Logger;
 
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
+import fr.inria.coming.changeminer.analyzer.commitAnalyzer.HunkDifftAnalyzer;
 import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstanceAnalyzer;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.analyzer.patternspecification.PatternAction;
@@ -57,6 +58,8 @@ public class ComingMain {
 		options.addOption("parenttype", true, "parent type");
 		options.addOption("parentlevel", true,
 				"parent level: numbers of AST node where the parent is located. 1 means inmediate parent");
+
+		options.addOption("hunkanalysis", true, "include analysis of hunks");
 
 		options.addOption("showactions", false, "show all actions");
 		options.addOption("showentities", false, "show all entities");
@@ -155,14 +158,17 @@ public class ComingMain {
 			experiment.getAnalyzers().add(new FineGrainDifftAnalyzer());
 
 			ChangePatternSpecification pattern = loadPattern();
-
-			//
 			experiment.getAnalyzers().add(new PatternInstanceAnalyzer(pattern));
 
 		} else {
 			// TODO: LOAD Analyzers from command
 
 		}
+
+		if (ComingProperties.getPropertyBoolean("hunkanalysis")) {
+			experiment.getAnalyzers().add(0, new HunkDifftAnalyzer());
+		}
+
 		// TODO: maybe move to git engine
 		experiment.setFilters(createFilters());
 

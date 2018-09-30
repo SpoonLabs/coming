@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import gumtree.spoon.diff.Diff;
-import gumtree.spoon.diff.operations.Operation;
-
 /**
  * 
  * @author Matias Martinez
@@ -14,30 +11,30 @@ import gumtree.spoon.diff.operations.Operation;
  *
  * @param <T>
  */
-public class DiffResult<T> extends AnalysisResult<T> {
+public class DiffResult<T, R> extends AnalysisResult<T> {
 
 	/**
 	 * Filename
 	 */
-	Map<String, Diff> diffOfFiles = null;
+	Map<String, R> diffOfFiles = null;
 
-	public DiffResult(T analyzed, Map<String, Diff> diffOfFiles) {
+	public DiffResult(T analyzed, Map<String, R> diffOfFiles) {
 		super(analyzed);
 		this.diffOfFiles = diffOfFiles;
 	}
 
-	public Map<String, Diff> getDiffOfFiles() {
+	public Map<String, R> getDiffOfFiles() {
 		return diffOfFiles;
 	}
 
-	public void setDiffOfFiles(Map<String, Diff> diffOfFiles) {
+	public void setDiffOfFiles(Map<String, R> diffOfFiles) {
 		this.diffOfFiles = diffOfFiles;
 	}
 
-	public List<Diff> getAllOps() {
-		List<Diff> all = new ArrayList<>();
+	public List<R> getAll() {
+		List<R> all = new ArrayList<>();
 
-		for (Diff ops : this.diffOfFiles.values()) {
+		for (R ops : this.diffOfFiles.values()) {
 			all.add(ops);
 		}
 		return all;
@@ -48,12 +45,13 @@ public class DiffResult<T> extends AnalysisResult<T> {
 		for (String file : this.diffOfFiles.keySet()) {
 			r += "\n" + ("-" + file);
 
-			Diff idiff = this.diffOfFiles.get(file);
+			R idiff = this.diffOfFiles.get(file);
 
-			List<Operation> opsFile = idiff.getRootOperations();
-			for (Operation operation : opsFile) {
-				r += "\n" + ("--op->" + operation);
-			}
+			// List<Operation> opsFile = idiff.getRootOperations();
+			// for (Operation operation : opsFile) {
+			// r += "\n" + ("--op->" + operation);
+			// }
+			r += "\n" + idiff.toString();
 
 		}
 		return r;
