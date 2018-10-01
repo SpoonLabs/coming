@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.entities.AnalysisResult;
@@ -91,6 +92,8 @@ public abstract class RevisionNavigationExperiment<Data extends IRevision> {
 			processEndRevision(element, resultAllAnalyzed);
 
 			i++;
+			if (i > ConfigurationProperties.getPropertyInt("maxrevision"))
+				break;
 		}
 
 		return processEnd();
