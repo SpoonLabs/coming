@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<pattern>
+	<entity id="1" type="Break">
+		<parent parentId="2" distance="10" />
+	</entity>
+	<entity id="2" type="If" />
+
+	<action entityId="2" type="INS" />
+	<action entityId="1" type="INS" />
+</pattern>
