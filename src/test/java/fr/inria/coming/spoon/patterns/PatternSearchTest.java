@@ -28,6 +28,7 @@ import fr.inria.coming.changeminer.analyzer.patternspecification.PatternAction;
 import fr.inria.coming.changeminer.analyzer.patternspecification.PatternEntity;
 import fr.inria.coming.changeminer.analyzer.patternspecification.PatternRelations;
 import fr.inria.coming.changeminer.entity.ActionType;
+import fr.inria.coming.changeminer.util.PatternXMLParser;
 import fr.inria.coming.core.engine.files.BugFixRunner;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
@@ -491,7 +492,8 @@ public class PatternSearchTest {
 		DetectorChangePatternInstanceEngine detector = new DetectorChangePatternInstanceEngine();
 		ResultMapping mappings = detector.mappingActions(pattern, diffInsert);
 		assertFalse(mappings.getMappings().isEmpty());
-		List<ChangePatternInstance> linkedInstances = detector.calculateValidInstancesFromMapping(pattern, mappings.getMappings());
+		List<ChangePatternInstance> linkedInstances = detector.calculateValidInstancesFromMapping(pattern,
+				mappings.getMappings());
 		System.out.println("all com " + linkedInstances);
 		assertTrue(linkedInstances.size() > 0);
 		assertEquals(2, linkedInstances.get(0).getActions().size());
@@ -532,7 +534,8 @@ public class PatternSearchTest {
 		ResultMapping mappings = detector.mappingActions(pattern, diffInsertUpdate);
 		assertFalse(mappings.getMappings().isEmpty());
 		assertTrue(mappings.getNotMapped().isEmpty());
-		List<ChangePatternInstance> linkedInstances = detector.calculateValidInstancesFromMapping(pattern, mappings.getMappings());
+		List<ChangePatternInstance> linkedInstances = detector.calculateValidInstancesFromMapping(pattern,
+				mappings.getMappings());
 		System.out.println("all com " + linkedInstances);
 		assertTrue(linkedInstances.size() > 0);
 		assertEquals(3, linkedInstances.get(0).getActions().size());
@@ -606,7 +609,8 @@ public class PatternSearchTest {
 		// 2 X 2
 		assertEquals(4, allCombinations.size());
 
-		List<ChangePatternInstance> linkedInstances = detector.calculateValidInstancesFromMapping(pattern, mappings.getMappings());
+		List<ChangePatternInstance> linkedInstances = detector.calculateValidInstancesFromMapping(pattern,
+				mappings.getMappings());
 		// Instances
 		assertEquals(2, linkedInstances.size());
 		// Actions per instance
@@ -658,7 +662,8 @@ public class PatternSearchTest {
 		// 2 X 2
 		assertEquals(4, allCombinations.size());
 
-		List<ChangePatternInstance> linkedInstances = detector.calculateValidInstancesFromMapping(pattern, mappings.getMappings());
+		List<ChangePatternInstance> linkedInstances = detector.calculateValidInstancesFromMapping(pattern,
+				mappings.getMappings());
 		// Instances
 		assertEquals(2, linkedInstances.size());
 		// Actions per instance
@@ -708,7 +713,8 @@ public class PatternSearchTest {
 			System.out.println("-->" + changePatternInstance.getActions());
 		}
 
-		List<ChangePatternInstance> linkedInstances = detector.calculateValidInstancesFromMapping(pattern, mappings.getMappings());
+		List<ChangePatternInstance> linkedInstances = detector.calculateValidInstancesFromMapping(pattern,
+				mappings.getMappings());
 		// Instances
 		assertEquals(1, linkedInstances.size());
 		// Actions per instance
@@ -760,7 +766,8 @@ public class PatternSearchTest {
 			System.out.println("-->" + changePatternInstance.getActions());
 		}
 
-		List<ChangePatternInstance> linkedInstances = detector.calculateValidInstancesFromMapping(pattern, mappings.getMappings());
+		List<ChangePatternInstance> linkedInstances = detector.calculateValidInstancesFromMapping(pattern,
+				mappings.getMappings());
 		// Instances
 		assertEquals(1, linkedInstances.size());
 		// Actions per instance
@@ -813,7 +820,8 @@ public class PatternSearchTest {
 			System.out.println("-->" + changePatternInstance.getActions());
 		}
 
-		List<ChangePatternInstance> linkedInstancesPattern1 = detector.calculateValidInstancesFromMapping(pattern, mappings.getMappings());
+		List<ChangePatternInstance> linkedInstancesPattern1 = detector.calculateValidInstancesFromMapping(pattern,
+				mappings.getMappings());
 		// Instances
 		assertEquals(1, linkedInstancesPattern1.size());
 		// Actions per instance
@@ -841,7 +849,8 @@ public class PatternSearchTest {
 		assertFalse(mappingsp2.getMappings().isEmpty());
 		assertTrue(mappingsp2.getNotMapped().isEmpty());
 
-		List<ChangePatternInstance> linkedInstancesPattern2 = detector.calculateValidInstancesFromMapping(pattern2, mappingsp2.getMappings());
+		List<ChangePatternInstance> linkedInstancesPattern2 = detector.calculateValidInstancesFromMapping(pattern2,
+				mappingsp2.getMappings());
 		assertEquals(1, linkedInstancesPattern2.size());
 
 		/// Now, checking entities
@@ -865,11 +874,28 @@ public class PatternSearchTest {
 		assertNotEquals(affectedNodeIfpattern1, affectedNodeIfpattern2);
 	}
 
+	@Test
+	public void testPatternInstanceMath3() throws Exception {
+		File fl = new File(getClass().getResource("/pattern_test_5_1_Actions2.xml").getFile());
+
+		ChangePatternSpecification pattern = PatternXMLParser.parseFile(fl.getAbsolutePath());
+
+		File s = getFile("casesDj4/math3/MathArrays_s.java");
+		File t = getFile("casesDj4/math3/MathArrays_t.java");
+		BugFixRunner r = new BugFixRunner();
+		Diff diff = r.getdiff(s, t);
+		System.out.println("Output: " + diff);
+		Assert.assertEquals(1, diff.getRootOperations().size());
+
+		assertPattern(diff, pattern);
+	}
+
 	public void assertPattern(Diff diffToAnalyze, ChangePatternSpecification pattern) {
 		DetectorChangePatternInstanceEngine detector = new DetectorChangePatternInstanceEngine();
 		ResultMapping mappings = detector.mappingActions(pattern, diffToAnalyze);
 		assertTrue(mappings.getMappings().size() > 0);
-		System.out.println(mappings);
+		List<ChangePatternInstance> instances = detector.findPatternInstances(pattern, diffToAnalyze);
+		assertTrue(instances.size() > 0);
 	}
 
 	public void assertNoPattern(Diff diffToAnalyze, ChangePatternSpecification pattern) {
@@ -889,4 +915,5 @@ public class PatternSearchTest {
 		File file = new File(classLoader.getResource(name).getFile());
 		return file;
 	}
+
 }
