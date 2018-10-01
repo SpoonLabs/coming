@@ -55,7 +55,6 @@ public class GITRepositoryInspector extends RevisionNavigationExperiment<Commit>
 		return new CommitFinalResult(allResults);
 	}
 
-	// Map<Commit, DiffResult<Commit>> allResults = new HashMap<>();
 	Map<Commit, RevisionResult> allResults = new HashMap<>();
 
 	@SuppressWarnings("unchecked")

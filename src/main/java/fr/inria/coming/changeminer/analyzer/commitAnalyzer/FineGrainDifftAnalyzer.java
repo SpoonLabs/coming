@@ -46,7 +46,7 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 	@Override
 	public AnalysisResult<IRevision> analyze(IRevision revision) {
 
-		List<IRevisionPair> javaFiles = revision.getChildren();// .getJavaFileCommits();
+		List<IRevisionPair> javaFiles = revision.getChildren();
 
 		Map<String, Diff> diffOfFiles = new HashMap<>();
 

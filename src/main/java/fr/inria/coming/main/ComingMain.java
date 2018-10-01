@@ -26,10 +26,14 @@ import fr.inria.coming.changeminer.util.PatternXMLParser;
 import fr.inria.coming.core.engine.RevisionNavigationExperiment;
 import fr.inria.coming.core.engine.git.GITRepositoryInspector;
 import fr.inria.coming.core.entities.interfaces.IFilter;
+import fr.inria.coming.core.entities.interfaces.IOutput;
+import fr.inria.coming.core.entities.output.JSonPatternInstanceOutput;
+import fr.inria.coming.core.entities.output.StdOutput;
 import fr.inria.coming.core.filter.commitmessage.BugfixKeywordsFilter;
 import fr.inria.coming.core.filter.commitmessage.KeyWordsMessageFilter;
 import fr.inria.coming.core.filter.diff.NbHunkFilter;
 import fr.inria.coming.core.filter.files.CommitSizeFilter;
+import fr.inria.coming.core.filter.files.ContainTestFilterFilter;
 
 /**
  * 
@@ -47,9 +51,10 @@ public class ComingMain {
 	static {
 		//
 		options.addOption("location", true, "location of the project");
-		options.addOption("output", true, "location of the output");
+		options.addOption("resultoutput", true, "location of the output");
 		options.addOption("mode", true, "execution Mode. ");
 		options.addOption("input", true, "Input. ");
+		options.addOption("outputprocessor", true, "result outout processors");
 		// Pattern mining
 		options.addOption("pattern", true, "Location XML of pattern ");
 		options.addOption("entitytype", true, "entity type to mine");
@@ -160,11 +165,15 @@ public class ComingMain {
 			ChangePatternSpecification pattern = loadPattern();
 			experiment.getAnalyzers().add(new PatternInstanceAnalyzer(pattern));
 
+			// JSON output
+			experiment.getOutputProcessors().add(new JSonPatternInstanceOutput());
+
 		} else {
 			// TODO: LOAD Analyzers from command
 
 		}
 
+		// output
 		if (ComingProperties.getPropertyBoolean("hunkanalysis")) {
 			experiment.getAnalyzers().add(0, new HunkDifftAnalyzer());
 		}
@@ -172,9 +181,20 @@ public class ComingMain {
 		// TODO: maybe move to git engine
 		experiment.setFilters(createFilters());
 
+		String outputs = ComingProperties.getProperty("outputprocessor");
+		if (outputs == null) {
+			experiment.getOutputProcessors().add(0, new StdOutput());
+		} else {
+			// TODO: load
+		}
+
+		// EXECUTION
 		FinalResult result = experiment.analyze();
 
-		System.out.println(result.toString());
+		// RESULTS:
+		for (IOutput out : experiment.getOutputProcessors()) {
+			out.generateOutput(result);
+		}
 
 		return result;
 	}
@@ -197,6 +217,9 @@ public class ComingMain {
 				filters.add(new NbHunkFilter());
 			else if ("maxfiles".equals(singlefilter))
 				filters.add(new CommitSizeFilter());
+			else if ("withtest".equals(singlefilter))
+				filters.add(new ContainTestFilterFilter());
+
 		}
 		return filters;
 	}

@@ -28,12 +28,21 @@ public class PatternInstancesFromDiff extends AnalysisResult<IRevision> {
 
 	@Override
 	public String toString() {
+		try {
+			if (diff == null) {
+				System.err.println("Diff null");
+				return "--Diff null--";
+			}
 
-		String r = "\n----For Diff:" + diff.toString() + "\n: number instances found: " + instances.size();
-		for (ChangePatternInstance instance : instances) {
-			r += "\n" + instance.toString();
+			String r = "\n----For Diff:" + diff.toString() + "\n: number instances found: " + instances.size();
+			for (ChangePatternInstance instance : instances) {
+				r += "\n" + instance.toString();
+			}
+			return r += "\n----";
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		return r += "\n----";
+		return "--Diff ex--";
 	}
 
 	public List<ChangePatternInstance> getInstances() {

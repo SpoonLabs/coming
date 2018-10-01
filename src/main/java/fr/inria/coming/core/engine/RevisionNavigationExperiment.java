@@ -10,6 +10,7 @@ import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.entities.AnalysisResult;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.core.entities.interfaces.IFilter;
+import fr.inria.coming.core.entities.interfaces.IOutput;
 import fr.inria.coming.core.entities.interfaces.RevisionOrder;
 
 /**
@@ -22,6 +23,7 @@ public abstract class RevisionNavigationExperiment<Data extends IRevision> {
 	protected RevisionOrder<Data> navigationStrategy = null;
 	protected List<Analyzer> analyzers = new ArrayList<>();
 	protected List<IFilter> filters = null;
+	protected List<IOutput> outputProcessors = new ArrayList<>();
 
 	public RevisionNavigationExperiment() {
 	}
@@ -112,6 +114,14 @@ public abstract class RevisionNavigationExperiment<Data extends IRevision> {
 
 	public void setFilters(List<IFilter> filters) {
 		this.filters = filters;
+	}
+
+	public List<IOutput> getOutputProcessors() {
+		return outputProcessors;
+	}
+
+	public void setOutputProcessors(List<IOutput> outputProcessors) {
+		this.outputProcessors = outputProcessors;
 	}
 
 }

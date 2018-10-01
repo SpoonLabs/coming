@@ -51,7 +51,11 @@ public class DiffResult<T, R> extends AnalysisResult<T> {
 			// for (Operation operation : opsFile) {
 			// r += "\n" + ("--op->" + operation);
 			// }
-			r += "\n" + idiff.toString();
+			try {
+				r += "\n" + idiff.toString();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
 		}
 		return r;

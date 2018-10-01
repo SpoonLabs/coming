@@ -119,7 +119,7 @@ public class PatternXMLParser {
 					String idEnt = eElement.getAttribute("entityId");
 					String action = eElement.getAttribute("type");
 
-					ActionType type = ActionType.valueOf(action);
+					ActionType type = "*".equals(action) ? ActionType.ANY : ActionType.valueOf(action);
 					if (type == null)
 						throw new Exception("Action Type not identified");
 
