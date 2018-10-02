@@ -55,6 +55,7 @@ public class ComingMain {
 		options.addOption("mode", true, "execution Mode. ");
 		options.addOption("input", true, "Input. ");
 		options.addOption("outputprocessor", true, "result outout processors");
+		options.addOption("output", true, "output folder");
 		// Pattern mining
 		options.addOption("pattern", true, "Location XML of pattern ");
 		options.addOption("entitytype", true, "entity type to mine");
@@ -76,7 +77,7 @@ public class ComingMain {
 		// In case of git
 		options.addOption("branch", true, "branch");
 		options.addOption("message", true, "comming message");
-
+		options.addOption("parameters", true, "Parameters, divided by " + File.pathSeparator);
 	}
 
 	public static void main(String[] args) {
@@ -109,8 +110,6 @@ public class ComingMain {
 			help();
 			return null;
 		}
-
-		options.addOption("parameters", true, "Parameters, divided by " + File.pathSeparator);
 
 		if (cmd.hasOption("showactions")) {
 			System.out.println("Actions availables: " + Arrays.toString(ActionType.values()));

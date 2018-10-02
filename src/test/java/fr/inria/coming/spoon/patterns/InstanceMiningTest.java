@@ -35,7 +35,7 @@ import gumtree.spoon.diff.Diff;
  * @author Matias Martinez
  *
  */
-public class NewScenariosPatternTest {
+public class InstanceMiningTest {
 
 	@Test
 	public void testMain1() throws Exception {

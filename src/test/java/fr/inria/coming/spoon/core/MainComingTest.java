@@ -40,7 +40,7 @@ import gumtree.spoon.diff.Diff;
  * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
-public class MainTest {
+public class MainComingTest {
 
 	@Before
 	public void setUp() throws Exception {

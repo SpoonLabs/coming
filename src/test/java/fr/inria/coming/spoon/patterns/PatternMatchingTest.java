@@ -44,7 +44,7 @@ import spoon.reflect.declaration.CtElement;
  * @author Matias Martinez
  *
  */
-public class PatternSearchTest {
+public class PatternMatchingTest {
 	Diff diffUpdate = null;
 	Diff diffInsert = null;
 
