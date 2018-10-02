@@ -12,9 +12,8 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 
-import fr.inria.coming.core.Parameters;
-import fr.inria.coming.core.interfaces.Commit;
-import fr.inria.coming.core.interfaces.FileCommit;
+import fr.inria.coming.core.entities.interfaces.Commit;
+import fr.inria.coming.core.entities.interfaces.FileCommit;
 import gumtree.spoon.diff.operations.Operation;
 import net.lingala.zip4j.core.ZipFile;
 
@@ -35,8 +34,6 @@ public abstract class GitRepository4Test {
 	@Before
 	public void setUpGitRepo4Test() {
 		try {
-
-			Parameters.setUpProperties();
 
 			URL resource = getClass().getResource(getRepoName());
 			File fl = new File(resource.getFile());

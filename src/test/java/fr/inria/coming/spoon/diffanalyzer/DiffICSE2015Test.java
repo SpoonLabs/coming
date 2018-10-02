@@ -5,18 +5,20 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 
 import org.json.simple.JSONArray;
+import org.junit.Ignore;
 import org.junit.Test;
 
-import diffanalyzer.DiffICSE15ContextAnalyzer;
-import diffanalyzer.MapCounter;
-import fr.inria.coming.main.ConfigurationProperties;
+import fr.inria.coming.core.engine.files.DiffICSE15ContextAnalyzer;
+import fr.inria.coming.core.engine.files.MapCounter;
+import fr.inria.coming.main.ComingProperties;
 
 public class DiffICSE2015Test {
 
 	@Test
+	@Ignore
 	public void testICSE2015() throws Exception {
 		DiffICSE15ContextAnalyzer analyzer = new DiffICSE15ContextAnalyzer();
-		analyzer.run(ConfigurationProperties.getProperty("icse15difffolder"));
+		analyzer.run(ComingProperties.getProperty("icse15difffolder"));
 	}
 
 	@Test
@@ -102,7 +104,7 @@ public class DiffICSE2015Test {
 	public void runAndAssertSingleDiff(String case1421510) {
 		DiffICSE15ContextAnalyzer analyzer = new DiffICSE15ContextAnalyzer();
 
-		File fileDiff = new File(ConfigurationProperties.getProperty("icse15difffolder") + "/" + case1421510);
+		File fileDiff = new File(ComingProperties.getProperty("icse15difffolder") + "/" + case1421510);
 		JSONArray arrayout = analyzer.processDiff(new MapCounter<>(), new MapCounter<>(), fileDiff);
 
 		assertTrue(arrayout.size() > 0);

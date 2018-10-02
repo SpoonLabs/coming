@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<pattern>
+<entity id="1" type = "Method"/>
+<entity id="2" type = "Assignment">
+	<parent parentId="1" distance="10" />
+</entity>
+<entity id="3" type = "BinaryOperator">
+	<parent parentId="2" distance="2" />
+</entity>
+
+<action entityId ="3" type = "INS" />
+</pattern>

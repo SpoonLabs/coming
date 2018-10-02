@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<pattern>
+	<entity id="2" type="Throw">
+		<parent parentId="3" distance="10" />
+	</entity>
+	<entity id="3" type="If" />
+
+	<action entityId="3" type="INS" />
+	<action entityId="2" type="INS" />
+</pattern>
