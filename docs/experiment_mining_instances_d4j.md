@@ -2,9 +2,9 @@
 
 ## Test cases
 
-[Test code](src/test/java/fr/inria/coming/spoon/patterns/ExperimentMiningInstancesD4JTest.java)
+[Test code](../src/test/java/fr/inria/coming/spoon/patterns/ExperimentMiningInstancesD4JTest.java)
 
 
 ## Patterns specified (XML format) related to If conditions
 
-[Patterns](/src/main/resources/pattern_specification/)
+[Patterns](../src/main/resources/pattern_specification/)
