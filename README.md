@@ -30,7 +30,7 @@ If you use Coming, please cite:
     year = {2014},
     }
     
-Contact: Matias Martinez http://www.martinezmatias.com.ar/, Martin Monperrus http://www.monperrus.net/martin/
+Contact: Matias Martinez http://www.martinezmatias.com/, Martin Monperrus http://www.monperrus.net/martin/
 
 Compile
 ------
@@ -51,104 +51,19 @@ mvn test
 ```
 
 
-If the compilation fails, please try to Clone and install (using mvn) two dependencies: [Astor](https://github.com/SpoonLabs/astor) and [GTSpoon](https://github.com/SpoonLabs/gumtree-spoon-ast-diff)
- (We are working to solve this dependency problem)
-Run
-------
+If the compilation fails, please try to Clone and install (using Maven) two dependencies: [Astor](https://github.com/SpoonLabs/astor) and [GTSpoon](https://github.com/SpoonLabs/gumtree-spoon-ast-diff)  (We are working to solve this dependency problem)
+
+
+`repogit4testv0` is a GIT repository included inside Coming which is used by the test cases.
+
+
+# Run
+
 
 The main class is: `fr.inria.coming.main.ComingMain`.
 
-# Mining simple Patterns
 
-
-
-Extract all commits of repogit4testv0 that insert a binary operator AST node
-
-
-```
-java -classpath ./coming.jar fr.inria.coming.main.ComingMain -location  ./repogit4testv0/ -mode mineinstance -action INS -entitytype BinaryOperator   -output ./out
-```
-
-The argument `-mode` indicates the analyzer that Coming will use.
-The value `-mode mineinstance` means to detect instances of a change pattern (in the previous example, insert a binary operator AST node).
-
-The argument  `-output` is used to indicate the folder where Coming will write the results.
-
-
-# Filtering Commits
-
-## By commit message
-
-Coming provides a filter to discard Commits which commit message does not include some keywords
-
-
-### Bug fix keywords
-
-
-
-For studying only commits which messages include words related to bug fixing (e.g., bug, fix, issue), add the following command.
-
-```
-
--filter bugfix 
-```
-
-
-
-### Custom keywords
-
-For studying only commits which messages include `[MATH-`, add the following two commands.
-
-```
-
--filter keywords filtervalue [MATH- 
-
-```
-
-
-## By Number of Hunks
-
-Coming applies line-based diff between two files (for more information, see http://en.wikipedia.org/wiki/Diff).
-
-To filter a Commit according to the number of hunks:
-
-```
-
--filter numberhunks -parameters:max_nb_hunks:2  
-
-```
- 
-
-Here, in attribute `-filter` indicates that Commits are filtered according to max number of hunks (value `numberhunks`).
-Then, using the argument`-parameters` we specify `max_nb_hunks:2` which means max number of hunks per modified file is 2.
-
-
-
-## By number of modified files
-
-``` 
--filter maxfiles  -parameters max_files_per_commit:1
-```
-
-
-# Combining several filters
-
-We can combine the two precedent filters:
-
-``` 
--filter numberhunks:maxfiles  -parameters max_nb_hunks2:max_files_per_commit:1
-```
-
-## By test
-
-```
--filter withtest
-```
-
-Indicates that only commits with at least one modification on test cases are considered.
-
-
-# Default Values 
+####  Default Values 
 
 
 Most of the properties are configured in file "configuration.properties"
@@ -165,12 +80,34 @@ In the following command we change the value of two properties: `max_nb_hunks` a
 
 
 
-# Change Pattern specification
+# Mining Simple Changes (i.e., with exactly one change)
+
+
+
+Extract all commits of `repogit4testv0` that insert a binary operator AST node
+
+
+```
+java -classpath ./coming.jar fr.inria.coming.main.ComingMain -location  ./repogit4testv0/ -mode mineinstance -action INS -entitytype BinaryOperator   -output ./out
+```
+
+The argument `-mode` indicates the analyzer that Coming will use.
+The value `-mode mineinstance` means to detect instances of a change pattern (in the previous example, insert a binary operator AST node).
+
+The argument  `-output` is used to indicate the folder where Coming will write the results.
+
+
+## Printing Types of Actions and Entities
+
+To know the values accepted by the arguments `-action` and  `-entitytype`, 
+please call ComingMain with the following arguments: `-showactions` and `-showentities`, resp.
+
+
+# Mining Complex Changes (i.e., Two or more changes) 
 
 
 Instead of passing the action type and entity type per command line (which defines simple pattern),
 we can pass to Coming complex change pattern specified in a XML file.
-
 
 
 ```
@@ -199,7 +136,7 @@ This pattern is specified as follows:
 
 # Output
 
-Coming writes the output in the folder indicated by the argument ` -output `
+Coming writes the output in the folder indicated by the argument ` -output `.
 
 
 When running Coming in mode `-mode mineinstance` the output is a file name `instances_found.json` , which shows the different instances.
@@ -232,20 +169,90 @@ The JSon element for one instance shows: the revision information, the operators
 
 
 
+# Filtering Commits
 
-Other information
----------
+## By commit message
 
-Most of the properties are configured in file "configuration.properties"
+Coming provides a filter to discard Commits which commit message does not include some keywords
 
-MAX_LINES_PER_HUNK --> MAX size of diff hunks (for more information, see http://en.wikipedia.org/wiki/Diff)
 
-MAX_HUNKS_PER_FILECOMMIT --> MAX number of hunks per file in the commit
+### Bug fix keywords
 
-MAX_FILES_PER_COMMIT --> Max number of files in the commit 
 
-MAX_AST_CHANGES_PER_FILE --> max number of AST changes per file
 
-MIN_AST_CHANGES_PER_FILE --> min number of AST changes per file
+For studying only commits which messages include words related to bug fixing (e.g., bug, fix, issue), add the following command.
 
-excludeCommitWithOutTest--> indicates whether a commits without test modification is excluded
+```
+
+-filter bugfix 
+```
+
+The bugfix keywords are predefined. If you want to use  other keywords, use the `Custom keywords`.
+
+
+### Custom keywords
+
+For studying only commits which messages include `[MATH-`, add the following two commands:
+
+```
+
+-filter keywords filtervalue [MATH- 
+
+```
+
+
+## By Number of Hunks
+
+Coming applies line-based diff between two files (for more information, see http://en.wikipedia.org/wiki/Diff).
+
+To filter a Commit according to the number of hunks:
+
+```
+
+-filter numberhunks -parameters:max_nb_hunks:2  
+
+```
+ 
+
+Here, in attribute `-filter` indicates that Commits are filtered according to max number of hunks (value `numberhunks`).
+Then, using the argument`-parameters` we specify `max_nb_hunks:2` which means max number of hunks per modified file is 2.
+
+
+
+## By number of modified files
+
+The arguments:
+
+`-filter maxfiles  -parameters max_files_per_commit:1`
+
+consider commits with at least one file modified, added or deleted.
+
+
+## Combining several filters
+
+We can combine the two precedent filters:
+
+``` 
+-filter numberhunks:maxfiles  -parameters max_nb_hunks2:max_files_per_commit:1
+```
+
+## By presence of Tests
+
+The argument `-filter withtest` indicates that only commits with at least one modification on test cases are considered.
+
+
+
+
+## By numbers of AST Changes
+
+TODO: to write.
+
+
+# Extending Coming
+
+To extend Coming, please read the document [Extension points of Coming](./doc/extension_points.md)
+
+
+
+
+
