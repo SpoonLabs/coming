@@ -29,6 +29,7 @@ import fr.inria.coming.core.entities.interfaces.IFilter;
 import fr.inria.coming.core.entities.interfaces.IOutput;
 import fr.inria.coming.core.entities.output.JSonPatternInstanceOutput;
 import fr.inria.coming.core.entities.output.StdOutput;
+import fr.inria.coming.core.extensionpoints.changepattern.PatternFileParser;
 import fr.inria.coming.core.filter.commitmessage.BugfixKeywordsFilter;
 import fr.inria.coming.core.filter.commitmessage.KeyWordsMessageFilter;
 import fr.inria.coming.core.filter.diff.NbHunkFilter;
@@ -57,7 +58,8 @@ public class ComingMain {
 		options.addOption("outputprocessor", true, "result outout processors");
 		options.addOption("output", true, "output folder");
 		// Pattern mining
-		options.addOption("pattern", true, "Location XML of pattern ");
+		options.addOption("pattern", true, "Location the file pattern ");
+		options.addOption("patternparser", true, "Class name of the pattern parser (By default XML)");
 		options.addOption("entitytype", true, "entity type to mine");
 		options.addOption("entityvalue", true, "entity value to mine");
 		options.addOption("action", true, "action");
@@ -227,11 +229,11 @@ public class ComingMain {
 		String patternProperty = ComingProperties.getProperty("pattern");
 
 		if (patternProperty != null) {
-			// Load from XML
+			// Load pattern from file
 			File fl = new File(patternProperty);
 			if (fl.exists()) {
-
-				ChangePatternSpecification patternParsed = PatternXMLParser.parseFile(fl.getAbsolutePath());
+				PatternFileParser patternParser = loadPatternParser();
+				ChangePatternSpecification patternParsed = patternParser.parse(fl);
 				return patternParsed;
 			} else {
 				throw new IllegalAccessError("The pattern file given as input does not exist " + fl.getAbsolutePath());
@@ -264,6 +266,16 @@ public class ComingMain {
 		}
 
 		// return null;
+	}
+
+	private PatternFileParser loadPatternParser() {
+		String parser = ComingProperties.getProperty("patternparser");
+		if (parser == null) {
+			return new PatternXMLParser();
+		} else {
+			// TODO:
+		}
+		return null;
 	}
 
 	private static void help() {

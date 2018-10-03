@@ -18,6 +18,7 @@ import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSp
 import fr.inria.coming.changeminer.analyzer.patternspecification.PatternAction;
 import fr.inria.coming.changeminer.analyzer.patternspecification.PatternEntity;
 import fr.inria.coming.changeminer.entity.ActionType;
+import fr.inria.coming.core.extensionpoints.changepattern.PatternFileParser;
 
 /**
  * 
@@ -25,19 +26,25 @@ import fr.inria.coming.changeminer.entity.ActionType;
  *
  */
 
-public class PatternXMLParser {
+public class PatternXMLParser implements PatternFileParser {
 
 	public static final String ENTITY = "entity";
 	public static final String ACTION = "action";
 	public static final String PARENT = "parent";
 
-	@SuppressWarnings({ "unchecked", "null" })
-
 	public static ChangePatternSpecification parseFile(String patternFile) {
+
+		PatternXMLParser parser = new PatternXMLParser();
+		return parser.parse(new File(patternFile));
+	}
+
+	@SuppressWarnings({ "unchecked", "null" })
+	public ChangePatternSpecification parse(File fXmlFile) {
+		if (!fXmlFile.exists())
+			throw new IllegalArgumentException("File does not exist " + fXmlFile.getAbsolutePath());
 
 		try {
 
-			File fXmlFile = new File(patternFile);
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(fXmlFile);
@@ -134,7 +141,7 @@ public class PatternXMLParser {
 			}
 			return pattern;
 		} catch (Exception e) {
-			System.err.println("Problems parsing file " + patternFile);
+			System.err.println("Problems parsing file " + fXmlFile);
 			e.printStackTrace();
 			return null;
 		}
