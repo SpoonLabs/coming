@@ -60,7 +60,7 @@ public class MainComingTest {
 	@Test
 	public void testListEntities() {
 
-		ComingMain.main(new String[] { "-showentities" });// todo
+		ComingMain.main(new String[] { "-showentities" });
 	}
 
 	@Test

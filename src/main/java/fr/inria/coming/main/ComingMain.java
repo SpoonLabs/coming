@@ -21,6 +21,7 @@ import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSp
 import fr.inria.coming.changeminer.analyzer.patternspecification.PatternAction;
 import fr.inria.coming.changeminer.analyzer.patternspecification.PatternEntity;
 import fr.inria.coming.changeminer.entity.ActionType;
+import fr.inria.coming.changeminer.entity.EntityTypeSpoon;
 import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
 import fr.inria.coming.core.engine.RevisionNavigationExperiment;
@@ -114,10 +115,25 @@ public class ComingMain {
 		}
 
 		if (cmd.hasOption("showactions")) {
-			System.out.println("Actions availables: " + Arrays.toString(ActionType.values()));
+			System.out.println("---");
+			System.out.println("Actions available: ");
+			for (ActionType a : ActionType.values()) {
+				System.out.println(a);
+			}
+			System.out.println("---");
 			return null;
 		}
 
+		if (cmd.hasOption("showentities")) {
+			System.out.println("---");
+			System.out.println("Entities Type Available:");
+			System.out.println("---");
+			for (EntityTypeSpoon et : EntityTypeSpoon.values()) {
+				System.out.println(et);
+			}
+			System.out.println("---");
+			return null;
+		}
 		for (Option option : cmd.getOptions()) {
 
 			if (cmd.hasOption(option.getOpt())) {
@@ -125,13 +141,6 @@ public class ComingMain {
 				ComingProperties.properties.setProperty(option.getOpt(), value);
 			}
 
-		}
-		;
-
-		if (cmd.hasOption("showentities")) {
-			// System.out.println("Entities availables: " + Arrays.toString(Entities));
-			System.out.println("TODO");
-			return null;
 		}
 
 		if (cmd.hasOption("parameters")) {
