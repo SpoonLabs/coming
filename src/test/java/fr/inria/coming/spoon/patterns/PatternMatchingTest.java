@@ -876,12 +876,12 @@ public class PatternMatchingTest {
 
 	@Test
 	public void testPatternInstanceMath3() throws Exception {
-		File fl = new File(getClass().getResource("/pattern_test_5_1_Actions2.xml").getFile());
+		File fl = new File(getClass().getResource("/pattern_specification/pattern_test_5_1_Actions2.xml").getFile());
 
 		ChangePatternSpecification pattern = PatternXMLParser.parseFile(fl.getAbsolutePath());
 
-		File s = getFile("casesDj4/math3/MathArrays_s.java");
-		File t = getFile("casesDj4/math3/MathArrays_t.java");
+		File s = getFile("casesDj4/math_3/MathArrays_s.java");
+		File t = getFile("casesDj4/math_3/MathArrays_t.java");
 		BugFixRunner r = new BugFixRunner();
 		Diff diff = r.getdiff(s, t);
 		System.out.println("Output: " + diff);

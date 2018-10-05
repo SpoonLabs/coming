@@ -369,7 +369,7 @@ public class InstanceMiningTest {
 
 	@Test
 	public void testXMLPattern1_INS_INV_FromFile() throws Exception {
-		File fl = new File(getClass().getResource("/pattern_test_1_INS_INV.xml").getFile());
+		File fl = new File(getClass().getResource("/pattern_specification/pattern_test_1_INS_INV.xml").getFile());
 
 		ChangePatternSpecification patternParsed = PatternXMLParser.parseFile(fl.getAbsolutePath());
 
@@ -408,7 +408,8 @@ public class InstanceMiningTest {
 
 	@Test
 	public void testXMLPattern2_INS_INV_FromFile() throws Exception {
-		File fileWithPattern = new File(getClass().getResource("/pattern_test_2_INS_INV_PARENT.xml").getFile());
+		File fileWithPattern = new File(
+				getClass().getResource("/pattern_specification/pattern_test_2_INS_INV_PARENT.xml").getFile());
 
 		ChangePatternSpecification patternParsed = PatternXMLParser.parseFile(fileWithPattern.getAbsolutePath());
 
@@ -443,7 +444,8 @@ public class InstanceMiningTest {
 
 	@Test
 	public void testXMLPattern3_INS_INV_FromFile_twoparent() throws Exception {
-		File fileWithPattern = new File(getClass().getResource("/pattern_test_3_INS_INV_PARENT2.xml").getFile());
+		File fileWithPattern = new File(
+				getClass().getResource("/pattern_specification/pattern_test_3_INS_INV_PARENT2.xml").getFile());
 
 		ChangePatternSpecification patternParsed = PatternXMLParser.parseFile(fileWithPattern.getAbsolutePath());
 
@@ -481,7 +483,8 @@ public class InstanceMiningTest {
 
 	@Test
 	public void testXMLPattern4_2_Actions_1move() throws Exception {
-		File fileWithPattern = new File(getClass().getResource("/pattern_test_4_2_Actions.xml").getFile());
+		File fileWithPattern = new File(
+				getClass().getResource("/pattern_specification/pattern_test_4_2_Actions.xml").getFile());
 
 		ChangePatternSpecification patternParsed = PatternXMLParser.parseFile(fileWithPattern.getAbsolutePath());
 
@@ -521,7 +524,8 @@ public class InstanceMiningTest {
 
 	@Test
 	public void testXMLPattern5_2_Actions_2Insert() throws Exception {
-		File fileWithPattern = new File(getClass().getResource("/pattern_test_5_1_Actions2.xml").getFile());
+		File fileWithPattern = new File(
+				getClass().getResource("/pattern_specification/pattern_test_5_1_Actions2.xml").getFile());
 
 		ChangePatternSpecification patternParsed = PatternXMLParser.parseFile(fileWithPattern.getAbsolutePath());
 
@@ -563,7 +567,8 @@ public class InstanceMiningTest {
 
 	@Test
 	public void testXMLPattern5_b_2_Actions_2Insert_with_value() throws Exception {
-		File fileWithPattern = new File(getClass().getResource("/pattern_test_5_2_Actions2.xml").getFile());
+		File fileWithPattern = new File(
+				getClass().getResource("/pattern_specification/pattern_test_5_2_Actions2.xml").getFile());
 
 		ChangePatternSpecification patternParsed = PatternXMLParser.parseFile(fileWithPattern.getAbsolutePath());
 
@@ -607,7 +612,8 @@ public class InstanceMiningTest {
 
 	@Test
 	public void testXMLPattern5_b_2_Actions_2Insert_with_value_wrongvalue() throws Exception {
-		File fileWithPattern = new File(getClass().getResource("/pattern_test_5_3_Actions2_wrong.xml").getFile());
+		File fileWithPattern = new File(
+				getClass().getResource("/pattern_specification/pattern_test_5_3_Actions2_wrong.xml").getFile());
 
 		ChangePatternSpecification patternParsed = PatternXMLParser.parseFile(fileWithPattern.getAbsolutePath());
 
