@@ -102,7 +102,7 @@
 		<dependency>
 			<groupId>org.inria.sacha.automaticRepair</groupId>
 			<artifactId>astor</artifactId>
-			<version>0.0.2-SNAPSHOT</version>
+			<version>d09905c02c3bea4e41be52d0af6fe8e485c8f3c7</version>
 		</dependency>
 
 	</dependencies>
@@ -134,6 +134,12 @@
 			<id>tdurieux.github.io/maven-repository/snapshots/</id>
 			<name>tdurieux.github.io maven-repository</name>
 			<url>https://tdurieux.github.io/maven-repository/snapshots/</url>
+		</repository>
+
+		<repository>
+			<id>tdurieux.github.io/maven-repository/releases/</id>
+			<name>tdurieux.github.io maven-repository</name>
+			<url>https://tdurieux.github.io/maven-repository/releases/</url>
 		</repository>
 
 		<repository>
