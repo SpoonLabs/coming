@@ -12,6 +12,7 @@ import fr.inria.coming.core.engine.files.DiffICSE15ContextAnalyzer;
 import fr.inria.coming.core.engine.files.MapCounter;
 import fr.inria.coming.main.ComingProperties;
 
+@Ignore
 public class DiffICSE2015Test {
 
 	@Test
