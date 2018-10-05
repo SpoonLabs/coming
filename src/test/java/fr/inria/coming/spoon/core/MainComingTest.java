@@ -33,6 +33,7 @@ import fr.inria.coming.core.filter.files.CommitSizeFilter;
 import fr.inria.coming.main.ComingMain;
 import fr.inria.coming.main.ComingProperties;
 import fr.inria.coming.spoon.core.dummies.MyTestFilter;
+import fr.inria.coming.spoon.core.dummies.MyTestInput;
 import fr.inria.main.CommandSummary;
 import gumtree.spoon.diff.Diff;
 
@@ -360,6 +361,17 @@ public class MainComingTest {
 		NbHunkFilter kwfilter = (NbHunkFilter) filters.stream().filter(e -> e instanceof NbHunkFilter).findFirst()
 				.get();
 		assertNotNull(kwfilter);
+
+	}
+
+	@Test
+	public void testLoadInput() throws Exception {
+
+		ComingMain cm = new ComingMain();
+		Object result = cm.run(new String[] { "-location", "repogit4testv0", "-input", MyTestInput.class.getName(),
+				"-parameters", "maxrevision:0" });
+
+		assertTrue(cm.getExperiment() instanceof MyTestInput);
 
 	}
 

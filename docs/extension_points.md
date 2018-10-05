@@ -7,6 +7,11 @@ Mining provides a set of Extension points which allow to override the default be
 
 ##  Input
 
+The value of argument `-input` can include the name of a class that explores a source of information (e.g. a Git repo, a SVN repo, a file system).
+The class must extend from `RevisionNavigationExperiment` and must be added to the classpath.
+
+
+
 ## Execution modes (Analyzers to run)
 
 

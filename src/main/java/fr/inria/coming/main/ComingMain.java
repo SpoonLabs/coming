@@ -160,10 +160,10 @@ public class ComingMain {
 		if (input == null || input.equals("git")) {
 			experiment = new GITRepositoryInspector();
 		} else if (input.equals("file")) {
-
+			// TODO:
 		} else {
 			// extension point
-			throw new IllegalArgumentException("The value of argument input does not exist: " + input);
+			experiment = loadInputEngine(input);
 		}
 
 		if ("diff".equals(mode)) {
@@ -208,6 +208,21 @@ public class ComingMain {
 		}
 
 		return result;
+	}
+
+	private RevisionNavigationExperiment<?> loadInputEngine(String input) {
+
+		Object loaded;
+		try {
+			loaded = PlugInLoader.loadPlugin(input, RevisionNavigationExperiment.class);
+			if (loaded != null) {
+				return (RevisionNavigationExperiment<?>) loaded;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("We could not load input: " + input);
+		return null;
 	}
 
 	private List<IFilter> createFilters() {
