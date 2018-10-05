@@ -32,6 +32,7 @@ import fr.inria.coming.core.filter.diff.NbHunkFilter;
 import fr.inria.coming.core.filter.files.CommitSizeFilter;
 import fr.inria.coming.main.ComingMain;
 import fr.inria.coming.main.ComingProperties;
+import fr.inria.coming.spoon.core.dummies.MyTestFilter;
 import fr.inria.main.CommandSummary;
 import gumtree.spoon.diff.Diff;
 
@@ -339,6 +340,26 @@ public class MainComingTest {
 			assertNotEquals("01dd29c37f6044d9d1126d9db55a961cccaccfb7", (c.getName().toString()));
 			assertNotEquals("c6b1cd8204b10c324b92cdc3e44fe3ab6cfb1f5e", (c.getName().toString()));
 		}
+
+	}
+
+	@Test
+	public void testLoadFilter() throws Exception {
+
+		ComingMain cm = new ComingMain();
+		Object result = cm.run(new String[] { "-location", "repogit4testv0", "-filter",
+				"maxfiles:numberhunks:" + MyTestFilter.class.getCanonicalName(), "-parameters", "maxrevision:0" });
+		assertNotNull(result);
+		assertTrue(result instanceof CommitFinalResult);
+		List<IFilter> filters = cm.getExperiment().getFilters();
+
+		MyTestFilter cmfilter = (MyTestFilter) filters.stream().filter(e -> e instanceof MyTestFilter).findFirst()
+				.get();
+		assertNotNull(cmfilter);
+
+		NbHunkFilter kwfilter = (NbHunkFilter) filters.stream().filter(e -> e instanceof NbHunkFilter).findFirst()
+				.get();
+		assertNotNull(kwfilter);
 
 	}
 

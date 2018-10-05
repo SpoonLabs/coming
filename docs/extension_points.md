@@ -12,6 +12,11 @@ Mining provides a set of Extension points which allow to override the default be
 
 ##  Commit Filters
 
+In the value of parameter `filter`  you can add the class names of the filter to consider. That classes must implement the interface `IFilter`.
+You can add more than one filter by separing them using the char Classpath separator (e.g., ':').
+
+For example `-filter bugfix:myclasses.Filter1:myclassesFilter2`, indicates the use of 3 filters: `bugfix`, included in Coming, and two news  `myclasses.Filter1` and `myclassesFilter2`. Those classes must be included in the classpath.
+
 
 ## Post-Processors and Outputs
 

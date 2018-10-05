@@ -30,6 +30,7 @@ import fr.inria.coming.core.entities.interfaces.IFilter;
 import fr.inria.coming.core.entities.interfaces.IOutput;
 import fr.inria.coming.core.entities.output.JSonPatternInstanceOutput;
 import fr.inria.coming.core.entities.output.StdOutput;
+import fr.inria.coming.core.extensionpoints.PlugInLoader;
 import fr.inria.coming.core.extensionpoints.changepattern.PatternFileParser;
 import fr.inria.coming.core.filter.commitmessage.BugfixKeywordsFilter;
 import fr.inria.coming.core.filter.commitmessage.KeyWordsMessageFilter;
@@ -229,9 +230,27 @@ public class ComingMain {
 				filters.add(new CommitSizeFilter());
 			else if ("withtest".equals(singlefilter))
 				filters.add(new ContainTestFilterFilter());
+			else {
+				IFilter filterLoaded = loadFilter(singlefilter);
+				if (filterLoaded != null) {
+					filters.add(filterLoaded);
+				}
+			}
 
 		}
 		return filters;
+	}
+
+	private IFilter loadFilter(String singlefilter) {
+		try {
+			Object filter = PlugInLoader.loadPlugin(singlefilter, IFilter.class);
+			if (filter != null) {
+				return (IFilter) filter;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	private ChangePatternSpecification loadPattern() {
