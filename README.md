@@ -6,6 +6,9 @@ Coming is a tool for mining git repositories
 
 If you use Coming, please cite: 
 
+**[tool-paper]** Coming: a Tool for Mining Change PatternInstances from Git Commits. M. Martinez, M. Monperrus. 2018.
+
+
 **[short]** [Automatically Extracting Instances of Code Change Patterns with AST Analysis](https://hal.inria.fr/hal-00861883/file/paper-short.pdf) (Martinez, M.; Duchien, L.; Monperrus, M.) IEEE International Conference on Software Maintenance (ICSM), pp.388-391, 2013, doi: 10.1109/ICSM.2013.54
 
     @INPROCEEDINGS{coming2015, 
@@ -30,7 +33,9 @@ If you use Coming, please cite:
     year = {2014},
     }
     
-Contact: Matias Martinez http://www.martinezmatias.com/, Martin Monperrus http://www.monperrus.net/martin/
+Contact: 
+
+[Matias Martinez](http://www.martinezmatias.com/), [Martin Monperrus](http://www.monperrus.net/martin/)
 
 Compile
 ------
@@ -49,9 +54,6 @@ Test
 unzip ./src/main/resources/repogit4testv0.zip
 mvn test
 ```
-
-
-If the compilation fails, please try to Clone and install (using Maven) two dependencies: [Astor](https://github.com/SpoonLabs/astor) and [GTSpoon](https://github.com/SpoonLabs/gumtree-spoon-ast-diff)  (We are working to solve this dependency problem)
 
 
 `repogit4testv0` is a GIT repository included inside Coming which is used by the test cases.
