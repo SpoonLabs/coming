@@ -196,7 +196,7 @@ public class ComingMain {
 		if (outputs == null) {
 			experiment.getOutputProcessors().add(0, new StdOutput());
 		} else {
-			// TODO: load
+			loadOutputProcessors(outputs);
 		}
 
 		// EXECUTION
@@ -208,6 +208,22 @@ public class ComingMain {
 		}
 
 		return result;
+	}
+
+	private void loadOutputProcessors(String output) {
+		String[] outputs = output.split(File.pathSeparator);
+
+		for (String singlefoutput : outputs) {
+			try {
+				Object outLoaded = PlugInLoader.loadPlugin(singlefoutput, IOutput.class);
+				if (outLoaded != null) {
+					experiment.getOutputProcessors().add((IOutput) outLoaded);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
 	}
 
 	private RevisionNavigationExperiment<?> loadInputEngine(String input) {
