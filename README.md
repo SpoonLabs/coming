@@ -134,6 +134,31 @@ This pattern is specified as follows:
 ```
 
 
+### Change Pattern Specification: 
+
+Coming accepts Change Patterns specified in a XML files.
+As example the pattern `Add If-Return`:
+
+```
+<pattern>
+	<entity id=``1" type=``Return">
+		<parent parentId=``2" distance=``2" />
+	</entity>
+	<entity id=``2" type=``If" />
+	<action entityId=``1" type=``INS" />
+	<action entityId=``2" type=``INS" />
+</pattern>
+
+```
+Specifies:
+
+a) two  entities  (id  1  and  2),  one  representing  a `Return`,  the second  one  an `If`;
+
+b) a  parent  relation  between  theifandtheReturnentities  (with  a  max  distance  of  2  nodes);  and
+
+c) two actions of type INS (insert), one affecting the entity id 1 (i.e., the `Return`), the other one the entity id 2 (i.e., the `if`)
+
+
 # Output
 
 Coming writes the output in the folder indicated by the argument ` -output `.
