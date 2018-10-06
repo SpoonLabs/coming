@@ -159,6 +159,18 @@ b) a  parent  relation  between  theifandtheReturnentities  (with  a  max  dista
 c) two actions of type INS (insert), one affecting the entity id 1 (i.e., the `Return`), the other one the entity id 2 (i.e., the `if`)
 
 
+This pattern is able to match a changes such:
+
+```
++  if ((n1 * n2) < MathUtils.SAFE_MIN) {
++           return ZERO;
++    }
+
+```
+
+That change is an *instance*  of the pattern `Add If-Return`.
+
+
 # Output
 
 Coming writes the output in the folder indicated by the argument ` -output `.
