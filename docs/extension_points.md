@@ -3,16 +3,27 @@
 
 Mining provides a set of Extension points which allow to override the default behavior of Coming or to add new functionality.
 
-(Page under construction)
 
 ##  Input
 
 The value of argument `-input` can include the name of a class that explores a source of information (e.g. a Git repo, a SVN repo, a file system).
 The class must extend from `RevisionNavigationExperiment` and must be added to the classpath.
 
+Accepted values:
+
+a) `diff`: AST diff analyzis
+
+b) `mineinstance`: mining of change pattern instances
+
+c) <class name>: class name of the analyzer to execute
 
 
 ## Execution modes (Analyzers to run)
+
+
+In the value of parameter `mode`  you can add the class names of the Analyzer to consider. That classes must implement the interface `Analyzer`.
+You can add more than one filter by separating them using the char Classpath separator (e.g., ':').
+
 
 
 ##  Commit Filters

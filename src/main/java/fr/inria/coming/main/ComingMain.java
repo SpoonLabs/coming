@@ -24,6 +24,7 @@ import fr.inria.coming.changeminer.entity.ActionType;
 import fr.inria.coming.changeminer.entity.EntityTypeSpoon;
 import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
+import fr.inria.coming.core.engine.Analyzer;
 import fr.inria.coming.core.engine.RevisionNavigationExperiment;
 import fr.inria.coming.core.engine.git.GITRepositoryInspector;
 import fr.inria.coming.core.entities.interfaces.IFilter;
@@ -98,6 +99,7 @@ public class ComingMain {
 
 	RevisionNavigationExperiment<?> experiment = null;
 
+	@SuppressWarnings("rawtypes")
 	public FinalResult run(String[] args) throws Exception {
 
 		ComingProperties.reset();
@@ -157,49 +159,16 @@ public class ComingMain {
 		String mode = ComingProperties.getProperty("mode");
 		String input = ComingProperties.getProperty("input");
 
-		if (input == null || input.equals("git")) {
-			experiment = new GITRepositoryInspector();
-		} else if (input.equals("file")) {
-			// TODO:
-		} else {
-			// extension point
-			experiment = loadInputEngine(input);
-		}
+		// CONFIGURATION:
+		loadInput(input);
 
-		if ("diff".equals(mode)) {
-			experiment.getAnalyzers().clear();
-			experiment.getAnalyzers().add(new FineGrainDifftAnalyzer());
-		} else if ("mineinstance".equals(mode)) {
-			experiment.getAnalyzers().clear();
-			experiment.getAnalyzers().add(new FineGrainDifftAnalyzer());
+		loadModeAnalyzers(mode);
 
-			ChangePatternSpecification pattern = loadPattern();
-			experiment.getAnalyzers().add(new PatternInstanceAnalyzer(pattern));
+		loadFilters();
 
-			// JSON output
-			experiment.getOutputProcessors().add(new JSonPatternInstanceOutput());
+		loadOutput();
 
-		} else {
-			// TODO: LOAD Analyzers from command
-
-		}
-
-		// output
-		if (ComingProperties.getPropertyBoolean("hunkanalysis")) {
-			experiment.getAnalyzers().add(0, new HunkDifftAnalyzer());
-		}
-
-		// TODO: maybe move to git engine
-		experiment.setFilters(createFilters());
-
-		String outputs = ComingProperties.getProperty("outputprocessor");
-		if (outputs == null) {
-			experiment.getOutputProcessors().add(0, new StdOutput());
-		} else {
-			loadOutputProcessors(outputs);
-		}
-
-		// EXECUTION
+		// EXECUTION:
 		FinalResult result = experiment.analyze();
 
 		// RESULTS:
@@ -208,6 +177,73 @@ public class ComingMain {
 		}
 
 		return result;
+	}
+
+	private void loadFilters() {
+		experiment.setFilters(createFilters());
+	}
+
+	private void loadOutput() {
+		String outputs = ComingProperties.getProperty("outputprocessor");
+		if (outputs == null) {
+			experiment.getOutputProcessors().add(0, new StdOutput());
+		} else {
+			loadOutputProcessors(outputs);
+		}
+	}
+
+	private void loadInput(String input) {
+		if (input == null || input.equals("git")) {
+			experiment = new GITRepositoryInspector();
+		} else if (input.equals("file")) {
+			// TODO:
+		} else {
+			// extension point
+			experiment = loadInputEngine(input);
+		}
+	}
+
+	private void loadModeAnalyzers(String modes) {
+
+		String[] modesp = modes.split(File.pathSeparator);
+
+		for (String mode : modesp) {
+
+			if ("diff".equals(mode)) {
+				experiment.getAnalyzers().clear();
+				experiment.getAnalyzers().add(new FineGrainDifftAnalyzer());
+			} else if ("mineinstance".equals(mode)) {
+				experiment.getAnalyzers().clear();
+				experiment.getAnalyzers().add(new FineGrainDifftAnalyzer());
+
+				ChangePatternSpecification pattern = loadPattern();
+				experiment.getAnalyzers().add(new PatternInstanceAnalyzer(pattern));
+
+				// By default JSON output of pattern instances
+				experiment.getOutputProcessors().add(new JSonPatternInstanceOutput());
+
+			} else {
+				// LOAD Analyzers from command
+				loadAnalyzersFromCommand(mode);
+			}
+
+		}
+
+		if (ComingProperties.getPropertyBoolean("hunkanalysis")) {
+			experiment.getAnalyzers().add(0, new HunkDifftAnalyzer());
+		}
+	}
+
+	private void loadAnalyzersFromCommand(String mode) {
+		try {
+			Object analyzerLoaded = PlugInLoader.loadPlugin(mode, Analyzer.class);
+			if (analyzerLoaded != null) {
+				experiment.getAnalyzers().add((Analyzer) analyzerLoaded);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	private void loadOutputProcessors(String output) {
