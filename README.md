@@ -6,7 +6,7 @@ Coming is a tool for mining git repositories
 
 If you use Coming, please cite: 
 
-**[tool-paper]** Coming: a Tool for Mining Change PatternInstances from Git Commits. M. Martinez, M. Monperrus. 2018.
+**[tool-paper]** Coming: a Tool for Mining Change Pattern Instances from Git Commits. M. Martinez, M. Monperrus. 2018.
 
 
 **[short]** [Automatically Extracting Instances of Code Change Patterns with AST Analysis](https://hal.inria.fr/hal-00861883/file/paper-short.pdf) (Martinez, M.; Duchien, L.; Monperrus, M.) IEEE International Conference on Software Maintenance (ICSM), pp.388-391, 2013, doi: 10.1109/ICSM.2013.54

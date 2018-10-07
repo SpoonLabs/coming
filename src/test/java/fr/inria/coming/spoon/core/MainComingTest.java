@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,7 @@ import fr.inria.coming.core.filter.diff.NbHunkFilter;
 import fr.inria.coming.core.filter.files.CommitSizeFilter;
 import fr.inria.coming.main.ComingMain;
 import fr.inria.coming.main.ComingProperties;
+import fr.inria.coming.spoon.core.dummies.MyTestAnalyzer;
 import fr.inria.coming.spoon.core.dummies.MyTestFilter;
 import fr.inria.coming.spoon.core.dummies.MyTestInput;
 import fr.inria.coming.spoon.core.dummies.MyTestOutput;
@@ -389,4 +391,39 @@ public class MainComingTest {
 
 	}
 
+	@Test
+	public void testLoadAnalyzers() throws Exception {
+
+		ComingMain cm = new ComingMain();
+		Object result = cm.run(new String[] { "-location", "repogit4testv0",
+
+				"-mode", MyTestAnalyzer.class.getName(), "-parameters", "maxrevision:0" });
+
+		MyTestAnalyzer cmanalyzer = (MyTestAnalyzer) cm.getExperiment().getAnalyzers().stream()
+				.filter(e -> e instanceof MyTestAnalyzer).findFirst().get();
+		assertNotNull(cmanalyzer);
+
+	}
+
+	@Test
+	public void testLoadAnalyzers2Args() throws Exception {
+
+		ComingMain cm = new ComingMain();
+		Object result = cm.run(new String[] { "-location", "repogit4testv0",
+
+				"-mode", MyTestAnalyzer.class.getName() + File.pathSeparator + HunkDifftAnalyzer.class.getName(),
+				"-parameters", "maxrevision:0" });
+
+		assertEquals(2, cm.getExperiment().getAnalyzers().size());
+		MyTestAnalyzer cmanalyzer = (MyTestAnalyzer) cm.getExperiment().getAnalyzers().stream()
+				.filter(e -> e instanceof MyTestAnalyzer).findFirst().get();
+
+		assertNotNull(cmanalyzer);
+
+		HunkDifftAnalyzer cmanalyzer2 = (HunkDifftAnalyzer) cm.getExperiment().getAnalyzers().stream()
+				.filter(e -> e instanceof HunkDifftAnalyzer).findFirst().get();
+
+		assertNotNull(cmanalyzer2);
+
+	}
 }

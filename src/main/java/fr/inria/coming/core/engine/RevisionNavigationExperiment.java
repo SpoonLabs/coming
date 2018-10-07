@@ -85,7 +85,7 @@ public abstract class RevisionNavigationExperiment<Data extends IRevision> {
 
 				AnalysisResult resultAnalyzer = analyzer.analyze(element, resultAllAnalyzed);
 				resultAllAnalyzed.put(analyzer.getClass().getSimpleName(), resultAnalyzer);
-				if (!resultAnalyzer.sucessful())
+				if (resultAnalyzer == null || !resultAnalyzer.sucessful())
 					break;
 			}
 
