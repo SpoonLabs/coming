@@ -289,7 +289,7 @@ TODO: to write.
 
 # Extending Coming
 
-To extend Coming, please read the document [Extension points of Coming](./doc/extension_points.md)
+To extend Coming, please read the document [Extension points of Coming](./docs/extension_points.md)
 
 
 
