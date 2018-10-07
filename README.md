@@ -103,7 +103,7 @@ The argument  `-output` is used to indicate the folder where Coming will write t
 
 To know the values accepted by the arguments `-action` and  `-entitytype`, 
 please call ComingMain with the following arguments: `-showactions` and `-showentities`, resp.
-
+You can also find those values on this [page](/docs/types.md).
 
 # Mining Complex Changes (i.e., Two or more changes) 
 
