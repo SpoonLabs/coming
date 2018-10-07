@@ -1,5 +1,10 @@
 
-#Values Accepted of Entity types and Action Types
+# Values Accepted of Entity types and Action Types
+
+[List of Entity types](#entity-types)
+
+[List of Action types](#action-types)
+
 
 # Entity Types
 
