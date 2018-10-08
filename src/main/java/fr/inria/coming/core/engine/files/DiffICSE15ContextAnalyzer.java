@@ -2,6 +2,7 @@ package fr.inria.coming.core.engine.files;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,6 +98,8 @@ public class DiffICSE15ContextAnalyzer extends BugFixRunner {
 
 			Diff diff = operations.get(modifiedFile);
 			List<Operation> ops = diff.getRootOperations();
+
+			System.out.println("Diff file " + modifiedFile + " " + ops.size());
 			for (Operation operation : ops) {
 				CntxResolver cresolver = new CntxResolver();
 
@@ -109,7 +112,7 @@ public class DiffICSE15ContextAnalyzer extends BugFixRunner {
 				opContext.put("ops", this.getJSONFromOperator(operation));
 
 				calculateJSONAffectedMethod(diff, operation, opContext);
-
+				calculateJSONAffectedElement(diff, operation, opContext);
 				sublistJSon.add(opContext);
 			}
 
@@ -118,6 +121,7 @@ public class DiffICSE15ContextAnalyzer extends BugFixRunner {
 	}
 
 	private void calculateJSONAffectedMethod(Diff diff, Operation operation, JSONObject opContext) {
+
 		CtMethod methodOfOperation = operation.getNode().getParent(CtMethod.class);
 		Json4SpoonGenerator jsongen = new Json4SpoonGenerator();
 
@@ -145,6 +149,25 @@ public class DiffICSE15ContextAnalyzer extends BugFixRunner {
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
+		}
+
+	}
+
+	static List emptyList = new ArrayList();
+
+	private void calculateJSONAffectedElement(Diff diff, Operation operation, JSONObject opContext) {
+
+		operation.getNode();
+		Json4SpoonGenerator jsongen = new Json4SpoonGenerator();
+
+		JsonObject jsonT = jsongen.getJSONasJsonObject(((DiffImpl) diff).getContext(), operation.getAction().getNode(),
+				emptyList);
+		org.json.simple.parser.JSONParser p = new JSONParser();
+		try {
+			JSONObject jsonTsimple = (JSONObject) p.parse(jsonT.toString());
+			opContext.put("ast_element", jsonTsimple);
+		} catch (ParseException e) {
+			e.printStackTrace();
 		}
 	}
 
