@@ -363,12 +363,21 @@ public class ComingMain {
 		// return null;
 	}
 
-	private PatternFileParser loadPatternParser() {
+	public PatternFileParser loadPatternParser() {
 		String parser = ComingProperties.getProperty("patternparser");
-		if (parser == null) {
+		if (parser == null || parser.equals("xmlparser")) {
 			return new PatternXMLParser();
 		} else {
-			// TODO:
+
+			try {
+				Object parserFile = PlugInLoader.loadPlugin(parser, PatternFileParser.class);
+				if (parserFile != null) {
+					return (PatternFileParser) parserFile;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
 		}
 		return null;
 	}
