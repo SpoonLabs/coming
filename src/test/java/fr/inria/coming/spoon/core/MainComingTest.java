@@ -27,6 +27,7 @@ import fr.inria.coming.core.entities.HunkDiff;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.core.entities.interfaces.Commit;
 import fr.inria.coming.core.entities.interfaces.IFilter;
+import fr.inria.coming.core.entities.output.JSonChangeFrequencyOutput;
 import fr.inria.coming.core.filter.commitmessage.BugfixKeywordsFilter;
 import fr.inria.coming.core.filter.commitmessage.KeyWordsMessageFilter;
 import fr.inria.coming.core.filter.diff.NbHunkFilter;
@@ -441,6 +442,23 @@ public class MainComingTest {
 				.filter(e -> e instanceof HunkDifftAnalyzer).findFirst().get();
 
 		assertNotNull(cmanalyzer2);
+
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testDiffOutput() throws Exception {
+		ComingMain cm = new ComingMain();
+		Object result = cm.run(new String[] { "-location", "repogit4testv0", "-outputprocessor",
+				JSonChangeFrequencyOutput.class.getName() });
+		assertNotNull(result);
+		assertTrue(result instanceof CommitFinalResult);
+		CommitFinalResult cfres = (CommitFinalResult) result;
+		Map<Commit, RevisionResult> commits = cfres.getAllResults();
+
+		JSonChangeFrequencyOutput cmoutput = (JSonChangeFrequencyOutput) cm.getExperiment().getOutputProcessors()
+				.stream().filter(e -> e instanceof JSonChangeFrequencyOutput).findFirst().get();
+		assertNotNull(cmoutput);
 
 	}
 }
