@@ -21,14 +21,14 @@ c) <class name>: class name of the analyzer to execute
 ## Execution modes (Analyzers to run)
 
 
-In the value of parameter `mode`  you can add the class names of the Analyzer to consider. That classes must implement the interface `Analyzer`.
+The value of parameter `mode`  can have the class names of the Analyzer to consider. That class must implement the interface `Analyzer`.
 You can add more than one filter by separating them using the char Classpath separator (e.g., ':').
 
 
 
 ##  Commit Filters
 
-In the value of parameter `filter`  you can add the class names of the filter to consider. That classes must implement the interface `IFilter`.
+The value of parameter `filter`  can have the class names of the filter to consider. That class must implement the interface `IFilter`.
 You can add more than one filter by separating them using the char Classpath separator (e.g., ':').
 
 For example `-filter bugfix:myclasses.Filter1:myclassesFilter2`, indicates the use of 3 filters: `bugfix`, included in Coming, and two news  `myclasses.Filter1` and `myclassesFilter2`. Those classes must be included in the classpath.
@@ -36,7 +36,7 @@ For example `-filter bugfix:myclasses.Filter1:myclassesFilter2`, indicates the u
 
 ## Post-Processors and Outputs
 
-In the value of parameter `-outputprocessor`  you can add the class names of the filter to consider. That classes must implement the interface `IOutput`.
+The value of parameter `-outputprocessor`  can have the class names of the filter to consider. That class must implement the interface `IOutput`.
 You can add more than one filter by separating them using the char Classpath separator (e.g., ':').
 
 A output processor can have one or more of the following goals:
@@ -47,3 +47,10 @@ b) to present the results from specific analyzers (e.g., to export instances of 
 
 
 ## Format of the Pattern Specification
+
+The value of argument `-patternparser` can include the name of a class that loads a change pattern.
+The class must implement the interface `PatternFileParser`.
+By default, Coming uses a XML parser (value `xmlparser`).
+
+
+

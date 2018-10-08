@@ -37,6 +37,7 @@ import fr.inria.coming.spoon.core.dummies.MyTestAnalyzer;
 import fr.inria.coming.spoon.core.dummies.MyTestFilter;
 import fr.inria.coming.spoon.core.dummies.MyTestInput;
 import fr.inria.coming.spoon.core.dummies.MyTestOutput;
+import fr.inria.coming.spoon.core.dummies.MyTestParser;
 import fr.inria.main.CommandSummary;
 import gumtree.spoon.diff.Diff;
 
@@ -375,6 +376,22 @@ public class MainComingTest {
 				"-parameters", "maxrevision:0" });
 
 		assertTrue(cm.getExperiment() instanceof MyTestInput);
+
+	}
+
+	@Test
+	public void testLoadPasers() throws Exception {
+
+		ComingMain cm = new ComingMain();
+		Object result = cm.run(new String[] { "-location", "repogit4testv0",
+				//
+
+				"-patternparser", MyTestParser.class.getName(), "-parameters", "maxrevision:0" });
+
+		Object p = cm.loadPatternParser();
+		assertNotNull(p);
+
+		assertTrue(p instanceof MyTestParser);
 
 	}
 
