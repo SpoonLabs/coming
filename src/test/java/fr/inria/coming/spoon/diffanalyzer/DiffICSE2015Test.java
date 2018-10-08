@@ -5,13 +5,14 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 
 import org.json.simple.JSONArray;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.coming.core.engine.files.DiffICSE15ContextAnalyzer;
 import fr.inria.coming.core.engine.files.MapCounter;
 import fr.inria.coming.main.ComingProperties;
 
-//@Ignore
+@Ignore
 public class DiffICSE2015Test {
 
 	@Test
