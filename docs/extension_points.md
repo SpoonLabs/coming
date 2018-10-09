@@ -15,7 +15,8 @@ a) `diff`: AST diff analyzis
 
 b) `mineinstance`: mining of change pattern instances
 
-c) <class name>: class name of the analyzer to execute
+c) class name of the analyzer to execute, e.g., `myapp.core.MyClassAnalyzer`
+
 
 
 ## Execution modes (Analyzers to run)
