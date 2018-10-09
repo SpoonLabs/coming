@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  */
 public class MapCounter<K> extends HashMap<K, Integer> {
 
-	Map<K, Double> probMap = null;
+	Map<K, Double> probMap = new HashMap<K, Double>();
 	boolean changeSinceLastCreation = false;
 
 	public void add(K key) {
@@ -41,7 +41,7 @@ public class MapCounter<K> extends HashMap<K, Integer> {
 			return probMap;
 		}
 		changeSinceLastCreation = false;
-		probMap = new HashMap<K, Double>();
+		probMap.clear();
 
 		int size = 0;
 		for (Integer values : this.values()) {
