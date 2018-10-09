@@ -29,6 +29,7 @@ import fr.inria.coming.core.engine.RevisionNavigationExperiment;
 import fr.inria.coming.core.engine.git.GITRepositoryInspector;
 import fr.inria.coming.core.entities.interfaces.IFilter;
 import fr.inria.coming.core.entities.interfaces.IOutput;
+import fr.inria.coming.core.entities.output.JSonChangeFrequencyOutput;
 import fr.inria.coming.core.entities.output.JSonPatternInstanceOutput;
 import fr.inria.coming.core.entities.output.StdOutput;
 import fr.inria.coming.core.extensionpoints.PlugInLoader;
@@ -212,6 +213,7 @@ public class ComingMain {
 			if ("diff".equals(mode)) {
 				experiment.getAnalyzers().clear();
 				experiment.getAnalyzers().add(new FineGrainDifftAnalyzer());
+				experiment.getOutputProcessors().add(new JSonChangeFrequencyOutput());
 			} else if ("mineinstance".equals(mode)) {
 				experiment.getAnalyzers().clear();
 				experiment.getAnalyzers().add(new FineGrainDifftAnalyzer());
@@ -251,9 +253,13 @@ public class ComingMain {
 
 		for (String singlefoutput : outputs) {
 			try {
-				Object outLoaded = PlugInLoader.loadPlugin(singlefoutput, IOutput.class);
-				if (outLoaded != null) {
-					experiment.getOutputProcessors().add((IOutput) outLoaded);
+				if (singlefoutput.equals("changefrequency")) {
+					experiment.getOutputProcessors().add(new JSonChangeFrequencyOutput());
+				} else {
+					Object outLoaded = PlugInLoader.loadPlugin(singlefoutput, IOutput.class);
+					if (outLoaded != null) {
+						experiment.getOutputProcessors().add((IOutput) outLoaded);
+					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

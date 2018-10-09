@@ -410,6 +410,19 @@ public class MainComingTest {
 	}
 
 	@Test
+	public void testLoadOutputJSonChange() throws Exception {
+
+		ComingMain cm = new ComingMain();
+		Object result = cm.run(new String[] { "-location", "repogit4testv0", "-outputprocessor",
+				JSonChangeFrequencyOutput.class.getName(), "-parameters", "maxrevision:0" });
+
+		JSonChangeFrequencyOutput cmoutput = (JSonChangeFrequencyOutput) cm.getExperiment().getOutputProcessors()
+				.stream().filter(e -> e instanceof JSonChangeFrequencyOutput).findFirst().get();
+		assertNotNull(cmoutput);
+
+	}
+
+	@Test
 	public void testLoadAnalyzers() throws Exception {
 
 		ComingMain cm = new ComingMain();
@@ -461,4 +474,24 @@ public class MainComingTest {
 		assertNotNull(cmoutput);
 
 	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testDiffOutputModeDiff() throws Exception {
+		ComingMain cm = new ComingMain();
+		Object result = cm.run(new String[] { "-location", "repogit4testv0", "-mode", "diff"
+				// "-outputprocessor",
+				// JSonChangeFrequencyOutput.class.getName()
+		});
+		assertNotNull(result);
+		assertTrue(result instanceof CommitFinalResult);
+		CommitFinalResult cfres = (CommitFinalResult) result;
+		Map<Commit, RevisionResult> commits = cfres.getAllResults();
+
+		JSonChangeFrequencyOutput cmoutput = (JSonChangeFrequencyOutput) cm.getExperiment().getOutputProcessors()
+				.stream().filter(e -> e instanceof JSonChangeFrequencyOutput).findFirst().get();
+		assertNotNull(cmoutput);
+
+	}
+
 }
