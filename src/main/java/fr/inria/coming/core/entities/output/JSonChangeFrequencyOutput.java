@@ -33,6 +33,9 @@ public class JSonChangeFrequencyOutput implements IOutput {
 
 		CommitFinalResult cfres = (CommitFinalResult) finalResult;
 
+		if (finalResult == null)
+			return;
+
 		for (RevisionResult revresult : cfres.getAllResults().values()) {
 
 			AnalysisResult ar = revresult.getResultFromClass(FineGrainDifftAnalyzer.class);

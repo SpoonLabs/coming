@@ -177,8 +177,11 @@ That change is an *instance*  of the pattern `Add If-Return`.
 
 Coming writes the output in the folder indicated by the argument ` -output `.
 
+## Mined Instances
 
 When running Coming in mode `-mode mineinstance` the output is a file name `instances_found.json` , which shows the different instances.
+
+An example of the content of such file is:
 
 ```
 "instances": [
@@ -205,6 +208,76 @@ When running Coming in mode `-mode mineinstance` the output is a file name `inst
 ```
 
 The JSon element for one instance shows: the revision information, the operators that match with the pattern, the pattern information, and the code matched with the pattern.
+
+
+## Change frequency
+
+
+When running Coming in mode `-mode diff` the output is a file name `change_frequency.json` , which shows the frequency and probability of each type of change (i.e., frequency of actions applied  to each type of entities).
+
+An example of the content of such file is:
+
+```
+
+{
+  "frequency": [
+    {
+      "c": "BinaryOperator",
+      "f": "6"
+    },
+    {
+      "c": "Invocation",
+      "f": "2"
+    },
+    {
+      "c": "If",
+      "f": "2"
+    },
+   ....
+  ],
+  "frequencyParent": [
+    {
+      "c": "INS_Invocation_Block",
+      "f": "2"
+    },
+    {
+      "c": "UPD_BinaryOperator_If",
+      "f": "2"
+    },
+    {
+      "c": "INS_If_Block",
+      "f": "2"
+    },
+    ...
+  ],
+
+
+```
+
+The file shows:
+
+a) the frequency of affected entities within json attribute  `frequency` ([see types available](docs/types.md)).
+Example, the previous json file shows
+
+```
+  "c": "BinaryOperator",
+  "f": "6"
+```
+
+which means that there are 6 actions (code changes) that affect Binary Operators.
+
+
+b) the frequency of Actions over affected entities and their entity parents.
+Example, the previous json file shows
+
+```
+{...
+      "c": "UPD_BinaryOperator_If",
+      "f": "2"
+    },
+```
+which means that there are 2 changes that update binary operators inside an if condition (i.e., the parent).
+
 
 
 
