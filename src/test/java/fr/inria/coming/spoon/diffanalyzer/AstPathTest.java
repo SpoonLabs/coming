@@ -71,12 +71,10 @@ public class AstPathTest {
 		for (CtMethod method : ast.getAllMethods()) {
 
 			CtPath path = method.getPath();
-			System.out.println("path " + path);
 			assertNotNull(path);
 
 			for (CtStatement stmt : method.getBody().getStatements()) {
 				path = stmt.getPath();
-				System.out.println("path " + path);
 				assertNotNull(path);
 			}
 
@@ -119,13 +117,9 @@ public class AstPathTest {
 		retrievePathOfStmt(astLeft);
 		retrievePathOfStmt(astRight);
 
-		System.out.println("End stmt check");
-
 		Diff diffResult = comparator.compare(astLeft, astRight);
-		System.out.println("Roots ops");
 		List<Operation> rootOperations = diffResult.getRootOperations();
 		retrievePathOFAffectedElements(rootOperations);
-		System.out.println("All ops");
 		List<Operation> allOperations = diffResult.getAllOperations();
 		retrievePathOFAffectedElements(allOperations);
 
@@ -134,18 +128,13 @@ public class AstPathTest {
 	private void retrievePathOFAffectedElements(List<Operation> rootops) {
 		for (Operation<?> op : rootops) {
 
-			System.out.println("\n\n-op->" + op);
 			CtElement left = op.getSrcNode();
 
 			CtPath pleft = left.getPath();
-			System.out.println("left " + left);
-			System.out.println("left path " + pleft);
 			assertNotNull(pleft);
 
 			CtElement right = op.getSrcNode();
 			CtPath pright = right.getPath();
-			System.out.println("right " + right);
-			System.out.println("right path " + pright);
 			assertNotNull(pright);
 
 		}
