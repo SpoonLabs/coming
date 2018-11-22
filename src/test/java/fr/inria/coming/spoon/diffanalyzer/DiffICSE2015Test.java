@@ -9,8 +9,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.coming.core.engine.files.DiffICSE15ContextAnalyzer;
-import fr.inria.coming.core.engine.files.MapCounter;
 import fr.inria.coming.main.ComingProperties;
+import fr.inria.coming.utils.MapCounter;
 
 @Ignore
 public class DiffICSE2015Test {

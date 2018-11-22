@@ -20,6 +20,7 @@ import org.junit.Ignore;
 import fr.inria.coming.changeminer.analyzer.DiffEngineFacade;
 import fr.inria.coming.changeminer.entity.GranuralityType;
 import fr.inria.coming.main.ComingProperties;
+import fr.inria.coming.utils.MapCounter;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
 

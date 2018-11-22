@@ -14,12 +14,12 @@ import com.google.gson.JsonParser;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
 import fr.inria.coming.changeminer.entity.CommitFinalResult;
 import fr.inria.coming.changeminer.entity.FinalResult;
-import fr.inria.coming.core.engine.files.MapCounter;
 import fr.inria.coming.core.entities.AnalysisResult;
 import fr.inria.coming.core.entities.DiffResult;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.core.entities.interfaces.IOutput;
 import fr.inria.coming.main.ComingProperties;
+import fr.inria.coming.utils.MapCounter;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
 
