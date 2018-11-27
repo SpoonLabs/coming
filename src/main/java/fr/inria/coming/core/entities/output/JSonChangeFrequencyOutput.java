@@ -12,8 +12,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
-import fr.inria.coming.changeminer.entity.CommitFinalResult;
 import fr.inria.coming.changeminer.entity.FinalResult;
+import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.entities.AnalysisResult;
 import fr.inria.coming.core.entities.DiffResult;
 import fr.inria.coming.core.entities.RevisionResult;
@@ -31,12 +31,12 @@ public class JSonChangeFrequencyOutput implements IOutput {
 	@Override
 	public void generateOutput(FinalResult finalResult) {
 
-		CommitFinalResult cfres = (CommitFinalResult) finalResult;
-
 		if (finalResult == null)
 			return;
 
-		for (RevisionResult revresult : cfres.getAllResults().values()) {
+		Map<IRevision, RevisionResult> results = finalResult.getAllResults();
+
+		for (RevisionResult revresult : results.values()) {
 
 			AnalysisResult ar = revresult.getResultFromClass(FineGrainDifftAnalyzer.class);
 			if (ar != null) {

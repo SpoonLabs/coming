@@ -26,6 +26,7 @@ import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
 import fr.inria.coming.core.engine.Analyzer;
 import fr.inria.coming.core.engine.RevisionNavigationExperiment;
+import fr.inria.coming.core.engine.files.FileNavigationExperiment;
 import fr.inria.coming.core.engine.git.GITRepositoryInspector;
 import fr.inria.coming.core.entities.interfaces.IFilter;
 import fr.inria.coming.core.entities.interfaces.IOutput;
@@ -58,7 +59,7 @@ public class ComingMain {
 		options.addOption("location", true, "location of the project");
 		options.addOption("resultoutput", true, "location of the output");
 		options.addOption("mode", true, "execution Mode. ");
-		options.addOption("input", true, "Input. ");
+		options.addOption("input", true, "Input (git(default)| files). ");
 		options.addOption("outputprocessor", true, "result outout processors");
 		options.addOption("output", true, "output folder");
 		// Pattern mining
@@ -163,7 +164,7 @@ public class ComingMain {
 		// CONFIGURATION:
 		loadInput(input);
 
-		loadModeAnalyzers(mode);
+		loadModelAnalyzers(mode);
 
 		loadFilters();
 
@@ -196,15 +197,15 @@ public class ComingMain {
 	private void loadInput(String input) {
 		if (input == null || input.equals("git")) {
 			experiment = new GITRepositoryInspector();
-		} else if (input.equals("file")) {
-			// TODO:
+		} else if (input.equals("files")) {
+			experiment = new FileNavigationExperiment();
 		} else {
 			// extension point
 			experiment = loadInputEngine(input);
 		}
 	}
 
-	private void loadModeAnalyzers(String modes) {
+	private void loadModelAnalyzers(String modes) {
 
 		String[] modesp = modes.split(File.pathSeparator);
 

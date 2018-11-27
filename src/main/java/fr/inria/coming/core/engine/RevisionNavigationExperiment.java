@@ -1,13 +1,15 @@
 package fr.inria.coming.core.engine;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.entities.AnalysisResult;
+import fr.inria.coming.core.entities.RevisionDataset;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.core.entities.interfaces.IFilter;
 import fr.inria.coming.core.entities.interfaces.IOutput;
@@ -26,6 +28,8 @@ public abstract class RevisionNavigationExperiment<Data extends IRevision> {
 	protected List<IFilter> filters = null;
 	protected List<IOutput> outputProcessors = new ArrayList<>();
 
+	protected Map<Data, RevisionResult> allResults = new HashMap<>();
+
 	public RevisionNavigationExperiment() {
 	}
 
@@ -42,7 +46,7 @@ public abstract class RevisionNavigationExperiment<Data extends IRevision> {
 		this.navigationStrategy = navigationStrategy;
 	}
 
-	public abstract Collection<Data> loadDataset();
+	public abstract RevisionDataset<Data> loadDataset();
 
 	public List<Analyzer> getAnalyzers() {
 		return this.analyzers;
@@ -52,20 +56,24 @@ public abstract class RevisionNavigationExperiment<Data extends IRevision> {
 		this.analyzers = analyzers;
 	}
 
-	/**
-	 * Map<String, ResultRevision> analyzer
-	 * 
-	 * @param element
-	 * @param resultAllAnalyzed
-	 */
-	public abstract void processEndRevision(Data element, RevisionResult resultAllAnalyzed);
+	@SuppressWarnings("unchecked")
+	public void processEndRevision(Data element, RevisionResult resultAllAnalyzed) {
 
-	protected abstract FinalResult processEnd();
+		if (ComingProperties.getPropertyBoolean("save_result_revision_analysis")) {
+			allResults.put(element, resultAllAnalyzed);
+		}
+
+	}
+
+	protected FinalResult processEnd() {
+
+		return new FinalResult(allResults);
+	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public FinalResult analyze() {
 
-		Collection data = loadDataset();
+		RevisionDataset data = loadDataset();
 		Iterator it = this.getNavigationStrategy().orderOfNavigation(data);
 
 		int i = 0;

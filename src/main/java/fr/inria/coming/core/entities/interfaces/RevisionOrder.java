@@ -1,8 +1,8 @@
 package fr.inria.coming.core.entities.interfaces;
 
-import java.util.Collection;
 import java.util.Iterator;
 
+import fr.inria.coming.core.entities.RevisionDataset;
 import fr.inria.coming.core.extensionpoints.ComingExtensionPoint;
 
 /**
@@ -12,6 +12,6 @@ import fr.inria.coming.core.extensionpoints.ComingExtensionPoint;
  */
 public interface RevisionOrder<T> extends ComingExtensionPoint {
 
-	public Iterator<T> orderOfNavigation(Collection<T> elements);
+	public Iterator<T> orderOfNavigation(RevisionDataset<T> data);
 
 }

@@ -1,8 +1,15 @@
 package fr.inria.coming.changeminer.analyzer.commitAnalyzer;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 
@@ -107,6 +114,43 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 
 		DiffEngineFacade cdiff = new DiffEngineFacade();
 		return cdiff.compareContent(left, right, granularity);
+
+	}
+
+	public Diff getDiff(File left, File right) throws Exception {
+
+		DiffEngineFacade cdiff = new DiffEngineFacade();
+		Diff d = cdiff.compareFiles(left, right, GranuralityType.SPOON);
+		return d;
+	}
+
+	private Future<Diff> getDiffInFuture(ExecutorService executorService, File left, File right) {
+
+		Future<Diff> future = executorService.submit(() -> {
+			DiffEngineFacade cdiff = new DiffEngineFacade();
+			Diff d = cdiff.compareFiles(left, right, GranuralityType.SPOON);
+			return d;
+		});
+		return future;
+	}
+
+	public Diff getdiffFuture(File left, File right) throws Exception {
+		ExecutorService executorService = Executors.newSingleThreadExecutor();
+		Future<Diff> future = getDiffInFuture(executorService, left, right);
+
+		Diff resukltDiff = null;
+		try {
+			resukltDiff = future.get(30, TimeUnit.SECONDS);
+		} catch (InterruptedException e) { // <-- possible error cases
+			System.out.println("job was interrupted");
+		} catch (ExecutionException e) {
+			System.out.println("caught exception: " + e.getCause());
+		} catch (TimeoutException e) {
+			System.out.println("timeout");
+		}
+
+		executorService.shutdown();
+		return resukltDiff;
 
 	}
 

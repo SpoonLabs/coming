@@ -5,12 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -18,7 +12,7 @@ import org.json.simple.JSONObject;
 import org.junit.Ignore;
 
 import fr.inria.coming.changeminer.analyzer.DiffEngineFacade;
-import fr.inria.coming.changeminer.entity.GranuralityType;
+import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
 import fr.inria.coming.main.ComingProperties;
 import fr.inria.coming.utils.MapCounter;
 import gumtree.spoon.diff.Diff;
@@ -119,6 +113,7 @@ public class BugFixRunner {
 	@SuppressWarnings("unchecked")
 	public JSONArray processDiff(MapCounter<String> counter, MapCounter<String> counterParent, File difffile) {
 		JSONArray filesArray = new JSONArray();
+		FineGrainDifftAnalyzer analyzer = new FineGrainDifftAnalyzer();
 		for (File fileModif : difffile.listFiles()) {
 			int i_hunk = 0;
 
@@ -142,7 +137,7 @@ public class BugFixRunner {
 			i_hunk++;
 			try {
 
-				Diff diff = getdiffFuture(previousVersion, postVersion);
+				Diff diff = analyzer.getdiffFuture(previousVersion, postVersion);
 				if (diff == null) {
 					file.put("status", "differror");
 					continue;
@@ -231,15 +226,6 @@ public class BugFixRunner {
 
 	}
 
-	public Diff getdiff(File left, File right) throws Exception {
-
-		DiffEngineFacade cdiff = new DiffEngineFacade();
-		// Diff d = cdiff.compareContent(left, right, GranuralityType.SPOON);
-		Diff d = cdiff.compareFiles(left, right, GranuralityType.SPOON);
-		// System.out.println("-->" + d.getAllOperations().size());
-		return d;
-	}
-
 	private void addStats(JSONObject root, String key1, Map sorted) {
 		JSONArray frequencyArray = new JSONArray();
 		root.put(key1, frequencyArray);
@@ -280,35 +266,4 @@ public class BugFixRunner {
 		runner.run(path);
 	}
 
-	private Future<Diff> getfutureResult(ExecutorService executorService, File left, File right) {
-
-		Future<Diff> future = executorService.submit(() -> {
-			DiffEngineFacade cdiff = new DiffEngineFacade();
-			// Diff d = cdiff.compareContent(left, right, GranuralityType.SPOON);
-			Diff d = cdiff.compareFiles(left, right, GranuralityType.SPOON);
-			// System.out.println("-->" + d.getAllOperations().size());
-			return d;
-		});
-		return future;
-	}
-
-	public Diff getdiffFuture(File left, File right) throws Exception {
-		ExecutorService executorService = Executors.newSingleThreadExecutor();
-		Future<Diff> future = getfutureResult(executorService, left, right);
-
-		Diff resukltDiff = null;
-		try {
-			resukltDiff = future.get(30, TimeUnit.SECONDS);
-		} catch (InterruptedException e) { // <-- possible error cases
-			System.out.println("job was interrupted");
-		} catch (ExecutionException e) {
-			System.out.println("caught exception: " + e.getCause());
-		} catch (TimeoutException e) {
-			System.out.println("timeout");
-		}
-
-		executorService.shutdown();
-		return resukltDiff;
-
-	}
 }

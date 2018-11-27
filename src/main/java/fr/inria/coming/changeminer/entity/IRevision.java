@@ -4,6 +4,11 @@ import java.util.List;
 
 import fr.inria.coming.core.entities.interfaces.IRevisionPair;
 
+/**
+ * 
+ * @author Matias Martinez
+ *
+ */
 public interface IRevision {
 
 	public List<IRevisionPair> getChildren();
