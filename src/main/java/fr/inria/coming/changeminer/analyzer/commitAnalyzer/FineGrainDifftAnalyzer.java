@@ -93,6 +93,7 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 				if (operations == null
 						|| operations.size() > ComingProperties.getPropertyInteger("MAX_AST_CHANGES_PER_FILE")
 						|| operations.size() < ComingProperties.getPropertyInteger("MIN_AST_CHANGES_PER_FILE")) {
+					log.debug("FileRevision with Max number of Root AST Changes. Discating it.");
 					return null;
 				}
 

@@ -496,7 +496,7 @@ public class MainComingTest {
 	}
 
 	@Test
-	public void testInputFilesPairs() throws Exception {
+	public void testInputFilesPairsFromD4j() throws Exception {
 
 		ComingMain cm = new ComingMain();
 		File inputFolderPairs = getFile("pairsD4j");
@@ -527,6 +527,49 @@ public class MainComingTest {
 
 		boolean hasRootOpM70 = hasChange(diffm70);
 		assertTrue(hasRootOpM70);
+
+	}
+
+	@Test
+	public void testInputFilesPairsFromICSE15() throws Exception {
+
+		ComingMain cm = new ComingMain();
+		File inputFolderPairs = getFile("pairsICSE15");
+		assertTrue(inputFolderPairs.exists());
+		Object result = cm.run(new String[] { "-location", inputFolderPairs.getAbsolutePath(), "-input", "files" });
+
+		assertNotNull(result);
+		assertTrue(result instanceof FinalResult);
+		FinalResult cfres = (FinalResult) result;
+		Map<IRevision, RevisionResult> revisionsAnalyzed = cfres.getAllResults();
+
+		assertEquals(2, revisionsAnalyzed.keySet().size());
+
+		IRevision rev1000098 = revisionsAnalyzed.keySet().stream().filter(e -> e.getName().equals("1000098"))
+				.findFirst().get();
+		DiffResult<IRevision, Diff> diffrev1000098 = (DiffResult<IRevision, Diff>) revisionsAnalyzed.get(rev1000098)
+				.getResultFromClass(FineGrainDifftAnalyzer.class);
+
+		assertTrue(diffrev1000098.getAll().size() > 0);
+		// One diff per modified file
+		assertEquals(1, diffrev1000098.getAll().size());
+		Diff diff98_1 = diffrev1000098.getAll().get(0);
+		assertTrue(diff98_1.getRootOperations().size() > 0);
+
+		// ## Second revision
+		//
+		IRevision rev1000021 = revisionsAnalyzed.keySet().stream().filter(e -> e.getName().equals("1000021"))
+				.findFirst().get();
+		DiffResult<IRevision, Diff> diffrev1000021 = (DiffResult<IRevision, Diff>) revisionsAnalyzed.get(rev1000021)
+				.getResultFromClass(FineGrainDifftAnalyzer.class);
+
+		assertTrue(diffrev1000021.getAll().size() > 0);
+		// One diff per modified file. 3 modified files
+
+		assertEquals(3, diffrev1000021.getAll().size());
+		for (Diff diff21 : diffrev1000021.getAll()) {
+			assertTrue(diff21.getRootOperations().size() > 0);
+		}
 
 	}
 

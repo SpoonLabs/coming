@@ -47,7 +47,7 @@ public class FileDiff implements IRevision {
 				String previousString = new String(Files.readAllBytes(previousVersion.toPath()));
 				String postString = new String(Files.readAllBytes(postVersion.toPath()));
 
-				FilePair fpair = new FilePair(previousString, postString, diffFolder.getName());
+				FilePair fpair = new FilePair(previousString, postString, fileModif.getName());
 				pairs.add(fpair);
 
 			} catch (Exception e) {
