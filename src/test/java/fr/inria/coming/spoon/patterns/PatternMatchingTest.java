@@ -17,6 +17,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
 import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
 import fr.inria.coming.changeminer.analyzer.instancedetector.DetectorChangePatternInstanceEngine;
 import fr.inria.coming.changeminer.analyzer.instancedetector.MatchingAction;
@@ -29,7 +30,6 @@ import fr.inria.coming.changeminer.analyzer.patternspecification.PatternEntity;
 import fr.inria.coming.changeminer.analyzer.patternspecification.PatternRelations;
 import fr.inria.coming.changeminer.entity.ActionType;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
-import fr.inria.coming.core.engine.files.BugFixRunner;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
 import gumtree.spoon.diff.operations.UpdateOperation;
@@ -61,14 +61,14 @@ public class PatternMatchingTest {
 
 		File s = getFile("patterns_examples/case1/1205753_EmbedPooledConnection_0_s.java");
 		File t = getFile("patterns_examples/case1/1205753_EmbedPooledConnection_0_t.java");
-		BugFixRunner r = new BugFixRunner();
-		diffUpdate = r.getdiff(s, t);
+		FineGrainDifftAnalyzer r = new FineGrainDifftAnalyzer();
+		diffUpdate = r.getDiff(s, t);
 		System.out.println("Output: " + diffUpdate);
 		Assert.assertEquals(1, diffUpdate.getRootOperations().size());
 
 		s = getFile("patterns_examples/case2/1205753_EmbedPooledConnection_0_s.java");
 		t = getFile("patterns_examples/case2/1205753_EmbedPooledConnection_0_t.java");
-		diffInsert = r.getdiff(s, t);
+		diffInsert = r.getDiff(s, t);
 		System.out.println("Output: " + diffInsert);
 		Assert.assertEquals(1, diffInsert.getRootOperations().size());
 
@@ -504,9 +504,9 @@ public class PatternMatchingTest {
 
 		File s = getFile("patterns_examples/case3/1205753_EmbedPooledConnection_0_s.java");
 		File t = getFile("patterns_examples/case3/1205753_EmbedPooledConnection_0_t.java");
-		BugFixRunner r = new BugFixRunner();
+		FineGrainDifftAnalyzer r = new FineGrainDifftAnalyzer();
 
-		Diff diffInsertUpdate = r.getdiff(s, t);
+		Diff diffInsertUpdate = r.getDiff(s, t);
 		System.out.println("Output: " + diffInsert);
 		Assert.assertEquals(2, diffInsertUpdate.getRootOperations().size());
 
@@ -547,9 +547,9 @@ public class PatternMatchingTest {
 
 		File s = getFile("patterns_examples/case3/1205753_EmbedPooledConnection_0_s.java");
 		File t = getFile("patterns_examples/case3/1205753_EmbedPooledConnection_0_t.java");
-		BugFixRunner r = new BugFixRunner();
+		FineGrainDifftAnalyzer r = new FineGrainDifftAnalyzer();
 
-		Diff diffInsertUpdate = r.getdiff(s, t);
+		Diff diffInsertUpdate = r.getDiff(s, t);
 
 		System.out.println("Case 2a");
 		ChangePatternSpecification pattern = new ChangePatternSpecification();
@@ -577,9 +577,9 @@ public class PatternMatchingTest {
 		System.out.println("Case 2 instances");
 		File s = getFile("patterns_examples/case4/1205753_EmbedPooledConnection_0_s.java");
 		File t = getFile("patterns_examples/case4/1205753_EmbedPooledConnection_0_t.java");
-		BugFixRunner r = new BugFixRunner();
+		FineGrainDifftAnalyzer r = new FineGrainDifftAnalyzer();
 
-		Diff diff2Inserts = r.getdiff(s, t);
+		Diff diff2Inserts = r.getDiff(s, t);
 		System.out.println(diff2Inserts.getRootOperations());
 
 		ChangePatternSpecification pattern = new ChangePatternSpecification();
@@ -629,9 +629,9 @@ public class PatternMatchingTest {
 		System.out.println("Case 2 instances");
 		File s = getFile("patterns_examples/case4/1205753_EmbedPooledConnection_0_s.java");
 		File t = getFile("patterns_examples/case4/1205753_EmbedPooledConnection_0_t.java");
-		BugFixRunner r = new BugFixRunner();
+		FineGrainDifftAnalyzer r = new FineGrainDifftAnalyzer();
 
-		Diff diff2Inserts = r.getdiff(s, t);
+		Diff diff2Inserts = r.getDiff(s, t);
 		System.out.println(diff2Inserts.getRootOperations());
 
 		ChangePatternSpecification pattern = new ChangePatternSpecification();
@@ -682,9 +682,9 @@ public class PatternMatchingTest {
 		System.out.println("Case 2 instances");
 		File s = getFile("patterns_examples/case5/1205753_EmbedPooledConnection_0_s.java");
 		File t = getFile("patterns_examples/case5/1205753_EmbedPooledConnection_0_t.java");
-		BugFixRunner r = new BugFixRunner();
+		FineGrainDifftAnalyzer r = new FineGrainDifftAnalyzer();
 
-		Diff diff2Inserts = r.getdiff(s, t);
+		Diff diff2Inserts = r.getDiff(s, t);
 		System.out.println(diff2Inserts.getRootOperations());
 
 		ChangePatternSpecification pattern = new ChangePatternSpecification();
@@ -735,9 +735,9 @@ public class PatternMatchingTest {
 		System.out.println("Case 2 instances");
 		File s = getFile("patterns_examples/case5/1205753_EmbedPooledConnection_0_s.java");
 		File t = getFile("patterns_examples/case5/1205753_EmbedPooledConnection_0_t.java");
-		BugFixRunner r = new BugFixRunner();
+		FineGrainDifftAnalyzer r = new FineGrainDifftAnalyzer();
 
-		Diff diff2Inserts = r.getdiff(s, t);
+		Diff diff2Inserts = r.getDiff(s, t);
 		System.out.println(diff2Inserts.getRootOperations());
 
 		ChangePatternSpecification pattern = new ChangePatternSpecification();
@@ -789,9 +789,9 @@ public class PatternMatchingTest {
 		System.out.println("Case 2 instances");
 		File s = getFile("patterns_examples/case5/1205753_EmbedPooledConnection_0_s.java");
 		File t = getFile("patterns_examples/case5/1205753_EmbedPooledConnection_0_t.java");
-		BugFixRunner r = new BugFixRunner();
+		FineGrainDifftAnalyzer r = new FineGrainDifftAnalyzer();
 
-		Diff diff2Inserts = r.getdiff(s, t);
+		Diff diff2Inserts = r.getDiff(s, t);
 		System.out.println(diff2Inserts.getRootOperations());
 
 		ChangePatternSpecification pattern = new ChangePatternSpecification();
@@ -882,8 +882,8 @@ public class PatternMatchingTest {
 
 		File s = getFile("casesDj4/math_3/MathArrays_s.java");
 		File t = getFile("casesDj4/math_3/MathArrays_t.java");
-		BugFixRunner r = new BugFixRunner();
-		Diff diff = r.getdiff(s, t);
+		FineGrainDifftAnalyzer r = new FineGrainDifftAnalyzer();
+		Diff diff = r.getDiff(s, t);
 		System.out.println("Output: " + diff);
 		Assert.assertEquals(1, diff.getRootOperations().size());
 
@@ -903,11 +903,6 @@ public class PatternMatchingTest {
 		ResultMapping mappings = detector.mappingActions(pattern, diffToAnalyze);
 		assertTrue(mappings.getMappings().isEmpty());
 
-	}
-
-	public void compare(CtElement left, CtElement right) {
-
-		// pattern.process(diff);
 	}
 
 	public File getFile(String name) {

@@ -12,7 +12,7 @@ import fr.inria.coming.core.entities.RevisionResult;
  * @author Matias Martinez
  *
  */
-public class FinalResult<R> {
+public class FinalResult<R extends IRevision> {
 
 	Map<R, RevisionResult> allResults;
 	Logger log = Logger.getLogger(CommitFinalResult.class.getName());

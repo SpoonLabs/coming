@@ -1,4 +1,4 @@
-package fr.inria.coming.core.engine.files;
+package fr.inria.coming.utils;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;

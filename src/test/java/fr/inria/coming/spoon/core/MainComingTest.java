@@ -22,6 +22,8 @@ import com.github.gumtreediff.matchers.Matcher;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.HunkDifftAnalyzer;
 import fr.inria.coming.changeminer.entity.CommitFinalResult;
+import fr.inria.coming.changeminer.entity.FinalResult;
+import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.entities.DiffResult;
 import fr.inria.coming.core.entities.HunkDiff;
 import fr.inria.coming.core.entities.RevisionResult;
@@ -480,8 +482,7 @@ public class MainComingTest {
 	public void testDiffOutputModeDiff() throws Exception {
 		ComingMain cm = new ComingMain();
 		Object result = cm.run(new String[] { "-location", "repogit4testv0", "-mode", "diff"
-				// "-outputprocessor",
-				// JSonChangeFrequencyOutput.class.getName()
+
 		});
 		assertNotNull(result);
 		assertTrue(result instanceof CommitFinalResult);
@@ -492,6 +493,56 @@ public class MainComingTest {
 				.stream().filter(e -> e instanceof JSonChangeFrequencyOutput).findFirst().get();
 		assertNotNull(cmoutput);
 
+	}
+
+	@Test
+	public void testInputFilesPairs() throws Exception {
+
+		ComingMain cm = new ComingMain();
+		File inputFolderPairs = getFile("pairsD4j");
+		assertTrue(inputFolderPairs.exists());
+		Object result = cm.run(new String[] { "-location", inputFolderPairs.getAbsolutePath(), "-input", "files" });
+
+		assertNotNull(result);
+		assertTrue(result instanceof FinalResult);
+		FinalResult cfres = (FinalResult) result;
+		Map<IRevision, RevisionResult> revisionsAnalyzed = cfres.getAllResults();
+
+		IRevision revMath73 = revisionsAnalyzed.keySet().stream().filter(e -> e.getName().equals("Math_73")).findFirst()
+				.get();
+		DiffResult<IRevision, Diff> diff1 = (DiffResult<IRevision, Diff>) revisionsAnalyzed.get(revMath73)
+				.getResultFromClass(FineGrainDifftAnalyzer.class);
+
+		assertTrue(diff1.getAll().size() > 0);
+
+		boolean hasRootOp = hasChange(diff1);
+		assertTrue(hasRootOp);
+
+		IRevision revMath70 = revisionsAnalyzed.keySet().stream().filter(e -> e.getName().equals("Math_70")).findFirst()
+				.get();
+		DiffResult<IRevision, Diff> diffm70 = (DiffResult<IRevision, Diff>) revisionsAnalyzed.get(revMath70)
+				.getResultFromClass(FineGrainDifftAnalyzer.class);
+
+		assertTrue(diffm70.getAll().size() > 0);
+
+		boolean hasRootOpM70 = hasChange(diffm70);
+		assertTrue(hasRootOpM70);
+
+	}
+
+	public boolean hasChange(DiffResult<IRevision, Diff> diff1) {
+		boolean hasRootOp = false;
+		// Assert one diff with +1 root op.
+		for (Diff diff : diff1.getAll()) {
+			hasRootOp |= !(diff.getRootOperations().isEmpty());
+		}
+		return hasRootOp;
+	}
+
+	public File getFile(String name) {
+		ClassLoader classLoader = getClass().getClassLoader();
+		File file = new File(classLoader.getResource(name).getFile());
+		return file;
 	}
 
 }
