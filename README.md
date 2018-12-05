@@ -1,4 +1,4 @@
-[![Travis Build Status](https://travis-ci.org/Spirals-Team/coming.svg?branch=master)](https://travis-ci.org/Spirals-Team/coming)
+[![Travis Build Status](https://travis-ci.org/SpoonLabs/coming.svg?branch=master)](https://travis-ci.org/SpoonLabs/coming)
 
 Coming
 =======
