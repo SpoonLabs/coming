@@ -4,35 +4,12 @@ Coming
 =======
 Coming is a tool for mining git repositories
 
-If you use Coming, please cite: 
+If you use Coming, please cite one of: 
 
-**[tool-paper]** Coming: a Tool for Mining Change Pattern Instances from Git Commits. M. Martinez, M. Monperrus. 2018.
+* [Coming: a Tool for Mining Change Pattern Instances from Git Commits](http://arxiv.org/pdf/1810.08532). M. Martinez, M. Monperrus, Proceedings of ICSE - Demo track, 2019. [bibtex](https://www.monperrus.net/martin/bibtexbrowser.php?key=arXiv-1810.08532&bib=monperrus.bib)
+* [Accurate Extraction of Bug Fix Pattern Occurrences using Abstract Syntax Tree Analysis](https://hal.archives-ouvertes.fr/hal-01075938/file/bug-fix-pattern-identification.pdf) (Matias Martinez, Laurence Duchien and Martin Monperrus), Technical report hal-01075938, Inria, 2014 [bibtex](https://www.monperrus.net/martin/bibtexbrowser.php?key=martinez%3Ahal-01075938&bib=monperrus.bib)
+* [Automatically Extracting Instances of Code Change Patterns with AST Analysis](https://hal.inria.fr/hal-00861883/file/paper-short.pdf) (Martinez, M.; Duchien, L.; Monperrus, M.) IEEE International Conference on Software Maintenance (ICSM), pp.388-391, 2013, doi: 10.1109/ICSM.2013.54 [bibtex](https://www.monperrus.net/martin/bibtexbrowser.php?key=martinez%3Ahal-00861883&bib=monperrus.bib)
 
-
-**[short]** [Automatically Extracting Instances of Code Change Patterns with AST Analysis](https://hal.inria.fr/hal-00861883/file/paper-short.pdf) (Martinez, M.; Duchien, L.; Monperrus, M.) IEEE International Conference on Software Maintenance (ICSM), pp.388-391, 2013, doi: 10.1109/ICSM.2013.54
-
-    @INPROCEEDINGS{coming2015, 
-    author={Martinez, M. and Duchien, L. and Monperrus, M.}, 
-    booktitle={IEEE International Conference on Software Maintenance (ICSM)}, 
-    title={Automatically Extracting Instances of Code Change Patterns with AST Analysis}, 
-    year={2013}, 
-    pages={388-391},
-    doi={10.1109/ICSM.2013.54}, 
-    ISSN={1063-6773},  
-    month={Sept},}
-
-**[long version]** [Accurate Extraction of Bug Fix Pattern Occurrences using Abstract Syntax Tree Analysis](https://hal.archives-ouvertes.fr/hal-01075938/file/bug-fix-pattern-identification.pdf) (Matias Martinez, Laurence Duchien and Martin Monperrus), Technical report hal-01075938, Inria, 2014
-
-    @techreport{martinez:hal-01075938,
-    title = {{Accurate Extraction of Bug Fix Pattern Occurrences using Abstract Syntax Tree Analysis}},
-    author = {Martinez, Matias and Duchien, Laurence and Monperrus, Martin},
-    url = {https://hal.archives-ouvertes.fr/hal-01075938/file/bug-fix-pattern-identification.pdf},
-    type = {Technical Report},
-    number = {hal-01075938},
-    institution = {{Inria}},
-    year = {2014},
-    }
-    
 Contact: 
 
 [Matias Martinez](http://www.martinezmatias.com/), [Martin Monperrus](http://www.monperrus.net/martin/)
