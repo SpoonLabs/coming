@@ -61,6 +61,46 @@ import spoon.support.reflect.code.CtVariableReadImpl;
  */
 public class CodeFeatureDetector {
 
+	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void analyzeFeatures(CtElement element, Cntx<Object> context) {
+		// Vars in scope at the position of element
+		List<CtVariable> varsInScope = VariableResolver.searchVariablesInScope(element);
+		putVarInContextInformation(context, varsInScope);
+
+		List<CtVariableAccess> varsAffected = VariableResolver.collectVariableRead(element);
+		analyzeTypesVarsAffected(varsAffected, element, context);
+		analyzeS1_AffectedAssigned(varsAffected, element, context);
+		analyzeS1_AffectedVariablesUsed(varsAffected, element, context);
+		analyzeS2_S5_SametypewithGuard(varsAffected, element, context);
+		analyzeS3_TypeOfFaulty(element, context);
+		analyzeS4_AffectedFielfs(varsAffected, element, context);
+		analyzeS6_M5_Method_Method_Features(element, context);
+
+		analyzeV1_VX_V6_AffectedVariablesInMethod(varsAffected, element, context);
+		analyzeV2_AffectedDistanceVarName(varsAffected, varsInScope, element, context);
+		analyzeV3_AffectedHasConstant(varsAffected, element, context);
+		analyzeV4(varsAffected, element, context);
+		analyzeV5_AffectedVariablesInTransformation(varsAffected, element, context);
+
+		analyzeM1_eM2_M3_M4_SimilarMethod(element, context);
+
+		analyzeLE1_AffectedVariablesUsed(varsAffected, element, context);
+		analyzeLE2_AffectedVariablesInMethod(varsAffected, element, context);
+		analyzeLE3_PrimitiveWithCompatibleNotUsed(varsAffected, varsInScope, element, context);
+		analyzeLE4_BooleanVarNotUsed(varsAffected, varsInScope, element, context);
+		analyzeLE5_BinaryInvolved(element, context);
+		analyzeLE6_UnaryInvolved(element, context);
+		analyzeLE7_VarDirectlyUsed(varsAffected, varsInScope, element, context);
+		analyzeLE8_LocalVariablesVariablesUsed(varsAffected, element, context);
+		// Other features not enumerated
+		analyzeAffectedWithCompatibleTypes(varsAffected, varsInScope, element, context);
+		analyzeParentTypes(element, context);
+		analyzeUseEnumAndConstants(element, context);
+
+	}
+
 	private final class ExpressionCapturerScanner extends CtScanner {
 		public CtElement toScan = null;
 
@@ -84,8 +124,6 @@ public class CodeFeatureDetector {
 			toScan = whileLoop.getLoopingExpression();
 		}
 	}
-
-	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
 
 	public Cntx<?> retrieveCntx(ModificationPoint modificationPoint) {
 		return retrieveCntx(modificationPoint.getCodeElement());
@@ -1607,8 +1645,7 @@ public class CodeFeatureDetector {
 		context.put(CodeFeatures.involve_NEG_relation_operators, binOps.contains(UnaryOperatorKind.NEG.toString()));
 		boolean containsNot = binOps.contains(UnaryOperatorKind.NOT.toString());
 		context.put(CodeFeatures.involve_NOT_relation_operators, containsNot);
-		context.put(CodeFeatures.involve_COMPL_relation_operators,
-				binOps.contains(UnaryOperatorKind.COMPL.toString()));
+		context.put(CodeFeatures.involve_COMPL_relation_operators, binOps.contains(UnaryOperatorKind.COMPL.toString()));
 		context.put(CodeFeatures.involve_PREINC_relation_operators,
 				binOps.contains(UnaryOperatorKind.PREINC.toString()));
 		context.put(CodeFeatures.involve_PREDEC_relation_operators,
@@ -1718,44 +1755,6 @@ public class CodeFeatureDetector {
 			key = element.getShortRepresentation();// To see.
 		}
 		return key;
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void analyzeFeatures(CtElement element, Cntx<Object> context) {
-		// Vars in scope at the position of element
-		List<CtVariable> varsInScope = VariableResolver.searchVariablesInScope(element);
-		putVarInContextInformation(context, varsInScope);
-
-		List<CtVariableAccess> varsAffected = VariableResolver.collectVariableRead(element);
-		analyzeTypesVarsAffected(varsAffected, element, context);
-		analyzeS1_AffectedAssigned(varsAffected, element, context);
-		analyzeS1_AffectedVariablesUsed(varsAffected, element, context);
-		analyzeS2_S5_SametypewithGuard(varsAffected, element, context);
-		analyzeS3_TypeOfFaulty(element, context);
-		analyzeS4_AffectedFielfs(varsAffected, element, context);
-		analyzeS6_Method_ExceptionAndInformation(element, context);
-
-		analyzeV1_VX_V6_AffectedVariablesInMethod(varsAffected, element, context);
-		analyzeV2_AffectedDistanceVarName(varsAffected, varsInScope, element, context);
-		analyzeV3_AffectedHasConstant(varsAffected, element, context);
-		analyzeV4(varsAffected, element, context);
-		analyzeV5_AffectedVariablesInTransformation(varsAffected, element, context);
-
-		analyzeM1_eM2_M3_M4_SimilarMethod(element, context);
-
-		analyzeLE1_AffectedVariablesUsed(varsAffected, element, context);
-		analyzeLE2_AffectedVariablesInMethod(varsAffected, element, context);
-		analyzeLE3_PrimitiveWithCompatibleNotUsed(varsAffected, varsInScope, element, context);
-		analyzeLE4_BooleanVarNotUsed(varsAffected, varsInScope, element, context);
-		analyzeLE5_BinaryInvolved(element, context);
-		analyzeLE6_UnaryInvolved(element, context);
-		analyzeLE7_VarDirectlyUsed(varsAffected, varsInScope, element, context);
-		analyzeLE8_LocalVariablesVariablesUsed(varsAffected, element, context);
-		// Other features not enumerated
-		analyzeAffectedWithCompatibleTypes(varsAffected, varsInScope, element, context);
-		analyzeParentTypes(element, context);
-		analyzeUseEnumAndConstants(element, context);
-
 	}
 
 	public void analyzeS3_TypeOfFaulty(CtElement element, Cntx<Object> context) {
@@ -1912,8 +1911,8 @@ public class CodeFeatureDetector {
 			writeDetailedInformationFromMethod(context, affectedMethod, CodeFeatures.M1_OVERLOADED_METHOD,
 					m1methodHasSameName);
 
-			writeDetailedInformationFromMethod(context, affectedMethod,
-					CodeFeatures.M2_SIMILAR_METHOD_WITH_SAME_RETURN, m2methodhasMinDist);
+			writeDetailedInformationFromMethod(context, affectedMethod, CodeFeatures.M2_SIMILAR_METHOD_WITH_SAME_RETURN,
+					m2methodhasMinDist);
 
 			writeDetailedInformationFromMethod(context, affectedMethod,
 					CodeFeatures.M3_ANOTHER_METHOD_WITH_PARAMETER_RETURN_COMP,
@@ -2022,13 +2021,16 @@ public class CodeFeatureDetector {
 	 * @param context
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void analyzeS6_Method_ExceptionAndInformation(CtElement element, Cntx<Object> context) {
+	private void analyzeS6_M5_Method_Method_Features(CtElement element, Cntx<Object> context) {
 		//
 		CtMethod parentMethod = element.getParent(CtMethod.class);
 		if (parentMethod != null) {
 			// Return
 			context.put(CodeFeatures.METHOD_RETURN_TYPE,
 					(parentMethod.getType() != null) ? parentMethod.getType().getQualifiedName() : null);
+
+			context.put(CodeFeatures.M5_RETURN_PRIMITIVE,
+					(parentMethod.getType() != null) ? parentMethod.getType().isPrimitive() : null);
 			// Param
 			List<CtParameter> parameters = parentMethod.getParameters();
 			List<String> parametersTypes = new ArrayList<>();

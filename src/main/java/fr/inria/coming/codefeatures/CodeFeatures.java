@@ -237,8 +237,7 @@ public enum CodeFeatures {
 	// For each method invocation, whether the types of some of its parameters are
 	// same or compatible with the return type of the method.
 	M4_PARAMETER_RETURN_COMPABILITY,
-	//
-
-	;
+	// For each method invocation, whether the return value of it is primitive
+	M5_RETURN_PRIMITIVE,;
 
 }

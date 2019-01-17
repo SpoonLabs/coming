@@ -1109,6 +1109,57 @@ public class CodeFeatureDetectorTest {
 	}
 
 	@Test
+	public void testProperty_M5_returnprimitive() {
+
+		String content = "" + "class X {" //
+				+ "public boolean gvarb =false;" //
+				+ "public Object foo() {" //
+				+ "boolean avarb =false;" //
+				+ "boolean bvarb =false;" //
+				+ "int mysimilar = 1;"//
+				+ "int myzimilar = (gvarb && avarb && bvarb)? 2:1;"// Use of two booleans
+				+ "float fiii =  getFloat(1.0f); "//
+				+ "double dother = 0;" //
+				+ "int f1 =  getConvertFloat(fiii);" //
+				+ "int f2 =  mysimilar + myzimilar + f1 ;" //
+				+ "if(avarb && gvarb){};" //
+				+ "return (avarb && bvarb)? 2: 1;" + "}"//
+				+ "public float getFloat(Double d){return 1.0;}"//
+				+ "public float getFloat(float f){return 1.0;}"//
+				+ "public int getConvertFloat(float f){return 1;}"//
+				+ "};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+		CtElement element = method.getBody().getStatements().stream()
+				.filter(e -> e.toString().startsWith("float fiii =")).findFirst().get();
+		System.out.println(element);
+
+		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
+		Cntx cntx = cntxResolver.retrieveCntx(element);
+		System.out.println(cntx.toJSON());
+		// not method involve
+		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.M5_RETURN_PRIMITIVE));
+
+		method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("getConvertFloat")).findFirst().get();
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return 1")).findFirst()
+				.get();
+		System.out.println(element);
+		cntxResolver = new CodeFeatureDetector();
+		cntx = cntxResolver.retrieveCntx(element);
+		// all variables used
+		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.M5_RETURN_PRIMITIVE));
+	}
+
+	@Test
 	public void testProperty_M1_OVERLOADED() {
 
 		String content = "" + "class X {" //
@@ -1216,6 +1267,57 @@ public class CodeFeatureDetectorTest {
 		cntx = cntxResolver.retrieveCntx(element);
 		// all variables used
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.M2_SIMILAR_METHOD_WITH_SAME_RETURN));
+
+	}
+
+	@Test
+	public void testProperty_S6_Method_thr_exception() {
+
+		String content = "" + "class X {" //
+				+ "public boolean gvarb =false;" //
+				+ "public Object foo() throws Exception{" //
+				+ "boolean avarb =false;" //
+				+ "boolean bvarb =false;" //
+				+ "int mysimilar = 1;"//
+				+ "int myzimilar = (gvarb && avarb && bvarb)? 2:1;"// Use of two booleans
+				+ "float fiii =  getFloat(); "//
+				+ "double dother = 0;" //
+				+ "int f1 =  getConvertFloat(fiii);" //
+				+ "int f2 =  mysimilar + myzimilar + f1 ;" //
+				+ "if(avarb && gvarb){};" //
+				+ "return (avarb && bvarb)? 2: 1;" + "}"//
+				+ "public float getMFloat(){return 1.0;}"//
+				+ "public float getFloat(){return 1.0;}"//
+				+ "public int getConvertFloat(float f){return 1;}"//
+				+ "};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+		CtElement element = method.getBody().getStatements().stream()
+				.filter(e -> e.toString().startsWith("int myzimilar")).findFirst().get();
+		System.out.println(element);
+		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
+		Cntx cntx = cntxResolver.retrieveCntx(element);
+		// not method involve
+		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.S6_METHOD_THROWS_EXCEPTION));
+
+		method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("getConvertFloat")).findFirst().get();
+
+		/// SECOND CASE
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return 1")).findFirst()
+				.get();
+		System.out.println(element);
+		cntxResolver = new CodeFeatureDetector();
+		cntx = cntxResolver.retrieveCntx(element);
+		// statement with a similar method
+		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.S6_METHOD_THROWS_EXCEPTION));
 
 	}
 
