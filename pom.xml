@@ -75,7 +75,8 @@
 		<dependency>
 			<groupId>fr.inria.gforge.spoon.labs </groupId>
 			<artifactId>gumtree-spoon-ast-diff</artifactId>
-			<version>1.6</version>
+			<version>1.6</version> 
+			<!--<version>1.6-SNAPSHOT</version>-->
 		</dependency>
 
 		<dependency>
@@ -102,7 +103,13 @@
 		<dependency>
 			<groupId>org.inria.sacha.automaticRepair</groupId>
 			<artifactId>astor</artifactId>
-			<version>d09905c02c3bea4e41be52d0af6fe8e485c8f3c7</version>
+			<version>87245788c0f606ca8c11791522d39e758f3a0a9a</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>1.6</version>
 		</dependency>
 
 	</dependencies>
