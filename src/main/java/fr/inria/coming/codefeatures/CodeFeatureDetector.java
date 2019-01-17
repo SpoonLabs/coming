@@ -70,7 +70,7 @@ public class CodeFeatureDetector {
 		putVarInContextInformation(context, varsInScope);
 
 		List<CtVariableAccess> varsAffected = VariableResolver.collectVariableRead(element);
-		analyzeTypesVarsAffected(varsAffected, element, context);
+		analyzeV8_TypesVarsAffected(varsAffected, element, context);
 		analyzeS1_AffectedAssigned(varsAffected, element, context);
 		analyzeS1_AffectedVariablesUsed(varsAffected, element, context);
 		analyzeS2_S5_SametypewithGuard(varsAffected, element, context);
@@ -97,6 +97,8 @@ public class CodeFeatureDetector {
 
 		analyzeC1_Constant(element, context);
 		analyzeC2_UseEnum(element, context);
+
+		analyzeAE1(element, context);
 
 		// Other features not enumerated
 		analyzeAffectedWithCompatibleTypes(varsAffected, varsInScope, element, context);
@@ -1574,6 +1576,62 @@ public class CodeFeatureDetector {
 	}
 
 	/**
+	 * For each arithmetic expression, whether has method definitions or method
+	 * calls (in the fault class) that take the return type of the arithmetic
+	 * expression as one of its parameters and the return type of the method is type
+	 * compatible with the return type of the arithmetic expression.
+	 * 
+	 * @param element
+	 * @param context
+	 */
+	private void analyzeAE1(CtElement element, Cntx<Object> context) {
+		try {
+
+			CtClass parentClass = element.getParent(CtClass.class);
+
+			List<CtInvocation> invocationsFromClass = parentClass.getElements(e -> (e instanceof CtInvocation)).stream()
+					.map(CtInvocation.class::cast).collect(Collectors.toList());
+
+			List allMethods = getAllMethodsFromClass(parentClass);
+
+			List<BinaryOperatorKind> opKinds = new ArrayList<>();
+			opKinds.add(BinaryOperatorKind.DIV);
+			opKinds.add(BinaryOperatorKind.PLUS);
+			opKinds.add(BinaryOperatorKind.MINUS);
+			opKinds.add(BinaryOperatorKind.MUL);
+			opKinds.add(BinaryOperatorKind.MUL);
+
+			boolean hasArithmeticCompatible = false;
+
+			List<CtBinaryOperator> arithmeticOperators = element.getElements(
+					e -> e instanceof CtBinaryOperator && opKinds.contains(((CtBinaryOperator) e).getKind()));
+
+			for (CtBinaryOperator anAritmeticOperator : arithmeticOperators) {
+
+				// First, Let's analyze the method declaration
+
+				if (checkMethodDeclarationWithType(allMethods, anAritmeticOperator.getType()) != null) {
+					hasArithmeticCompatible = true;
+				}
+				// Second, let's inspect invocations
+				else {
+
+					if (checkInvocationWithType(invocationsFromClass, anAritmeticOperator.getType()) != null) {
+						hasArithmeticCompatible = true;
+					}
+
+				}
+
+			}
+
+			context.put(CodeFeatures.AE1_COMPATIBLE_RETURN_TYPE, (hasArithmeticCompatible));
+
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
 	 * Check if a method declaration has a parameter compatible with that one from
 	 * the var affected
 	 * 
@@ -1604,6 +1662,39 @@ public class CodeFeatureDetector {
 
 		}
 		return null;
+	}
+
+	/**
+	 * Check if a method declaration has a parameter compatible and return with the
+	 * cttype as argument
+	 * 
+	 * @param allMethods
+	 * @param varAffected
+	 * @return
+	 */
+	public CtMethod checkMethodDeclarationWithType(List allMethods, CtTypeReference typeToMatch) {
+		for (Object omethod : allMethods) {
+
+			if (!(omethod instanceof CtMethod))
+				continue;
+
+			CtMethod anotherMethodInBuggyClass = (CtMethod) omethod;
+
+			// Check the parameters
+			for (Object oparameter : anotherMethodInBuggyClass.getParameters()) {
+				CtParameter parameter = (CtParameter) oparameter;
+
+				if (compareTypes(typeToMatch, parameter.getType())
+						&& compareTypes(typeToMatch, anotherMethodInBuggyClass.getType())) {
+
+					return anotherMethodInBuggyClass;
+
+				}
+			}
+
+		}
+		return null;
+
 	}
 
 	/**
@@ -1644,6 +1735,35 @@ public class CodeFeatureDetector {
 
 		}
 		return null;
+	}
+
+	public CtInvocation checkInvocationWithType(List<CtInvocation> invocationsFromClass, CtTypeReference type) {
+		// For each invocation found in the class
+		for (CtInvocation anInvocation : invocationsFromClass) {
+
+			// For each argument in the invocation
+			for (Object anObjArgument : anInvocation.getArguments()) {
+				CtExpression anArgument = (CtExpression) anObjArgument;
+
+				// retrieve Var access
+
+				List<CtVariableAccess> varReadFromArguments = VariableResolver.collectVariableRead(anArgument);
+
+				for (CtVariableAccess aVarReadFrmArgument : varReadFromArguments) {
+
+					//
+					if (compareTypes(type, aVarReadFrmArgument.getType())
+							&& compareTypes(type, anInvocation.getType())) {
+						return anInvocation;
+					}
+
+				}
+
+			}
+
+		}
+		return null;
+
 	}
 
 	private boolean isSubtype(CtVariableAccess var, CtMethod method) {
@@ -2043,7 +2163,7 @@ public class CodeFeatureDetector {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void analyzeTypesVarsAffected(List<CtVariableAccess> varsAffected, CtElement element,
+	private void analyzeV8_TypesVarsAffected(List<CtVariableAccess> varsAffected, CtElement element,
 			Cntx<Object> context) {
 		// Vars in scope at the position of element
 
@@ -2052,18 +2172,22 @@ public class CodeFeatureDetector {
 
 		List<CtVariableAccess> objectAccess = new ArrayList<>();
 
-		for (CtVariableAccess ctVariableAccess : varsAffected) {
+		for (CtVariableAccess aVariableAccess : varsAffected) {
 
-			CtVariable ctVariable = ctVariableAccess.getVariable().getDeclaration();
-
+			CtVariable ctVariable = aVariableAccess.getVariable().getDeclaration();
+			boolean isPrimitive = false;
 			if (ctVariable != null && ctVariable.getReference() != null
 					&& ctVariable.getReference().getType() != null) {
 				if (ctVariable.getReference().getType().isPrimitive()) {
 					nrPrimitives++;
+					isPrimitive = true;
 				} else {
 					nrObjectRef++;
-					objectAccess.add(ctVariableAccess);
+					objectAccess.add(aVariableAccess);
 				}
+
+				writeDetailedInformationFromVariables(context, aVariableAccess.getVariable().getSimpleName(),
+						CodeFeatures.V8_VAR_PRIMITIVE, isPrimitive);
 			}
 		}
 		context.put(CodeFeatures.NUMBER_PRIMITIVE_VARS_IN_STMT, nrPrimitives);

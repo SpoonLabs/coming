@@ -219,6 +219,8 @@ public enum CodeFeatures {
 //	If statement involves variables, whether has methods in scope that return 
 	// the type of the involved variable
 	V6_IS_METHOD_RETURN_TYPE_VAR,
+	// For each variable, is it primitive type?
+	V8_VAR_PRIMITIVE,
 	// For each method invocation, whether the method has overloaded method
 	M1_OVERLOADED_METHOD,
 	// For each method invocation, whether there exist methods that return the same
@@ -244,5 +246,10 @@ public enum CodeFeatures {
 	C1_SAME_TYPE_CONSTANT,
 	// For each constant, is it an enum vlaue (But may be it ishard to detect it use
 	// partial program analysis).
-	C2_USES_ENUMERATION;
+	C2_USES_ENUMERATION,
+	// For each arithmetic expression, whether has method definitions or method
+	// calls (in the fault class) that take the return type of the arithmetic
+	// expression as one of its parameters and the return type of the method is
+	// type compatible with the return type of the arithmetic expression.
+	AE1_COMPATIBLE_RETURN_TYPE;
 }

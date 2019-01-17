@@ -295,7 +295,7 @@ public class CodeFeatureDetectorTest {
 	}
 
 	@Test
-	public void testProperty_NUMBER_PRIMITIVE_VARS_IN_STMT() {
+	public void testProperty_V8_NUMBER_PRIMITIVE_VARS_IN_STMT() {
 
 		String content = "" + "class X {" + "public Object foo() {" //
 				+ " String s=null;"//
@@ -330,6 +330,7 @@ public class CodeFeatureDetectorTest {
 		assertEquals(1, cntx.get(CodeFeatures.NUMBER_PRIMITIVE_VARS_IN_STMT));
 		assertEquals(0, cntx.get(CodeFeatures.NUMBER_OBJECT_REFERENCE_VARS_IN_STMT));
 		assertEquals(1, cntx.get(CodeFeatures.NUMBER_TOTAL_VARS_IN_STMT));
+		assertEquals(Boolean.TRUE, retrieveFeatureVarProperty(cntx, CodeFeatures.V8_VAR_PRIMITIVE, "a"));
 
 		stm = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("b =")).findFirst().get();
 
@@ -536,14 +537,75 @@ public class CodeFeatureDetectorTest {
 
 	}
 
+	@Test
+	public void testProperty_AE1() {
+
+		String content = "" + "class X {" + //
+				"public String SC = null;"//
+				+ "public Object foo() {" //
+				+ " int mysimilar = 1;"//
+				+ "int myzimilar = 2 + 1;"//
+				+ "float fiii = (float)myzimilar - 1.0f; " //
+				+ "String s1 = SC;"//
+				+ "String s2 = s1 + SC;"//
+				+ "double dother = 0;" + "return fiii;" + "}" //
+				+ "public float getFloat(){return 1.0;}"//
+				+ "public float getConvertFloat(float f){return 1;}"//
+				+ "public String getConvertSFloat(String f){return null;}"//
+				+ "};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+		CtElement element = method.getBody().getStatements().stream()
+				.filter(e -> e.toString().startsWith("java.lang.String s2")).findFirst().get();
+		System.out.println(element);
+		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
+		Cntx cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.AE1_COMPATIBLE_RETURN_TYPE));
+
+		///
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float fiii"))
+				.findFirst().get();
+		System.out.println(element);
+		cntxResolver = new CodeFeatureDetector();
+		cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.AE1_COMPATIBLE_RETURN_TYPE));
+
+		///
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int myzimilar"))
+				.findFirst().get();
+		System.out.println(element);
+		cntxResolver = new CodeFeatureDetector();
+		cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.AE1_COMPATIBLE_RETURN_TYPE));
+
+	}
+
 	public Object retrieveFeatureVarProperty(Cntx cntx, CodeFeatures property, String varName) {
-		return ((Cntx) ((Cntx) cntx.getInformation().get("FEATURES_VARS")).getInformation().get(varName))
-				.getInformation().get(property.toString());
+		try {
+			return ((Cntx) ((Cntx) cntx.getInformation().get("FEATURES_VARS")).getInformation().get(varName))
+					.getInformation().get(property.toString());
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	public Object retrieveMethodsVarProperty(Cntx cntx, CodeFeatures property, String varName) {
-		return ((Cntx) ((Cntx) cntx.getInformation().get("FEATURES_METHODS")).getInformation().get(varName))
-				.getInformation().get(property.toString());
+		try {
+			return ((Cntx) ((Cntx) cntx.getInformation().get("FEATURES_METHODS")).getInformation().get(varName))
+					.getInformation().get(property.toString());
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	@Test
