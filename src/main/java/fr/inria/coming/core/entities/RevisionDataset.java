@@ -35,4 +35,9 @@ public class RevisionDataset<Data> {
 		return this.data.iterator();
 
 	}
+
+	public int size() {
+
+		return data != null ? data.size() : 0;
+	}
 }
