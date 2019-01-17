@@ -94,10 +94,45 @@ public class CodeFeatureDetector {
 		analyzeLE6_UnaryInvolved(element, context);
 		analyzeLE7_VarDirectlyUsed(varsAffected, varsInScope, element, context);
 		analyzeLE8_LocalVariablesVariablesUsed(varsAffected, element, context);
+
+		analyzeC1_Constant(element, context);
+		analyzeC2_UseEnum(element, context);
+
 		// Other features not enumerated
 		analyzeAffectedWithCompatibleTypes(varsAffected, varsInScope, element, context);
 		analyzeParentTypes(element, context);
-		analyzeUseEnumAndConstants(element, context);
+		analyze_UseEnumAndConstants(element, context);
+	}
+
+	private void analyzeC1_Constant(CtElement element, Cntx<Object> context) {
+
+		boolean hasSimilarLiterals = false;
+		// Get all invocations inside the faulty element
+		List<CtLiteral> literalsFromFaultyLine = element.getElements(e -> (e instanceof CtLiteral)).stream()
+				.map(CtLiteral.class::cast).collect(Collectors.toList());
+
+		if (literalsFromFaultyLine.size() > 0) {
+
+			for (CtLiteral literalFormFaulty : literalsFromFaultyLine) {
+
+				CtClass parentClass = element.getParent(CtClass.class);
+				List<CtLiteral> literalsFromClass = parentClass.getElements(e -> (e instanceof CtLiteral)).stream()
+						.map(CtLiteral.class::cast).collect(Collectors.toList());
+				for (CtLiteral anotherLiteral : literalsFromClass) {
+					if (// Compare types
+					compareTypes(anotherLiteral.getType(), literalFormFaulty.getType())
+							// Compare value
+							&& !(anotherLiteral.getValue() != null && literalFormFaulty.getValue() != null
+									&& anotherLiteral.getValue().equals(literalFormFaulty.getValue()))) {
+						hasSimilarLiterals = true;
+						break;
+					}
+				}
+
+			}
+
+		}
+		context.put(CodeFeatures.C1_SAME_TYPE_CONSTANT, hasSimilarLiterals);
 
 	}
 
@@ -226,7 +261,30 @@ public class CodeFeatureDetector {
 		}
 	}
 
-	private void analyzeUseEnumAndConstants(CtElement element, Cntx<Object> context) {
+	private void analyzeC2_UseEnum(CtElement element, Cntx<Object> context) {
+
+		boolean useEnum = false;
+		CtClass classParent = element.getParent(CtClass.class);
+
+		if (classParent == null)
+			return;
+
+		List<CtEnum> enums = classParent.getElements(new TypeFilter<>(CtEnum.class));
+
+		List<CtVariableRead> varAccessFromSusp = element.getElements(new TypeFilter<>(CtVariableRead.class));
+
+		for (CtVariableRead varAccess : varAccessFromSusp) {
+
+			if (varAccess.getVariable().getType() != null
+					&& enums.contains(varAccess.getVariable().getType().getDeclaration())) {
+				useEnum = true;
+			}
+		}
+
+		context.put(CodeFeatures.C2_USES_ENUMERATION, useEnum);
+	}
+
+	private void analyze_UseEnumAndConstants(CtElement element, Cntx<Object> context) {
 
 		List enumsValues = new ArrayList();
 		List literalsValues = new ArrayList();

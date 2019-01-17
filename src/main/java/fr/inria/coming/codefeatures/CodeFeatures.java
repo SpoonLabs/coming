@@ -238,6 +238,11 @@ public enum CodeFeatures {
 	// same or compatible with the return type of the method.
 	M4_PARAMETER_RETURN_COMPABILITY,
 	// For each method invocation, whether the return value of it is primitive
-	M5_RETURN_PRIMITIVE,;
-
+	M5_RETURN_PRIMITIVE,
+	// C1: For each constantc, whether exist other constants used inthe faulty class
+	// whose types are the same (or type compatible)withcbut values are different
+	C1_SAME_TYPE_CONSTANT,
+	// For each constant, is it an enum vlaue (But may be it ishard to detect it use
+	// partial program analysis).
+	C2_USES_ENUMERATION;
 }

@@ -454,6 +454,47 @@ public class CodeFeatureDetectorTest {
 	}
 
 	@Test
+	public void testProperty_C1() {
+
+		String content = "" + "class X {" + " int ffii = 1;"//
+				+ "public Object foo() {" //
+				+ " int mysimilar = 1;"//
+				+ "int myzimilar = 1;"//
+				+ "String test = \"mycontant\";"//
+				+ "String t2est2 = test + \"mycontant2\";" + "float fiii = (float)myzimilar;"//
+				+ "int dother = max(mysimilar, myzimilar);" //
+				+ "return max(mysimilar, mysimilar);" + "}" + "public float getFloat(){return 1.0;}"//
+				+ "public int max(int m, int n){return 1;}"//
+				+ "};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+		CtElement element = method.getBody().getStatements().stream()
+				.filter(e -> e.toString().startsWith("java.lang.String test")).findFirst().get();
+		System.out.println(element);
+		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
+		Cntx cntx = cntxResolver.retrieveCntx(element);
+		// affected myzimilar
+		System.out.println(cntx.toJSON());
+		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.C1_SAME_TYPE_CONSTANT));
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int myzimilar "))
+				.findFirst().get();
+		System.out.println(element);
+		cntxResolver = new CodeFeatureDetector();
+		cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.C1_SAME_TYPE_CONSTANT));
+
+	}
+
+	@Test
 	public void testProperty_V3() {
 
 		String content = "" + "class X {" + //
@@ -1398,8 +1439,7 @@ public class CodeFeatureDetectorTest {
 	}
 
 	@Test
-	@Ignore
-	public void testProperty_USES_ENUM() {
+	public void testProperty_C2USES_ENUM() {
 
 		String content = "" + "class X {" + "public enum MYEN  {ENU1, ENU2;}" + "public Object foo() {" //
 				+ " float mysimilar = 1;"//
@@ -1411,27 +1451,28 @@ public class CodeFeatureDetectorTest {
 				+ "};";
 
 		CtType type = getCtType(content);
-
+		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 		assertNotNull(type);
 		CtMethod method = (CtMethod) type.getMethods().stream()
 				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 
 		assertNotNull(method);
 		System.out.println(method);
-		CtElement element = method.getBody().getStatements().stream()
-				.filter(e -> e.toString().startsWith("int myzimilar")).findFirst().get();
-		System.out.println(element);
-		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.USES_ENUM));
-
-		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float fiii"))
+		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float fiii"))
 				.findFirst().get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.retrieveCntx(element);
 		// TODO: Failing:
-		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.USES_ENUM));
+		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.C2_USES_ENUMERATION));
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int myzimilar"))
+				.findFirst().get();
+		System.out.println(element);
+
+		cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.C2_USES_ENUMERATION));
 
 	}
 
