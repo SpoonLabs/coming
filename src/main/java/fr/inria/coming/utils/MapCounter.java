@@ -5,6 +5,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 /**
  * @author Matias Martinez
  *
@@ -60,6 +64,36 @@ public class MapCounter<K> extends HashMap<K, Integer> {
 						LinkedHashMap::new));
 
 		return probMap;
+	}
+
+	public JsonElement toJSON() {
+
+		// JsonArray root = new JsonArray();
+		JsonObject element = new JsonObject();
+
+		for (K k : this.keySet()) {
+			// JsonObject element = new JsonObject();
+			// element.addProperty("k", k.toString());
+			// elemeRnt.addProperty("v", this.get(k));
+			element.addProperty(k.toString(), this.get(k));
+			// root.add(element);
+		}
+
+		return element;
+	}
+
+	public JsonElement toJSONArray() {
+
+		JsonArray root = new JsonArray();
+
+		for (K k : this.keySet()) {
+			JsonObject element = new JsonObject();
+			element.addProperty("k", k.toString());
+			element.addProperty("v", this.get(k));
+			root.add(element);
+		}
+
+		return root;
 	}
 
 }
