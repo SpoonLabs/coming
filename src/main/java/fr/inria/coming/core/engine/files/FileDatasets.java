@@ -30,4 +30,10 @@ public class FileDatasets extends RevisionDataset<IRevision> {
 		return new FileDynamicIterator(rootDirectory);
 	}
 
+	@Override
+	public int size() {
+
+		return this.rootDirectory != null ? rootDirectory.listFiles().length : 0;
+	}
+
 }

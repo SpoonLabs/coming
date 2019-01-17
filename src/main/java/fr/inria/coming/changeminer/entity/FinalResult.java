@@ -38,7 +38,12 @@ public class FinalResult<R extends IRevision> {
 
 				r += "\n" + processorName;
 				AnalysisResult result = rv.get(processorName);
-				r += "\n" + result;
+				try {
+					r += "\n" + result;
+				} catch (Exception e) {
+					r += "\n -Error on toString-";
+					e.printStackTrace();
+				}
 			}
 		}
 		return r;

@@ -5,8 +5,11 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.entities.interfaces.IRevisionPair;
+import fr.inria.coming.main.ComingProperties;
 
 /**
  * 
@@ -14,6 +17,7 @@ import fr.inria.coming.core.entities.interfaces.IRevisionPair;
  *
  */
 public class FileDiff implements IRevision {
+	Logger log = Logger.getLogger(FileDiff.class.getName());
 
 	protected File diffFolder = null;
 
@@ -29,34 +33,58 @@ public class FileDiff implements IRevision {
 			return null;
 		}
 		List<IRevisionPair> pairs = new ArrayList<>();
-		for (File fileModif : diffFolder.listFiles()) {
-			int i_hunk = 0;
+		try {
+			for (File fileModif : diffFolder.listFiles()) {
 
-			if (".DS_Store".equals(fileModif.getName()))
-				continue;
+				if (".DS_Store".equals(fileModif.getName()))
+					continue;
 
-			String pathname = fileModif.getAbsolutePath() + File.separator + diffFolder.getName() + "_"
-					+ fileModif.getName() /* + "_" + i_hunk */;
-			File previousVersion = new File(pathname + "_s.java");
-			if (!previousVersion.exists()) {
-				break;
+				String pathname = calculatePathName(fileModif);
+
+				String filename = fileModif.getName().trim();
+				if (ComingProperties.getPropertyBoolean("excludetests")
+						&& (filename.startsWith("Test") || filename.endsWith("Test"))) {
+					log.debug("Ignore test: " + pathname);
+					continue;
+				}
+
+				File previousVersion = new File(pathname.trim() + "_s.java");
+				File postVersion = new File(pathname.trim() + "_t.java");
+
+				if (!previousVersion.exists() || !postVersion.exists()) {
+					log.debug("Missing file in diff " + pathname + " " + diffFolder.getName());
+					continue;
+				}
+
+				try {
+					String previousString = new String(Files.readAllBytes(previousVersion.toPath()));
+					String postString = new String(Files.readAllBytes(postVersion.toPath()));
+
+					FilePair fpair = new FilePair(previousString, postString, fileModif.getName());
+					pairs.add(fpair);
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				;
 			}
-
-			File postVersion = new File(pathname + "_t.java");
-			try {
-				String previousString = new String(Files.readAllBytes(previousVersion.toPath()));
-				String postString = new String(Files.readAllBytes(postVersion.toPath()));
-
-				FilePair fpair = new FilePair(previousString, postString, fileModif.getName());
-				pairs.add(fpair);
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			;
+		} catch (Exception e) {
+			System.err.println("Error analyzing " + diffFolder);
+			e.printStackTrace();
 		}
 
 		return pairs;
+	}
+
+	public String calculatePathName(File fileModif) {
+		return
+		// The folder with the file name
+		fileModif.getAbsolutePath() + File.separator
+		// check if add the revision name in the file name
+				+ (ComingProperties.getPropertyBoolean("excludecommitnameinfile") ? "" : (diffFolder.getName() + "_"))
+				// File name
+				+ fileModif.getName();
+
 	}
 
 	@Override

@@ -76,14 +76,17 @@ public abstract class RevisionNavigationExperiment<Data extends IRevision> {
 		RevisionDataset data = loadDataset();
 		Iterator it = this.getNavigationStrategy().orderOfNavigation(data);
 
-		int i = 0;
+		int i = 1;
 
 		List<Analyzer> analyzers = this.getAnalyzers();
+
+		int size = data.size();
 
 		for (Iterator<Data> iterator = it; iterator.hasNext();) {
 
 			Data element = iterator.next();
 
+			System.out.println("\n***********\nAnalyzing " + i + "/" + size);
 			if (!accept(element)) {
 				continue;
 			}
