@@ -203,11 +203,6 @@ public enum CodeFeatures {
 	// identifier names are majorly capital letters are constant variables
 	V3_HAS_CONSTANT,
 
-	// If statement involves variables, whether has methods in scope that take the
-	// type of the involved variable as parameter
-
-	V_X_BIS_IS_METHOD_PARAM_TYPE_VAR,
-
 	// V4: For each involved variable, if it is used as parameter inmethod call, for
 	// this method call, is it the first time that it isused as parameter
 	V4_FIRST_TIME_PARAMETER,
@@ -216,8 +211,7 @@ public enum CodeFeatures {
 	// assigned to a certain function transformation of the involved variable
 	V5_HAS_VAR_IN_TRANSFORMATION,
 
-//	If statement involves variables, whether has methods in scope that return 
-	// the type of the involved variable
+//For each involved variable, whether has methods in scope(method definitions or method calls in the faulty class) thatreturn a type which is the same or compatible with the typeof the involved variable. 
 	V6_IS_METHOD_RETURN_TYPE_VAR,
 	// For each variable, is it primitive type?
 	V8_VAR_PRIMITIVE,

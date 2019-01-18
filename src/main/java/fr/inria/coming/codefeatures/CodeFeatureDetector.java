@@ -78,7 +78,7 @@ public class CodeFeatureDetector {
 		analyzeS4_AffectedFielfs(varsAffected, element, context);
 		analyzeS6_M5_Method_Method_Features(element, context);
 
-		analyzeV1_VX_V6_AffectedVariablesInMethod(varsAffected, element, context);
+		analyzeV1_V6(varsAffected, element, context);
 		analyzeV2_AffectedDistanceVarName(varsAffected, varsInScope, element, context);
 		analyzeV3_AffectedHasConstant(varsAffected, element, context);
 		analyzeV4(varsAffected, element, context);
@@ -1356,7 +1356,7 @@ public class CodeFeatureDetector {
 							v2SimilarNameCompatibleType = true;
 							v2VarSimilarNameCompatibleType = true;
 							// to save computation
-							break;
+							// break;
 						}
 					}
 
@@ -1409,108 +1409,58 @@ public class CodeFeatureDetector {
 	 * @param element
 	 * @param context
 	 */
-	private void analyzeV1_VX_V6_AffectedVariablesInMethod(List<CtVariableAccess> varsAffected, CtElement element,
-			Cntx<Object> context) {
+	private void analyzeV1_V6(List<CtVariableAccess> varsAffected, CtElement element, Cntx<Object> context) {
 		try {
 			// For each involved variable, whether has method definitions or method calls
 			// (in the fault class) that take the type of the involved variable as one of
 			// its parameters and the return type of the method is type compatible with the
 			// type of the involved variable
-			boolean v1CompatibleReturnAndParameterTypes = false;
-			// If statement involves variables, whether has methods in scope that take the
-			// type of the involved variable as parameter
-			boolean v4paramCompatible = false;
-			// If statement involves variables, whether has methods in scope that return
-			// the type of the involved variable
-			boolean v6returnCompatible = false;
-			// For any variable involved in a logical expression,whether exist methods
-			// (method declaration or method call) in scope (that is in the same faulty
-			// class
-			// since we do not assume full program) that take variable whose type is same
-			// with vas one of its parameters and return boolean
-			boolean les2paramCompatibleWithBooleanReturn = false;
+			boolean v1AnyVarCompatibleReturnAndParameterTypes = false;
+
+			// For each involved variable, whether has methods in scope(method definitions
+			// or method calls in the faulty class) thatreturn a type which is the same or
+			// compatible with the typeof the involved variable.
+			boolean v6AnyVarReturnCompatible = false;
 
 			CtClass parentClass = element.getParent(CtClass.class);
+
+			List<CtInvocation> invocationsFromClass = parentClass.getElements(e -> (e instanceof CtInvocation)).stream()
+					.map(CtInvocation.class::cast).collect(Collectors.toList());
 
 			List allMethods = getAllMethodsFromClass(parentClass);
 
 			for (CtVariableAccess varAffected : varsAffected) {
 
-				boolean v6InvReturnCompatible = false;
-				boolean v4InvparamCompatible = false;
-				boolean les2InvparamCompatibleWithBooleanReturn = false;
-				boolean v1CurrentCompatibleReturnAndParameterTypes = false;
+				boolean v6CurrentVarReturnCompatible = false;
+				boolean v1CurrentVarCompatibleReturnAndParameterTypes = false;
 
-				for (Object omethod : allMethods) {
-					boolean matchInmethodType = false;
-					boolean matchInmethodReturn = false;
+				if (checkMethodDeclarationWithParameterReturnCompatibleType(allMethods, varAffected.getType()) != null
+						|| checkInvocationWithParameterReturnCompatibleType(invocationsFromClass,
+								varAffected.getType()) != null) {
+					v1AnyVarCompatibleReturnAndParameterTypes = true;
+					v1CurrentVarCompatibleReturnAndParameterTypes = true;
+				}
 
-					if (!(omethod instanceof CtMethod))
-						continue;
-
-					CtMethod anotherMethodInBuggyClass = (CtMethod) omethod;
-
-					// Get the return type
-					if (anotherMethodInBuggyClass.getType() != null) {
-
-						if (isSubtype(varAffected, anotherMethodInBuggyClass)) {
-							v6returnCompatible = true;
-							matchInmethodReturn = true;
-							v6InvReturnCompatible = true;
-
-						}
-
-					}
-					// Check the parameters
-					for (Object oparameter : anotherMethodInBuggyClass.getParameters()) {
-						CtParameter parameter = (CtParameter) oparameter;
-
-						if (compareTypes(varAffected.getType(), parameter.getType())) {
-							v4paramCompatible = true;
-							v4InvparamCompatible = true;
-							matchInmethodType = true;
-							if (anotherMethodInBuggyClass.getType().unbox().toString().equals("boolean")) {
-								les2paramCompatibleWithBooleanReturn = true;
-								les2InvparamCompatibleWithBooleanReturn = true;
-							}
-
-						}
-					}
-					// check both return type and parameter
-					if (matchInmethodType && matchInmethodReturn) {
-						v1CompatibleReturnAndParameterTypes = true;
-						v1CurrentCompatibleReturnAndParameterTypes = true;
-					}
-
-					if (v4paramCompatible && v6returnCompatible && les2paramCompatibleWithBooleanReturn
-							&& v1CompatibleReturnAndParameterTypes) {
-						break;
-					}
-
+				if (checkMethodDeclarationWithReturnCompatibleType(allMethods, varAffected.getType()) != null
+						|| checkInvocationWithReturnCompatibleType(invocationsFromClass,
+								varAffected.getType()) != null) {
+					v6AnyVarReturnCompatible = true;
+					v6CurrentVarReturnCompatible = true;
 				}
 
 				writeDetailedInformationFromVariables(context, varAffected.getVariable().getSimpleName(),
 						CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN,
-						(v1CurrentCompatibleReturnAndParameterTypes));
+						(v1CurrentVarCompatibleReturnAndParameterTypes));
 
 				writeDetailedInformationFromVariables(context, varAffected.getVariable().getSimpleName(),
-						CodeFeatures.V_X_BIS_IS_METHOD_PARAM_TYPE_VAR, v4InvparamCompatible);
-
-				writeDetailedInformationFromVariables(context, varAffected.getVariable().getSimpleName(),
-						CodeFeatures.V6_IS_METHOD_RETURN_TYPE_VAR, v6InvReturnCompatible);
-
-				writeDetailedInformationFromVariables(context, varAffected.getVariable().getSimpleName(),
-						CodeFeatures.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR, (les2InvparamCompatibleWithBooleanReturn));
+						CodeFeatures.V6_IS_METHOD_RETURN_TYPE_VAR, v6CurrentVarReturnCompatible);
 
 			}
 
 			context.put(CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN,
-					(v1CompatibleReturnAndParameterTypes));
+					(v1AnyVarCompatibleReturnAndParameterTypes));
 
-			context.put(CodeFeatures.V_X_BIS_IS_METHOD_PARAM_TYPE_VAR, v4paramCompatible);
-			context.put(CodeFeatures.V6_IS_METHOD_RETURN_TYPE_VAR, v6returnCompatible);
-
-			context.put(CodeFeatures.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR, (les2paramCompatibleWithBooleanReturn));
+			context.put(CodeFeatures.V6_IS_METHOD_RETURN_TYPE_VAR, v6AnyVarReturnCompatible);
 
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -1531,14 +1481,14 @@ public class CodeFeatureDetector {
 			Cntx<Object> context) {
 		try {
 
-			boolean les2paramCompatibleWithBooleanReturn = false;
+			boolean hasAnyLES2paramCompatibleWithBooleanReturn = false;
 			CtClass parentClass = element.getParent(CtClass.class);
 
-			// First check method declarations
-
+			// Collects all invocations inside the class
 			List<CtInvocation> invocationsFromClass = parentClass.getElements(e -> (e instanceof CtInvocation)).stream()
 					.map(CtInvocation.class::cast).collect(Collectors.toList());
 
+			// Collect all method declaration inside the class
 			List allMethods = getAllMethodsFromClass(parentClass);
 
 			for (CtVariableAccess varAffected : varsAffected) {
@@ -1546,29 +1496,24 @@ public class CodeFeatureDetector {
 				if (!isParentBooleanExpression(varAffected))
 					continue;
 
-				boolean les2InvparamCompatibleWithBooleanReturn = false;
-				// First, Let's analyze the method declaration
+				boolean isCurrentVarLE2paramCompatibleWithBooleanReturn = false;
 
-				if (checkMethodDeclarationWithTypeInParameter(allMethods, varAffected) != null) {
-					les2paramCompatibleWithBooleanReturn = true;
-					les2InvparamCompatibleWithBooleanReturn = true;
-				}
-				// Second, let's inspect invocations
-				else {
-
-					if (checkInvocationWithTypeInParameter(invocationsFromClass, varAffected) != null) {
-						les2paramCompatibleWithBooleanReturn = true;
-						les2InvparamCompatibleWithBooleanReturn = true;
-					}
-
+				if (// First, Let's analyze the method declaration
+				checkBooleanMethodDeclarationWithTypeInParameter(allMethods, varAffected) != null
+						// Second, let's inspect invocations
+						|| checkBooleanInvocationWithParameterReturn(invocationsFromClass, varAffected) != null) {
+					hasAnyLES2paramCompatibleWithBooleanReturn = true;
+					isCurrentVarLE2paramCompatibleWithBooleanReturn = true;
 				}
 
 				writeDetailedInformationFromVariables(context, varAffected.getVariable().getSimpleName(),
-						CodeFeatures.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR, (les2InvparamCompatibleWithBooleanReturn));
+						CodeFeatures.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR,
+						(isCurrentVarLE2paramCompatibleWithBooleanReturn));
 
 			}
 
-			context.put(CodeFeatures.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR, (les2paramCompatibleWithBooleanReturn));
+			context.put(CodeFeatures.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR,
+					(hasAnyLES2paramCompatibleWithBooleanReturn));
 
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -1610,13 +1555,15 @@ public class CodeFeatureDetector {
 
 				// First, Let's analyze the method declaration
 
-				if (checkMethodDeclarationWithType(allMethods, anAritmeticOperator.getType()) != null) {
+				if (checkMethodDeclarationWithParameterReturnCompatibleType(allMethods,
+						anAritmeticOperator.getType()) != null) {
 					hasArithmeticCompatible = true;
 				}
 				// Second, let's inspect invocations
 				else {
 
-					if (checkInvocationWithType(invocationsFromClass, anAritmeticOperator.getType()) != null) {
+					if (checkInvocationWithParameterReturnCompatibleType(invocationsFromClass,
+							anAritmeticOperator.getType()) != null) {
 						hasArithmeticCompatible = true;
 					}
 
@@ -1639,7 +1586,7 @@ public class CodeFeatureDetector {
 	 * @param varAffected
 	 * @return
 	 */
-	public CtMethod checkMethodDeclarationWithTypeInParameter(List allMethods, CtVariableAccess varAffected) {
+	public CtMethod checkBooleanMethodDeclarationWithTypeInParameter(List allMethods, CtVariableAccess varAffected) {
 		for (Object omethod : allMethods) {
 
 			if (!(omethod instanceof CtMethod))
@@ -1672,7 +1619,8 @@ public class CodeFeatureDetector {
 	 * @param varAffected
 	 * @return
 	 */
-	public CtMethod checkMethodDeclarationWithType(List allMethods, CtTypeReference typeToMatch) {
+	public CtMethod checkMethodDeclarationWithParameterReturnCompatibleType(List allMethods,
+			CtTypeReference typeToMatch) {
 		for (Object omethod : allMethods) {
 
 			if (!(omethod instanceof CtMethod))
@@ -1694,7 +1642,22 @@ public class CodeFeatureDetector {
 
 		}
 		return null;
+	}
 
+	public CtMethod checkMethodDeclarationWithReturnCompatibleType(List allMethods, CtTypeReference typeToMatch) {
+		for (Object omethod : allMethods) {
+
+			if (!(omethod instanceof CtMethod))
+				continue;
+
+			CtMethod anotherMethodInBuggyClass = (CtMethod) omethod;
+
+			if (compareTypes(typeToMatch, anotherMethodInBuggyClass.getType())) {
+
+				return anotherMethodInBuggyClass;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -1705,25 +1668,25 @@ public class CodeFeatureDetector {
 	 * @param varAffected
 	 * @return
 	 */
-	public CtInvocation checkInvocationWithTypeInParameter(List<CtInvocation> invocationsFromClass,
+	public CtInvocation checkBooleanInvocationWithParameterReturn(List<CtInvocation> invocationsFromClass,
 			CtVariableAccess varAffected) {
 		// For each invocation found in the class
 		for (CtInvocation anInvocation : invocationsFromClass) {
 
-			// For each argument in the invocation
-			for (Object anObjArgument : anInvocation.getArguments()) {
-				CtExpression anArgument = (CtExpression) anObjArgument;
+			// Check types
+			if (anInvocation.getType() != null && anInvocation.getType().unbox().toString().equals("boolean")) {
 
-				// retrieve Var access
+				// For each argument in the invocation
+				for (Object anObjArgument : anInvocation.getArguments()) {
+					CtExpression anArgument = (CtExpression) anObjArgument;
 
-				List<CtVariableAccess> varReadFromArguments = VariableResolver.collectVariableRead(anArgument);
+					// retrieve Var access
 
-				for (CtVariableAccess aVarReadFrmArgument : varReadFromArguments) {
+					List<CtVariableAccess> varReadFromArguments = VariableResolver.collectVariableRead(anArgument);
 
-					//
-					if (compareTypes(varAffected.getType(), aVarReadFrmArgument.getType())) {
-						if (anInvocation.getType() == null
-								|| anInvocation.getType().unbox().toString().equals("boolean")) {
+					for (CtVariableAccess aVarReadFrmArgument : varReadFromArguments) {
+
+						if (compareTypes(varAffected.getType(), aVarReadFrmArgument.getType())) {
 							return anInvocation;
 						}
 
@@ -1737,33 +1700,45 @@ public class CodeFeatureDetector {
 		return null;
 	}
 
-	public CtInvocation checkInvocationWithType(List<CtInvocation> invocationsFromClass, CtTypeReference type) {
+	public CtInvocation checkInvocationWithParameterReturnCompatibleType(List<CtInvocation> invocationsFromClass,
+			CtTypeReference type) {
+		// For each invocation found in the class
+		for (CtInvocation anInvocation : invocationsFromClass) {
+			// Compatible types
+			if (compareTypes(type, anInvocation.getType())) {
+
+				// For each argument in the invocation
+				for (Object anObjArgument : anInvocation.getArguments()) {
+					CtExpression anArgument = (CtExpression) anObjArgument;
+
+					// retrieve Var access
+
+					List<CtVariableAccess> varReadFromArguments = VariableResolver.collectVariableRead(anArgument);
+
+					for (CtVariableAccess aVarReadFrmArgument : varReadFromArguments) {
+
+						//
+						if (compareTypes(type, aVarReadFrmArgument.getType())
+								&& compareTypes(type, anInvocation.getType())) {
+							return anInvocation;
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	public CtInvocation checkInvocationWithReturnCompatibleType(List<CtInvocation> invocationsFromClass,
+			CtTypeReference type) {
 		// For each invocation found in the class
 		for (CtInvocation anInvocation : invocationsFromClass) {
 
-			// For each argument in the invocation
-			for (Object anObjArgument : anInvocation.getArguments()) {
-				CtExpression anArgument = (CtExpression) anObjArgument;
-
-				// retrieve Var access
-
-				List<CtVariableAccess> varReadFromArguments = VariableResolver.collectVariableRead(anArgument);
-
-				for (CtVariableAccess aVarReadFrmArgument : varReadFromArguments) {
-
-					//
-					if (compareTypes(type, aVarReadFrmArgument.getType())
-							&& compareTypes(type, anInvocation.getType())) {
-						return anInvocation;
-					}
-
-				}
-
+			if (compareTypes(type, anInvocation.getType())) {
+				return anInvocation;
 			}
-
 		}
 		return null;
-
 	}
 
 	private boolean isSubtype(CtVariableAccess var, CtMethod method) {

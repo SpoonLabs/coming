@@ -132,13 +132,14 @@ public class CodeFeatureDetectorTest {
 	}
 
 	@Test
-	public void testProperty_V1_IS_METHOD_RETURN_TYPE_VAR() {
+	public void testProperty_V6_IS_METHOD_RETURN_TYPE_VAR() {
 
 		String content = "" + "class X {" + "public Object foo() {" //
 				+ " int a = 1;"//
 				+ "int b = a;" + "float f = 0;" + "" + "return f;" + "}" //
 				+ "public float getFloat(){return 1.0;}"//
 				+ "public double getConvertFloat(int i){return 0.0;}"//
+				+ "public double getConvert2Float(int i){String s2;Integer.valueOf(s2);return 0.0;}"//
 				+ "};";
 
 		CtType type = getCtType(content);
@@ -163,6 +164,14 @@ public class CodeFeatureDetectorTest {
 		cntx = cntxResolver.retrieveCntx(stassig);
 
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V6_IS_METHOD_RETURN_TYPE_VAR));
+		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
+
+		///
+		stassig = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int b")).findFirst()
+				.get();
+		cntx = cntxResolver.retrieveCntx(stassig);
+
+		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.V6_IS_METHOD_RETURN_TYPE_VAR));
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
 
 	}
@@ -239,15 +248,17 @@ public class CodeFeatureDetectorTest {
 				+ "int b = a;" //
 				+ "float f = 0; "//
 				+ "double d = 0;" //
+				+ "String s1 = null;" //
+				+ "String s2 = s1;" //
 				+ "return f;" + "}"//
 				+ "public float getFloat(){return 1.0;}"//
 				+ "public int getConvertFloat(float f){return 1;}"//
-				+ "public float getSameFloat(float f){return 1;}"//
+				+ "public float getSameFloat(float f){String s3 = null;String.format(s3, null);return 1;}"//
 				+ "public boolean getBoolConvertFloat(float f){return false;}"//
 				+ "};";
 
 		CtType type = getCtType(content);
-
+		// String.format(format, args);
 		assertNotNull(type);
 		CtMethod method = (CtMethod) type.getMethods().stream()
 				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
@@ -260,7 +271,6 @@ public class CodeFeatureDetectorTest {
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 		Cntx cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.V_X_BIS_IS_METHOD_PARAM_TYPE_VAR));
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
 		assertEquals(Boolean.TRUE,
 				retrieveFeatureVarProperty(cntx, CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN, "f"));
@@ -270,25 +280,33 @@ public class CodeFeatureDetectorTest {
 				.get();
 		cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V_X_BIS_IS_METHOD_PARAM_TYPE_VAR));
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("double d")).findFirst()
 				.get();
 		cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V_X_BIS_IS_METHOD_PARAM_TYPE_VAR));
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
 
+		//
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int b")).findFirst()
 				.get();
 		cntx = cntxResolver.retrieveCntx(element);
 
 		// int matches with Object.wait(int, int)
-		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.V_X_BIS_IS_METHOD_PARAM_TYPE_VAR));
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
 		assertEquals(Boolean.FALSE,
 				retrieveFeatureVarProperty(cntx, CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN, "a"));
+
+		//
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("java.lang.String s2"))
+				.findFirst().get();
+		cntx = cntxResolver.retrieveCntx(element);
+
+		// int matches with Object.wait(int, int)
+		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
+		assertEquals(Boolean.TRUE,
+				retrieveFeatureVarProperty(cntx, CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN, "s1"));
 
 		System.out.println(cntx.toJSON());
 
