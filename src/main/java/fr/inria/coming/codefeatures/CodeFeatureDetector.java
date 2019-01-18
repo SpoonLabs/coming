@@ -12,6 +12,7 @@ import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.manipulation.synthesis.dynamoth.spoon.StaSynthBuilder;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.util.StringDistance;
+import fr.inria.coming.utils.MapCounter;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
@@ -337,6 +338,12 @@ public class CodeFeatureDetector {
 		context.put(CodeFeatures.USES_CONSTANT, literalsValues.size() > 0);
 	}
 
+	/**
+	 * 
+	 * @param varsAffected
+	 * @param element
+	 * @param context
+	 */
 	private void analyzeV4(List<CtVariableAccess> varsAffected, CtElement element, Cntx<Object> context) {
 
 		boolean hasOneVarAppearsMultiple = false;
@@ -344,12 +351,30 @@ public class CodeFeatureDetector {
 
 			CtInvocation parentInvocation = varInFaulty.getParent(CtInvocation.class);
 			int appearsInParams = 0;
+			MapCounter<CtElement> parameterFound = new MapCounter<>();
 			if (parentInvocation != null) {
 				List<CtElement> arguments = parentInvocation.getArguments();
 				for (CtElement i_Argument : arguments) {
 					List<CtVariableAccess> varsAccessInParameter = VariableResolver.collectVariableRead(i_Argument);
+					// .stream().filter(e -> e.getRoleInParent().equals(CtRole.PARAMETER))
+					// .collect(Collectors.toList());
 					if (varsAccessInParameter.contains(varInFaulty)) {
 						appearsInParams++;
+
+						if (!parameterFound.containsKey(varInFaulty)) {
+							// it was not used before in a parameter of the method invocation
+							writeDetailedInformationFromVariables(context, varInFaulty.getVariable().getSimpleName(),
+									CodeFeatures.V4_FIRST_TIME_USED_AS_PARAMETER, true);
+						} else {
+							// already used as parameter
+							int count = parameterFound.get(varInFaulty);
+							writeDetailedInformationFromVariables(context,
+									varInFaulty.getVariable().getSimpleName() + "_" + (count + 1),
+									CodeFeatures.V4_FIRST_TIME_USED_AS_PARAMETER, false);
+						}
+
+						parameterFound.add(varInFaulty);
+
 					}
 
 				}
@@ -358,10 +383,10 @@ public class CodeFeatureDetector {
 				hasOneVarAppearsMultiple = true;
 			}
 			writeDetailedInformationFromVariables(context, varInFaulty.getVariable().getSimpleName(),
-					CodeFeatures.V4_FIRST_TIME_PARAMETER, (appearsInParams > 1));
+					CodeFeatures.V4B_USED_MULTIPLE_AS_PARAMETER, (appearsInParams > 1));
 
 		}
-		context.put(CodeFeatures.V4_FIRST_TIME_PARAMETER, hasOneVarAppearsMultiple);
+		context.put(CodeFeatures.V4B_USED_MULTIPLE_AS_PARAMETER, hasOneVarAppearsMultiple);
 	}
 
 	/**

@@ -203,9 +203,11 @@ public enum CodeFeatures {
 	// identifier names are majorly capital letters are constant variables
 	V3_HAS_CONSTANT,
 
+	V4B_USED_MULTIPLE_AS_PARAMETER,
+
 	// V4: For each involved variable, if it is used as parameter inmethod call, for
 	// this method call, is it the first time that it isused as parameter
-	V4_FIRST_TIME_PARAMETER,
+	V4_FIRST_TIME_USED_AS_PARAMETER,
 
 	// For an involved variable, is there any other variable in scope that is
 	// assigned to a certain function transformation of the involved variable

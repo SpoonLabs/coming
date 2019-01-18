@@ -430,7 +430,7 @@ public class CodeFeatureDetectorTest {
 	}
 
 	@Test
-	public void testProperty_V4_() {
+	public void testProperty_V4() {
 
 		String content = "" + "class X {" + " int ffii = 1;"//
 				+ "public Object foo() {" //
@@ -457,18 +457,26 @@ public class CodeFeatureDetectorTest {
 		Cntx cntx = cntxResolver.retrieveCntx(element);
 		// affected myzimilar
 		System.out.println(cntx.toJSON());
-		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V4_FIRST_TIME_PARAMETER));
+		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V4B_USED_MULTIPLE_AS_PARAMETER));
 		assertEquals(Boolean.FALSE,
-				retrieveFeatureVarProperty(cntx, CodeFeatures.V4_FIRST_TIME_PARAMETER, "mysimilar"));
+				retrieveFeatureVarProperty(cntx, CodeFeatures.V4B_USED_MULTIPLE_AS_PARAMETER, "mysimilar"));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return max"))
 				.findFirst().get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.V4_FIRST_TIME_PARAMETER));
-		assertEquals(Boolean.TRUE, retrieveFeatureVarProperty(cntx, CodeFeatures.V4_FIRST_TIME_PARAMETER, "mysimilar"));
+		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.V4B_USED_MULTIPLE_AS_PARAMETER));
+		assertEquals(Boolean.TRUE,
+				retrieveFeatureVarProperty(cntx, CodeFeatures.V4B_USED_MULTIPLE_AS_PARAMETER, "mysimilar"));
+		System.out.println(cntx.toJSON());
 
+		assertEquals(Boolean.TRUE,
+				retrieveFeatureVarProperty(cntx, CodeFeatures.V4_FIRST_TIME_USED_AS_PARAMETER, "mysimilar"));
+		System.out.println(cntx.toJSON());
+		assertEquals(Boolean.FALSE,
+				retrieveFeatureVarProperty(cntx, CodeFeatures.V4_FIRST_TIME_USED_AS_PARAMETER, "mysimilar_2"));
+		System.out.println(cntx.toJSON());
 	}
 
 	@Test
