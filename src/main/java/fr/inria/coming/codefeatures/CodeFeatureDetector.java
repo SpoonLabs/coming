@@ -69,7 +69,7 @@ public class CodeFeatureDetector {
 		List<CtVariable> varsInScope = VariableResolver.searchVariablesInScope(element);
 		putVarInContextInformation(context, varsInScope);
 
-		List<CtVariableAccess> varsAffected = VariableResolver.collectVariableRead(element);
+		List<CtVariableAccess> varsAffected = retrieveVariables(element);
 		analyzeV8_TypesVarsAffected(varsAffected, element, context);
 		analyzeS1_AffectedAssigned(varsAffected, element, context);
 		analyzeS1_AffectedVariablesUsed(varsAffected, element, context);
@@ -104,6 +104,23 @@ public class CodeFeatureDetector {
 		analyzeAffectedWithCompatibleTypes(varsAffected, varsInScope, element, context);
 		analyzeParentTypes(element, context);
 		analyze_UseEnumAndConstants(element, context);
+	}
+
+	public List<CtVariableAccess> retrieveVariables(CtElement element) {
+
+		if (element instanceof CtIf) {
+			return VariableResolver.collectVariableRead(((CtIf) element).getCondition());
+		} else if (element instanceof CtWhile) {
+			return VariableResolver.collectVariableRead(((CtWhile) element).getLoopingExpression());
+		} else if (element instanceof CtFor) {
+			return VariableResolver.collectVariableRead(((CtFor) element).getExpression());
+		} else if (element instanceof CtDo) {
+			return VariableResolver.collectVariableRead(((CtDo) element).getLoopingExpression());
+		} else if (element instanceof CtConditional) {
+			return VariableResolver.collectVariableRead(((CtConditional) element).getCondition());
+		} else
+			return VariableResolver.collectVariableRead(element);
+
 	}
 
 	private void analyzeC1_Constant(CtElement element, Cntx<Object> context) {

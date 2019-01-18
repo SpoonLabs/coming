@@ -713,6 +713,7 @@ public class CodeFeatureDetectorTest {
 
 		String content = "" + "class X {" //
 				+ "public boolean gvarb =false;" //
+				//
 				+ "public Object foo() {" //
 				+ "boolean avarb =false;" //
 				+ "boolean bvarb =false;" //
