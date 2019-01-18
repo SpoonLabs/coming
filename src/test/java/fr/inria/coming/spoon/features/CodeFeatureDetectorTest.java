@@ -28,7 +28,6 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
-import spoon.reflect.factory.TypeFactory;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
 import spoon.support.compiler.VirtualFile;
@@ -1655,7 +1654,7 @@ public class CodeFeatureDetectorTest {
 	}
 
 	@Test
-	public void testProperty_NR_LocalVariable_ASSIGNED() {
+	public void testProperty_S1_LocalVariable_ASSIGNED() {
 
 		String content = "" + "class X {"
 		//
@@ -1666,6 +1665,7 @@ public class CodeFeatureDetectorTest {
 				+ "ob = new String();"//
 				+ "String t= null;" // Not initialized (default expression == null)
 				+ "boolean com = (ob == t);" //
+				+ "if(t == null){}"// Control flow to ignore
 				+ "com = (t==true);"//
 				+ "return ob;" + //
 				"};};";
@@ -2355,12 +2355,6 @@ public class CodeFeatureDetectorTest {
 		// for (Object spaceeleemnt : space) {
 		// System.out.println((i++) + "--> " + spaceeleemnt);
 		// }
-	}
-
-	@Test
-	public void testSpoon1() {
-		CtType s = new TypeFactory().get(Integer.class);
-		System.out.println(s.getSimpleName());
 	}
 
 	protected CtType getCtType(File file) throws Exception {

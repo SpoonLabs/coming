@@ -798,6 +798,10 @@ public class CodeFeatureDetector {
 			// For each assignment in the methid
 			for (CtStatement aStatement : statements) {
 
+				// ignoring control flow
+				if (aStatement instanceof CtIf || aStatement instanceof CtLoop)
+					continue;
+
 				if (!isElementBeforeVariable(variableAffected, aStatement))
 					continue;
 
