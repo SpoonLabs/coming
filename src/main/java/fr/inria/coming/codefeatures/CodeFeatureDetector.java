@@ -125,35 +125,37 @@ public class CodeFeatureDetector {
 	}
 
 	private void analyzeC1_Constant(CtElement element, Cntx<Object> context) {
+		try {
+			boolean hasSimilarLiterals = false;
+			// Get all invocations inside the faulty element
+			List<CtLiteral> literalsFromFaultyLine = element.getElements(e -> (e instanceof CtLiteral)).stream()
+					.map(CtLiteral.class::cast).collect(Collectors.toList());
 
-		boolean hasSimilarLiterals = false;
-		// Get all invocations inside the faulty element
-		List<CtLiteral> literalsFromFaultyLine = element.getElements(e -> (e instanceof CtLiteral)).stream()
-				.map(CtLiteral.class::cast).collect(Collectors.toList());
+			if (literalsFromFaultyLine.size() > 0) {
 
-		if (literalsFromFaultyLine.size() > 0) {
+				for (CtLiteral literalFormFaulty : literalsFromFaultyLine) {
 
-			for (CtLiteral literalFormFaulty : literalsFromFaultyLine) {
-
-				CtClass parentClass = element.getParent(CtClass.class);
-				List<CtLiteral> literalsFromClass = parentClass.getElements(e -> (e instanceof CtLiteral)).stream()
-						.map(CtLiteral.class::cast).collect(Collectors.toList());
-				for (CtLiteral anotherLiteral : literalsFromClass) {
-					if (// Compare types
-					compareTypes(anotherLiteral.getType(), literalFormFaulty.getType())
-							// Compare value
-							&& !(anotherLiteral.getValue() != null && literalFormFaulty.getValue() != null
-									&& anotherLiteral.getValue().equals(literalFormFaulty.getValue()))) {
-						hasSimilarLiterals = true;
-						break;
+					CtClass parentClass = element.getParent(CtClass.class);
+					List<CtLiteral> literalsFromClass = parentClass.getElements(e -> (e instanceof CtLiteral)).stream()
+							.map(CtLiteral.class::cast).collect(Collectors.toList());
+					for (CtLiteral anotherLiteral : literalsFromClass) {
+						if (// Compare types
+						compareTypes(anotherLiteral.getType(), literalFormFaulty.getType())
+								// Compare value
+								&& !(anotherLiteral.getValue() != null && literalFormFaulty.getValue() != null
+										&& anotherLiteral.getValue().equals(literalFormFaulty.getValue()))) {
+							hasSimilarLiterals = true;
+							break;
+						}
 					}
+
 				}
 
 			}
-
+			context.put(CodeFeatures.C1_SAME_TYPE_CONSTANT, hasSimilarLiterals);
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
-		context.put(CodeFeatures.C1_SAME_TYPE_CONSTANT, hasSimilarLiterals);
-
 	}
 
 	private final class ExpressionCapturerScanner extends CtScanner {
@@ -282,26 +284,29 @@ public class CodeFeatureDetector {
 	}
 
 	private void analyzeC2_UseEnum(CtElement element, Cntx<Object> context) {
+		try {
+			boolean useEnum = false;
+			CtClass classParent = element.getParent(CtClass.class);
 
-		boolean useEnum = false;
-		CtClass classParent = element.getParent(CtClass.class);
+			if (classParent == null)
+				return;
 
-		if (classParent == null)
-			return;
+			List<CtEnum> enums = classParent.getElements(new TypeFilter<>(CtEnum.class));
 
-		List<CtEnum> enums = classParent.getElements(new TypeFilter<>(CtEnum.class));
+			List<CtVariableRead> varAccessFromSusp = element.getElements(new TypeFilter<>(CtVariableRead.class));
 
-		List<CtVariableRead> varAccessFromSusp = element.getElements(new TypeFilter<>(CtVariableRead.class));
+			for (CtVariableRead varAccess : varAccessFromSusp) {
 
-		for (CtVariableRead varAccess : varAccessFromSusp) {
-
-			if (varAccess.getVariable().getType() != null
-					&& enums.contains(varAccess.getVariable().getType().getDeclaration())) {
-				useEnum = true;
+				if (varAccess.getVariable().getType() != null
+						&& enums.contains(varAccess.getVariable().getType().getDeclaration())) {
+					useEnum = true;
+				}
 			}
-		}
 
-		context.put(CodeFeatures.C2_USES_ENUMERATION, useEnum);
+			context.put(CodeFeatures.C2_USES_ENUMERATION, useEnum);
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void analyze_UseEnumAndConstants(CtElement element, Cntx<Object> context) {
@@ -345,48 +350,52 @@ public class CodeFeatureDetector {
 	 * @param context
 	 */
 	private void analyzeV4(List<CtVariableAccess> varsAffected, CtElement element, Cntx<Object> context) {
+		try {
+			boolean hasOneVarAppearsMultiple = false;
+			for (CtVariableAccess varInFaulty : varsAffected) {
 
-		boolean hasOneVarAppearsMultiple = false;
-		for (CtVariableAccess varInFaulty : varsAffected) {
+				CtInvocation parentInvocation = varInFaulty.getParent(CtInvocation.class);
+				int appearsInParams = 0;
+				MapCounter<CtElement> parameterFound = new MapCounter<>();
+				if (parentInvocation != null) {
+					List<CtElement> arguments = parentInvocation.getArguments();
+					for (CtElement i_Argument : arguments) {
+						List<CtVariableAccess> varsAccessInParameter = VariableResolver.collectVariableRead(i_Argument);
+						// .stream().filter(e -> e.getRoleInParent().equals(CtRole.PARAMETER))
+						// .collect(Collectors.toList());
+						if (varsAccessInParameter.contains(varInFaulty)) {
+							appearsInParams++;
 
-			CtInvocation parentInvocation = varInFaulty.getParent(CtInvocation.class);
-			int appearsInParams = 0;
-			MapCounter<CtElement> parameterFound = new MapCounter<>();
-			if (parentInvocation != null) {
-				List<CtElement> arguments = parentInvocation.getArguments();
-				for (CtElement i_Argument : arguments) {
-					List<CtVariableAccess> varsAccessInParameter = VariableResolver.collectVariableRead(i_Argument);
-					// .stream().filter(e -> e.getRoleInParent().equals(CtRole.PARAMETER))
-					// .collect(Collectors.toList());
-					if (varsAccessInParameter.contains(varInFaulty)) {
-						appearsInParams++;
+							if (!parameterFound.containsKey(varInFaulty)) {
+								// it was not used before in a parameter of the method invocation
+								writeDetailedInformationFromVariables(context,
+										varInFaulty.getVariable().getSimpleName(),
+										CodeFeatures.V4_FIRST_TIME_USED_AS_PARAMETER, true);
+							} else {
+								// already used as parameter
+								int count = parameterFound.get(varInFaulty);
+								writeDetailedInformationFromVariables(context,
+										varInFaulty.getVariable().getSimpleName() + "_" + (count + 1),
+										CodeFeatures.V4_FIRST_TIME_USED_AS_PARAMETER, false);
+							}
 
-						if (!parameterFound.containsKey(varInFaulty)) {
-							// it was not used before in a parameter of the method invocation
-							writeDetailedInformationFromVariables(context, varInFaulty.getVariable().getSimpleName(),
-									CodeFeatures.V4_FIRST_TIME_USED_AS_PARAMETER, true);
-						} else {
-							// already used as parameter
-							int count = parameterFound.get(varInFaulty);
-							writeDetailedInformationFromVariables(context,
-									varInFaulty.getVariable().getSimpleName() + "_" + (count + 1),
-									CodeFeatures.V4_FIRST_TIME_USED_AS_PARAMETER, false);
+							parameterFound.add(varInFaulty);
+
 						}
 
-						parameterFound.add(varInFaulty);
-
 					}
-
 				}
-			}
-			if (appearsInParams > 1) {
-				hasOneVarAppearsMultiple = true;
-			}
-			writeDetailedInformationFromVariables(context, varInFaulty.getVariable().getSimpleName(),
-					CodeFeatures.V4B_USED_MULTIPLE_AS_PARAMETER, (appearsInParams > 1));
+				if (appearsInParams > 1) {
+					hasOneVarAppearsMultiple = true;
+				}
+				writeDetailedInformationFromVariables(context, varInFaulty.getVariable().getSimpleName(),
+						CodeFeatures.V4B_USED_MULTIPLE_AS_PARAMETER, (appearsInParams > 1));
 
+			}
+			context.put(CodeFeatures.V4B_USED_MULTIPLE_AS_PARAMETER, hasOneVarAppearsMultiple);
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
-		context.put(CodeFeatures.V4B_USED_MULTIPLE_AS_PARAMETER, hasOneVarAppearsMultiple);
 	}
 
 	/**
@@ -400,27 +409,29 @@ public class CodeFeatureDetector {
 	 */
 	private void analyzeLE4_BooleanVarNotUsed(List<CtVariableAccess> varsAffectedInStatement,
 			List<CtVariable> varsInScope, CtElement element, Cntx<Object> context) {
+		try {
+			boolean hasBooleanVarNotPresent = false;
+			/**
+			 * For each var in scope
+			 */
+			for (CtVariable aVarInScope : varsInScope) {
 
-		boolean hasBooleanVarNotPresent = false;
-		/**
-		 * For each var in scope
-		 */
-		for (CtVariable aVarInScope : varsInScope) {
+				if (aVarInScope.getType() != null && aVarInScope.getType().unbox().toString().equals("boolean")) {
 
-			if (aVarInScope.getType() != null && aVarInScope.getType().unbox().toString().equals("boolean")) {
-
-				// Check if the var in scope is present in the list of var from the expression.
-				boolean isPresentVar = varsAffectedInStatement.stream()
-						.filter(e -> e.getVariable().getSimpleName().equals(aVarInScope.getSimpleName())).findFirst()
-						.isPresent();
-				if (!isPresentVar) {
-					hasBooleanVarNotPresent = true;
-					break;
+					// Check if the var in scope is present in the list of var from the expression.
+					boolean isPresentVar = varsAffectedInStatement.stream()
+							.filter(e -> e.getVariable().getSimpleName().equals(aVarInScope.getSimpleName()))
+							.findFirst().isPresent();
+					if (!isPresentVar) {
+						hasBooleanVarNotPresent = true;
+						break;
+					}
 				}
 			}
+			context.put(CodeFeatures.LE4_EXISTS_LOCAL_UNUSED_VARIABLES, hasBooleanVarNotPresent);
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
-		context.put(CodeFeatures.LE4_EXISTS_LOCAL_UNUSED_VARIABLES, hasBooleanVarNotPresent);
-
 	}
 
 	/**
@@ -437,41 +448,43 @@ public class CodeFeatureDetector {
 	 */
 	private void analyzeLE3_PrimitiveWithCompatibleNotUsed(List<CtVariableAccess> varsAffectedInStatement,
 			List<CtVariable> varsInScope, CtElement element, Cntx<Object> context) {
+		try {
+			boolean hasCompatibleVarNoPresent = false;
 
-		boolean hasCompatibleVarNoPresent = false;
+			for (CtVariableAccess aVarFromAffected : varsAffectedInStatement) {
 
-		for (CtVariableAccess aVarFromAffected : varsAffectedInStatement) {
+				if (aVarFromAffected.getType() == null || !aVarFromAffected.getType().isPrimitive()
+				// parent is binary operator
+						|| // !isparentBinaryComparison(aVarFromAffected))
+						aVarFromAffected.getParent(CtBinaryOperator.class) == null)
+					continue;
 
-			if (aVarFromAffected.getType() == null || !aVarFromAffected.getType().isPrimitive()
-			// parent is binary operator
-					|| // !isparentBinaryComparison(aVarFromAffected))
-					aVarFromAffected.getParent(CtBinaryOperator.class) == null)
-				continue;
+				// For each var in scope
+				for (CtVariable aVarFromScope : varsInScope) {
+					// If the var name are different
+					if (!aVarFromScope.getSimpleName().equals(aVarFromAffected.getVariable().getSimpleName())) {
 
-			// For each var in scope
-			for (CtVariable aVarFromScope : varsInScope) {
-				// If the var name are different
-				if (!aVarFromScope.getSimpleName().equals(aVarFromAffected.getVariable().getSimpleName())) {
+						// Let's check if the type are compatible (i.e., the same primitive type)
+						if (compareTypes(aVarFromScope.getType(), aVarFromAffected.getType())) {
 
-					// Let's check if the type are compatible (i.e., the same primitive type)
-					if (compareTypes(aVarFromScope.getType(), aVarFromAffected.getType())) {
-
-						boolean presentInExpression = varsAffectedInStatement.stream()
-								.filter(e -> e.getVariable().getSimpleName().equals(aVarFromScope.getSimpleName()))
-								.findFirst().isPresent();
-						if (!presentInExpression) {
-							hasCompatibleVarNoPresent = true;
-							context.put(CodeFeatures.LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED, hasCompatibleVarNoPresent);
-							return;
+							boolean presentInExpression = varsAffectedInStatement.stream()
+									.filter(e -> e.getVariable().getSimpleName().equals(aVarFromScope.getSimpleName()))
+									.findFirst().isPresent();
+							if (!presentInExpression) {
+								hasCompatibleVarNoPresent = true;
+								context.put(CodeFeatures.LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED, hasCompatibleVarNoPresent);
+								return;
+							}
 						}
+
 					}
-
 				}
+
 			}
-
+			context.put(CodeFeatures.LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED, hasCompatibleVarNoPresent);
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
-		context.put(CodeFeatures.LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED, hasCompatibleVarNoPresent);
-
 	}
 
 	@Deprecated
@@ -504,58 +517,63 @@ public class CodeFeatureDetector {
 	 */
 	private void analyzeLE7_VarDirectlyUsed(List<CtVariableAccess> varsAffectedInStatement,
 			List<CtVariable> varsInScope, CtElement element, Cntx<Object> context) {
+		try {
+			boolean hasVarDirectlyUsed = false;
 
-		boolean hasVarDirectlyUsed = false;
+			for (CtVariableAccess aVarFromAffected : varsAffectedInStatement) {
 
-		for (CtVariableAccess aVarFromAffected : varsAffectedInStatement) {
+				CtElement parent = aVarFromAffected.getParent();
+				if (parent instanceof CtExpression) {
+					// First case: the parent is a binary
+					if (isLogicalExpression((CtExpression) parent)) {
+						hasVarDirectlyUsed = true;
+						break;
 
-			CtElement parent = aVarFromAffected.getParent();
-			if (parent instanceof CtExpression) {
-				// First case: the parent is a binary
-				if (isLogicalExpression((CtExpression) parent)) {
-					hasVarDirectlyUsed = true;
-					break;
+					} else {
 
-				} else {
+						// Second case: the parent is a negation
+						if (parent instanceof CtUnaryOperator) {
+							if (isLogicalExpression(((CtUnaryOperator) parent).getParent())) {
+								hasVarDirectlyUsed = true;
+								break;
+							}
 
-					// Second case: the parent is a negation
-					if (parent instanceof CtUnaryOperator) {
-						if (isLogicalExpression(((CtUnaryOperator) parent).getParent())) {
-							hasVarDirectlyUsed = true;
-							break;
 						}
 
 					}
-
 				}
 			}
+			context.put(CodeFeatures.LE7_SIMPLE_VAR_IN_LOGIC, hasVarDirectlyUsed);
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
-		context.put(CodeFeatures.LE7_SIMPLE_VAR_IN_LOGIC, hasVarDirectlyUsed);
-
 	}
 
 	private void analyzeAffectedWithCompatibleTypes(List<CtVariableAccess> varsAffected, List<CtVariable> varsInScope,
 			CtElement element, Cntx<Object> context) {
+		try {
+			boolean hasSimType = false;
+			for (CtVariableAccess aVariableAccessInStatement : varsAffected) {
+				for (CtVariable aVariableInScope : varsInScope) {
+					if (!aVariableInScope.getSimpleName()
+							.equals(aVariableAccessInStatement.getVariable().getSimpleName())) {
 
-		boolean hasSimType = false;
-		for (CtVariableAccess aVariableAccessInStatement : varsAffected) {
-			for (CtVariable aVariableInScope : varsInScope) {
-				if (!aVariableInScope.getSimpleName()
-						.equals(aVariableAccessInStatement.getVariable().getSimpleName())) {
-
-					try {
-						if (compareTypes(aVariableInScope.getType(), aVariableAccessInStatement.getType())) {
-							hasSimType = true;
-							context.put(CodeFeatures.HAS_VAR_SIM_TYPE, hasSimType);
-							return;
+						try {
+							if (compareTypes(aVariableInScope.getType(), aVariableAccessInStatement.getType())) {
+								hasSimType = true;
+								context.put(CodeFeatures.HAS_VAR_SIM_TYPE, hasSimType);
+								return;
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
-					} catch (Exception e) {
-						e.printStackTrace();
 					}
 				}
 			}
+			context.put(CodeFeatures.HAS_VAR_SIM_TYPE, hasSimType);
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
-		context.put(CodeFeatures.HAS_VAR_SIM_TYPE, hasSimType);
 	}
 
 	/**
@@ -569,60 +587,62 @@ public class CodeFeatureDetector {
 	@SuppressWarnings("rawtypes")
 	private void analyzeV5_AffectedVariablesInTransformation(List<CtVariableAccess> varsAffected, CtElement element,
 			Cntx<Object> context) {
+		try {
+			CtMethod methodParent = element.getParent(CtMethod.class);
 
-		CtMethod methodParent = element.getParent(CtMethod.class);
+			List<CtExpression> assignments = new ArrayList<>();
 
-		List<CtExpression> assignments = new ArrayList<>();
+			CtScanner assignmentScanner = new CtScanner() {
 
-		CtScanner assignmentScanner = new CtScanner() {
+				@Override
+				public <T, A extends T> void visitCtAssignment(CtAssignment<T, A> assignement) {
+					if (assignement.getAssignment() != null)
+						assignments.add(assignement.getAssignment());
+				}
 
-			@Override
-			public <T, A extends T> void visitCtAssignment(CtAssignment<T, A> assignement) {
-				if (assignement.getAssignment() != null)
-					assignments.add(assignement.getAssignment());
-			}
+				@Override
+				public <T> void visitCtLocalVariable(CtLocalVariable<T> localVariable) {
+					if (localVariable.getAssignment() != null)
+						assignments.add(localVariable.getAssignment());
+				}
 
-			@Override
-			public <T> void visitCtLocalVariable(CtLocalVariable<T> localVariable) {
-				if (localVariable.getAssignment() != null)
-					assignments.add(localVariable.getAssignment());
-			}
+			};
+			// Collect Assignments and var declaration (local)
+			assignmentScanner.scan(methodParent);
 
-		};
-		// Collect Assignments and var declaration (local)
-		assignmentScanner.scan(methodParent);
+			boolean v5_anyhasvar = false;
+			// For each variable affected
+			for (CtVariableAccess variableAffected : varsAffected) {
 
-		boolean v5_anyhasvar = false;
-		// For each variable affected
-		for (CtVariableAccess variableAffected : varsAffected) {
+				boolean v5_currentVarHasvar = false;
 
-			boolean v5_currentVarHasvar = false;
+				// For each assignment in the methid
+				for (CtExpression assignment : assignments) {
 
-			// For each assignment in the methid
-			for (CtExpression assignment : assignments) {
+					if (!isElementBeforeVariable(variableAffected, assignment))
+						continue;
 
-				if (!isElementBeforeVariable(variableAffected, assignment))
-					continue;
+					// let's collect the var access in the right part
+					List<CtVariableAccess> varsInRightPart = VariableResolver.collectVariableRead(assignment); // VariableResolver.collectVariableAccess(assignment);
 
-				// let's collect the var access in the right part
-				List<CtVariableAccess> varsInRightPart = VariableResolver.collectVariableRead(assignment); // VariableResolver.collectVariableAccess(assignment);
+					// if the var access in the right is the same that the affected
+					for (CtVariableAccess varInAssign : varsInRightPart) {
+						if (hasSameName(variableAffected, varInAssign)) {
 
-				// if the var access in the right is the same that the affected
-				for (CtVariableAccess varInAssign : varsInRightPart) {
-					if (hasSameName(variableAffected, varInAssign)) {
-
-						v5_anyhasvar = true;
-						v5_currentVarHasvar = true;
-						break;
+							v5_anyhasvar = true;
+							v5_currentVarHasvar = true;
+							break;
+						}
 					}
 				}
+				writeDetailedInformationFromVariables(context, variableAffected.getVariable().getSimpleName(),
+						CodeFeatures.V5_HAS_VAR_IN_TRANSFORMATION, (v5_currentVarHasvar));
+
 			}
-			writeDetailedInformationFromVariables(context, variableAffected.getVariable().getSimpleName(),
-					CodeFeatures.V5_HAS_VAR_IN_TRANSFORMATION, (v5_currentVarHasvar));
-
+			context.put(CodeFeatures.V5_HAS_VAR_IN_TRANSFORMATION, v5_anyhasvar);
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
-		context.put(CodeFeatures.V5_HAS_VAR_IN_TRANSFORMATION, v5_anyhasvar);
-
 	}
 
 	/**
@@ -669,47 +689,49 @@ public class CodeFeatureDetector {
 	@SuppressWarnings("rawtypes")
 	private void analyzeLE1_AffectedVariablesUsed(List<CtVariableAccess> varsAffected, CtElement element,
 			Cntx<Object> context) {
+		try {
+			CtClass classParent = element.getParent(CtClass.class);
 
-		CtClass classParent = element.getParent(CtClass.class);
+			if (classParent == null)
+				return;
 
-		if (classParent == null)
-			return;
+			List<CtStatement> statements = classParent.getElements(new LineFilter());
 
-		List<CtStatement> statements = classParent.getElements(new LineFilter());
+			int similarUsedBefore = 0;
 
-		int similarUsedBefore = 0;
+			// For each variable affected
+			for (CtVariableAccess variableAffected : varsAffected) {
 
-		// For each variable affected
-		for (CtVariableAccess variableAffected : varsAffected) {
+				// boolean used = false;
+				boolean foundSimilarVarUsed = false;
 
-			// boolean used = false;
-			boolean foundSimilarVarUsed = false;
+				boolean isInBinaryExpression = isLogicalExpressionInParent(variableAffected);
 
-			boolean isInBinaryExpression = isLogicalExpressionInParent(variableAffected);
+				if (!isInBinaryExpression)
+					continue;
 
-			if (!isInBinaryExpression)
-				continue;
+				// let's find other boolean expressions in the statements
+				for (CtStatement aStatement : statements) {
 
-			// let's find other boolean expressions in the statements
-			for (CtStatement aStatement : statements) {
+					// let's find all binary expressions in the statement
+					List<CtBinaryOperator> binaryOps = aStatement.getElements(e -> isLogicalExpression(e)).stream()
+							.map(CtBinaryOperator.class::cast).collect(Collectors.toList());
 
-				// let's find all binary expressions in the statement
-				List<CtBinaryOperator> binaryOps = aStatement.getElements(e -> isLogicalExpression(e)).stream()
-						.map(CtBinaryOperator.class::cast).collect(Collectors.toList());
+					for (CtBinaryOperator ctBinaryOperator : binaryOps) {
 
-				for (CtBinaryOperator ctBinaryOperator : binaryOps) {
+						// retrieve all variables
+						List<CtVariableAccess> varsInOtherExpressions = VariableResolver
+								.collectVariableRead(ctBinaryOperator);
+						for (CtVariableAccess varInAnotherExpression : varsInOtherExpressions) {
+							if (!hasSameName(variableAffected, varInAnotherExpression)) {
+								// Different name, so it's another variable
 
-					// retrieve all variables
-					List<CtVariableAccess> varsInOtherExpressions = VariableResolver
-							.collectVariableRead(ctBinaryOperator);
-					for (CtVariableAccess varInAnotherExpression : varsInOtherExpressions) {
-						if (!hasSameName(variableAffected, varInAnotherExpression)) {
-							// Different name, so it's another variable
+								// involve using variable whose type is same with v
+								if (compareTypes(variableAffected.getVariable().getType(),
+										varInAnotherExpression.getVariable().getType())) {
+									foundSimilarVarUsed = true;
+								}
 
-							// involve using variable whose type is same with v
-							if (compareTypes(variableAffected.getVariable().getType(),
-									varInAnotherExpression.getVariable().getType())) {
-								foundSimilarVarUsed = true;
 							}
 
 						}
@@ -718,15 +740,15 @@ public class CodeFeatureDetector {
 
 				}
 
+				if (foundSimilarVarUsed)
+					similarUsedBefore++;
+
 			}
 
-			if (foundSimilarVarUsed)
-				similarUsedBefore++;
-
+			context.put(CodeFeatures.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION, (similarUsedBefore) > 0);
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
-
-		context.put(CodeFeatures.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION, (similarUsedBefore) > 0);
-
 	}
 
 	/**
@@ -741,63 +763,65 @@ public class CodeFeatureDetector {
 	@SuppressWarnings("rawtypes")
 	private void analyzeLE8_LocalVariablesVariablesUsed(List<CtVariableAccess> varsAffected, CtElement element,
 			Cntx<Object> context) {
+		try {
+			CtExecutable methodParent = element.getParent(CtExecutable.class);
 
-		CtExecutable methodParent = element.getParent(CtExecutable.class);
+			if (methodParent == null)
+				return;
 
-		if (methodParent == null)
-			return;
+			List<CtStatement> statements = methodParent.getBody().getStatements();// methodParent.getElements(new
+																					// LineFilter());
 
-		List<CtStatement> statements = methodParent.getBody().getStatements();// methodParent.getElements(new
-																				// LineFilter());
+			// int similarUsedBefore = 0;
+			boolean allLocalVariableUsed = true;
+			// For each variable affected
+			for (CtVariableAccess variableAffected : varsAffected) {
 
-		// int similarUsedBefore = 0;
-		boolean allLocalVariableUsed = true;
-		// For each variable affected
-		for (CtVariableAccess variableAffected : varsAffected) {
+				boolean aVarUsed = false;
 
-			boolean aVarUsed = false;
-
-			if (variableAffected.getVariable().getType() != null
-					&& !(variableAffected.getVariable().getDeclaration() instanceof CtLocalVariable)) {
-				continue;
-			}
-
-			boolean isInBinaryExpression = isLogicalExpressionInParent(variableAffected);
-
-			// For any variable involved in a logical expression,
-			if (!isInBinaryExpression)
-				continue;
-
-			// For each assignment in the methid
-			for (CtStatement aStatement : statements) {
-
-				// ignoring control flow
-				if (aStatement instanceof CtIf || aStatement instanceof CtLoop)
+				if (variableAffected.getVariable().getType() != null
+						&& !(variableAffected.getVariable().getDeclaration() instanceof CtLocalVariable)) {
 					continue;
-
-				// ignoring statements after the faulty
-				if (!isElementBeforeVariable(variableAffected, aStatement))
-					continue;
-
-				// let's collect the var access in the statement
-				List<CtVariableAccess> varsReadInStatement = VariableResolver.collectVariableRead(aStatement);
-				// if the var access in the right is the same that the affected
-				for (CtVariableAccess varInStatement : varsReadInStatement) {
-					if (hasSameName(variableAffected, varInStatement)) {
-						aVarUsed = true;
-					}
 				}
 
+				boolean isInBinaryExpression = isLogicalExpressionInParent(variableAffected);
+
+				// For any variable involved in a logical expression,
+				if (!isInBinaryExpression)
+					continue;
+
+				// For each assignment in the methid
+				for (CtStatement aStatement : statements) {
+
+					// ignoring control flow
+					if (aStatement instanceof CtIf || aStatement instanceof CtLoop)
+						continue;
+
+					// ignoring statements after the faulty
+					if (!isElementBeforeVariable(variableAffected, aStatement))
+						continue;
+
+					// let's collect the var access in the statement
+					List<CtVariableAccess> varsReadInStatement = VariableResolver.collectVariableRead(aStatement);
+					// if the var access in the right is the same that the affected
+					for (CtVariableAccess varInStatement : varsReadInStatement) {
+						if (hasSameName(variableAffected, varInStatement)) {
+							aVarUsed = true;
+						}
+					}
+
+				}
+				// one variable is not used before the faulty
+				if (!aVarUsed) {
+					allLocalVariableUsed = false;
+					break;
+				}
 			}
-			// one variable is not used before the faulty
-			if (!aVarUsed) {
-				allLocalVariableUsed = false;
-				break;
-			}
+
+			context.put(CodeFeatures.LE_8_LOGICAL_WITH_USED_LOCAL_VARS, allLocalVariableUsed);
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
-
-		context.put(CodeFeatures.LE_8_LOGICAL_WITH_USED_LOCAL_VARS, allLocalVariableUsed);
-
 	}
 
 	/**
@@ -814,151 +838,157 @@ public class CodeFeatureDetector {
 	@SuppressWarnings("rawtypes")
 	private void analyzeS1_AffectedVariablesUsed(List<CtVariableAccess> varsAffected, CtElement element,
 			Cntx<Object> context) {
+		try {
+			CtExecutable methodParent = element.getParent(CtExecutable.class);
 
-		CtExecutable methodParent = element.getParent(CtExecutable.class);
+			if (methodParent == null)
+				// the element is not in a method.
+				return;
 
-		if (methodParent == null)
-			// the element is not in a method.
-			return;
+			List<CtStatement> statements = methodParent.getElements(new LineFilter());
 
-		List<CtStatement> statements = methodParent.getElements(new LineFilter());
+			int usedObjects = 0;
+			int notUsedObjects = 0;
 
-		int usedObjects = 0;
-		int notUsedObjects = 0;
+			int usedObjectsLocal = 0;
+			int usedPrimitiveLocal = 0;
+			int notUsedObjectsLocal = 0;
+			int notUsedPrimitiveLocal = 0;
 
-		int usedObjectsLocal = 0;
-		int usedPrimitiveLocal = 0;
-		int notUsedObjectsLocal = 0;
-		int notUsedPrimitiveLocal = 0;
+			// For each variable affected
+			for (CtVariableAccess variableAffected : varsAffected) {
 
-		// For each variable affected
-		for (CtVariableAccess variableAffected : varsAffected) {
+				boolean aVarUsed = false;
+				// boolean foundSimilarVarUsedBefore = false;
 
-			boolean aVarUsed = false;
-			// boolean foundSimilarVarUsedBefore = false;
+				// For each assignment in the methid
+				for (CtStatement aStatement : statements) {
 
-			// For each assignment in the methid
-			for (CtStatement aStatement : statements) {
+					// ignoring control flow
+					if (aStatement instanceof CtIf || aStatement instanceof CtLoop)
+						continue;
 
-				// ignoring control flow
-				if (aStatement instanceof CtIf || aStatement instanceof CtLoop)
-					continue;
+					if (!isElementBeforeVariable(variableAffected, aStatement))
+						continue;
 
-				if (!isElementBeforeVariable(variableAffected, aStatement))
-					continue;
-
-				// let's collect the var access in the right part
-				List<CtVariableAccess> varsInRightPart = VariableResolver.collectVariableRead(aStatement);
-				// if the var access in the right is the same that the affected
-				for (CtVariableAccess varInStatement : varsInRightPart) {
-					if (hasSameName(variableAffected, varInStatement)
-							&& !(varInStatement.getVariable().getSimpleName() + " != null")
-									.equals(varInStatement.getParent().toString())) {
-						aVarUsed = true;
+					// let's collect the var access in the right part
+					List<CtVariableAccess> varsInRightPart = VariableResolver.collectVariableRead(aStatement);
+					// if the var access in the right is the same that the affected
+					for (CtVariableAccess varInStatement : varsInRightPart) {
+						if (hasSameName(variableAffected, varInStatement)
+								&& !(varInStatement.getVariable().getSimpleName() + " != null")
+										.equals(varInStatement.getParent().toString())) {
+							aVarUsed = true;
+						}
 					}
-				}
-				if (aVarUsed)
-					break;
-			}
-			// Now, let's check the type of the var to see if it's local or not
-			if (variableAffected.getVariable().getType() != null) {
-
-				if (!variableAffected.getVariable().getType().isPrimitive()) {
 					if (aVarUsed)
-						usedObjects++;
-					else
-						notUsedObjects++;
-
-					if (variableAffected.getVariable().getDeclaration() instanceof CtLocalVariable) {
-						if (aVarUsed)
-							usedObjectsLocal++;
-						else
-							notUsedObjectsLocal++;
-					}
-				} else {
-
-					if (variableAffected.getVariable().getType().isPrimitive()
-							&& (variableAffected.getVariable().getDeclaration() instanceof CtLocalVariable))
-						if (aVarUsed)
-							usedPrimitiveLocal++;
-						else
-							notUsedPrimitiveLocal++;
+						break;
 				}
+				// Now, let's check the type of the var to see if it's local or not
+				if (variableAffected.getVariable().getType() != null) {
+
+					if (!variableAffected.getVariable().getType().isPrimitive()) {
+						if (aVarUsed)
+							usedObjects++;
+						else
+							notUsedObjects++;
+
+						if (variableAffected.getVariable().getDeclaration() instanceof CtLocalVariable) {
+							if (aVarUsed)
+								usedObjectsLocal++;
+							else
+								notUsedObjectsLocal++;
+						}
+					} else {
+
+						if (variableAffected.getVariable().getType().isPrimitive()
+								&& (variableAffected.getVariable().getDeclaration() instanceof CtLocalVariable))
+							if (aVarUsed)
+								usedPrimitiveLocal++;
+							else
+								notUsedPrimitiveLocal++;
+					}
+				}
+
 			}
+			context.put(CodeFeatures.NR_OBJECT_USED, usedObjects);
+			context.put(CodeFeatures.NR_OBJECT_NOT_USED, notUsedObjects);
 
+			context.put(CodeFeatures.NR_OBJECT_USED_LOCAL_VAR, usedObjectsLocal);
+			context.put(CodeFeatures.NR_OBJECT_NOT_USED_LOCAL_VAR, notUsedObjectsLocal);
+
+			context.put(CodeFeatures.NR_PRIMITIVE_USED_LOCAL_VAR, usedPrimitiveLocal);
+			context.put(CodeFeatures.NR_PRIMITIVE_NOT_USED_LOCAL_VAR, notUsedPrimitiveLocal);
+
+			context.put(CodeFeatures.S1_LOCAL_VAR_NOT_USED, (notUsedObjectsLocal) > 0);
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
-		context.put(CodeFeatures.NR_OBJECT_USED, usedObjects);
-		context.put(CodeFeatures.NR_OBJECT_NOT_USED, notUsedObjects);
-
-		context.put(CodeFeatures.NR_OBJECT_USED_LOCAL_VAR, usedObjectsLocal);
-		context.put(CodeFeatures.NR_OBJECT_NOT_USED_LOCAL_VAR, notUsedObjectsLocal);
-
-		context.put(CodeFeatures.NR_PRIMITIVE_USED_LOCAL_VAR, usedPrimitiveLocal);
-		context.put(CodeFeatures.NR_PRIMITIVE_NOT_USED_LOCAL_VAR, notUsedPrimitiveLocal);
-
-		context.put(CodeFeatures.S1_LOCAL_VAR_NOT_USED, (notUsedObjectsLocal) > 0);
-
 	}
 
 	private void analyzeS2_S5_SametypewithGuard(List<CtVariableAccess> varsAffected, CtElement element,
 			Cntx<Object> context) {
+		try {
+			CtClass classParent = element.getParent(CtClass.class);
+			CtExecutable faultyMethodParent = element.getParent(CtExecutable.class);
 
-		CtClass classParent = element.getParent(CtClass.class);
-		CtExecutable faultyMethodParent = element.getParent(CtExecutable.class);
+			if (classParent == null)
+				// the element is not in a method.
+				return;
 
-		if (classParent == null)
-			// the element is not in a method.
-			return;
+			List<CtStatement> statements = classParent.getElements(new LineFilter());
+			boolean hasPrimitiveSimilarTypeWithGuard = false;
+			boolean hasObjectSimilarTypeWithGuard = false;
 
-		List<CtStatement> statements = classParent.getElements(new LineFilter());
-		boolean hasPrimitiveSimilarTypeWithGuard = false;
-		boolean hasObjectSimilarTypeWithGuard = false;
+			// For each variable affected
+			for (CtVariableAccess variableAffected : varsAffected) {
 
-		// For each variable affected
-		for (CtVariableAccess variableAffected : varsAffected) {
+				// For each statement in the method (it includes the statements inside the
+				// blocks (then, while)!)
+				for (CtStatement aStatement : statements) {
 
-			// For each statement in the method (it includes the statements inside the
-			// blocks (then, while)!)
-			for (CtStatement aStatement : statements) {
+					CtExecutable anotherStatmentMethodParent = aStatement.getParent(CtExecutable.class);
 
-				CtExecutable anotherStatmentMethodParent = aStatement.getParent(CtExecutable.class);
+					if (anotherStatmentMethodParent.equals(faultyMethodParent)
+							&& !isElementBeforeVariable(variableAffected, aStatement))
+						continue;
 
-				if (anotherStatmentMethodParent.equals(faultyMethodParent)
-						&& !isElementBeforeVariable(variableAffected, aStatement))
-					continue;
+					// let's collect the var access in the statement
+					List<CtVariableAccess> varsFromStatement = VariableResolver
+							.collectVariableReadIgnoringBlocks(aStatement);
+					// if the var access is the same that the affected
+					for (CtVariableAccess varInStatement : varsFromStatement) {
+						// Has similar type but different name
+						if (compareTypes(variableAffected.getVariable().getType(),
+								varInStatement.getVariable().getType())
+								&& !hasSameName(variableAffected, varInStatement)) {
+							// Now, let's check if the parent is a guard
+							// if (isGuard(getParentNotBlock(aStatement))) {
+							if (isGuard(varInStatement, (aStatement))) {
 
-				// let's collect the var access in the statement
-				List<CtVariableAccess> varsFromStatement = VariableResolver
-						.collectVariableReadIgnoringBlocks(aStatement);
-				// if the var access is the same that the affected
-				for (CtVariableAccess varInStatement : varsFromStatement) {
-					// Has similar type but different name
-					if (compareTypes(variableAffected.getVariable().getType(), varInStatement.getVariable().getType())
-							&& !hasSameName(variableAffected, varInStatement)) {
-						// Now, let's check if the parent is a guard
-						// if (isGuard(getParentNotBlock(aStatement))) {
-						if (isGuard(varInStatement, (aStatement))) {
+								// it's ok, now let's check the type
+								if (variableAffected.getType() != null) {
 
-							// it's ok, now let's check the type
-							if (variableAffected.getType() != null) {
-
-								if (variableAffected.getType().isPrimitive())
-									hasPrimitiveSimilarTypeWithGuard = true;
-								else
-									hasObjectSimilarTypeWithGuard = true;
+									if (variableAffected.getType().isPrimitive())
+										hasPrimitiveSimilarTypeWithGuard = true;
+									else
+										hasObjectSimilarTypeWithGuard = true;
+								}
 							}
+
 						}
-
 					}
+					// If we find both cases, we can stop
+					if (hasPrimitiveSimilarTypeWithGuard && hasObjectSimilarTypeWithGuard)
+						break;
 				}
-				// If we find both cases, we can stop
-				if (hasPrimitiveSimilarTypeWithGuard && hasObjectSimilarTypeWithGuard)
-					break;
 			}
-		}
 
-		context.put(CodeFeatures.S2_SIMILAR_OBJECT_TYPE_WITH_GUARD, hasObjectSimilarTypeWithGuard);
-		context.put(CodeFeatures.S5_SIMILAR_PRIMITIVE_TYPE_WITH_GUARD, hasPrimitiveSimilarTypeWithGuard);
+			context.put(CodeFeatures.S2_SIMILAR_OBJECT_TYPE_WITH_GUARD, hasObjectSimilarTypeWithGuard);
+			context.put(CodeFeatures.S5_SIMILAR_PRIMITIVE_TYPE_WITH_GUARD, hasPrimitiveSimilarTypeWithGuard);
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -1145,97 +1175,100 @@ public class CodeFeatureDetector {
 	@SuppressWarnings("rawtypes")
 	private void analyzeS1_AffectedAssigned(List<CtVariableAccess> varsAffected, CtElement element,
 			Cntx<Object> context) {
+		try {
+			CtMethod methodParent = element.getParent(CtMethod.class);
 
-		CtMethod methodParent = element.getParent(CtMethod.class);
+			List<CtAssignment> assignments = new ArrayList<>();
+			List<CtLocalVariable> localsVariable = new ArrayList<>();
 
-		List<CtAssignment> assignments = new ArrayList<>();
-		List<CtLocalVariable> localsVariable = new ArrayList<>();
+			// Get all vars from variables
+			CtScanner assignmentScanner = new CtScanner() {
 
-		// Get all vars from variables
-		CtScanner assignmentScanner = new CtScanner() {
+				@Override
+				public <T, A extends T> void visitCtAssignment(CtAssignment<T, A> assignement) {
 
-			@Override
-			public <T, A extends T> void visitCtAssignment(CtAssignment<T, A> assignement) {
-
-				assignments.add(assignement);
-			}
-
-			@Override
-			public <T> void visitCtLocalVariable(CtLocalVariable<T> localVariable) {
-
-				localsVariable.add(localVariable);
-			}
-
-		};
-
-		assignmentScanner.scan(methodParent);
-		boolean hasIncomplete = false;
-		int nrOfVarWithAssignment = 0;
-		int nrOfVarWithoutAssignment = 0;
-
-		int nrOfLocalVarWithAssignment = 0;
-		int nrOfLocalVarWithoutAssignment = 0;
-
-		// For each variable affected
-		for (CtVariableAccess variableAffected : varsAffected) {
-
-			boolean varHasAssig = false;
-			// For each assignment in the method
-			for (CtAssignment assignment : assignments) {
-
-				if (!isElementBeforeVariable(variableAffected, assignment))
-					continue;
-
-				if (assignment.getAssigned().toString().equals(variableAffected.getVariable().getSimpleName())) {
-					varHasAssig = true;
+					assignments.add(assignement);
 				}
-				boolean incomplete = retrieveNotAllInitialized(variableAffected, assignment, assignments);
-				if (incomplete) {
-					hasIncomplete = true;
+
+				@Override
+				public <T> void visitCtLocalVariable(CtLocalVariable<T> localVariable) {
+
+					localsVariable.add(localVariable);
 				}
-			}
-			// Let's find in local declaration
-			// if it was not assigned before
-			if (!varHasAssig) {
 
-				for (CtLocalVariable ctLocalVariable : localsVariable) {
+			};
 
-					if (!isElementBeforeVariable(variableAffected, ctLocalVariable))
+			assignmentScanner.scan(methodParent);
+			boolean hasIncomplete = false;
+			int nrOfVarWithAssignment = 0;
+			int nrOfVarWithoutAssignment = 0;
+
+			int nrOfLocalVarWithAssignment = 0;
+			int nrOfLocalVarWithoutAssignment = 0;
+
+			// For each variable affected
+			for (CtVariableAccess variableAffected : varsAffected) {
+
+				boolean varHasAssig = false;
+				// For each assignment in the method
+				for (CtAssignment assignment : assignments) {
+
+					if (!isElementBeforeVariable(variableAffected, assignment))
 						continue;
 
-					if (ctLocalVariable.getReference().getSimpleName()
-							.equals(variableAffected.getVariable().getSimpleName())
-							&& ctLocalVariable.getDefaultExpression() != null
-							&& !"null".equals(ctLocalVariable.getDefaultExpression().toString()))
+					if (assignment.getAssigned().toString().equals(variableAffected.getVariable().getSimpleName())) {
 						varHasAssig = true;
+					}
+					boolean incomplete = retrieveNotAllInitialized(variableAffected, assignment, assignments);
+					if (incomplete) {
+						hasIncomplete = true;
+					}
+				}
+				// Let's find in local declaration
+				// if it was not assigned before
+				if (!varHasAssig) {
+
+					for (CtLocalVariable ctLocalVariable : localsVariable) {
+
+						if (!isElementBeforeVariable(variableAffected, ctLocalVariable))
+							continue;
+
+						if (ctLocalVariable.getReference().getSimpleName()
+								.equals(variableAffected.getVariable().getSimpleName())
+								&& ctLocalVariable.getDefaultExpression() != null
+								&& !"null".equals(ctLocalVariable.getDefaultExpression().toString()))
+							varHasAssig = true;
+					}
+
+				}
+
+				if (varHasAssig)
+					nrOfVarWithAssignment++;
+				else
+					nrOfVarWithoutAssignment++;
+
+				if (variableAffected.getVariable().getDeclaration() instanceof CtLocalVariable) {
+					if (varHasAssig)
+						nrOfLocalVarWithAssignment++;
+					else
+						nrOfLocalVarWithoutAssignment++;
 				}
 
 			}
+			context.put(CodeFeatures.NR_VARIABLE_ASSIGNED, nrOfVarWithAssignment);
+			context.put(CodeFeatures.NR_VARIABLE_NOT_ASSIGNED, nrOfVarWithoutAssignment);
+			context.put(CodeFeatures.NR_FIELD_INCOMPLETE_INIT, hasIncomplete);
+			context.put(CodeFeatures.NR_OBJECT_ASSIGNED_LOCAL, nrOfLocalVarWithAssignment);
+			context.put(CodeFeatures.NR_OBJECT_NOT_ASSIGNED_LOCAL, nrOfLocalVarWithoutAssignment);
 
-			if (varHasAssig)
-				nrOfVarWithAssignment++;
-			else
-				nrOfVarWithoutAssignment++;
+			// S1 is if NR_OBJECT_ASSIGNED_LOCAL > 0 then
+			// if NR_VARIABLE_NOT_ASSIGNED = 0 then S1 = false else S1 = true
+			// Else S1= false
 
-			if (variableAffected.getVariable().getDeclaration() instanceof CtLocalVariable) {
-				if (varHasAssig)
-					nrOfLocalVarWithAssignment++;
-				else
-					nrOfLocalVarWithoutAssignment++;
-			}
-
+			context.put(CodeFeatures.S1_LOCAL_VAR_NOT_ASSIGNED, (nrOfLocalVarWithoutAssignment > 0));
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
-		context.put(CodeFeatures.NR_VARIABLE_ASSIGNED, nrOfVarWithAssignment);
-		context.put(CodeFeatures.NR_VARIABLE_NOT_ASSIGNED, nrOfVarWithoutAssignment);
-		context.put(CodeFeatures.NR_FIELD_INCOMPLETE_INIT, hasIncomplete);
-		context.put(CodeFeatures.NR_OBJECT_ASSIGNED_LOCAL, nrOfLocalVarWithAssignment);
-		context.put(CodeFeatures.NR_OBJECT_NOT_ASSIGNED_LOCAL, nrOfLocalVarWithoutAssignment);
-
-		// S1 is if NR_OBJECT_ASSIGNED_LOCAL > 0 then
-		// if NR_VARIABLE_NOT_ASSIGNED = 0 then S1 = false else S1 = true
-		// Else S1= false
-
-		context.put(CodeFeatures.S1_LOCAL_VAR_NOT_ASSIGNED, (nrOfLocalVarWithoutAssignment > 0));
 	}
 
 	/**
@@ -1250,46 +1283,51 @@ public class CodeFeatureDetector {
 	@SuppressWarnings("rawtypes")
 	private void analyzeS4_AffectedFielfs(List<CtVariableAccess> varsAffected, CtElement element,
 			Cntx<Object> context) {
+		try {
+			CtMethod methodParent = element.getParent(CtMethod.class);
+			CtClass xclass = element.getParent(CtClass.class);
+			if (xclass == null)
+				return;
 
-		CtMethod methodParent = element.getParent(CtMethod.class);
-		CtClass xclass = element.getParent(CtClass.class);
+			boolean hasFieldNeverUsedOutside = false;
+			// For each variable affected in the faulty statement
+			for (CtVariableAccess variableAffected : varsAffected) {
 
-		boolean hasFieldNeverUsedOutside = false;
-		// For each variable affected in the faulty statement
-		for (CtVariableAccess variableAffected : varsAffected) {
+				// if it's a field
+				if (variableAffected instanceof CtFieldAccess) {
 
-			// if it's a field
-			if (variableAffected instanceof CtFieldAccess) {
+					boolean isFieldUsed = false;
 
-				boolean isFieldUsed = false;
+					// For the other methods
+					for (Object amethod : xclass.getAllMethods()) {
 
-				// For the other methods
-				for (Object amethod : xclass.getAllMethods()) {
+						CtMethod anotherMethod = (CtMethod) amethod;
+						// ignore current method (where is the faulty)
+						if (amethod.equals(methodParent))
+							continue;
 
-					CtMethod anotherMethod = (CtMethod) amethod;
-					// ignore current method (where is the faulty)
-					if (amethod.equals(methodParent))
-						continue;
-
-					// get all field access on the method
-					List<CtElement> fieldsaccsess = anotherMethod.getElements(e -> e instanceof CtFieldAccess);
-					for (CtElement ef : fieldsaccsess) {
-						// check is the access is the same from that one used in the faulty
-						CtFieldAccess faccess = (CtFieldAccess) ef;
-						if (faccess.getVariable().getSimpleName()
-								.equals(variableAffected.getVariable().getSimpleName())) {
-							isFieldUsed = true;
+						// get all field access on the method
+						List<CtElement> fieldsaccsess = anotherMethod.getElements(e -> e instanceof CtFieldAccess);
+						for (CtElement ef : fieldsaccsess) {
+							// check is the access is the same from that one used in the faulty
+							CtFieldAccess faccess = (CtFieldAccess) ef;
+							if (faccess.getVariable().getSimpleName()
+									.equals(variableAffected.getVariable().getSimpleName())) {
+								isFieldUsed = true;
+							}
 						}
+
 					}
+					// If the filed is never used
+					if (!isFieldUsed)
+						hasFieldNeverUsedOutside = true;
 
 				}
-				// If the filed is never used
-				if (!isFieldUsed)
-					hasFieldNeverUsedOutside = true;
-
 			}
+			context.put(CodeFeatures.S4_USED_FIELD, hasFieldNeverUsedOutside);
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
-		context.put(CodeFeatures.S4_USED_FIELD, hasFieldNeverUsedOutside);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -1383,38 +1421,40 @@ public class CodeFeatureDetector {
 	 */
 	private void analyzeV2_AffectedDistanceVarName(List<CtVariableAccess> varsAffected, List<CtVariable> varsInScope,
 			CtElement element, Cntx<Object> context) {
+		try {
+			boolean anyhasMinDist = false;
+			boolean v2SimilarNameCompatibleType = false;
 
-		boolean anyhasMinDist = false;
-		boolean v2SimilarNameCompatibleType = false;
+			for (CtVariableAccess aVarAffected : varsAffected) {
 
-		for (CtVariableAccess aVarAffected : varsAffected) {
+				boolean v2VarSimilarNameCompatibleType = false;
 
-			boolean v2VarSimilarNameCompatibleType = false;
+				for (CtVariable aVarInScope : varsInScope) {
+					if (!aVarInScope.getSimpleName().equals(aVarAffected.getVariable().getSimpleName())) {
+						int dist = StringDistance.calculate(aVarInScope.getSimpleName(),
+								aVarAffected.getVariable().getSimpleName());
+						if (dist > 0 && dist < 3) {
+							anyhasMinDist = true;
 
-			for (CtVariable aVarInScope : varsInScope) {
-				if (!aVarInScope.getSimpleName().equals(aVarAffected.getVariable().getSimpleName())) {
-					int dist = StringDistance.calculate(aVarInScope.getSimpleName(),
-							aVarAffected.getVariable().getSimpleName());
-					if (dist > 0 && dist < 3) {
-						anyhasMinDist = true;
-
-						if (compareTypes(aVarAffected.getType(), aVarInScope.getType())) {
-							v2SimilarNameCompatibleType = true;
-							v2VarSimilarNameCompatibleType = true;
-							// to save computation
-							// break;
+							if (compareTypes(aVarAffected.getType(), aVarInScope.getType())) {
+								v2SimilarNameCompatibleType = true;
+								v2VarSimilarNameCompatibleType = true;
+								// to save computation
+								// break;
+							}
 						}
+
 					}
-
 				}
+				writeDetailedInformationFromVariables(context, aVarAffected.getVariable().getSimpleName(),
+						CodeFeatures.V2_HAS_VAR_SIM_NAME_COMP_TYPE, (v2VarSimilarNameCompatibleType));
+
 			}
-			writeDetailedInformationFromVariables(context, aVarAffected.getVariable().getSimpleName(),
-					CodeFeatures.V2_HAS_VAR_SIM_NAME_COMP_TYPE, (v2VarSimilarNameCompatibleType));
-
+			context.put(CodeFeatures.HAS_VAR_SIM_NAME, anyhasMinDist);
+			context.put(CodeFeatures.V2_HAS_VAR_SIM_NAME_COMP_TYPE, v2SimilarNameCompatibleType);
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
-		context.put(CodeFeatures.HAS_VAR_SIM_NAME, anyhasMinDist);
-		context.put(CodeFeatures.V2_HAS_VAR_SIM_NAME_COMP_TYPE, v2SimilarNameCompatibleType);
-
 	}
 
 	/**
@@ -1428,24 +1468,26 @@ public class CodeFeatureDetector {
 	 */
 	private void analyzeV3_AffectedHasConstant(List<CtVariableAccess> varsAffected, CtElement element,
 			Cntx<Object> context) {
+		try {
+			boolean hasConstant = false;
+			for (CtVariableAccess aVarAffected : varsAffected) {
+				boolean currentIsConstant = false;
+				if (aVarAffected.getVariable() instanceof CtFieldReference &&
+				// Check if it's uppercase
+						aVarAffected.getVariable().getSimpleName().toUpperCase()
+								.equals(aVarAffected.getVariable().getSimpleName())) {
+					hasConstant = true;
+					currentIsConstant = true;
 
-		boolean hasConstant = false;
-		for (CtVariableAccess aVarAffected : varsAffected) {
-			boolean currentIsConstant = false;
-			if (aVarAffected.getVariable() instanceof CtFieldReference &&
-			// Check if it's uppercase
-					aVarAffected.getVariable().getSimpleName().toUpperCase()
-							.equals(aVarAffected.getVariable().getSimpleName())) {
-				hasConstant = true;
-				currentIsConstant = true;
+				}
+				writeDetailedInformationFromVariables(context, aVarAffected.getVariable().getSimpleName(),
+						CodeFeatures.V3_HAS_CONSTANT, (currentIsConstant));
 
 			}
-			writeDetailedInformationFromVariables(context, aVarAffected.getVariable().getSimpleName(),
-					CodeFeatures.V3_HAS_CONSTANT, (currentIsConstant));
-
+			context.put(CodeFeatures.V3_HAS_CONSTANT, hasConstant);
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
-		context.put(CodeFeatures.V3_HAS_CONSTANT, hasConstant);
-
 	}
 
 	/**
@@ -1804,6 +1846,7 @@ public class CodeFeatureDetector {
 			e.printStackTrace();
 			return false;
 		}
+
 	}
 
 	/**
@@ -1815,47 +1858,50 @@ public class CodeFeatureDetector {
 	 * @param parentContext
 	 */
 	private void analyzeLE6_UnaryInvolved(CtElement element, Cntx<Object> parentContext) {
+		try {
+			Cntx<Object> context = new Cntx<>();
+			parentContext.put(CodeFeatures.UNARY_PROPERTIES, context);
 
-		Cntx<Object> context = new Cntx<>();
-		parentContext.put(CodeFeatures.UNARY_PROPERTIES, context);
+			List<String> binOps = new ArrayList();
+			CtScanner scanner = new CtScanner() {
 
-		List<String> binOps = new ArrayList();
-		CtScanner scanner = new CtScanner() {
+				@Override
+				public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {
 
-			@Override
-			public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {
+					super.visitCtUnaryOperator(operator);
+					binOps.add(operator.getKind().toString());
+				}
 
-				super.visitCtUnaryOperator(operator);
-				binOps.add(operator.getKind().toString());
+			};
+
+			ExpressionCapturerScanner expressionScanner = new ExpressionCapturerScanner();
+			expressionScanner.scan(element);
+			if (expressionScanner.toScan != null) {
+				scanner.scan(expressionScanner.toScan);
+			} else {
+				scanner.scan(element);
 			}
+			context.put(CodeFeatures.involved_relation_unary_operators, binOps);
 
-		};
+			context.put(CodeFeatures.involve_POS_relation_operators, binOps.contains(UnaryOperatorKind.POS.toString()));
+			context.put(CodeFeatures.involve_NEG_relation_operators, binOps.contains(UnaryOperatorKind.NEG.toString()));
+			boolean containsNot = binOps.contains(UnaryOperatorKind.NOT.toString());
+			context.put(CodeFeatures.involve_NOT_relation_operators, containsNot);
+			context.put(CodeFeatures.involve_COMPL_relation_operators,
+					binOps.contains(UnaryOperatorKind.COMPL.toString()));
+			context.put(CodeFeatures.involve_PREINC_relation_operators,
+					binOps.contains(UnaryOperatorKind.PREINC.toString()));
+			context.put(CodeFeatures.involve_PREDEC_relation_operators,
+					binOps.contains(UnaryOperatorKind.PREDEC.toString()));
+			context.put(CodeFeatures.involve_POSTINC_relation_operators,
+					binOps.contains(UnaryOperatorKind.POSTINC.toString()));
+			context.put(CodeFeatures.involve_POSTDEC_relation_operators,
+					binOps.contains(UnaryOperatorKind.POSTDEC.toString()));
 
-		ExpressionCapturerScanner expressionScanner = new ExpressionCapturerScanner();
-		expressionScanner.scan(element);
-		if (expressionScanner.toScan != null) {
-			scanner.scan(expressionScanner.toScan);
-		} else {
-			scanner.scan(element);
+			parentContext.put(CodeFeatures.LE6_HAS_NEGATION, containsNot);
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
-		context.put(CodeFeatures.involved_relation_unary_operators, binOps);
-
-		context.put(CodeFeatures.involve_POS_relation_operators, binOps.contains(UnaryOperatorKind.POS.toString()));
-		context.put(CodeFeatures.involve_NEG_relation_operators, binOps.contains(UnaryOperatorKind.NEG.toString()));
-		boolean containsNot = binOps.contains(UnaryOperatorKind.NOT.toString());
-		context.put(CodeFeatures.involve_NOT_relation_operators, containsNot);
-		context.put(CodeFeatures.involve_COMPL_relation_operators, binOps.contains(UnaryOperatorKind.COMPL.toString()));
-		context.put(CodeFeatures.involve_PREINC_relation_operators,
-				binOps.contains(UnaryOperatorKind.PREINC.toString()));
-		context.put(CodeFeatures.involve_PREDEC_relation_operators,
-				binOps.contains(UnaryOperatorKind.PREDEC.toString()));
-		context.put(CodeFeatures.involve_POSTINC_relation_operators,
-				binOps.contains(UnaryOperatorKind.POSTINC.toString()));
-		context.put(CodeFeatures.involve_POSTDEC_relation_operators,
-				binOps.contains(UnaryOperatorKind.POSTDEC.toString()));
-
-		parentContext.put(CodeFeatures.LE6_HAS_NEGATION, containsNot);
-
 	}
 
 	/**
@@ -1867,62 +1913,70 @@ public class CodeFeatureDetector {
 	 * @param parentContext
 	 */
 	private void analyzeLE5_BinaryInvolved(CtElement element, Cntx<Object> parentContext) {
+		try {
+			Cntx<Object> context = new Cntx<>();
+			parentContext.put(CodeFeatures.BIN_PROPERTIES, context);
 
-		Cntx<Object> context = new Cntx<>();
-		parentContext.put(CodeFeatures.BIN_PROPERTIES, context);
+			List<String> binOps = new ArrayList();
+			CtScanner scanner = new CtScanner() {
 
-		List<String> binOps = new ArrayList();
-		CtScanner scanner = new CtScanner() {
+				@Override
+				public <T> void visitCtBinaryOperator(CtBinaryOperator<T> operator) {
+					super.visitCtBinaryOperator(operator);
+					binOps.add(operator.getKind().toString());
+				}
 
-			@Override
-			public <T> void visitCtBinaryOperator(CtBinaryOperator<T> operator) {
-				super.visitCtBinaryOperator(operator);
-				binOps.add(operator.getKind().toString());
+			};
+			// CtElement toScan = null;
+			ExpressionCapturerScanner scanner2 = new ExpressionCapturerScanner();
+			scanner2.scan(element);
+			if (scanner2.toScan != null) {
+				scanner.scan(scanner2.toScan);
+			} else {
+				scanner.scan(element);
 			}
+			context.put(CodeFeatures.involved_relation_bin_operators, binOps);
 
-		};
-		// CtElement toScan = null;
-		ExpressionCapturerScanner scanner2 = new ExpressionCapturerScanner();
-		scanner2.scan(element);
-		if (scanner2.toScan != null) {
-			scanner.scan(scanner2.toScan);
-		} else {
-			scanner.scan(element);
+			context.put(CodeFeatures.involve_GE_relation_operators, binOps.contains(BinaryOperatorKind.GE.toString()));
+			boolean containsAnd = binOps.contains(BinaryOperatorKind.AND.toString());
+			context.put(CodeFeatures.involve_AND_relation_operators, containsAnd);
+			boolean containsOr = binOps.contains(BinaryOperatorKind.OR.toString());
+			context.put(CodeFeatures.involve_OR_relation_operators, containsOr);
+			boolean containsBitor = binOps.contains(BinaryOperatorKind.BITOR.toString());
+			context.put(CodeFeatures.involve_BITOR_relation_operators, containsBitor);
+			boolean containsBitxor = binOps.contains(BinaryOperatorKind.BITXOR.toString());
+			context.put(CodeFeatures.involve_BITXOR_relation_operators, containsBitxor);
+			boolean containsBitand = binOps.contains(BinaryOperatorKind.BITAND.toString());
+			context.put(CodeFeatures.involve_BITAND_relation_operators, containsBitand);
+			context.put(CodeFeatures.involve_EQ_relation_operators, binOps.contains(BinaryOperatorKind.EQ.toString()));
+			context.put(CodeFeatures.involve_NE_relation_operators, binOps.contains(BinaryOperatorKind.NE.toString()));
+			context.put(CodeFeatures.involve_LT_relation_operators, binOps.contains(BinaryOperatorKind.LT.toString()));
+			context.put(CodeFeatures.involve_GT_relation_operators, binOps.contains(BinaryOperatorKind.GT.toString()));
+			context.put(CodeFeatures.involve_LE_relation_operators, binOps.contains(BinaryOperatorKind.LE.toString()));
+			context.put(CodeFeatures.involve_SL_relation_operators, binOps.contains(BinaryOperatorKind.SL.toString()));
+			context.put(CodeFeatures.involve_SR_relation_operators, binOps.contains(BinaryOperatorKind.SR.toString()));
+			context.put(CodeFeatures.involve_USR_relation_operators,
+					binOps.contains(BinaryOperatorKind.USR.toString()));
+			context.put(CodeFeatures.involve_PLUS_relation_operators,
+					binOps.contains(BinaryOperatorKind.PLUS.toString()));
+			context.put(CodeFeatures.involve_MINUS_relation_operators,
+					binOps.contains(BinaryOperatorKind.MINUS.toString()));
+			context.put(CodeFeatures.involve_MUL_relation_operators,
+					binOps.contains(BinaryOperatorKind.MUL.toString()));
+			context.put(CodeFeatures.involve_DIV_relation_operators,
+					binOps.contains(BinaryOperatorKind.DIV.toString()));
+			context.put(CodeFeatures.involve_MOD_relation_operators,
+					binOps.contains(BinaryOperatorKind.MOD.toString()));
+
+			context.put(CodeFeatures.involve_INSTANCEOF_relation_operators,
+					binOps.contains(BinaryOperatorKind.INSTANCEOF.toString()));
+
+			parentContext.put(CodeFeatures.LE5_BOOLEAN_EXPRESSIONS_IN_FAULTY,
+					(containsAnd || containsBitand || containsBitor || containsBitxor || containsOr));
+
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
-		context.put(CodeFeatures.involved_relation_bin_operators, binOps);
-
-		context.put(CodeFeatures.involve_GE_relation_operators, binOps.contains(BinaryOperatorKind.GE.toString()));
-		boolean containsAnd = binOps.contains(BinaryOperatorKind.AND.toString());
-		context.put(CodeFeatures.involve_AND_relation_operators, containsAnd);
-		boolean containsOr = binOps.contains(BinaryOperatorKind.OR.toString());
-		context.put(CodeFeatures.involve_OR_relation_operators, containsOr);
-		boolean containsBitor = binOps.contains(BinaryOperatorKind.BITOR.toString());
-		context.put(CodeFeatures.involve_BITOR_relation_operators, containsBitor);
-		boolean containsBitxor = binOps.contains(BinaryOperatorKind.BITXOR.toString());
-		context.put(CodeFeatures.involve_BITXOR_relation_operators, containsBitxor);
-		boolean containsBitand = binOps.contains(BinaryOperatorKind.BITAND.toString());
-		context.put(CodeFeatures.involve_BITAND_relation_operators, containsBitand);
-		context.put(CodeFeatures.involve_EQ_relation_operators, binOps.contains(BinaryOperatorKind.EQ.toString()));
-		context.put(CodeFeatures.involve_NE_relation_operators, binOps.contains(BinaryOperatorKind.NE.toString()));
-		context.put(CodeFeatures.involve_LT_relation_operators, binOps.contains(BinaryOperatorKind.LT.toString()));
-		context.put(CodeFeatures.involve_GT_relation_operators, binOps.contains(BinaryOperatorKind.GT.toString()));
-		context.put(CodeFeatures.involve_LE_relation_operators, binOps.contains(BinaryOperatorKind.LE.toString()));
-		context.put(CodeFeatures.involve_SL_relation_operators, binOps.contains(BinaryOperatorKind.SL.toString()));
-		context.put(CodeFeatures.involve_SR_relation_operators, binOps.contains(BinaryOperatorKind.SR.toString()));
-		context.put(CodeFeatures.involve_USR_relation_operators, binOps.contains(BinaryOperatorKind.USR.toString()));
-		context.put(CodeFeatures.involve_PLUS_relation_operators, binOps.contains(BinaryOperatorKind.PLUS.toString()));
-		context.put(CodeFeatures.involve_MINUS_relation_operators,
-				binOps.contains(BinaryOperatorKind.MINUS.toString()));
-		context.put(CodeFeatures.involve_MUL_relation_operators, binOps.contains(BinaryOperatorKind.MUL.toString()));
-		context.put(CodeFeatures.involve_DIV_relation_operators, binOps.contains(BinaryOperatorKind.DIV.toString()));
-		context.put(CodeFeatures.involve_MOD_relation_operators, binOps.contains(BinaryOperatorKind.MOD.toString()));
-
-		context.put(CodeFeatures.involve_INSTANCEOF_relation_operators,
-				binOps.contains(BinaryOperatorKind.INSTANCEOF.toString()));
-
-		parentContext.put(CodeFeatures.LE5_BOOLEAN_EXPRESSIONS_IN_FAULTY,
-				(containsAnd || containsBitand || containsBitor || containsBitxor || containsOr));
-
 	}
 
 	private void retrieveType(CtElement element, Cntx<Object> context) {
@@ -1931,19 +1985,22 @@ public class CodeFeatureDetector {
 	}
 
 	private void retrievePosition(CtElement element, Cntx<Object> context) {
-		if (element.getPosition() != null && element.getPosition().getFile() != null) {
-			context.put(CodeFeatures.FILE_LOCATION, element.getPosition().getFile().getAbsolutePath());
+		try {
+			if (element.getPosition() != null && element.getPosition().getFile() != null) {
+				context.put(CodeFeatures.FILE_LOCATION, element.getPosition().getFile().getAbsolutePath());
 
-			context.put(CodeFeatures.LINE_LOCATION, element.getPosition().getLine());
-		} else {
-			context.put(CodeFeatures.FILE_LOCATION, "");
-			context.put(CodeFeatures.LINE_LOCATION, "");
+				context.put(CodeFeatures.LINE_LOCATION, element.getPosition().getLine());
+			} else {
+				context.put(CodeFeatures.FILE_LOCATION, "");
+				context.put(CodeFeatures.LINE_LOCATION, "");
 
+			}
+			CtType parentClass = element.getParent(spoon.reflect.declaration.CtType.class);
+
+			context.put(CodeFeatures.PARENT_CLASS, (parentClass != null) ? parentClass.getQualifiedName() : "");
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
-		CtType parentClass = element.getParent(spoon.reflect.declaration.CtType.class);
-
-		context.put(CodeFeatures.PARENT_CLASS, (parentClass != null) ? parentClass.getQualifiedName() : "");
-
 	}
 
 	public Object determineKey(CtElement element) {
@@ -1957,8 +2014,12 @@ public class CodeFeatureDetector {
 	}
 
 	public void analyzeS3_TypeOfFaulty(CtElement element, Cntx<Object> context) {
-		String type = element.getClass().getSimpleName().replaceAll("Ct", "").replaceAll("Impl", "");
-		context.put(CodeFeatures.S3_TYPE_OF_FAULTY_STATEMENT, type);
+		try {
+			String type = element.getClass().getSimpleName().replaceAll("Ct", "").replaceAll("Impl", "");
+			context.put(CodeFeatures.S3_TYPE_OF_FAULTY_STATEMENT, type);
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -1968,19 +2029,23 @@ public class CodeFeatureDetector {
 	 * @param varsInScope
 	 */
 	public void putVarInContextInformation(Cntx<Object> context, List<CtVariable> varsInScope) {
-		context.put(CodeFeatures.VARS_IN_SCOPE, varsInScope);
-		List<Cntx> children = new ArrayList();
-		for (CtVariable ctVariable : varsInScope) {
-			Cntx c = new Cntx<>();
-			c.put(CodeFeatures.VAR_VISIB,
-					(ctVariable.getVisibility() == null) ? "" : (ctVariable.getVisibility()).toString());
-			c.put(CodeFeatures.VAR_TYPE, ctVariable.getType().getQualifiedName());
-			c.put(CodeFeatures.VAR_MODIF, ctVariable.getModifiers());
-			c.put(CodeFeatures.VAR_NAME, ctVariable.getSimpleName());
-			children.add(c);
+		try {
+			context.put(CodeFeatures.VARS_IN_SCOPE, varsInScope);
+			List<Cntx> children = new ArrayList();
+			for (CtVariable ctVariable : varsInScope) {
+				Cntx c = new Cntx<>();
+				c.put(CodeFeatures.VAR_VISIB,
+						(ctVariable.getVisibility() == null) ? "" : (ctVariable.getVisibility()).toString());
+				c.put(CodeFeatures.VAR_TYPE, ctVariable.getType().getQualifiedName());
+				c.put(CodeFeatures.VAR_MODIF, ctVariable.getModifiers());
+				c.put(CodeFeatures.VAR_NAME, ctVariable.getSimpleName());
+				children.add(c);
 
+			}
+			context.put(CodeFeatures.VARS, children);
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
-		context.put(CodeFeatures.VARS, children);
 	}
 
 	/**
@@ -1990,111 +2055,114 @@ public class CodeFeatureDetector {
 	 * @param context
 	 */
 	private void analyzeM1_eM2_M3_M4_SimilarMethod(CtElement element, Cntx<Object> context) {
+		try {
+			CtClass parentClass = element.getParent(CtClass.class);
+			// For each method invocation, whether the method has overloaded method
+			boolean m1anyhasSameName = false;
+			// For each method invocation, whether there exist methods that return the same
+			// type (or type compatible) and are similar in identifier name with the called
+			// method (again, we limit the search to the faulty class, search both method
+			// definition and method invocations in the faulty class
+			boolean m2anyhasMinDist = false;
+			// For each method invocation, whether has method definitions or method calls
+			// (in the fault class) that take the return type of the method invocation as
+			// one
+			// of its parameters and the return type of the method is type compatible with
+			// the return type of the method invocation.
+			boolean m3anyhasCompatibleParameterAndReturnWithOtherMethod = false;
+			// For each method invocation, whether the types of some of its parameters are
+			// same or compatible with the return type of the method.
+			boolean m4anyhasCompatibleParameterAndReturnSameMethod = false;
 
-		CtClass parentClass = element.getParent(CtClass.class);
-		// For each method invocation, whether the method has overloaded method
-		boolean m1anyhasSameName = false;
-		// For each method invocation, whether there exist methods that return the same
-		// type (or type compatible) and are similar in identifier name with the called
-		// method (again, we limit the search to the faulty class, search both method
-		// definition and method invocations in the faulty class
-		boolean m2anyhasMinDist = false;
-		// For each method invocation, whether has method definitions or method calls
-		// (in the fault class) that take the return type of the method invocation as
-		// one
-		// of its parameters and the return type of the method is type compatible with
-		// the return type of the method invocation.
-		boolean m3anyhasCompatibleParameterAndReturnWithOtherMethod = false;
-		// For each method invocation, whether the types of some of its parameters are
-		// same or compatible with the return type of the method.
-		boolean m4anyhasCompatibleParameterAndReturnSameMethod = false;
+			// Get all invocations inside the faulty element
+			List<CtInvocation> invocations = element.getElements(e -> (e instanceof CtInvocation)).stream()
+					.map(CtInvocation.class::cast).collect(Collectors.toList());
 
-		// Get all invocations inside the faulty element
-		List<CtInvocation> invocations = element.getElements(e -> (e instanceof CtInvocation)).stream()
-				.map(CtInvocation.class::cast).collect(Collectors.toList());
+			for (CtInvocation invocation : invocations) {
+				CtExecutable minvokedInAffected = invocation.getExecutable().getDeclaration();
 
-		for (CtInvocation invocation : invocations) {
-			CtExecutable minvokedInAffected = invocation.getExecutable().getDeclaration();
-
-			if (minvokedInAffected == null || !(minvokedInAffected instanceof CtMethod))
-				continue;
-
-			boolean m1methodHasSameName = false;
-			boolean m2methodhasMinDist = false;
-			boolean m3methodhasCompatibleParameterAndReturnWithOtherMethod = false;
-			boolean m4methodHasCompatibleParameterAndReturnSameMethod = false;
-
-			// Get the method that is invoked
-			CtMethod affectedMethod = (CtMethod) minvokedInAffected;
-
-			// Check parameters
-			for (Object oparameter : affectedMethod.getParameters()) {
-				CtParameter parameter = (CtParameter) oparameter;
-
-				if (affectedMethod != null && compareTypes(affectedMethod.getType(), parameter.getType())) {
-					m4anyhasCompatibleParameterAndReturnSameMethod = true;
-					m4methodHasCompatibleParameterAndReturnSameMethod = true;
-				}
-			}
-
-			List allMethodsFromClass = getAllMethodsFromClass(parentClass);
-
-			// For each method in the class
-			for (Object omethod : allMethodsFromClass) {
-
-				if (!(omethod instanceof CtMethod))
+				if (minvokedInAffected == null || !(minvokedInAffected instanceof CtMethod))
 					continue;
 
-				CtMethod anotherMethod = (CtMethod) omethod;
-				// Ignoring if it's the same
-				if (anotherMethod == null || anotherMethod.getSignature().equals(affectedMethod.getSignature()))
-					continue;
+				boolean m1methodHasSameName = false;
+				boolean m2methodhasMinDist = false;
+				boolean m3methodhasCompatibleParameterAndReturnWithOtherMethod = false;
+				boolean m4methodHasCompatibleParameterAndReturnSameMethod = false;
 
-				if (anotherMethod.getSimpleName().equals(affectedMethod.getSimpleName())) {
-					// It's override
-					m1methodHasSameName = true;
-					m1anyhasSameName = true;
-				}
-				// If the return types are compatibles
-				if (anotherMethod.getType() != null && minvokedInAffected.getType() != null) {
+				// Get the method that is invoked
+				CtMethod affectedMethod = (CtMethod) minvokedInAffected;
 
-					// Check if the method has the return type compatible with the affected
-					// invocation
-					boolean compatibleReturnTypes = compareTypes(anotherMethod.getType(), minvokedInAffected.getType());
-					if (compatibleReturnTypes) {
-						// Check name similarity:
-						int dist = StringDistance.calculate(anotherMethod.getSimpleName(),
-								minvokedInAffected.getSimpleName());
-						if (dist > 0 && dist < 3) {
-							m2anyhasMinDist = true;
-							context.put(CodeFeatures.M2_SIMILAR_METHOD_WITH_SAME_RETURN, m2anyhasMinDist);
-							m2methodhasMinDist = true;
-						}
+				// Check parameters
+				for (Object oparameter : affectedMethod.getParameters()) {
+					CtParameter parameter = (CtParameter) oparameter;
 
-						// Check if the method has a parameter compatible with the affected invocation
-						boolean hasSameParam = checkTypeInParameter(anotherMethod, minvokedInAffected);
-						if (hasSameParam) {
-							m3anyhasCompatibleParameterAndReturnWithOtherMethod = true;
-							m3methodhasCompatibleParameterAndReturnWithOtherMethod = true;
-						}
+					if (affectedMethod != null && compareTypes(affectedMethod.getType(), parameter.getType())) {
+						m4anyhasCompatibleParameterAndReturnSameMethod = true;
+						m4methodHasCompatibleParameterAndReturnSameMethod = true;
 					}
 				}
-				// if the other method is not similar method for M3, let's find in the
-				// invocation inside the .
-				if (!m3methodhasCompatibleParameterAndReturnWithOtherMethod) {
 
-					List<CtInvocation> invocationsFromAnotherMethod = anotherMethod
-							.getElements(e -> (e instanceof CtInvocation)).stream().map(CtInvocation.class::cast)
-							.collect(Collectors.toList());
-					for (CtInvocation ctInvocation : invocationsFromAnotherMethod) {
-						CtExecutable methodInvokedInAnotherMethod = ctInvocation.getExecutable().getDeclaration();
+				List allMethodsFromClass = getAllMethodsFromClass(parentClass);
 
-						if (methodInvokedInAnotherMethod != null) {
+				// For each method in the class
+				for (Object omethod : allMethodsFromClass) {
 
-							if (compareTypes(anotherMethod.getType(), minvokedInAffected.getType())
-									&& checkTypeInParameter(anotherMethod, minvokedInAffected)) {
+					if (!(omethod instanceof CtMethod))
+						continue;
+
+					CtMethod anotherMethod = (CtMethod) omethod;
+					// Ignoring if it's the same
+					if (anotherMethod == null || anotherMethod.getSignature().equals(affectedMethod.getSignature()))
+						continue;
+
+					if (anotherMethod.getSimpleName().equals(affectedMethod.getSimpleName())) {
+						// It's override
+						m1methodHasSameName = true;
+						m1anyhasSameName = true;
+					}
+					// If the return types are compatibles
+					if (anotherMethod.getType() != null && minvokedInAffected.getType() != null) {
+
+						// Check if the method has the return type compatible with the affected
+						// invocation
+						boolean compatibleReturnTypes = compareTypes(anotherMethod.getType(),
+								minvokedInAffected.getType());
+						if (compatibleReturnTypes) {
+							// Check name similarity:
+							int dist = StringDistance.calculate(anotherMethod.getSimpleName(),
+									minvokedInAffected.getSimpleName());
+							if (dist > 0 && dist < 3) {
+								m2anyhasMinDist = true;
+								context.put(CodeFeatures.M2_SIMILAR_METHOD_WITH_SAME_RETURN, m2anyhasMinDist);
+								m2methodhasMinDist = true;
+							}
+
+							// Check if the method has a parameter compatible with the affected invocation
+							boolean hasSameParam = checkTypeInParameter(anotherMethod, minvokedInAffected);
+							if (hasSameParam) {
 								m3anyhasCompatibleParameterAndReturnWithOtherMethod = true;
 								m3methodhasCompatibleParameterAndReturnWithOtherMethod = true;
+							}
+						}
+					}
+					// if the other method is not similar method for M3, let's find in the
+					// invocation inside the .
+					if (!m3methodhasCompatibleParameterAndReturnWithOtherMethod) {
+
+						List<CtInvocation> invocationsFromAnotherMethod = anotherMethod
+								.getElements(e -> (e instanceof CtInvocation)).stream().map(CtInvocation.class::cast)
+								.collect(Collectors.toList());
+						for (CtInvocation ctInvocation : invocationsFromAnotherMethod) {
+							CtExecutable methodInvokedInAnotherMethod = ctInvocation.getExecutable().getDeclaration();
+
+							if (methodInvokedInAnotherMethod != null) {
+
+								if (compareTypes(anotherMethod.getType(), minvokedInAffected.getType())
+										&& checkTypeInParameter(anotherMethod, minvokedInAffected)) {
+									m3anyhasCompatibleParameterAndReturnWithOtherMethod = true;
+									m3methodhasCompatibleParameterAndReturnWithOtherMethod = true;
+								}
+
 							}
 
 						}
@@ -2102,28 +2170,29 @@ public class CodeFeatureDetector {
 					}
 
 				}
+				writeDetailedInformationFromMethod(context, affectedMethod,
+						CodeFeatures.M4_PARAMETER_RETURN_COMPABILITY,
+						m4methodHasCompatibleParameterAndReturnSameMethod);
 
-			}
-			writeDetailedInformationFromMethod(context, affectedMethod, CodeFeatures.M4_PARAMETER_RETURN_COMPABILITY,
-					m4methodHasCompatibleParameterAndReturnSameMethod);
+				writeDetailedInformationFromMethod(context, affectedMethod, CodeFeatures.M1_OVERLOADED_METHOD,
+						m1methodHasSameName);
 
-			writeDetailedInformationFromMethod(context, affectedMethod, CodeFeatures.M1_OVERLOADED_METHOD,
-					m1methodHasSameName);
+				writeDetailedInformationFromMethod(context, affectedMethod,
+						CodeFeatures.M2_SIMILAR_METHOD_WITH_SAME_RETURN, m2methodhasMinDist);
 
-			writeDetailedInformationFromMethod(context, affectedMethod, CodeFeatures.M2_SIMILAR_METHOD_WITH_SAME_RETURN,
-					m2methodhasMinDist);
+				writeDetailedInformationFromMethod(context, affectedMethod,
+						CodeFeatures.M3_ANOTHER_METHOD_WITH_PARAMETER_RETURN_COMP,
+						m3methodhasCompatibleParameterAndReturnWithOtherMethod);
 
-			writeDetailedInformationFromMethod(context, affectedMethod,
-					CodeFeatures.M3_ANOTHER_METHOD_WITH_PARAMETER_RETURN_COMP,
-					m3methodhasCompatibleParameterAndReturnWithOtherMethod);
-
-		} // end invocation
-		context.put(CodeFeatures.M1_OVERLOADED_METHOD, m1anyhasSameName);
-		context.put(CodeFeatures.M2_SIMILAR_METHOD_WITH_SAME_RETURN, m2anyhasMinDist);
-		context.put(CodeFeatures.M3_ANOTHER_METHOD_WITH_PARAMETER_RETURN_COMP,
-				m3anyhasCompatibleParameterAndReturnWithOtherMethod);
-		context.put(CodeFeatures.M4_PARAMETER_RETURN_COMPABILITY, m4anyhasCompatibleParameterAndReturnSameMethod);
-
+			} // end invocation
+			context.put(CodeFeatures.M1_OVERLOADED_METHOD, m1anyhasSameName);
+			context.put(CodeFeatures.M2_SIMILAR_METHOD_WITH_SAME_RETURN, m2anyhasMinDist);
+			context.put(CodeFeatures.M3_ANOTHER_METHOD_WITH_PARAMETER_RETURN_COMP,
+					m3anyhasCompatibleParameterAndReturnWithOtherMethod);
+			context.put(CodeFeatures.M4_PARAMETER_RETURN_COMPABILITY, m4anyhasCompatibleParameterAndReturnSameMethod);
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 	}
 
 	private boolean checkTypeInParameter(CtMethod anotherMethod, CtExecutable minvokedInAffected) {
@@ -2187,34 +2256,36 @@ public class CodeFeatureDetector {
 	private void analyzeV8_TypesVarsAffected(List<CtVariableAccess> varsAffected, CtElement element,
 			Cntx<Object> context) {
 		// Vars in scope at the position of element
+		try {
+			int nrPrimitives = 0;
+			int nrObjectRef = 0;
 
-		int nrPrimitives = 0;
-		int nrObjectRef = 0;
+			List<CtVariableAccess> objectAccess = new ArrayList<>();
 
-		List<CtVariableAccess> objectAccess = new ArrayList<>();
+			for (CtVariableAccess aVariableAccess : varsAffected) {
 
-		for (CtVariableAccess aVariableAccess : varsAffected) {
+				CtVariable ctVariable = aVariableAccess.getVariable().getDeclaration();
+				boolean isPrimitive = false;
+				if (ctVariable != null && ctVariable.getReference() != null
+						&& ctVariable.getReference().getType() != null) {
+					if (ctVariable.getReference().getType().isPrimitive()) {
+						nrPrimitives++;
+						isPrimitive = true;
+					} else {
+						nrObjectRef++;
+						objectAccess.add(aVariableAccess);
+					}
 
-			CtVariable ctVariable = aVariableAccess.getVariable().getDeclaration();
-			boolean isPrimitive = false;
-			if (ctVariable != null && ctVariable.getReference() != null
-					&& ctVariable.getReference().getType() != null) {
-				if (ctVariable.getReference().getType().isPrimitive()) {
-					nrPrimitives++;
-					isPrimitive = true;
-				} else {
-					nrObjectRef++;
-					objectAccess.add(aVariableAccess);
+					writeDetailedInformationFromVariables(context, aVariableAccess.getVariable().getSimpleName(),
+							CodeFeatures.V8_VAR_PRIMITIVE, isPrimitive);
 				}
-
-				writeDetailedInformationFromVariables(context, aVariableAccess.getVariable().getSimpleName(),
-						CodeFeatures.V8_VAR_PRIMITIVE, isPrimitive);
 			}
+			context.put(CodeFeatures.NUMBER_PRIMITIVE_VARS_IN_STMT, nrPrimitives);
+			context.put(CodeFeatures.NUMBER_OBJECT_REFERENCE_VARS_IN_STMT, nrObjectRef);
+			context.put(CodeFeatures.NUMBER_TOTAL_VARS_IN_STMT, nrPrimitives + nrObjectRef);
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
-		context.put(CodeFeatures.NUMBER_PRIMITIVE_VARS_IN_STMT, nrPrimitives);
-		context.put(CodeFeatures.NUMBER_OBJECT_REFERENCE_VARS_IN_STMT, nrObjectRef);
-		context.put(CodeFeatures.NUMBER_TOTAL_VARS_IN_STMT, nrPrimitives + nrObjectRef);
-
 	}
 
 	/**
@@ -2225,32 +2296,35 @@ public class CodeFeatureDetector {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void analyzeS6_M5_Method_Method_Features(CtElement element, Cntx<Object> context) {
-		//
-		CtMethod parentMethod = element.getParent(CtMethod.class);
-		if (parentMethod != null) {
-			// Return
-			context.put(CodeFeatures.METHOD_RETURN_TYPE,
-					(parentMethod.getType() != null) ? parentMethod.getType().getQualifiedName() : null);
+		try {
+			CtMethod parentMethod = element.getParent(CtMethod.class);
+			if (parentMethod != null) {
+				// Return
+				context.put(CodeFeatures.METHOD_RETURN_TYPE,
+						(parentMethod.getType() != null) ? parentMethod.getType().getQualifiedName() : null);
 
-			context.put(CodeFeatures.M5_RETURN_PRIMITIVE,
-					(parentMethod.getType() != null) ? parentMethod.getType().isPrimitive() : null);
-			// Param
-			List<CtParameter> parameters = parentMethod.getParameters();
-			List<String> parametersTypes = new ArrayList<>();
-			for (CtParameter ctParameter : parameters) {
-				parametersTypes.add(ctParameter.getType().getSimpleName());
+				context.put(CodeFeatures.M5_RETURN_PRIMITIVE,
+						(parentMethod.getType() != null) ? parentMethod.getType().isPrimitive() : null);
+				// Param
+				List<CtParameter> parameters = parentMethod.getParameters();
+				List<String> parametersTypes = new ArrayList<>();
+				for (CtParameter ctParameter : parameters) {
+					parametersTypes.add(ctParameter.getType().getSimpleName());
+				}
+				context.put(CodeFeatures.METHOD_PARAMETERS, parametersTypes);
+
+				// Modif
+				context.put(CodeFeatures.METHOD_MODIFIERS, parentMethod.getModifiers());
+
+				// Comments
+				context.put(CodeFeatures.METHOD_COMMENTS, parentMethod.getComments());
+
+				// Exception
+				context.put(CodeFeatures.S6_METHOD_THROWS_EXCEPTION, parentMethod.getThrownTypes().size() > 0);
+
 			}
-			context.put(CodeFeatures.METHOD_PARAMETERS, parametersTypes);
-
-			// Modif
-			context.put(CodeFeatures.METHOD_MODIFIERS, parentMethod.getModifiers());
-
-			// Comments
-			context.put(CodeFeatures.METHOD_COMMENTS, parentMethod.getComments());
-
-			// Exception
-			context.put(CodeFeatures.S6_METHOD_THROWS_EXCEPTION, parentMethod.getThrownTypes().size() > 0);
-
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
 	}
 
