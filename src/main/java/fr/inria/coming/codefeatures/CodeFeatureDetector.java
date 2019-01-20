@@ -68,6 +68,12 @@ public class CodeFeatureDetector {
 	private void analyzeFeatures(CtElement element, Cntx<Object> context) {
 		// Vars in scope at the position of element
 		List<CtVariable> varsInScope = VariableResolver.searchVariablesInScope(element);
+
+		CtClass parentClass = element.getParent(CtClass.class);
+		List allMethods = getAllMethodsFromClass(parentClass);
+		List<CtInvocation> invocationsFromClass = parentClass.getElements(e -> (e instanceof CtInvocation)).stream()
+				.map(CtInvocation.class::cast).collect(Collectors.toList());
+
 		putVarInContextInformation(context, varsInScope);
 
 		List<CtVariableAccess> varsAffected = retrieveVariables(element);
@@ -79,7 +85,7 @@ public class CodeFeatureDetector {
 		analyzeS4_AffectedFielfs(varsAffected, element, context);
 		analyzeS6_M5_Method_Method_Features(element, context);
 
-		analyzeV1_V6(varsAffected, element, context);
+		analyzeV1_V6(varsAffected, element, context, allMethods, invocationsFromClass);
 		analyzeV2_AffectedDistanceVarName(varsAffected, varsInScope, element, context);
 		analyzeV3_AffectedHasConstant(varsAffected, element, context);
 		analyzeV4(varsAffected, element, context);
@@ -88,7 +94,7 @@ public class CodeFeatureDetector {
 		analyzeM1_eM2_M3_M4_SimilarMethod(element, context);
 
 		analyzeLE1_AffectedVariablesUsed(varsAffected, element, context);
-		analyzeLE2_AffectedVariablesInMethod(varsAffected, element, context);
+		analyzeLE2_AffectedVariablesInMethod(varsAffected, element, context, allMethods, invocationsFromClass);
 		analyzeLE3_PrimitiveWithCompatibleNotUsed(varsAffected, varsInScope, element, context);
 		analyzeLE4_BooleanVarNotUsed(varsAffected, varsInScope, element, context);
 		analyzeLE5_BinaryInvolved(element, context);
@@ -99,7 +105,7 @@ public class CodeFeatureDetector {
 		analyzeC1_Constant(element, context);
 		analyzeC2_UseEnum(element, context);
 
-		analyzeAE1(element, context);
+		analyzeAE1(element, context, allMethods, invocationsFromClass);
 
 		// Other features not enumerated
 		analyzeAffectedWithCompatibleTypes(varsAffected, varsInScope, element, context);
@@ -1497,7 +1503,8 @@ public class CodeFeatureDetector {
 	 * @param element
 	 * @param context
 	 */
-	private void analyzeV1_V6(List<CtVariableAccess> varsAffected, CtElement element, Cntx<Object> context) {
+	private void analyzeV1_V6(List<CtVariableAccess> varsAffected, CtElement element, Cntx<Object> context,
+			List allMethods, List<CtInvocation> invocationsFromClass) {
 		try {
 			// For each involved variable, whether has method definitions or method calls
 			// (in the fault class) that take the type of the involved variable as one of
@@ -1509,13 +1516,6 @@ public class CodeFeatureDetector {
 			// or method calls in the faulty class) thatreturn a type which is the same or
 			// compatible with the typeof the involved variable.
 			boolean v6AnyVarReturnCompatible = false;
-
-			CtClass parentClass = element.getParent(CtClass.class);
-
-			List<CtInvocation> invocationsFromClass = parentClass.getElements(e -> (e instanceof CtInvocation)).stream()
-					.map(CtInvocation.class::cast).collect(Collectors.toList());
-
-			List allMethods = getAllMethodsFromClass(parentClass);
 
 			for (CtVariableAccess varAffected : varsAffected) {
 
@@ -1566,18 +1566,10 @@ public class CodeFeatureDetector {
 	 * @param context
 	 */
 	private void analyzeLE2_AffectedVariablesInMethod(List<CtVariableAccess> varsAffected, CtElement element,
-			Cntx<Object> context) {
+			Cntx<Object> context, List allMethods, List<CtInvocation> invocationsFromClass) {
 		try {
 
 			boolean hasAnyLES2paramCompatibleWithBooleanReturn = false;
-			CtClass parentClass = element.getParent(CtClass.class);
-
-			// Collects all invocations inside the class
-			List<CtInvocation> invocationsFromClass = parentClass.getElements(e -> (e instanceof CtInvocation)).stream()
-					.map(CtInvocation.class::cast).collect(Collectors.toList());
-
-			// Collect all method declaration inside the class
-			List allMethods = getAllMethodsFromClass(parentClass);
 
 			for (CtVariableAccess varAffected : varsAffected) {
 
@@ -1617,15 +1609,9 @@ public class CodeFeatureDetector {
 	 * @param element
 	 * @param context
 	 */
-	private void analyzeAE1(CtElement element, Cntx<Object> context) {
+	private void analyzeAE1(CtElement element, Cntx<Object> context, List allMethods,
+			List<CtInvocation> invocationsFromClass) {
 		try {
-
-			CtClass parentClass = element.getParent(CtClass.class);
-
-			List<CtInvocation> invocationsFromClass = parentClass.getElements(e -> (e instanceof CtInvocation)).stream()
-					.map(CtInvocation.class::cast).collect(Collectors.toList());
-
-			List allMethods = getAllMethodsFromClass(parentClass);
 
 			List<BinaryOperatorKind> opKinds = new ArrayList<>();
 			opKinds.add(BinaryOperatorKind.DIV);
@@ -2207,14 +2193,21 @@ public class CodeFeatureDetector {
 	}
 
 	public static List getAllMethodsFromClass(CtClass parentClass) {
-		List allMethods = new ArrayList(parentClass.getAllMethods());
 
-		if (parentClass != null && parentClass.getParent() instanceof CtClass) {
-			CtClass parentParentClass = (CtClass) parentClass.getParent();
-			allMethods.addAll(parentParentClass.getAllMethods());
+		List allMethods = new ArrayList();
 
+		try {
+			allMethods.addAll(parentClass.getAllMethods());
+			if (parentClass != null && parentClass.getParent() instanceof CtClass) {
+				CtClass parentParentClass = (CtClass) parentClass.getParent();
+				allMethods.addAll(parentParentClass.getAllMethods());
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return allMethods;
+
 	}
 
 	private void writeDetailedInformationFromMethod(Cntx<Object> context, CtMethod affectedMethod,
