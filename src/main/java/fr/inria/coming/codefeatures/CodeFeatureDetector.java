@@ -68,8 +68,15 @@ public class CodeFeatureDetector {
 	private void analyzeFeatures(CtElement element, Cntx<Object> context) {
 		// Vars in scope at the position of element
 		List<CtVariable> varsInScope = VariableResolver.searchVariablesInScope(element);
-
-		CtClass parentClass = element.getParent(CtClass.class);
+		CtClass parentClass = null;
+		if (element instanceof CtClass)
+			parentClass = (CtClass) element;
+		else
+			parentClass = element.getParent(CtClass.class);
+		if (parentClass == null) {
+			log.error("Parent null, we dont analyze the features");
+			return;
+		}
 		List allMethods = getAllMethodsFromClass(parentClass);
 		List<CtInvocation> invocationsFromClass = parentClass.getElements(e -> (e instanceof CtInvocation)).stream()
 				.map(CtInvocation.class::cast).collect(Collectors.toList());
@@ -80,9 +87,9 @@ public class CodeFeatureDetector {
 		analyzeV8_TypesVarsAffected(varsAffected, element, context);
 		analyzeS1_AffectedAssigned(varsAffected, element, context);
 		analyzeS1_AffectedVariablesUsed(varsAffected, element, context);
-		analyzeS2_S5_SametypewithGuard(varsAffected, element, context);
+		analyzeS2_S5_SametypewithGuard(varsAffected, element, context, parentClass);
 		analyzeS3_TypeOfFaulty(element, context);
-		analyzeS4_AffectedFielfs(varsAffected, element, context);
+		analyzeS4_AffectedFielfs(varsAffected, element, context, parentClass);
 		analyzeS6_M5_Method_Method_Features(element, context);
 
 		analyzeV1_V6(varsAffected, element, context, allMethods, invocationsFromClass);
@@ -91,9 +98,9 @@ public class CodeFeatureDetector {
 		analyzeV4(varsAffected, element, context);
 		analyzeV5_AffectedVariablesInTransformation(varsAffected, element, context);
 
-		analyzeM1_eM2_M3_M4_SimilarMethod(element, context);
+		analyzeM1_eM2_M3_M4_SimilarMethod(element, context, parentClass, allMethods);
 
-		analyzeLE1_AffectedVariablesUsed(varsAffected, element, context);
+		analyzeLE1_AffectedVariablesUsed(varsAffected, element, context, parentClass);
 		analyzeLE2_AffectedVariablesInMethod(varsAffected, element, context, allMethods, invocationsFromClass);
 		analyzeLE3_PrimitiveWithCompatibleNotUsed(varsAffected, varsInScope, element, context);
 		analyzeLE4_BooleanVarNotUsed(varsAffected, varsInScope, element, context);
@@ -102,8 +109,8 @@ public class CodeFeatureDetector {
 		analyzeLE7_VarDirectlyUsed(varsAffected, varsInScope, element, context);
 		analyzeLE8_LocalVariablesVariablesUsed(varsAffected, element, context);
 
-		analyzeC1_Constant(element, context);
-		analyzeC2_UseEnum(element, context);
+		analyzeC1_Constant(element, context, parentClass);
+		analyzeC2_UseEnum(element, context, parentClass);
 
 		analyzeAE1(element, context, allMethods, invocationsFromClass);
 
@@ -130,7 +137,7 @@ public class CodeFeatureDetector {
 
 	}
 
-	private void analyzeC1_Constant(CtElement element, Cntx<Object> context) {
+	private void analyzeC1_Constant(CtElement element, Cntx<Object> context, CtClass parentClass) {
 		try {
 			boolean hasSimilarLiterals = false;
 			// Get all invocations inside the faulty element
@@ -141,7 +148,6 @@ public class CodeFeatureDetector {
 
 				for (CtLiteral literalFormFaulty : literalsFromFaultyLine) {
 
-					CtClass parentClass = element.getParent(CtClass.class);
 					List<CtLiteral> literalsFromClass = parentClass.getElements(e -> (e instanceof CtLiteral)).stream()
 							.map(CtLiteral.class::cast).collect(Collectors.toList());
 					for (CtLiteral anotherLiteral : literalsFromClass) {
@@ -259,9 +265,9 @@ public class CodeFeatureDetector {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void retrieveDM(CtElement element, Cntx<Object> context, List<CtVariable> varsInScope) {
+	public void retrieveDM(CtElement element, Cntx<Object> context, List<CtVariable> varsInScope, CtClass parentClass) {
 
-		List<CtLiteral> literals = VariableResolver.collectLiteralsNoString(element.getParent(CtClass.class));
+		List<CtLiteral> literals = VariableResolver.collectLiteralsNoString(parentClass);
 
 		List<CtExpression> ctexpressions = new ArrayList<>();
 		List<CtVariableRead> cteVarReadList = new ArrayList<>();
@@ -289,15 +295,14 @@ public class CodeFeatureDetector {
 		}
 	}
 
-	private void analyzeC2_UseEnum(CtElement element, Cntx<Object> context) {
+	private void analyzeC2_UseEnum(CtElement element, Cntx<Object> context, CtClass parentClass) {
 		try {
 			boolean useEnum = false;
-			CtClass classParent = element.getParent(CtClass.class);
 
-			if (classParent == null)
+			if (parentClass == null)
 				return;
 
-			List<CtEnum> enums = classParent.getElements(new TypeFilter<>(CtEnum.class));
+			List<CtEnum> enums = parentClass.getElements(new TypeFilter<>(CtEnum.class));
 
 			List<CtVariableRead> varAccessFromSusp = element.getElements(new TypeFilter<>(CtVariableRead.class));
 
@@ -694,14 +699,13 @@ public class CodeFeatureDetector {
 	 */
 	@SuppressWarnings("rawtypes")
 	private void analyzeLE1_AffectedVariablesUsed(List<CtVariableAccess> varsAffected, CtElement element,
-			Cntx<Object> context) {
+			Cntx<Object> context, CtClass parentClass) {
 		try {
-			CtClass classParent = element.getParent(CtClass.class);
 
-			if (classParent == null)
+			if (parentClass == null)
 				return;
 
-			List<CtStatement> statements = classParent.getElements(new LineFilter());
+			List<CtStatement> statements = parentClass.getElements(new LineFilter());
 
 			int similarUsedBefore = 0;
 
@@ -933,16 +937,15 @@ public class CodeFeatureDetector {
 	}
 
 	private void analyzeS2_S5_SametypewithGuard(List<CtVariableAccess> varsAffected, CtElement element,
-			Cntx<Object> context) {
+			Cntx<Object> context, CtClass parentClass) {
 		try {
-			CtClass classParent = element.getParent(CtClass.class);
 			CtExecutable faultyMethodParent = element.getParent(CtExecutable.class);
 
-			if (classParent == null)
+			if (parentClass == null)
 				// the element is not in a method.
 				return;
 
-			List<CtStatement> statements = classParent.getElements(new LineFilter());
+			List<CtStatement> statements = parentClass.getElements(new LineFilter());
 			boolean hasPrimitiveSimilarTypeWithGuard = false;
 			boolean hasObjectSimilarTypeWithGuard = false;
 
@@ -1287,12 +1290,11 @@ public class CodeFeatureDetector {
 	 * @param context
 	 */
 	@SuppressWarnings("rawtypes")
-	private void analyzeS4_AffectedFielfs(List<CtVariableAccess> varsAffected, CtElement element,
-			Cntx<Object> context) {
+	private void analyzeS4_AffectedFielfs(List<CtVariableAccess> varsAffected, CtElement element, Cntx<Object> context,
+			CtClass parentClass) {
 		try {
 			CtMethod methodParent = element.getParent(CtMethod.class);
-			CtClass xclass = element.getParent(CtClass.class);
-			if (xclass == null)
+			if (parentClass == null)
 				return;
 
 			boolean hasFieldNeverUsedOutside = false;
@@ -1305,7 +1307,7 @@ public class CodeFeatureDetector {
 					boolean isFieldUsed = false;
 
 					// For the other methods
-					for (Object amethod : xclass.getAllMethods()) {
+					for (Object amethod : parentClass.getAllMethods()) {
 
 						CtMethod anotherMethod = (CtMethod) amethod;
 						// ignore current method (where is the faulty)
@@ -1748,7 +1750,8 @@ public class CodeFeatureDetector {
 		for (CtInvocation anInvocation : invocationsFromClass) {
 
 			// Check types
-			if (anInvocation.getType() != null && anInvocation.getType().unbox().toString().equals("boolean")) {
+			if (anInvocation.getType() != null && (anInvocation.getType().getSimpleName().equals("Boolean")
+					|| anInvocation.getType().unbox().toString().equals("boolean"))) {
 
 				// For each argument in the invocation
 				for (Object anObjArgument : anInvocation.getArguments()) {
@@ -2040,9 +2043,10 @@ public class CodeFeatureDetector {
 	 * @param element
 	 * @param context
 	 */
-	private void analyzeM1_eM2_M3_M4_SimilarMethod(CtElement element, Cntx<Object> context) {
+	private void analyzeM1_eM2_M3_M4_SimilarMethod(CtElement element, Cntx<Object> context, CtClass parentClass,
+			List allMethodsFromClass) {
 		try {
-			CtClass parentClass = element.getParent(CtClass.class);
+
 			// For each method invocation, whether the method has overloaded method
 			boolean m1anyhasSameName = false;
 			// For each method invocation, whether there exist methods that return the same
@@ -2088,7 +2092,7 @@ public class CodeFeatureDetector {
 					}
 				}
 
-				List allMethodsFromClass = getAllMethodsFromClass(parentClass);
+				// List allMethodsFromClass = getAllMethodsFromClass(parentClass);
 
 				// For each method in the class
 				for (Object omethod : allMethodsFromClass) {
