@@ -5,9 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
@@ -24,19 +21,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-import fr.inria.coming.codefeatures.Cntx;
-import fr.inria.coming.codefeatures.CodeFeatureDetector;
 import fr.inria.coming.codefeatures.CodeFeatures;
-import gumtree.spoon.AstComparator;
-import gumtree.spoon.diff.Diff;
-import gumtree.spoon.diff.operations.DeleteOperation;
-import gumtree.spoon.diff.operations.InsertOperation;
-import gumtree.spoon.diff.operations.MoveOperation;
-import gumtree.spoon.diff.operations.Operation;
-import gumtree.spoon.diff.operations.UpdateOperation;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.visitor.filter.LineFilter;
+import fr.inria.coming.codefeatures.FeatureAnalyzer;
 
 /**
  * Testing features on D4j
@@ -46,20 +32,20 @@ import spoon.reflect.visitor.filter.LineFilter;
  */
 public class FeaturesOnD4jTest {
 
-	private static final LineFilter FILTER = new LineFilter();
+	FeatureAnalyzer featureAnalyzer = new FeatureAnalyzer();
 
-	public JsonElement getJsonOfBugId(String diffId) {
+	private JsonElement getJsonOfBugId(String diffId) {
 		String input = "Defects4J_all_pairs/" + diffId;
 		File file = new File("./src/main/resources/" + input);
-		JsonElement resultjson = processDiff(file);
+		JsonElement resultjson = featureAnalyzer.processDiff(file);
 		return resultjson;
 	}
 
-	public static void asserFeatureValue(JsonElement resultjson, CodeFeatures name, Boolean b) {
+	private static void asserFeatureValue(JsonElement resultjson, CodeFeatures name, Boolean b) {
 		assertMarkedlAST(resultjson, name.name(), b);
 	}
 
-	public static void assertMarkedlAST(JsonElement resultjson, String name, Boolean b) {
+	private static void assertMarkedlAST(JsonElement resultjson, String name, Boolean b) {
 
 		System.out.println("**************** finding " + name);
 
@@ -97,7 +83,7 @@ public class FeaturesOnD4jTest {
 		assertEquals(b, found);
 	}
 
-	public static void asserFeatureValue(JsonElement resultjson, String typeProperty, CodeFeatures nameProperty,
+	private static void asserFeatureValue(JsonElement resultjson, String typeProperty, CodeFeatures nameProperty,
 			String elementname, Boolean b) {
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -140,109 +126,6 @@ public class FeaturesOnD4jTest {
 		assertEquals(b, found);
 	}
 
-	@SuppressWarnings("unchecked")
-	public JsonArray processDiff(File difffile) {
-		Map<String, Diff> diffOfcommit = new HashMap();
-		CodeFeatureDetector cresolver = new CodeFeatureDetector();
-		JsonArray filesArray = new JsonArray();
-		for (File fileModif : difffile.listFiles()) {
-			int i_hunk = 0;
-
-			if (".DS_Store".equals(fileModif.getName()))
-				continue;
-
-			String pathname = fileModif.getAbsolutePath() + File.separator + difffile.getName() + "_"
-					+ fileModif.getName();
-
-			File previousVersion = new File(pathname + "_s.java");
-			if (!previousVersion.exists()) {
-				pathname = pathname + "_" + i_hunk;
-				previousVersion = new File(pathname + "_s.java");
-				if (!previousVersion.exists())
-					// break;
-					continue;
-			}
-
-			JsonObject file = new JsonObject();
-			filesArray.add(file);
-			file.addProperty("file_name", fileModif.getName());
-			JsonArray changesArray = new JsonArray();
-			file.add("features", changesArray);
-
-			File postVersion = new File(pathname + "_t.java");
-			i_hunk++;
-			try {
-				AstComparator comparator = new AstComparator();
-
-				Diff diff = comparator.compare(previousVersion, postVersion);
-				if (diff == null) {
-					file.addProperty("status", "differror");
-					continue;
-				}
-
-				System.out.println("--diff: " + diff);
-
-				List<Operation> ops = diff.getRootOperations();
-				String key = fileModif.getParentFile().getName() + "_" + fileModif.getName();
-				diffOfcommit.put(key, diff);
-
-				for (Operation operation : ops) {
-					CtElement affectedCtElement = getBuggyElement(operation);
-					//
-					if (affectedCtElement != null) {
-						Cntx iContext = cresolver.retrieveCntx(affectedCtElement);
-						changesArray.add(iContext.toJSON());
-					}
-				}
-
-			} catch (Throwable e) {
-				System.out.println("error with " + previousVersion);
-				e.printStackTrace();
-				file.addProperty("status", "exception");
-			}
-
-		}
-		return filesArray;
-	}
-
-	private CtElement getBuggyElement(Operation operation) {
-
-		CtElement affectedCtElement = null;
-
-		if (operation instanceof MoveOperation) {
-
-			// Element to move in source
-			CtElement affectedMoved = operation.getSrcNode();
-
-			affectedCtElement = affectedMoved;
-
-		} else if (operation instanceof InsertOperation) {
-
-			CtElement oldLocation = ((InsertOperation) operation).getParent();
-
-			affectedCtElement = oldLocation;
-
-		} else if (operation instanceof DeleteOperation) {
-
-			CtElement oldLocation = operation.getSrcNode();
-
-			affectedCtElement = oldLocation;
-
-		} else if (operation instanceof UpdateOperation) {
-
-			CtElement oldLocation = operation.getSrcNode();
-
-			affectedCtElement = oldLocation;
-		}
-		// Let's find the parent statement
-		CtStatement parentLine = affectedCtElement.getParent(FILTER);
-		if (parentLine != null)
-			return parentLine;
-		// by default, we return the affected element
-		return affectedCtElement;
-
-	}
-
 	@Before
 	public void setUp() throws Exception {
 
@@ -254,12 +137,6 @@ public class FeaturesOnD4jTest {
 		Logger.getRootLogger().getLoggerRepository().resetConfiguration();
 		Logger.getRootLogger().addAppender(console);
 
-	}
-
-	public File getFile(String name) {
-		ClassLoader classLoader = getClass().getClassLoader();
-		File file = new File(classLoader.getResource(name).getFile());
-		return file;
 	}
 
 	@Test

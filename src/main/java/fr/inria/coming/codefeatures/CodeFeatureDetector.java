@@ -13,6 +13,7 @@ import fr.inria.astor.core.manipulation.synthesis.dynamoth.spoon.StaSynthBuilder
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.util.StringDistance;
 import fr.inria.coming.utils.MapCounter;
+import fr.inria.coming.utils.TimeChrono;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
@@ -67,6 +68,8 @@ public class CodeFeatureDetector {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void analyzeFeatures(CtElement element, Cntx<Object> context) {
 		// Vars in scope at the position of element
+		TimeChrono cr = new TimeChrono();
+		cr.start();
 		List<CtVariable> varsInScope = VariableResolver.searchVariablesInScope(element);
 		CtClass parentClass = null;
 		if (element instanceof CtClass)
@@ -77,47 +80,83 @@ public class CodeFeatureDetector {
 			log.error("Parent null, we dont analyze the features");
 			return;
 		}
+		List<CtStatement> statements = parentClass.getElements(new LineFilter());
+
+		log.debug("------Total vars  of " + ": " + cr.stopAndGetSeconds());
+
 		List allMethods = getAllMethodsFromClass(parentClass);
 		List<CtInvocation> invocationsFromClass = parentClass.getElements(e -> (e instanceof CtInvocation)).stream()
 				.map(CtInvocation.class::cast).collect(Collectors.toList());
+		log.debug("------Total methods of " + ": " + cr.stopAndGetSeconds());
 
 		putVarInContextInformation(context, varsInScope);
 
+		log.debug("------Total context of " + ": " + cr.stopAndGetSeconds());
+
 		List<CtVariableAccess> varsAffected = retrieveVariables(element);
+		log.debug("------Total vars of " + ": " + cr.stopAndGetSeconds());
+
 		analyzeV8_TypesVarsAffected(varsAffected, element, context);
+		log.debug("------Total v8 of " + ": " + cr.stopAndGetSeconds());
 		analyzeS1_AffectedAssigned(varsAffected, element, context);
-		analyzeS1_AffectedVariablesUsed(varsAffected, element, context);
-		analyzeS2_S5_SametypewithGuard(varsAffected, element, context, parentClass);
+		log.debug("------Total s1 of " + ": " + cr.stopAndGetSeconds());
+		analyzeS1_AffectedVariablesUsed(varsAffected, element, context, statements);
+		log.debug("------Total s1b of " + ": " + cr.stopAndGetSeconds());
+		analyzeS2_S5_SametypewithGuard(varsAffected, element, context, parentClass, statements);
+		log.debug("------Total s2 of " + ": " + cr.stopAndGetSeconds());
 		analyzeS3_TypeOfFaulty(element, context);
+		log.debug("------Total s3 of " + ": " + cr.stopAndGetSeconds());
 		analyzeS4_AffectedFielfs(varsAffected, element, context, parentClass);
+		log.debug("------Total s4 of " + ": " + cr.stopAndGetSeconds());
 		analyzeS6_M5_Method_Method_Features(element, context);
 
+		log.debug("------Total s6 of " + ": " + cr.stopAndGetSeconds());
 		analyzeV1_V6(varsAffected, element, context, allMethods, invocationsFromClass);
+		log.debug("------Total v1 of " + ": " + cr.stopAndGetSeconds());
 		analyzeV2_AffectedDistanceVarName(varsAffected, varsInScope, element, context);
+		log.debug("------Total v2 of " + ": " + cr.stopAndGetSeconds());
 		analyzeV3_AffectedHasConstant(varsAffected, element, context);
+		log.debug("------Total v3 of " + ": " + cr.stopAndGetSeconds());
 		analyzeV4(varsAffected, element, context);
+		log.debug("------Total  v4 of " + ": " + cr.stopAndGetSeconds());
 		analyzeV5_AffectedVariablesInTransformation(varsAffected, element, context);
+		log.debug("------Total v5 of " + ": " + cr.stopAndGetSeconds());
 
 		analyzeM1_eM2_M3_M4_SimilarMethod(element, context, parentClass, allMethods);
+		log.debug("------Total  Mx of " + ": " + cr.stopAndGetSeconds());
 
-		analyzeLE1_AffectedVariablesUsed(varsAffected, element, context, parentClass);
+		analyzeLE1_AffectedVariablesUsed(varsAffected, element, context, parentClass, statements);
+		log.debug("------Total le1 of " + ": " + cr.stopAndGetSeconds());
 		analyzeLE2_AffectedVariablesInMethod(varsAffected, element, context, allMethods, invocationsFromClass);
+		log.debug("------Total le2 of " + ": " + cr.stopAndGetSeconds());
 		analyzeLE3_PrimitiveWithCompatibleNotUsed(varsAffected, varsInScope, element, context);
+		log.debug("------Total le3  of " + ": " + cr.stopAndGetSeconds());
 		analyzeLE4_BooleanVarNotUsed(varsAffected, varsInScope, element, context);
+		log.debug("------Total  le4 of " + ": " + cr.stopAndGetSeconds());
 		analyzeLE5_BinaryInvolved(element, context);
+		log.debug("------Total le5  of " + ": " + cr.stopAndGetSeconds());
 		analyzeLE6_UnaryInvolved(element, context);
+		log.debug("------Total le6 of " + ": " + cr.stopAndGetSeconds());
 		analyzeLE7_VarDirectlyUsed(varsAffected, varsInScope, element, context);
+		log.debug("------Total le7 of " + ": " + cr.stopAndGetSeconds());
 		analyzeLE8_LocalVariablesVariablesUsed(varsAffected, element, context);
+		log.debug("------Total le8 of " + ": " + cr.stopAndGetSeconds());
 
 		analyzeC1_Constant(element, context, parentClass);
+		log.debug("------Total c1 of " + ": " + cr.stopAndGetSeconds());
 		analyzeC2_UseEnum(element, context, parentClass);
+		log.debug("------Total c2 of " + ": " + cr.stopAndGetSeconds());
 
 		analyzeAE1(element, context, allMethods, invocationsFromClass);
+		log.debug("------Total ae1 of " + ": " + cr.stopAndGetSeconds());
 
 		// Other features not enumerated
 		analyzeAffectedWithCompatibleTypes(varsAffected, varsInScope, element, context);
+		log.debug("------Total cp of " + ": " + cr.stopAndGetSeconds());
 		analyzeParentTypes(element, context);
+		log.debug("------Total py of " + ": " + cr.stopAndGetSeconds());
 		analyze_UseEnumAndConstants(element, context);
+		log.debug("------Total enum of " + ": " + cr.stopAndGetSeconds());
 	}
 
 	public List<CtVariableAccess> retrieveVariables(CtElement element) {
@@ -699,13 +738,13 @@ public class CodeFeatureDetector {
 	 */
 	@SuppressWarnings("rawtypes")
 	private void analyzeLE1_AffectedVariablesUsed(List<CtVariableAccess> varsAffected, CtElement element,
-			Cntx<Object> context, CtClass parentClass) {
+			Cntx<Object> context, CtClass parentClass, List<CtStatement> statements) {
 		try {
 
 			if (parentClass == null)
 				return;
 
-			List<CtStatement> statements = parentClass.getElements(new LineFilter());
+			// List<CtStatement> statements = parentClass.getElements(new LineFilter());
 
 			int similarUsedBefore = 0;
 
@@ -847,15 +886,13 @@ public class CodeFeatureDetector {
 	 */
 	@SuppressWarnings("rawtypes")
 	private void analyzeS1_AffectedVariablesUsed(List<CtVariableAccess> varsAffected, CtElement element,
-			Cntx<Object> context) {
+			Cntx<Object> context, List<CtStatement> statements) {
 		try {
 			CtExecutable methodParent = element.getParent(CtExecutable.class);
 
 			if (methodParent == null)
 				// the element is not in a method.
 				return;
-
-			List<CtStatement> statements = methodParent.getElements(new LineFilter());
 
 			int usedObjects = 0;
 			int notUsedObjects = 0;
@@ -937,7 +974,7 @@ public class CodeFeatureDetector {
 	}
 
 	private void analyzeS2_S5_SametypewithGuard(List<CtVariableAccess> varsAffected, CtElement element,
-			Cntx<Object> context, CtClass parentClass) {
+			Cntx<Object> context, CtClass parentClass, List<CtStatement> statements) {
 		try {
 			CtExecutable faultyMethodParent = element.getParent(CtExecutable.class);
 
@@ -945,16 +982,17 @@ public class CodeFeatureDetector {
 				// the element is not in a method.
 				return;
 
-			List<CtStatement> statements = parentClass.getElements(new LineFilter());
 			boolean hasPrimitiveSimilarTypeWithGuard = false;
 			boolean hasObjectSimilarTypeWithGuard = false;
 
 			// For each variable affected
 			for (CtVariableAccess variableAffected : varsAffected) {
+				// for (CtStatement aStatement : statements) {
 
 				// For each statement in the method (it includes the statements inside the
 				// blocks (then, while)!)
 				for (CtStatement aStatement : statements) {
+					// for (CtVariableAccess variableAffected : varsAffected) {
 
 					CtExecutable anotherStatmentMethodParent = aStatement.getParent(CtExecutable.class);
 
@@ -1746,25 +1784,29 @@ public class CodeFeatureDetector {
 	 */
 	public CtInvocation checkBooleanInvocationWithParameterReturn(List<CtInvocation> invocationsFromClass,
 			CtVariableAccess varAffected) {
-		// For each invocation found in the class
-		for (CtInvocation anInvocation : invocationsFromClass) {
 
-			// Check types
-			if (anInvocation.getType() != null && (anInvocation.getType().getSimpleName().equals("Boolean")
-					|| anInvocation.getType().unbox().toString().equals("boolean"))) {
+		try {
+			// For each invocation found in the class
+			for (CtInvocation anInvocation : invocationsFromClass) {
 
-				// For each argument in the invocation
-				for (Object anObjArgument : anInvocation.getArguments()) {
-					CtExpression anArgument = (CtExpression) anObjArgument;
+				// Check types
+				if (anInvocation.getType() != null && (anInvocation.getType().getSimpleName().equals("Boolean")
+						|| anInvocation.getType().unbox().toString().equals("boolean"))) {
 
-					// retrieve Var access
+					// For each argument in the invocation
+					for (Object anObjArgument : anInvocation.getArguments()) {
+						CtExpression anArgument = (CtExpression) anObjArgument;
 
-					List<CtVariableAccess> varReadFromArguments = VariableResolver.collectVariableRead(anArgument);
+						// retrieve Var access
 
-					for (CtVariableAccess aVarReadFrmArgument : varReadFromArguments) {
+						List<CtVariableAccess> varReadFromArguments = VariableResolver.collectVariableRead(anArgument);
 
-						if (compareTypes(varAffected.getType(), aVarReadFrmArgument.getType())) {
-							return anInvocation;
+						for (CtVariableAccess aVarReadFrmArgument : varReadFromArguments) {
+
+							if (compareTypes(varAffected.getType(), aVarReadFrmArgument.getType())) {
+								return anInvocation;
+							}
+
 						}
 
 					}
@@ -1772,6 +1814,7 @@ public class CodeFeatureDetector {
 				}
 
 			}
+		} catch (Exception ex) {
 
 		}
 		return null;
@@ -1831,8 +1874,8 @@ public class CodeFeatureDetector {
 			return t1 != null && t2 != null && (t1.toString().equals(t2.toString()) || t1.equals(t2)
 					|| t1.isSubtypeOf(t2) || t2.isSubtypeOf(t1));
 		} catch (Exception e) {
-			System.out.println("Error comparing types");
-			e.printStackTrace();
+			log.debug("Error comparing types");
+			log.debug(e);
 			return false;
 		}
 
