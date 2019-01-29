@@ -521,6 +521,44 @@ public class CodeFeatureDetectorTest {
 	}
 
 	@Test
+	public void testProperty_C1_case2() {
+
+		String content = "" + "class X {" //
+				+ " final float DDCONSTANT = 1.0f; " //
+
+				+ "public Object foo() {" //
+				+ " int ffii = 1;"//
+				+ "float fiii = 10.0f;"//
+				+ "return null;};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float fiii"))
+				.findFirst().get();
+		System.out.println(element);
+		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
+		Cntx cntx = cntxResolver.retrieveCntx(element);
+		// affected myzimilar
+		System.out.println(cntx.toJSON());
+		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.C1_SAME_TYPE_CONSTANT));
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int ffii "))
+				.findFirst().get();
+		System.out.println(element);
+		cntxResolver = new CodeFeatureDetector();
+		cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.C1_SAME_TYPE_CONSTANT));
+
+	}
+
+	@Test
 	public void testProperty_V3() {
 
 		String content = "" + "class X {" + //
@@ -1280,7 +1318,6 @@ public class CodeFeatureDetectorTest {
 
 		cntx = cntxResolver.retrieveCntx(element);
 		System.out.println(cntx.toJSON());
-		// not method involve
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.M5_MI_WITH_COMPATIBLE_VAR_TYPE));
 
 	}

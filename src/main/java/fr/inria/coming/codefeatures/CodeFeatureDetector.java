@@ -3,6 +3,7 @@ package fr.inria.coming.codefeatures;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -44,6 +45,7 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtPath;
@@ -87,13 +89,23 @@ public class CodeFeatureDetector {
 		List allMethods = getAllMethodsFromClass(parentClass);
 		List<CtInvocation> invocationsFromClass = parentClass.getElements(e -> (e instanceof CtInvocation)).stream()
 				.map(CtInvocation.class::cast).collect(Collectors.toList());
+
 		log.debug("------Total methods of " + ": " + cr.stopAndGetSeconds());
 
 		putVarInContextInformation(context, varsInScope);
 
 		log.debug("------Total context of " + ": " + cr.stopAndGetSeconds());
 
-		List<CtVariableAccess> varsAffected = retrieveVariables(element);
+		CtElement elementToStudy = retrieveElementToStudy(element);
+		List<CtVariableAccess> varsAffected = VariableResolver.collectVariableRead(elementToStudy);
+
+		// Get all invocations inside the faulty element
+		List<CtInvocation> invocations = elementToStudy.getElements(e -> (e instanceof CtInvocation)).stream()
+				.map(CtInvocation.class::cast).collect(Collectors.toList());
+
+		List<CtLiteral> literalsFromFaultyLine = elementToStudy.getElements(e -> (e instanceof CtLiteral)).stream()
+				.map(CtLiteral.class::cast).collect(Collectors.toList());
+
 		log.debug("------Total vars of " + ": " + cr.stopAndGetSeconds());
 
 		analyzeV8_TypesVarsAffected(varsAffected, element, context);
@@ -122,10 +134,6 @@ public class CodeFeatureDetector {
 		analyzeV5_AffectedVariablesInTransformation(varsAffected, element, context);
 		log.debug("------Total v5 of " + ": " + cr.stopAndGetSeconds());
 
-		// Get all invocations inside the faulty element
-		List<CtInvocation> invocations = element.getElements(e -> (e instanceof CtInvocation)).stream()
-				.map(CtInvocation.class::cast).collect(Collectors.toList());
-
 		analyzeM1_eM2_M3_M4_SimilarMethod(element, context, parentClass, allMethods, invocations);
 		analyzeM5(element, context, invocations, varsInScope);
 
@@ -148,7 +156,7 @@ public class CodeFeatureDetector {
 		analyzeLE8_LocalVariablesVariablesUsed(varsAffected, element, context);
 		log.debug("------Total le8 of " + ": " + cr.stopAndGetSeconds());
 
-		analyzeC1_Constant(element, context, parentClass);
+		analyzeC1_Constant(element, context, parentClass, varsInScope, varsAffected, literalsFromFaultyLine);
 		log.debug("------Total c1 of " + ": " + cr.stopAndGetSeconds());
 		analyzeC2_UseEnum(element, context, parentClass);
 		log.debug("------Total c2 of " + ": " + cr.stopAndGetSeconds());
@@ -197,7 +205,8 @@ public class CodeFeatureDetector {
 
 	}
 
-	public List<CtVariableAccess> retrieveVariables(CtElement element) {
+	@Deprecated
+	public List<CtVariableAccess> retrieveVariablesInsideElement(CtElement element) {
 
 		if (element instanceof CtIf) {
 			return VariableResolver.collectVariableRead(((CtIf) element).getCondition());
@@ -214,25 +223,61 @@ public class CodeFeatureDetector {
 
 	}
 
-	private void analyzeC1_Constant(CtElement element, Cntx<Object> context, CtClass parentClass) {
+	public CtElement retrieveElementToStudy(CtElement element) {
+
+		if (element instanceof CtIf) {
+			return (((CtIf) element).getCondition());
+		} else if (element instanceof CtWhile) {
+			return (((CtWhile) element).getLoopingExpression());
+		} else if (element instanceof CtFor) {
+			return (((CtFor) element).getExpression());
+		} else if (element instanceof CtDo) {
+			return (((CtDo) element).getLoopingExpression());
+		} else if (element instanceof CtConditional) {
+			return (((CtConditional) element).getCondition());
+		} else
+			return (element);
+
+	}
+
+	private void analyzeC1_Constant(CtElement element, Cntx<Object> context, CtClass parentClass,
+			List<CtVariable> varsInScope, List<CtVariableAccess> varsAffected, List<CtLiteral> literalsFromFaultyLine) {
 		try {
 			boolean hasSimilarLiterals = false;
-			// Get all invocations inside the faulty element
-			List<CtLiteral> literalsFromFaultyLine = element.getElements(e -> (e instanceof CtLiteral)).stream()
+
+			List<CtExpression> allConstant = new ArrayList();
+
+			allConstant.addAll(literalsFromFaultyLine);
+
+			// we filter all variables that are constant
+			List<CtVariableAccess> contantVars = varsAffected.stream().filter(e -> isConstantVariableAccess(e))
+					.collect(Collectors.toList());
+
+			allConstant.addAll(contantVars);
+
+			List<CtLiteral> literalsFromClass = parentClass.getElements(e -> (e instanceof CtLiteral)).stream()
 					.map(CtLiteral.class::cast).collect(Collectors.toList());
 
-			if (literalsFromFaultyLine.size() > 0) {
+			List<CtTypedElement> constantVarsInScope = varsInScope.stream().filter(e -> isConstantVariableAccess(e))
+					.map(CtTypedElement.class::cast).collect(Collectors.toList());
 
-				for (CtLiteral literalFormFaulty : literalsFromFaultyLine) {
+			List<CtTypedElement> allTypeInScope = new ArrayList();
+			allTypeInScope.addAll(constantVarsInScope);
+			allTypeInScope.addAll(literalsFromClass);
 
-					List<CtLiteral> literalsFromClass = parentClass.getElements(e -> (e instanceof CtLiteral)).stream()
-							.map(CtLiteral.class::cast).collect(Collectors.toList());
-					for (CtLiteral anotherLiteral : literalsFromClass) {
+			if (allConstant.size() > 0) {
+
+				for (CtExpression literalFormFaulty : allConstant) {
+
+					for (CtTypedElement anotherConstant : allTypeInScope) {
 						if (// Compare types
-						compareTypes(anotherLiteral.getType(), literalFormFaulty.getType())
-								// Compare value
-								&& !(anotherLiteral.getValue() != null && literalFormFaulty.getValue() != null
-										&& anotherLiteral.getValue().equals(literalFormFaulty.getValue()))) {
+						compareTypes(anotherConstant.getType(), literalFormFaulty.getType())
+								&& !anotherConstant.toString().equals(literalFormFaulty.toString())) {
+
+							// Compare value
+							// && !(anotherLiteral.getValue() != null && literalFormFaulty.getValue() !=
+							// null
+							// && anotherLiteral.getValue().equals(literalFormFaulty.getValue()))) {
 							hasSimilarLiterals = true;
 							break;
 						}
@@ -245,6 +290,35 @@ public class CodeFeatureDetector {
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static boolean isConstantVariableAccess(CtVariableAccess ctVariableAccess) {
+		if (ctVariableAccess.getVariable() != null) {
+			Set<ModifierKind> modifiers = ctVariableAccess.getVariable().getModifiers();
+			if (modifiers.contains(ModifierKind.FINAL)) {
+				return true;
+			} else {
+				String simpleName = ctVariableAccess.getVariable().getSimpleName();
+				if (simpleName.toUpperCase().equals(simpleName)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public static boolean isConstantVariableAccess(CtVariable ctVariable) {
+		Set<ModifierKind> modifiers = ctVariable.getModifiers();
+		if (modifiers.contains(ModifierKind.FINAL)) {
+			return true;
+		} else {
+			String simpleName = ctVariable.getSimpleName();
+			if (simpleName.toUpperCase().equals(simpleName)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private final class ExpressionCapturerScanner extends CtScanner {
