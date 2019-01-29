@@ -16,6 +16,7 @@ import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.DiffImpl;
 import gumtree.spoon.diff.operations.DeleteOperation;
 import gumtree.spoon.diff.operations.InsertOperation;
+import gumtree.spoon.diff.operations.MoveOperation;
 import gumtree.spoon.diff.operations.Operation;
 import gumtree.spoon.diff.operations.UpdateOperation;
 
@@ -57,7 +58,7 @@ public class SecAnalysis {
 				JsonObject ast_dst = jsongen.getJSONasJsonObject(((DiffImpl) iDiff).getContext(), dest);
 				change.add("ast_node_updated_post", ast_dst);
 
-			} else if (operation instanceof InsertOperation) {
+			} else if (operation instanceof MoveOperation) {
 				JsonObject ast = jsongen.getJSONasJsonObject(((DiffImpl) iDiff).getContext(),
 						operation.getAction().getNode());
 				change.add("ast_node_moved", ast);

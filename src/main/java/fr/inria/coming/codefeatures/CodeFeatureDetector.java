@@ -132,7 +132,7 @@ public class CodeFeatureDetector {
 		analyzeLE3_PrimitiveWithCompatibleNotUsed(varsAffected, varsInScope, element, context);
 		log.debug("------Total le3  of " + ": " + cr.stopAndGetSeconds());
 		analyzeLE4_BooleanVarNotUsed(varsAffected, varsInScope, element, context);
-		log.debug("------Total  le4 of " + ": " + cr.stopAndGetSeconds());
+		log.debug("------Total le4 of " + ": " + cr.stopAndGetSeconds());
 		analyzeLE5_BinaryInvolved(element, context);
 		log.debug("------Total le5  of " + ": " + cr.stopAndGetSeconds());
 		analyzeLE6_UnaryInvolved(element, context);
