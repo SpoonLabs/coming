@@ -1238,7 +1238,55 @@ public class CodeFeatureDetectorTest {
 	}
 
 	@Test
-	public void testProperty_M5_returnprimitive() {
+	public void testProperty_M5_invocation_comp_var() {
+
+		String content = "" + "class X {" //
+				+ "public boolean gvarb =false;" //
+				+ "public Object foo() {" //
+				+ "boolean avarb =false;" //
+				+ "boolean bvarb =false;" //
+				+ "int mysimilar = 1;"//
+				+ "int myzimilar = (gvarb && avarb && bvarb)? 2:1;"// Use of two booleans
+				+ "float fiii =  getFloat(1.0f); "//
+				+ "double dother = 0;" //
+				+ "int f1 =  getConvertFloat(fiii);" //
+				+ "int f2 =  mysimilar + myzimilar + f1 ;" //
+				+ "if(avarb && gvarb){};" //
+				+ "return (avarb && bvarb)? 2: 1;" + "}"//
+				+ "public float getFloat(Double d){return 1.0;}"//
+				+ "public float getFloat(float f){return 1.0;}"//
+				+ "public int getConvertFloat(float f){return 1;}"//
+				+ "};";
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+		CtElement element = method.getBody().getStatements().stream()
+				.filter(e -> e.toString().startsWith("float fiii =")).findFirst().get();
+		System.out.println(element);
+
+		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
+		Cntx cntx = cntxResolver.retrieveCntx(element);
+		System.out.println(cntx.toJSON());
+		// not method involve
+		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.M5_MI_WITH_COMPATIBLE_VAR_TYPE));
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int f1")).findFirst()
+				.get();
+
+		cntx = cntxResolver.retrieveCntx(element);
+		System.out.println(cntx.toJSON());
+		// not method involve
+		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.M5_MI_WITH_COMPATIBLE_VAR_TYPE));
+
+	}
+
+	@Test
+	public void testProperty_M6_returnprimitive() {
 
 		String content = "" + "class X {" //
 				+ "public boolean gvarb =false;" //
@@ -1274,7 +1322,7 @@ public class CodeFeatureDetectorTest {
 		Cntx cntx = cntxResolver.retrieveCntx(element);
 		System.out.println(cntx.toJSON());
 		// not method involve
-		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.M5_RETURN_PRIMITIVE));
+		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.M6_RETURN_PRIMITIVE));
 
 		method = (CtMethod) type.getMethods().stream()
 				.filter(e -> ((CtMethod) e).getSimpleName().equals("getConvertFloat")).findFirst().get();
@@ -1285,7 +1333,7 @@ public class CodeFeatureDetectorTest {
 		cntxResolver = new CodeFeatureDetector();
 		cntx = cntxResolver.retrieveCntx(element);
 		// all variables used
-		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.M5_RETURN_PRIMITIVE));
+		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.M6_RETURN_PRIMITIVE));
 	}
 
 	@Test

@@ -235,8 +235,10 @@ public enum CodeFeatures {
 	// For each method invocation, whether the types of some of its parameters are
 	// same or compatible with the return type of the method.
 	M4_PARAMETER_RETURN_COMPABILITY,
+//	 For each method invocation, whether has variables in scope whose types are the same or compatible with the return types of the method invocation. I am not sure whether it is easy to add this feature
+	M5_MI_WITH_COMPATIBLE_VAR_TYPE,
 	// For each method invocation, whether the return value of it is primitive
-	M5_RETURN_PRIMITIVE,
+	M6_RETURN_PRIMITIVE,
 	// C1: For each constantc, whether exist other constants used inthe faulty class
 	// whose types are the same (or type compatible)withcbut values are different
 	C1_SAME_TYPE_CONSTANT,

@@ -122,7 +122,13 @@ public class CodeFeatureDetector {
 		analyzeV5_AffectedVariablesInTransformation(varsAffected, element, context);
 		log.debug("------Total v5 of " + ": " + cr.stopAndGetSeconds());
 
-		analyzeM1_eM2_M3_M4_SimilarMethod(element, context, parentClass, allMethods);
+		// Get all invocations inside the faulty element
+		List<CtInvocation> invocations = element.getElements(e -> (e instanceof CtInvocation)).stream()
+				.map(CtInvocation.class::cast).collect(Collectors.toList());
+
+		analyzeM1_eM2_M3_M4_SimilarMethod(element, context, parentClass, allMethods, invocations);
+		analyzeM5(element, context, invocations, varsInScope);
+
 		log.debug("------Total  Mx of " + ": " + cr.stopAndGetSeconds());
 
 		analyzeLE1_AffectedVariablesUsed(varsAffected, element, context, parentClass, statements);
@@ -157,6 +163,38 @@ public class CodeFeatureDetector {
 		log.debug("------Total py of " + ": " + cr.stopAndGetSeconds());
 		analyze_UseEnumAndConstants(element, context);
 		log.debug("------Total enum of " + ": " + cr.stopAndGetSeconds());
+	}
+
+	private void analyzeM5(CtElement element, Cntx<Object> context, List<CtInvocation> invocations,
+			List<CtVariable> varsInScope) {
+
+		boolean hasMIcompatibleVar = false;
+		try {
+			for (CtInvocation invocation : invocations) {
+				boolean currentInvocationWithCompVar = false;
+				CtTypeReference type = invocation.getType();
+
+				if (type != null) {
+					// for the variables in scope
+					for (CtVariable varInScope : varsInScope) {
+						if (compareTypes(type, varInScope.getType())) {
+							hasMIcompatibleVar = true;
+							currentInvocationWithCompVar = true;
+						}
+					}
+
+				}
+				writeGroupedByVar(context,
+						((invocation.getExecutable() != null) ? invocation.getExecutable().getSimpleName()
+								: invocation.toString()),
+						CodeFeatures.M5_MI_WITH_COMPATIBLE_VAR_TYPE, currentInvocationWithCompVar,
+						"FEATURES_METHOD_INVOCATIONS");
+
+			}
+		} catch (Exception e) {
+		}
+		context.put(CodeFeatures.M5_MI_WITH_COMPATIBLE_VAR_TYPE, hasMIcompatibleVar);
+
 	}
 
 	public List<CtVariableAccess> retrieveVariables(CtElement element) {
@@ -2087,7 +2125,7 @@ public class CodeFeatureDetector {
 	 * @param context
 	 */
 	private void analyzeM1_eM2_M3_M4_SimilarMethod(CtElement element, Cntx<Object> context, CtClass parentClass,
-			List allMethodsFromClass) {
+			List allMethodsFromClass, List<CtInvocation> invocations) {
 		try {
 
 			// For each method invocation, whether the method has overloaded method
@@ -2106,10 +2144,6 @@ public class CodeFeatureDetector {
 			// For each method invocation, whether the types of some of its parameters are
 			// same or compatible with the return type of the method.
 			boolean m4anyhasCompatibleParameterAndReturnSameMethod = false;
-
-			// Get all invocations inside the faulty element
-			List<CtInvocation> invocations = element.getElements(e -> (e instanceof CtInvocation)).stream()
-					.map(CtInvocation.class::cast).collect(Collectors.toList());
 
 			for (CtInvocation invocation : invocations) {
 				CtExecutable minvokedInAffected = invocation.getExecutable().getDeclaration();
@@ -2134,8 +2168,6 @@ public class CodeFeatureDetector {
 						m4methodHasCompatibleParameterAndReturnSameMethod = true;
 					}
 				}
-
-				// List allMethodsFromClass = getAllMethodsFromClass(parentClass);
 
 				// For each method in the class
 				for (Object omethod : allMethodsFromClass) {
@@ -2343,7 +2375,7 @@ public class CodeFeatureDetector {
 				context.put(CodeFeatures.METHOD_RETURN_TYPE,
 						(parentMethod.getType() != null) ? parentMethod.getType().getQualifiedName() : null);
 
-				context.put(CodeFeatures.M5_RETURN_PRIMITIVE,
+				context.put(CodeFeatures.M6_RETURN_PRIMITIVE,
 						(parentMethod.getType() != null) ? parentMethod.getType().isPrimitive() : null);
 				// Param
 				List<CtParameter> parameters = parentMethod.getParameters();
