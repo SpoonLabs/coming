@@ -256,6 +256,11 @@ Example, the previous json file shows
 which means that there are 2 changes that update binary operators inside an if condition (i.e., the parent).
 
 
+## Code Features
+
+Coming has an option to compute the features associated to the code changed by a commit.
+This functionality can be used with the argument `-mode features`.
+Coming writes in the folder specified in the `-output` a JSON file for each commit.
 
 
 # Filtering Commits
