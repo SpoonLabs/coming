@@ -62,7 +62,12 @@ public abstract class RevisionNavigationExperiment<Data extends IRevision> {
 		if (ComingProperties.getPropertyBoolean("save_result_revision_analysis")) {
 			allResults.put(element, resultAllAnalyzed);
 		}
+		if (ComingProperties.getPropertyBoolean("outputperrevision")) {
 
+			for (IOutput out : this.getOutputProcessors()) {
+				out.generateRevisionOutput(resultAllAnalyzed);
+			}
+		}
 	}
 
 	protected FinalResult processEnd() {

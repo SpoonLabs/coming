@@ -100,4 +100,9 @@ public class JSonChangeFrequencyOutput implements IOutput {
 			frequencyArray.add(singlediff);
 		}
 	}
+
+	@Override
+	public void generateRevisionOutput(RevisionResult resultAllAnalyzed) {
+
+	}
 }

@@ -114,4 +114,9 @@ public class JSonPatternInstanceOutput implements IOutput {
 						: "null");
 		return op;
 	}
+
+	@Override
+	public void generateRevisionOutput(RevisionResult resultAllAnalyzed) {
+
+	}
 }
