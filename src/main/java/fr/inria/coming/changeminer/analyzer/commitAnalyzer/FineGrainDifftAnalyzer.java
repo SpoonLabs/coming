@@ -56,7 +56,7 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 
 		Map<String, Diff> diffOfFiles = new HashMap<>();
 
-		System.out.println("\n*****\nCommit: " + revision.getName());
+		log.info("\n*****\nCommit: " + revision.getName());
 
 		for (IRevisionPair<String> fileFromRevision : javaFiles) {
 
@@ -143,11 +143,11 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 		try {
 			resukltDiff = future.get(30, TimeUnit.SECONDS);
 		} catch (InterruptedException e) { // <-- possible error cases
-			System.out.println("job was interrupted");
+			log.error("job was interrupted");
 		} catch (ExecutionException e) {
-			System.out.println("caught exception: " + e.getCause());
+			log.error("caught exception: " + e.getCause());
 		} catch (TimeoutException e) {
-			System.out.println("timeout");
+			log.error("timeout");
 		}
 
 		executorService.shutdown();

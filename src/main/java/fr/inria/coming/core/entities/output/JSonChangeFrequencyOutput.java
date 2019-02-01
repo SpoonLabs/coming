@@ -29,7 +29,7 @@ public class JSonChangeFrequencyOutput implements IOutput {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public void generateOutput(FinalResult finalResult) {
+	public void generateFinalOutput(FinalResult finalResult) {
 
 		if (finalResult == null)
 			return;

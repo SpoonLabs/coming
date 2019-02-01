@@ -175,7 +175,7 @@ public class ComingMain {
 
 		// RESULTS:
 		for (IOutput out : experiment.getOutputProcessors()) {
-			out.generateOutput(result);
+			out.generateFinalOutput(result);
 		}
 
 		return result;

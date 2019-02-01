@@ -25,7 +25,7 @@ import gumtree.spoon.diff.operations.Operation;
 public class JSonPatternInstanceOutput implements IOutput {
 
 	@Override
-	public void generateOutput(FinalResult finalResult) {
+	public void generateFinalOutput(FinalResult finalResult) {
 
 		System.out.println("JSON output");
 		JsonObject root = new JsonObject();

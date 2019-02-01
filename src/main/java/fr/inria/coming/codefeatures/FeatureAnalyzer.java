@@ -1,6 +1,7 @@
 package fr.inria.coming.codefeatures;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,9 +11,11 @@ import org.apache.log4j.Logger;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.engine.Analyzer;
 import fr.inria.coming.core.entities.AnalysisResult;
+import fr.inria.coming.core.entities.DiffResult;
 import fr.inria.coming.core.entities.RevisionResult;
 import gumtree.spoon.AstComparator;
 import gumtree.spoon.diff.Diff;
@@ -31,14 +34,50 @@ import spoon.reflect.visitor.filter.LineFilter;
  *
  */
 public class FeatureAnalyzer implements Analyzer<IRevision> {
-	private static final LineFilter FILTER = new LineFilter();
 
 	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
+
+	private static final LineFilter FILTER = new LineFilter();
+
+	protected CodeFeatureDetector cresolver = new CodeFeatureDetector();
+
+	@Override
+	public AnalysisResult analyze(IRevision revision, RevisionResult previousResults) {
+
+		AnalysisResult resultFromDiffAnalysis = previousResults.getResultFromClass(FineGrainDifftAnalyzer.class);
+
+		if (resultFromDiffAnalysis == null) {
+			System.err.println("Error Diff must be executed before");
+			throw new IllegalArgumentException("Error: missing diff");
+		}
+
+		DiffResult diffResut = (DiffResult) resultFromDiffAnalysis;
+		List<Cntx> allContext = new ArrayList<>();
+
+		for (Object value : diffResut.getDiffOfFiles().values()) {
+
+			Diff diff = (Diff) value;
+
+			List<Operation> ops = diff.getRootOperations();
+
+			for (Operation operation : ops) {
+				CtElement affectedCtElement = getLeftElement(operation);
+
+				if (affectedCtElement != null) {
+					Cntx iContext = cresolver.analyzeFeatures(affectedCtElement);
+					allContext.add(iContext);
+				}
+
+			}
+		}
+
+		return new FeaturesResult(revision, allContext);
+	}
 
 	@SuppressWarnings("unchecked")
 	public JsonArray processFilesPair(File pairFolder) {
 		Map<String, Diff> diffOfcommit = new HashMap();
-		CodeFeatureDetector cresolver = new CodeFeatureDetector();
+
 		JsonArray filesArray = new JsonArray();
 		for (File fileModif : pairFolder.listFiles()) {
 			int i_hunk = 0;
@@ -57,15 +96,16 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 					continue;
 			}
 
-			JsonObject file = new JsonObject();
-			filesArray.add(file);
-			file.addProperty("file_name", fileModif.getName());
-			JsonArray changesArray = new JsonArray();
-			file.add("features", changesArray);
-
 			File postVersion = new File(pathname + "_t.java");
 			i_hunk++;
+
+			JsonObject file = new JsonObject();
 			try {
+				filesArray.add(file);
+				file.addProperty("file_name", fileModif.getName());
+				JsonArray changesArray = new JsonArray();
+				file.add("features", changesArray);
+
 				AstComparator comparator = new AstComparator();
 
 				Diff diff = comparator.compare(previousVersion, postVersion);
@@ -141,12 +181,6 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 		// by default, we return the affected element
 		return affectedCtElement;
 
-	}
-
-	@Override
-	public AnalysisResult analyze(IRevision input, RevisionResult previousResults) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

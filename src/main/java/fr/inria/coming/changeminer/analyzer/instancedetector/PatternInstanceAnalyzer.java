@@ -12,6 +12,11 @@ import fr.inria.coming.core.entities.DiffResult;
 import fr.inria.coming.core.entities.RevisionResult;
 import gumtree.spoon.diff.Diff;
 
+/**
+ * 
+ * @author Matias Martinez
+ *
+ */
 public class PatternInstanceAnalyzer implements Analyzer {
 
 	ChangePatternSpecification patternToMine = null;

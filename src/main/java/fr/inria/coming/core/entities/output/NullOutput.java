@@ -12,7 +12,7 @@ import fr.inria.coming.core.entities.interfaces.IOutput;
 public class NullOutput implements IOutput {
 
 	@Override
-	public void generateOutput(FinalResult finalResult) {
+	public void generateFinalOutput(FinalResult finalResult) {
 
 	}
 

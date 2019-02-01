@@ -9,6 +9,6 @@ import fr.inria.coming.changeminer.entity.FinalResult;
  */
 public interface IOutput {
 
-	public void generateOutput(FinalResult finalResult);
+	public void generateFinalOutput(FinalResult finalResult);
 
 }
