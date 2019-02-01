@@ -11,8 +11,14 @@ import fr.inria.coming.core.entities.RevisionResult;
  */
 public interface Analyzer<T extends IRevision> {
 
-	public AnalysisResult analyze(T input);
-
+	/**
+	 * Analyze the input and return the results
+	 * 
+	 * @param input           input to be analyzer
+	 * @param previousResults results of previous analysis that can be used in case
+	 *                        of doing a chain of analysis
+	 * @return result of the analysis
+	 */
 	public AnalysisResult analyze(T input, RevisionResult previousResults);
 
 }

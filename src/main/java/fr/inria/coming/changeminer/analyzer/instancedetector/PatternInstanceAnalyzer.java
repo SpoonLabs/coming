@@ -30,12 +30,6 @@ public class PatternInstanceAnalyzer implements Analyzer {
 	}
 
 	@Override
-	public AnalysisResult analyze(IRevision input) {
-
-		throw new IllegalArgumentException("This analyzer needs results (i.e., the diff) from previous processors ");
-	}
-
-	@Override
 	public AnalysisResult analyze(IRevision input, RevisionResult previousResults) {
 
 		AnalysisResult resultFromDiffAnalysis = previousResults.getResultFromClass(FineGrainDifftAnalyzer.class);

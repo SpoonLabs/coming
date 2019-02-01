@@ -50,7 +50,6 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 	 * Analyze a commit finding instances of changes return a Map<FileCommit, List>
 	 */
 	@SuppressWarnings("rawtypes")
-	@Override
 	public AnalysisResult<IRevision> analyze(IRevision revision) {
 
 		List<IRevisionPair> javaFiles = revision.getChildren();
