@@ -4,6 +4,11 @@ import java.util.HashMap;
 
 import fr.inria.coming.core.engine.Analyzer;
 
+/**
+ * 
+ * @author Matias Martinez
+ *
+ */
 public class RevisionResult extends HashMap<String, AnalysisResult> {
 
 	public AnalysisResult getResultFromClass(Class _class) {

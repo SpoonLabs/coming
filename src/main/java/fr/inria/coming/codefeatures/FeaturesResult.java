@@ -1,6 +1,6 @@
 package fr.inria.coming.codefeatures;
 
-import java.util.List;
+import com.google.gson.JsonElement;
 
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.entities.AnalysisResult;
@@ -12,18 +12,18 @@ import fr.inria.coming.core.entities.AnalysisResult;
  */
 public class FeaturesResult extends AnalysisResult<IRevision> {
 
-	List<Cntx> features = null;
+	JsonElement features = null;
 
-	public FeaturesResult(IRevision analyzed, List<Cntx> features) {
+	public FeaturesResult(IRevision analyzed, JsonElement features) {
 		super(analyzed);
 		this.features = features;
 	}
 
-	public List<Cntx> getFeatures() {
+	public JsonElement getFeatures() {
 		return features;
 	}
 
-	public void setFeatures(List<Cntx> features) {
+	public void setFeatures(JsonElement features) {
 		this.features = features;
 	}
 

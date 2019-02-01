@@ -1,7 +1,6 @@
 package fr.inria.coming.codefeatures;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,28 +49,35 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 			System.err.println("Error Diff must be executed before");
 			throw new IllegalArgumentException("Error: missing diff");
 		}
-
+		JsonArray filesArray = new JsonArray();
 		DiffResult diffResut = (DiffResult) resultFromDiffAnalysis;
-		List<Cntx> allContext = new ArrayList<>();
 
-		for (Object value : diffResut.getDiffOfFiles().values()) {
-
-			Diff diff = (Diff) value;
+		for (Object nameFile : diffResut.getDiffOfFiles().keySet()) {
+			Diff diff = (Diff) diffResut.getDiffOfFiles().get(nameFile);
 
 			List<Operation> ops = diff.getRootOperations();
+
+			JsonObject file = new JsonObject();
+
+			filesArray.add(file);
+			file.addProperty("file_name", nameFile.toString());
+			JsonArray changesArray = new JsonArray();
+			file.add("features", changesArray);
 
 			for (Operation operation : ops) {
 				CtElement affectedCtElement = getLeftElement(operation);
 
 				if (affectedCtElement != null) {
 					Cntx iContext = cresolver.analyzeFeatures(affectedCtElement);
-					allContext.add(iContext);
+					// allContext.add(iContext);
+					changesArray.add(iContext.toJSON());
 				}
 
 			}
 		}
 
-		return new FeaturesResult(revision, allContext);
+		return new FeaturesResult(revision, filesArray);
+
 	}
 
 	@SuppressWarnings("unchecked")

@@ -24,12 +24,14 @@ import fr.inria.coming.changeminer.entity.ActionType;
 import fr.inria.coming.changeminer.entity.EntityTypeSpoon;
 import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
+import fr.inria.coming.codefeatures.FeatureAnalyzer;
 import fr.inria.coming.core.engine.Analyzer;
 import fr.inria.coming.core.engine.RevisionNavigationExperiment;
 import fr.inria.coming.core.engine.files.FileNavigationExperiment;
 import fr.inria.coming.core.engine.git.GITRepositoryInspector;
 import fr.inria.coming.core.entities.interfaces.IFilter;
 import fr.inria.coming.core.entities.interfaces.IOutput;
+import fr.inria.coming.core.entities.output.FeaturesOutput;
 import fr.inria.coming.core.entities.output.JSonChangeFrequencyOutput;
 import fr.inria.coming.core.entities.output.JSonPatternInstanceOutput;
 import fr.inria.coming.core.entities.output.StdOutput;
@@ -219,6 +221,13 @@ public class ComingMain {
 
 				// By default JSON output of pattern instances
 				experiment.getOutputProcessors().add(new JSonPatternInstanceOutput());
+
+			} else if ("features".equals(mode)) {
+				experiment.getAnalyzers().clear();
+				experiment.getAnalyzers().add(new FineGrainDifftAnalyzer());
+				experiment.getAnalyzers().add(new FeatureAnalyzer());
+
+				experiment.getOutputProcessors().add(new FeaturesOutput());
 
 			} else {
 				// LOAD Analyzers from command

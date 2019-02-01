@@ -55,7 +55,6 @@ public class JSonChangeFrequencyOutput implements IOutput {
 			}
 
 		}
-		// System.out.println("counter: " + counter.sorted());
 
 		JsonObject root = new JsonObject();
 
