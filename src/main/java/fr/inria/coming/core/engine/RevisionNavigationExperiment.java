@@ -67,7 +67,13 @@ public abstract class RevisionNavigationExperiment<Data extends IRevision> {
 
 	protected FinalResult processEnd() {
 
-		return new FinalResult(allResults);
+		FinalResult finalResult = new FinalResult(allResults);
+
+		for (IOutput out : this.getOutputProcessors()) {
+			out.generateFinalOutput(finalResult);
+		}
+
+		return finalResult;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

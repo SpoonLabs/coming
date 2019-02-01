@@ -173,11 +173,6 @@ public class ComingMain {
 		// EXECUTION:
 		FinalResult result = experiment.analyze();
 
-		// RESULTS:
-		for (IOutput out : experiment.getOutputProcessors()) {
-			out.generateFinalOutput(result);
-		}
-
 		return result;
 	}
 
