@@ -8,11 +8,10 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
-import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
-import fr.inria.astor.core.manipulation.synthesis.dynamoth.spoon.StaSynthBuilder;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.util.StringDistance;
+import fr.inria.coming.main.ComingProperties;
 import fr.inria.coming.utils.MapCounter;
 import fr.inria.coming.utils.TimeChrono;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -56,7 +55,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.LineFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.reflect.code.CtVariableReadImpl;
 
 /**
  * 
@@ -68,7 +66,9 @@ public class CodeFeatureDetector {
 	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void analyzeFeatures(CtElement element, Cntx<Object> context) {
+	public Cntx<?> analyzeFeatures(CtElement element) {
+		Cntx<Object> context = new Cntx<>(determineKey(element));
+
 		// Vars in scope at the position of element
 		TimeChrono cr = new TimeChrono();
 		cr.start();
@@ -80,7 +80,7 @@ public class CodeFeatureDetector {
 			parentClass = element.getParent(CtClass.class);
 		if (parentClass == null) {
 			log.error("Parent null, we dont analyze the features");
-			return;
+			return null;
 		}
 		List<CtStatement> statements = parentClass.getElements(new LineFilter());
 
@@ -171,6 +171,8 @@ public class CodeFeatureDetector {
 		log.debug("------Total py of " + ": " + cr.stopAndGetSeconds());
 		analyze_UseEnumAndConstants(element, context);
 		log.debug("------Total enum of " + ": " + cr.stopAndGetSeconds());
+
+		return context;
 	}
 
 	private void analyzeM5(CtElement element, Cntx<Object> context, List<CtInvocation> invocations,
@@ -345,52 +347,8 @@ public class CodeFeatureDetector {
 		}
 	}
 
-	public Cntx<?> retrieveCntx(ModificationPoint modificationPoint) {
-		return retrieveCntx(modificationPoint.getCodeElement());
-	}
-
-	public Cntx<?> retrievePatchCntx(CtElement element) {
-		Cntx<Object> patchcontext = new Cntx<>(determineKey(element));
-
-		patchcontext.put(CodeFeatures.PATCH_CODE_ELEMENT, element.toString());
-
-		CtElement stmt = element.getParent(CtStatement.class);
-		if (stmt == null)
-			stmt = element.getParent(CtMethod.class);
-		patchcontext.put(CodeFeatures.PATCH_CODE_STATEMENT, (stmt != null) ? element.toString() : null);
-
-		retrieveType(element, patchcontext);
-		retrievePath(element, patchcontext);
-
-		return patchcontext;
-	}
-
 	@SuppressWarnings("unused")
-	public Cntx<?> retrieveBuggy(CtElement element) {
-
-		Cntx<Object> context = new Cntx<>(determineKey(element));
-
-		retrievePath(element, context);
-		retrieveType(element, context);
-
-		//
-		context.put(CodeFeatures.CODE, element.toString());
-
-		CtElement stmt = element.getParent(CtStatement.class);
-		if (stmt == null)
-			stmt = element.getParent(CtMethod.class);
-		context.put(CodeFeatures.BUGGY_STATEMENT, (stmt != null) ? element.toString() : null);
-
-		//
-		Cntx<Object> buggyPositionCntx = new Cntx<>();
-		retrievePosition(element, buggyPositionCntx);
-		context.put(CodeFeatures.POSITION, buggyPositionCntx);
-
-		return context;
-	}
-
-	@SuppressWarnings("unused")
-	public Cntx<?> retrieveBuggyInfo(CtElement element) {
+	public Cntx<?> retrieveInfoOfElement(CtElement element) {
 
 		Cntx<Object> context = new Cntx<>(determineKey(element));
 
@@ -404,46 +362,6 @@ public class CodeFeatureDetector {
 		context.put(CodeFeatures.POSITION, buggyPositionCntx);
 
 		return context;
-	}
-
-	@SuppressWarnings("unused")
-	public Cntx<?> retrieveCntx(CtElement element) {
-		Cntx<Object> context = new Cntx<>(determineKey(element));
-
-		analyzeFeatures(element, context);
-
-		return context;
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void retrieveDM(CtElement element, Cntx<Object> context, List<CtVariable> varsInScope, CtClass parentClass) {
-
-		List<CtLiteral> literals = VariableResolver.collectLiteralsNoString(parentClass);
-
-		List<CtExpression> ctexpressions = new ArrayList<>();
-		List<CtVariableRead> cteVarReadList = new ArrayList<>();
-		for (CtVariable ctVariable : varsInScope) {
-
-			CtVariableReadImpl vr = new CtVariableReadImpl<>();
-			vr.setVariable(ctVariable.getReference());
-			vr.setType(ctVariable.getType());
-			ctexpressions.add(vr);
-			cteVarReadList.add(vr);
-		}
-
-		for (CtLiteral ctLiteral : literals) {
-			ctexpressions.add(ctLiteral);
-		}
-
-		StaSynthBuilder ib = new StaSynthBuilder();
-		try {
-			List<CtExpression> result = ib.synthesizer(ctexpressions, cteVarReadList);
-			List<String> resultstring = result.stream().map(e -> e.toString()).collect(Collectors.toList());
-			context.put(CodeFeatures.PSPACE, resultstring);
-		} catch (Exception e) {
-			e.printStackTrace();
-			context.put(CodeFeatures.PSPACE, null);
-		}
 	}
 
 	private void analyzeC2_UseEnum(CtElement element, Cntx<Object> context, CtClass parentClass) {
@@ -1087,15 +1005,16 @@ public class CodeFeatureDetector {
 
 	private void analyzeS2_S5_SametypewithGuard(List<CtVariableAccess> varsAffected, CtElement element,
 			Cntx<Object> context, CtClass parentClass, List<CtStatement> statements) {
+
+		boolean hasPrimitiveSimilarTypeWithGuard = false;
+		boolean hasObjectSimilarTypeWithGuard = false;
+
 		try {
 			CtExecutable faultyMethodParent = element.getParent(CtExecutable.class);
 
 			if (parentClass == null)
 				// the element is not in a method.
 				return;
-
-			boolean hasPrimitiveSimilarTypeWithGuard = false;
-			boolean hasObjectSimilarTypeWithGuard = false;
 
 			// For each variable affected
 			for (CtVariableAccess variableAffected : varsAffected) {
@@ -1143,11 +1062,12 @@ public class CodeFeatureDetector {
 				}
 			}
 
-			context.put(CodeFeatures.S2_SIMILAR_OBJECT_TYPE_WITH_GUARD, hasObjectSimilarTypeWithGuard);
-			context.put(CodeFeatures.S5_SIMILAR_PRIMITIVE_TYPE_WITH_GUARD, hasPrimitiveSimilarTypeWithGuard);
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
+		context.put(CodeFeatures.S2_SIMILAR_OBJECT_TYPE_WITH_GUARD, hasObjectSimilarTypeWithGuard);
+		context.put(CodeFeatures.S5_SIMILAR_PRIMITIVE_TYPE_WITH_GUARD, hasPrimitiveSimilarTypeWithGuard);
+
 	}
 
 	/**
@@ -2003,7 +1923,14 @@ public class CodeFeatureDetector {
 	 */
 	private void analyzeLE6_UnaryInvolved(CtElement element, Cntx<Object> parentContext) {
 		try {
-			Cntx<Object> context = new Cntx<>();
+			Cntx<Object> context = null;
+
+			if (ComingProperties.getPropertyBoolean("avoidgroupsubfeatures")) {
+				context = parentContext;
+			} else {
+				context = new Cntx<>();
+			}
+
 			parentContext.put(CodeFeatures.UNARY_PROPERTIES, context);
 
 			List<String> binOps = new ArrayList();
@@ -2058,7 +1985,15 @@ public class CodeFeatureDetector {
 	 */
 	private void analyzeLE5_BinaryInvolved(CtElement element, Cntx<Object> parentContext) {
 		try {
-			Cntx<Object> context = new Cntx<>();
+			Cntx<Object> context = null;
+
+			if (ComingProperties.getPropertyBoolean("avoidgroupsubfeatures")) {
+				// we write the properties in the parent
+				context = parentContext;
+			} else {
+				context = new Cntx<>();
+			}
+
 			parentContext.put(CodeFeatures.BIN_PROPERTIES, context);
 
 			List<String> binOps = new ArrayList();

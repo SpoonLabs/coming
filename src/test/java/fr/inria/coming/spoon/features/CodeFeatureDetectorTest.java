@@ -62,7 +62,7 @@ public class CodeFeatureDetectorTest {
 
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 
-		Cntx cntx = cntxResolver.retrieveCntx(stassig);
+		Cntx cntx = cntxResolver.analyzeFeatures(stassig);
 
 		Cntx binop = (Cntx) cntx.get(CodeFeatures.BIN_PROPERTIES);
 
@@ -79,7 +79,7 @@ public class CodeFeatureDetectorTest {
 
 		CtElement returnStmt = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return"))
 				.findFirst().get();
-		cntx = cntxResolver.retrieveCntx(returnStmt);
+		cntx = cntxResolver.analyzeFeatures(returnStmt);
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.LE5_BOOLEAN_EXPRESSIONS_IN_FAULTY));
 
 	}
@@ -105,7 +105,7 @@ public class CodeFeatureDetectorTest {
 
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 
-		Cntx cntx = cntxResolver.retrieveCntx(stassig);
+		Cntx cntx = cntxResolver.analyzeFeatures(stassig);
 
 		Cntx unopctxt = (Cntx) cntx.get(CodeFeatures.UNARY_PROPERTIES);
 
@@ -120,7 +120,7 @@ public class CodeFeatureDetectorTest {
 		assertEquals(Boolean.FALSE, unopctxt.get(CodeFeatures.involve_POSTINC_relation_operators));
 
 		CtElement postin = ((CtIf) stassig).getThenStatement();
-		Cntx cntxposting = cntxResolver.retrieveCntx((CtElement) ((CtBlock) postin).getStatement(0));
+		Cntx cntxposting = cntxResolver.analyzeFeatures((CtElement) ((CtBlock) postin).getStatement(0));
 		Cntx unopctxtposting = (Cntx) cntxposting.get(CodeFeatures.UNARY_PROPERTIES);
 
 		assertEquals(Boolean.FALSE, unopctxtposting.get(CodeFeatures.involve_NOT_relation_operators));
@@ -153,14 +153,14 @@ public class CodeFeatureDetectorTest {
 				.findFirst().get();
 		System.out.println(stassig);
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(stassig);
+		Cntx cntx = cntxResolver.analyzeFeatures(stassig);
 
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.V6_IS_METHOD_RETURN_TYPE_VAR));
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
 
 		stassig = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float f")).findFirst()
 				.get();
-		cntx = cntxResolver.retrieveCntx(stassig);
+		cntx = cntxResolver.analyzeFeatures(stassig);
 
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V6_IS_METHOD_RETURN_TYPE_VAR));
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
@@ -168,7 +168,7 @@ public class CodeFeatureDetectorTest {
 		///
 		stassig = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int b")).findFirst()
 				.get();
-		cntx = cntxResolver.retrieveCntx(stassig);
+		cntx = cntxResolver.analyzeFeatures(stassig);
 
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.V6_IS_METHOD_RETURN_TYPE_VAR));
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
@@ -204,33 +204,33 @@ public class CodeFeatureDetectorTest {
 				.findFirst().get();
 		System.out.println(element);
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR));
 
 		///
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float f")).findFirst()
 				.get();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR));
 ///
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("double d")).findFirst()
 				.get();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR));
 ///
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int b")).findFirst()
 				.get();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR));
 
 		///
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float f1")).findFirst()
 				.get();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR));
 
@@ -268,7 +268,7 @@ public class CodeFeatureDetectorTest {
 				.findFirst().get();
 		System.out.println(element);
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
 		assertEquals(Boolean.TRUE,
@@ -277,20 +277,20 @@ public class CodeFeatureDetectorTest {
 		///
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float f")).findFirst()
 				.get();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("double d")).findFirst()
 				.get();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
 
 		//
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int b")).findFirst()
 				.get();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		// int matches with Object.wait(int, int)
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
@@ -300,7 +300,7 @@ public class CodeFeatureDetectorTest {
 		//
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("java.lang.String s2"))
 				.findFirst().get();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		// int matches with Object.wait(int, int)
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
@@ -332,7 +332,7 @@ public class CodeFeatureDetectorTest {
 				.findFirst().get();
 		System.out.println(stassig);
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(stassig);
+		Cntx cntx = cntxResolver.analyzeFeatures(stassig);
 
 		assertEquals(0, cntx.get(CodeFeatures.NUMBER_PRIMITIVE_VARS_IN_STMT));
 		assertEquals(0, cntx.get(CodeFeatures.NUMBER_OBJECT_REFERENCE_VARS_IN_STMT));
@@ -342,7 +342,7 @@ public class CodeFeatureDetectorTest {
 		CtElement stm = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int b"))
 				.findFirst().get();
 
-		cntx = cntxResolver.retrieveCntx(stm);
+		cntx = cntxResolver.analyzeFeatures(stm);
 
 		assertEquals(1, cntx.get(CodeFeatures.NUMBER_PRIMITIVE_VARS_IN_STMT));
 		assertEquals(0, cntx.get(CodeFeatures.NUMBER_OBJECT_REFERENCE_VARS_IN_STMT));
@@ -351,7 +351,7 @@ public class CodeFeatureDetectorTest {
 
 		stm = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("b =")).findFirst().get();
 
-		cntx = cntxResolver.retrieveCntx(stm);
+		cntx = cntxResolver.analyzeFeatures(stm);
 
 		assertEquals(2, cntx.get(CodeFeatures.NUMBER_PRIMITIVE_VARS_IN_STMT));
 		assertEquals(0, cntx.get(CodeFeatures.NUMBER_OBJECT_REFERENCE_VARS_IN_STMT));
@@ -359,7 +359,7 @@ public class CodeFeatureDetectorTest {
 
 		stm = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("s.to")).findFirst().get();
 
-		cntx = cntxResolver.retrieveCntx(stm);
+		cntx = cntxResolver.analyzeFeatures(stm);
 
 		assertEquals(0, cntx.get(CodeFeatures.NUMBER_PRIMITIVE_VARS_IN_STMT));
 		assertEquals(1, cntx.get(CodeFeatures.NUMBER_OBJECT_REFERENCE_VARS_IN_STMT));
@@ -368,7 +368,7 @@ public class CodeFeatureDetectorTest {
 		stm = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ")).findFirst()
 				.get();
 
-		cntx = cntxResolver.retrieveCntx(stm);
+		cntx = cntxResolver.analyzeFeatures(stm);
 
 		assertEquals(2, cntx.get(CodeFeatures.NUMBER_PRIMITIVE_VARS_IN_STMT));
 		assertEquals(2, cntx.get(CodeFeatures.NUMBER_OBJECT_REFERENCE_VARS_IN_STMT));
@@ -401,7 +401,7 @@ public class CodeFeatureDetectorTest {
 				.findFirst().get();
 		System.out.println(element);
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 		// affected myzimilar
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.HAS_VAR_SIM_NAME));
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.V2_HAS_VAR_SIM_NAME_COMP_TYPE));
@@ -411,7 +411,7 @@ public class CodeFeatureDetectorTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("double dother"))
 				.findFirst().get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.HAS_VAR_SIM_NAME));
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V2_HAS_VAR_SIM_NAME_COMP_TYPE));
@@ -419,7 +419,7 @@ public class CodeFeatureDetectorTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return f")).findFirst()
 				.get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.HAS_VAR_SIM_NAME));
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V2_HAS_VAR_SIM_NAME_COMP_TYPE));
@@ -454,7 +454,7 @@ public class CodeFeatureDetectorTest {
 				.findFirst().get();
 		System.out.println(element);
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 		// affected myzimilar
 		System.out.println(cntx.toJSON());
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V4B_USED_MULTIPLE_AS_PARAMETER));
@@ -464,7 +464,7 @@ public class CodeFeatureDetectorTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return max"))
 				.findFirst().get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.V4B_USED_MULTIPLE_AS_PARAMETER));
 		assertEquals(Boolean.TRUE,
@@ -505,7 +505,7 @@ public class CodeFeatureDetectorTest {
 				.filter(e -> e.toString().startsWith("java.lang.String test")).findFirst().get();
 		System.out.println(element);
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 		// affected myzimilar
 		System.out.println(cntx.toJSON());
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.C1_SAME_TYPE_CONSTANT));
@@ -514,7 +514,7 @@ public class CodeFeatureDetectorTest {
 				.findFirst().get();
 		System.out.println(element);
 		cntxResolver = new CodeFeatureDetector();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.C1_SAME_TYPE_CONSTANT));
 
@@ -543,7 +543,7 @@ public class CodeFeatureDetectorTest {
 				.findFirst().get();
 		System.out.println(element);
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 		// affected myzimilar
 		System.out.println(cntx.toJSON());
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.C1_SAME_TYPE_CONSTANT));
@@ -552,7 +552,7 @@ public class CodeFeatureDetectorTest {
 				.findFirst().get();
 		System.out.println(element);
 		cntxResolver = new CodeFeatureDetector();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.C1_SAME_TYPE_CONSTANT));
 
@@ -585,7 +585,7 @@ public class CodeFeatureDetectorTest {
 				.filter(e -> e.toString().startsWith("java.lang.String s1")).findFirst().get();
 		System.out.println(element);
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.V3_HAS_CONSTANT));
 		assertEquals(Boolean.TRUE, retrieveFeatureVarProperty(cntx, CodeFeatures.V3_HAS_CONSTANT, "SC"));
@@ -594,7 +594,7 @@ public class CodeFeatureDetectorTest {
 				.findFirst().get();
 		System.out.println(element);
 		cntxResolver = new CodeFeatureDetector();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V3_HAS_CONSTANT));
 
@@ -629,7 +629,7 @@ public class CodeFeatureDetectorTest {
 				.filter(e -> e.toString().startsWith("java.lang.String s2")).findFirst().get();
 		System.out.println(element);
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.AE1_COMPATIBLE_RETURN_TYPE));
 
@@ -638,7 +638,7 @@ public class CodeFeatureDetectorTest {
 				.findFirst().get();
 		System.out.println(element);
 		cntxResolver = new CodeFeatureDetector();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.AE1_COMPATIBLE_RETURN_TYPE));
 
@@ -647,7 +647,7 @@ public class CodeFeatureDetectorTest {
 				.findFirst().get();
 		System.out.println(element);
 		cntxResolver = new CodeFeatureDetector();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.AE1_COMPATIBLE_RETURN_TYPE));
 
@@ -694,21 +694,21 @@ public class CodeFeatureDetectorTest {
 				.findFirst().get();
 		System.out.println(element);
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.HAS_VAR_SIM_TYPE));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return")).findFirst()
 				.get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.HAS_VAR_SIM_TYPE));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("double")).findFirst()
 				.get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.HAS_VAR_SIM_TYPE));
 
@@ -741,14 +741,14 @@ public class CodeFeatureDetectorTest {
 				.findFirst().get();
 		System.out.println(element);
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int f2")).findFirst()
 				.get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED));
 
@@ -787,7 +787,7 @@ public class CodeFeatureDetectorTest {
 				.filter(e -> e.toString().startsWith("int myzimilar")).findFirst().get();
 		System.out.println(element);
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 		// all variables used
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.LE4_EXISTS_LOCAL_UNUSED_VARIABLES));
 
@@ -796,7 +796,7 @@ public class CodeFeatureDetectorTest {
 				.findFirst().get();
 		System.out.println(element);
 		cntxResolver = new CodeFeatureDetector();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.LE4_EXISTS_LOCAL_UNUSED_VARIABLES));
 
@@ -805,7 +805,7 @@ public class CodeFeatureDetectorTest {
 				.get();
 		System.out.println(element);
 		cntxResolver = new CodeFeatureDetector();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.LE4_EXISTS_LOCAL_UNUSED_VARIABLES));
 
@@ -843,7 +843,7 @@ public class CodeFeatureDetectorTest {
 				.findFirst().get();
 		System.out.println(element);
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 		// all variables used
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.LE6_HAS_NEGATION));
 
@@ -852,7 +852,7 @@ public class CodeFeatureDetectorTest {
 				.get();
 		System.out.println(element);
 		cntxResolver = new CodeFeatureDetector();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.LE6_HAS_NEGATION));
 
@@ -887,7 +887,7 @@ public class CodeFeatureDetectorTest {
 				.findFirst().get();
 		System.out.println(element);
 		cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.S5_SIMILAR_PRIMITIVE_TYPE_WITH_GUARD));
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.S2_SIMILAR_OBJECT_TYPE_WITH_GUARD));
@@ -922,7 +922,7 @@ public class CodeFeatureDetectorTest {
 				.findFirst().get();
 		System.out.println(element);
 		cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.S5_SIMILAR_PRIMITIVE_TYPE_WITH_GUARD));
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.S2_SIMILAR_OBJECT_TYPE_WITH_GUARD));
@@ -957,7 +957,7 @@ public class CodeFeatureDetectorTest {
 				.findFirst().get();
 		System.out.println(element);
 		cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.S5_SIMILAR_PRIMITIVE_TYPE_WITH_GUARD));
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.S2_SIMILAR_OBJECT_TYPE_WITH_GUARD));
@@ -996,7 +996,7 @@ public class CodeFeatureDetectorTest {
 				.filter(e -> e.toString().startsWith("int myzimilar")).findFirst().get();
 		System.out.println(element);
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 		// all variables used
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.S4_USED_FIELD));
 
@@ -1004,7 +1004,7 @@ public class CodeFeatureDetectorTest {
 				.get();
 		System.out.println(element);
 		cntxResolver = new CodeFeatureDetector();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.S4_USED_FIELD));
 
@@ -1012,7 +1012,7 @@ public class CodeFeatureDetectorTest {
 				.get();
 		System.out.println(element);
 		cntxResolver = new CodeFeatureDetector();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.S4_USED_FIELD));
 
@@ -1050,7 +1050,7 @@ public class CodeFeatureDetectorTest {
 				.filter(e -> e.toString().startsWith("int myzimilar")).findFirst().get();
 		System.out.println(element);
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 		// all variables used
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.LE5_BOOLEAN_EXPRESSIONS_IN_FAULTY));
 
@@ -1058,7 +1058,7 @@ public class CodeFeatureDetectorTest {
 				.get();
 		System.out.println(element);
 		cntxResolver = new CodeFeatureDetector();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.LE5_BOOLEAN_EXPRESSIONS_IN_FAULTY));
 
@@ -1066,7 +1066,7 @@ public class CodeFeatureDetectorTest {
 				.get();
 		System.out.println(element);
 		cntxResolver = new CodeFeatureDetector();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.LE5_BOOLEAN_EXPRESSIONS_IN_FAULTY));
 
@@ -1109,7 +1109,7 @@ public class CodeFeatureDetectorTest {
 				.findFirst().get();
 		System.out.println(element);
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 		// not method involve
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.LE7_SIMPLE_VAR_IN_LOGIC));
 
@@ -1118,7 +1118,7 @@ public class CodeFeatureDetectorTest {
 				.findFirst().get();
 		System.out.println(element);
 		cntxResolver = new CodeFeatureDetector();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		// statement with a similar method
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.LE7_SIMPLE_VAR_IN_LOGIC));
 
@@ -1127,7 +1127,7 @@ public class CodeFeatureDetectorTest {
 				.findFirst().get();
 		System.out.println(element);
 		cntxResolver = new CodeFeatureDetector();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		// statement with a similar method
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.LE7_SIMPLE_VAR_IN_LOGIC));
 	}
@@ -1166,7 +1166,7 @@ public class CodeFeatureDetectorTest {
 				.findFirst().get();
 		System.out.println(element);
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 		// not method involve
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.M3_ANOTHER_METHOD_WITH_PARAMETER_RETURN_COMP));
 		assertEquals(Boolean.TRUE, retrieveMethodsVarProperty(cntx,
@@ -1176,7 +1176,7 @@ public class CodeFeatureDetectorTest {
 				.findFirst().get();
 		System.out.println(element);
 		cntxResolver = new CodeFeatureDetector();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		// statement with a similar method
 		System.out.println(cntx.toJSON());
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.M3_ANOTHER_METHOD_WITH_PARAMETER_RETURN_COMP));
@@ -1217,7 +1217,7 @@ public class CodeFeatureDetectorTest {
 				.filter(e -> e.toString().startsWith("java.lang.String f1")).findFirst().get();
 		System.out.println(element);
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 		// not method involve
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.M3_ANOTHER_METHOD_WITH_PARAMETER_RETURN_COMP));
 		// assertEquals(Boolean.FALSE, retrieveMethodsVarProperty(cntx,
@@ -1260,7 +1260,7 @@ public class CodeFeatureDetectorTest {
 		System.out.println(element);
 
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 		System.out.println(cntx.toJSON());
 		// not method involve
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.M4_PARAMETER_RETURN_COMPABILITY));
@@ -1270,7 +1270,7 @@ public class CodeFeatureDetectorTest {
 				.get();
 		System.out.println(element);
 		cntxResolver = new CodeFeatureDetector();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		// all variables used
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.M1_OVERLOADED_METHOD));
 	}
@@ -1308,7 +1308,7 @@ public class CodeFeatureDetectorTest {
 		System.out.println(element);
 
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 		System.out.println(cntx.toJSON());
 		// not method involve
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.M5_MI_WITH_COMPATIBLE_VAR_TYPE));
@@ -1316,7 +1316,7 @@ public class CodeFeatureDetectorTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int f1")).findFirst()
 				.get();
 
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		System.out.println(cntx.toJSON());
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.M5_MI_WITH_COMPATIBLE_VAR_TYPE));
 
@@ -1356,7 +1356,7 @@ public class CodeFeatureDetectorTest {
 		System.out.println(element);
 
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 		System.out.println(cntx.toJSON());
 		// not method involve
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.M6_RETURN_PRIMITIVE));
@@ -1368,7 +1368,7 @@ public class CodeFeatureDetectorTest {
 				.get();
 		System.out.println(element);
 		cntxResolver = new CodeFeatureDetector();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		// all variables used
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.M6_RETURN_PRIMITIVE));
 	}
@@ -1407,7 +1407,7 @@ public class CodeFeatureDetectorTest {
 		System.out.println(element);
 
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 		System.out.println(cntx.toJSON());
 		// not method involve
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.M1_OVERLOADED_METHOD));
@@ -1417,7 +1417,7 @@ public class CodeFeatureDetectorTest {
 				.get();
 		System.out.println(element);
 		cntxResolver = new CodeFeatureDetector();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		// all variables used
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.M1_OVERLOADED_METHOD));
 
@@ -1456,7 +1456,7 @@ public class CodeFeatureDetectorTest {
 				.filter(e -> e.toString().startsWith("int myzimilar")).findFirst().get();
 		System.out.println(element);
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 		// not method involve
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.M2_SIMILAR_METHOD_WITH_SAME_RETURN));
 
@@ -1465,7 +1465,7 @@ public class CodeFeatureDetectorTest {
 				.findFirst().get();
 		System.out.println(element);
 		cntxResolver = new CodeFeatureDetector();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		// statement with a similar method
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.M2_SIMILAR_METHOD_WITH_SAME_RETURN));
 
@@ -1478,7 +1478,7 @@ public class CodeFeatureDetectorTest {
 				.get();
 		System.out.println(element);
 		cntxResolver = new CodeFeatureDetector();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		// all variables used
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.M2_SIMILAR_METHOD_WITH_SAME_RETURN));
 
@@ -1517,7 +1517,7 @@ public class CodeFeatureDetectorTest {
 				.filter(e -> e.toString().startsWith("int myzimilar")).findFirst().get();
 		System.out.println(element);
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 		// not method involve
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.S6_METHOD_THROWS_EXCEPTION));
 
@@ -1529,7 +1529,7 @@ public class CodeFeatureDetectorTest {
 				.get();
 		System.out.println(element);
 		cntxResolver = new CodeFeatureDetector();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		// statement with a similar method
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.S6_METHOD_THROWS_EXCEPTION));
 
@@ -1559,14 +1559,14 @@ public class CodeFeatureDetectorTest {
 				.filter(e -> e.toString().startsWith("return mysimilar")).findFirst().get();
 		System.out.println(element);
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.V5_HAS_VAR_IN_TRANSFORMATION));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("double ddother"))
 				.findFirst().get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.HAS_VAR_SIM_NAME));
 
@@ -1598,14 +1598,14 @@ public class CodeFeatureDetectorTest {
 				.filter(e -> e.toString().startsWith("int myzimilar")).findFirst().get();
 		System.out.println(element);
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.USES_CONSTANT));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float fiii"))
 				.findFirst().get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.USES_CONSTANT));
 
@@ -1635,7 +1635,7 @@ public class CodeFeatureDetectorTest {
 		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float fiii"))
 				.findFirst().get();
 		System.out.println(element);
-		Cntx cntx = cntxResolver.retrieveCntx(element);
+		Cntx cntx = cntxResolver.analyzeFeatures(element);
 		// TODO: Failing:
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.C2_USES_ENUMERATION));
 
@@ -1643,7 +1643,7 @@ public class CodeFeatureDetectorTest {
 				.findFirst().get();
 		System.out.println(element);
 
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.C2_USES_ENUMERATION));
 
@@ -1677,14 +1677,14 @@ public class CodeFeatureDetectorTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("com =")).findFirst()
 				.get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		assertEquals(1, cntx.get(CodeFeatures.NR_VARIABLE_ASSIGNED));
 		assertEquals(0, cntx.get(CodeFeatures.NR_VARIABLE_NOT_ASSIGNED));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ob"))
 				.findFirst().get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(1, cntx.get(CodeFeatures.NR_VARIABLE_ASSIGNED));
 		assertEquals(0, cntx.get(CodeFeatures.NR_VARIABLE_NOT_ASSIGNED));
@@ -1692,7 +1692,7 @@ public class CodeFeatureDetectorTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean com"))
 				.findFirst().get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		assertEquals(2, cntx.get(CodeFeatures.NR_VARIABLE_ASSIGNED));
 		assertEquals(0, cntx.get(CodeFeatures.NR_VARIABLE_NOT_ASSIGNED));
 
@@ -1726,14 +1726,14 @@ public class CodeFeatureDetectorTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("com =")).findFirst()
 				.get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		assertEquals(0, cntx.get(CodeFeatures.NR_VARIABLE_ASSIGNED));
 		assertEquals(1, cntx.get(CodeFeatures.NR_VARIABLE_NOT_ASSIGNED));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ob"))
 				.findFirst().get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(1, cntx.get(CodeFeatures.NR_VARIABLE_ASSIGNED));
 		assertEquals(0, cntx.get(CodeFeatures.NR_VARIABLE_NOT_ASSIGNED));
@@ -1741,7 +1741,7 @@ public class CodeFeatureDetectorTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean com"))
 				.findFirst().get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		assertEquals(1, cntx.get(CodeFeatures.NR_VARIABLE_ASSIGNED));
 		assertEquals(1, cntx.get(CodeFeatures.NR_VARIABLE_NOT_ASSIGNED));
 
@@ -1780,7 +1780,7 @@ public class CodeFeatureDetectorTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("com =")).findFirst()
 				.get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		assertEquals(0, cntx.get(CodeFeatures.NR_VARIABLE_ASSIGNED));
 		assertEquals(1, cntx.get(CodeFeatures.NR_VARIABLE_NOT_ASSIGNED));
 		// All are local
@@ -1794,7 +1794,7 @@ public class CodeFeatureDetectorTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ob"))
 				.findFirst().get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(1, cntx.get(CodeFeatures.NR_VARIABLE_ASSIGNED));
 		assertEquals(0, cntx.get(CodeFeatures.NR_VARIABLE_NOT_ASSIGNED));
@@ -1808,7 +1808,7 @@ public class CodeFeatureDetectorTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean com"))
 				.findFirst().get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		assertEquals(1, cntx.get(CodeFeatures.NR_VARIABLE_ASSIGNED));
 		assertEquals(1, cntx.get(CodeFeatures.NR_VARIABLE_NOT_ASSIGNED));
 
@@ -1853,7 +1853,7 @@ public class CodeFeatureDetectorTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("com =")).findFirst()
 				.get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		assertEquals(0, cntx.get(CodeFeatures.NR_VARIABLE_ASSIGNED));
 		assertEquals(2, cntx.get(CodeFeatures.NR_VARIABLE_NOT_ASSIGNED));
 		// All are local
@@ -1863,7 +1863,7 @@ public class CodeFeatureDetectorTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ob"))
 				.findFirst().get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(1, cntx.get(CodeFeatures.NR_VARIABLE_ASSIGNED));
 		assertEquals(0, cntx.get(CodeFeatures.NR_VARIABLE_NOT_ASSIGNED));
@@ -1874,7 +1874,7 @@ public class CodeFeatureDetectorTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean com"))
 				.findFirst().get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		assertEquals(1, cntx.get(CodeFeatures.NR_VARIABLE_ASSIGNED));
 		assertEquals(1, cntx.get(CodeFeatures.NR_VARIABLE_NOT_ASSIGNED));
 
@@ -1912,14 +1912,14 @@ public class CodeFeatureDetectorTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean com"))
 				.findFirst().get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		assertEquals(1, cntx.get(CodeFeatures.NR_OBJECT_USED));
 		assertEquals(2, cntx.get(CodeFeatures.NR_OBJECT_NOT_USED));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ob"))
 				.findFirst().get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(1, cntx.get(CodeFeatures.NR_OBJECT_USED));
 		assertEquals(0, cntx.get(CodeFeatures.NR_OBJECT_NOT_USED));
@@ -1961,21 +1961,21 @@ public class CodeFeatureDetectorTest {
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean com"))
 				.findFirst().get();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		assertEquals("LocalVariable", cntx.get(CodeFeatures.S3_TYPE_OF_FAULTY_STATEMENT));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ob"))
 				.findFirst().get();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		assertEquals("Return", cntx.get(CodeFeatures.S3_TYPE_OF_FAULTY_STATEMENT));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("t2 =")).findFirst()
 				.get();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		assertEquals("Assignment", cntx.get(CodeFeatures.S3_TYPE_OF_FAULTY_STATEMENT));
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("while")).findFirst()
 				.get();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		assertEquals("While", cntx.get(CodeFeatures.S3_TYPE_OF_FAULTY_STATEMENT));
 
 	}
@@ -2016,7 +2016,7 @@ public class CodeFeatureDetectorTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean com"))
 				.findFirst().get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		assertEquals(1, cntx.get(CodeFeatures.NR_OBJECT_USED));
 		assertEquals(2, cntx.get(CodeFeatures.NR_OBJECT_NOT_USED));
 
@@ -2029,7 +2029,7 @@ public class CodeFeatureDetectorTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ob"))
 				.findFirst().get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(1, cntx.get(CodeFeatures.NR_OBJECT_USED));
 		assertEquals(0, cntx.get(CodeFeatures.NR_OBJECT_NOT_USED));
@@ -2040,7 +2040,7 @@ public class CodeFeatureDetectorTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("t2 =")).findFirst()
 				.get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(0, cntx.get(CodeFeatures.NR_OBJECT_USED));
 		assertEquals(2, cntx.get(CodeFeatures.NR_OBJECT_NOT_USED));
@@ -2056,7 +2056,7 @@ public class CodeFeatureDetectorTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("t =")).findFirst()
 				.get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		assertEquals(3, cntx.get(CodeFeatures.NR_OBJECT_USED));
 		assertEquals(1, cntx.get(CodeFeatures.NR_OBJECT_NOT_USED));
@@ -2107,7 +2107,7 @@ public class CodeFeatureDetectorTest {
 		/// C1
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean s2"))
 				.findFirst().get();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		boolean existsNotUsed = Boolean
 				.parseBoolean(cntx.get(CodeFeatures.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION).toString());
 		assertTrue(existsNotUsed);
@@ -2115,7 +2115,7 @@ public class CodeFeatureDetectorTest {
 		/// C2:
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean s1"))
 				.findFirst().get();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		existsNotUsed = Boolean.parseBoolean(cntx.get(CodeFeatures.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION).toString());
 		assertTrue(existsNotUsed);
@@ -2123,7 +2123,7 @@ public class CodeFeatureDetectorTest {
 		/// C3:
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean s3"))
 				.findFirst().get();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		existsNotUsed = Boolean.parseBoolean(cntx.get(CodeFeatures.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION).toString());
 		assertFalse(existsNotUsed);
@@ -2131,7 +2131,7 @@ public class CodeFeatureDetectorTest {
 		/// C4:
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean s4"))
 				.findFirst().get();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		// Now d1 is used in binary ()
 		existsNotUsed = Boolean.parseBoolean(cntx.get(CodeFeatures.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION).toString());
 		assertTrue(existsNotUsed);
@@ -2177,14 +2177,14 @@ public class CodeFeatureDetectorTest {
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean s2"))
 				.findFirst().get();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		boolean existsNotUsed = Boolean
 				.parseBoolean(cntx.get(CodeFeatures.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION).toString());
 		assertTrue(existsNotUsed);
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean s1"))
 				.findFirst().get();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		existsNotUsed = Boolean.parseBoolean(cntx.get(CodeFeatures.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION).toString());
 		assertFalse(existsNotUsed);
@@ -2192,14 +2192,14 @@ public class CodeFeatureDetectorTest {
 		///
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean s3"))
 				.findFirst().get();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		existsNotUsed = Boolean.parseBoolean(cntx.get(CodeFeatures.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION).toString());
 		assertFalse(existsNotUsed);
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean s4"))
 				.findFirst().get();
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		// Now d1 is used in binary ()
 		existsNotUsed = Boolean.parseBoolean(cntx.get(CodeFeatures.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION).toString());
 		assertTrue(existsNotUsed);
@@ -2236,7 +2236,7 @@ public class CodeFeatureDetectorTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("f2 = ")).findFirst()
 				.get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		// field not assigned fX
 		// Strange behaviour: fails when running, works when debbuging
 		// assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
@@ -2277,7 +2277,7 @@ public class CodeFeatureDetectorTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("mv = ")).findFirst()
 				.get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.NR_FIELD_INCOMPLETE_INIT));
 
 	}
@@ -2316,7 +2316,7 @@ public class CodeFeatureDetectorTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("mv = ")).findFirst()
 				.get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.NR_FIELD_INCOMPLETE_INIT));
 
 	}
@@ -2356,7 +2356,7 @@ public class CodeFeatureDetectorTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("mv = ")).findFirst()
 				.get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.NR_FIELD_INCOMPLETE_INIT));
 
 	}
@@ -2397,7 +2397,7 @@ public class CodeFeatureDetectorTest {
 				.get();
 		System.out.println(element);
 		ConfigurationProperties.setProperty("max_synthesis_step", "100");
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 
 		// List<?> space = (List<?>) cntx.get(CNTX_Property.PSPACE);
 		int i = 0;
@@ -2440,7 +2440,7 @@ public class CodeFeatureDetectorTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ")).findFirst()
 				.get();
 		System.out.println(element);
-		cntx = cntxResolver.retrieveCntx(element);
+		cntx = cntxResolver.analyzeFeatures(element);
 		// assertEquals(Boolean.FALSE,
 		// cntx.get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
 

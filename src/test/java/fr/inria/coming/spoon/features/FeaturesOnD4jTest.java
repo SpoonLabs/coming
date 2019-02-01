@@ -37,7 +37,7 @@ public class FeaturesOnD4jTest {
 	private JsonElement getJsonOfBugId(String diffId) {
 		String input = "Defects4J_all_pairs/" + diffId;
 		File file = new File("./src/main/resources/" + input);
-		JsonElement resultjson = featureAnalyzer.processDiff(file);
+		JsonElement resultjson = featureAnalyzer.processFilesPair(file);
 		return resultjson;
 	}
 

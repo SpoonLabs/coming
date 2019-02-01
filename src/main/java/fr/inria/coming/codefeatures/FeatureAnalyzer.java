@@ -5,9 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import fr.inria.coming.changeminer.entity.IRevision;
+import fr.inria.coming.core.engine.Analyzer;
+import fr.inria.coming.core.entities.AnalysisResult;
+import fr.inria.coming.core.entities.RevisionResult;
 import gumtree.spoon.AstComparator;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.DeleteOperation;
@@ -24,21 +30,23 @@ import spoon.reflect.visitor.filter.LineFilter;
  * @author Matias Martinez
  *
  */
-public class FeatureAnalyzer {
+public class FeatureAnalyzer implements Analyzer<IRevision> {
 	private static final LineFilter FILTER = new LineFilter();
 
+	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
+
 	@SuppressWarnings("unchecked")
-	public JsonArray processDiff(File difffile) {
+	public JsonArray processFilesPair(File pairFolder) {
 		Map<String, Diff> diffOfcommit = new HashMap();
 		CodeFeatureDetector cresolver = new CodeFeatureDetector();
 		JsonArray filesArray = new JsonArray();
-		for (File fileModif : difffile.listFiles()) {
+		for (File fileModif : pairFolder.listFiles()) {
 			int i_hunk = 0;
 
 			if (".DS_Store".equals(fileModif.getName()))
 				continue;
 
-			String pathname = fileModif.getAbsolutePath() + File.separator + difffile.getName() + "_"
+			String pathname = fileModif.getAbsolutePath() + File.separator + pairFolder.getName() + "_"
 					+ fileModif.getName();
 
 			File previousVersion = new File(pathname + "_s.java");
@@ -46,7 +54,6 @@ public class FeatureAnalyzer {
 				pathname = pathname + "_" + i_hunk;
 				previousVersion = new File(pathname + "_s.java");
 				if (!previousVersion.exists())
-					// break;
 					continue;
 			}
 
@@ -67,7 +74,7 @@ public class FeatureAnalyzer {
 					continue;
 				}
 
-				System.out.println("--diff: " + diff);
+				log.info("--diff: " + diff);
 
 				List<Operation> ops = diff.getRootOperations();
 				String key = fileModif.getParentFile().getName() + "_" + fileModif.getName();
@@ -75,16 +82,16 @@ public class FeatureAnalyzer {
 
 				for (Operation operation : ops) {
 					CtElement affectedCtElement = getLeftElement(operation);
-					//
+
 					if (affectedCtElement != null) {
-						Cntx iContext = cresolver.retrieveCntx(affectedCtElement);
+						Cntx iContext = cresolver.analyzeFeatures(affectedCtElement);
 						changesArray.add(iContext.toJSON());
 					}
 				}
 
 			} catch (Throwable e) {
-				System.out.println("error with " + previousVersion);
-				e.printStackTrace();
+				log.error("error with " + previousVersion);
+				log.error(e);
 				file.addProperty("status", "exception");
 			}
 
@@ -134,6 +141,12 @@ public class FeatureAnalyzer {
 		// by default, we return the affected element
 		return affectedCtElement;
 
+	}
+
+	@Override
+	public AnalysisResult analyze(IRevision input, RevisionResult previousResults) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
