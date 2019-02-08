@@ -13,6 +13,7 @@ import fr.inria.coming.core.engine.Analyzer;
 import fr.inria.coming.core.entities.AnalysisResult;
 import fr.inria.coming.core.entities.DiffResult;
 import fr.inria.coming.core.entities.HunkDiff;
+import fr.inria.coming.core.entities.HunkPair;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.core.entities.interfaces.IRevisionPair;
 import fr.inria.coming.core.filter.diff.syntcomparison.Fragmentable;
@@ -62,7 +63,7 @@ public class HunkDifftAnalyzer implements Analyzer<IRevision> {
 				diffOfFiles.put(fileFromRevision.getName(), hunks);
 			}
 		}
-
+		// TODO: refactor
 		return new DiffResult<IRevision, HunkDiff>(revision, diffOfFiles);
 	}
 
@@ -79,12 +80,30 @@ public class HunkDifftAnalyzer implements Analyzer<IRevision> {
 		Fragmentable fNextVersion = comparator.createFragmentable(nextVersion);
 		RangeDifference[] results = comparator.compare(fPreviousVersion, fNextVersion);
 
-		for (RangeDifference diff : results) {
-			if (diff.kind() != RangeDifference.NOCHANGE) {
+		for (RangeDifference diffInfo : results) {
+			if (diffInfo.kind() != RangeDifference.NOCHANGE /* && diffInfo.kind() != RangeDifference.ANCESTOR */) {
 				// TODO: for the moment, ignoring here hunk filtering
 				// int length = diff.rightEnd() - diff.rightStart();
 				// if (length <= ComingProperties.getPropertyInteger("max_lines_per_hunk"))
-				ranges.add(diff);
+				ranges.add(diffInfo);
+				String left = "";
+				String right = "";
+
+				if (diffInfo.ancestorStart() == 0 && diffInfo.ancestorEnd() == 0
+						|| diffInfo.ancestorStart() == 1 && diffInfo.ancestorLength() == 0)
+					continue;
+
+				for (int i = diffInfo.ancestorStart(); i < diffInfo.ancestorEnd(); i++) {
+					// System.out.println(diffInfo);
+					left += fPreviousVersion.getFragment(i) + "\n";
+				}
+
+				for (int i = diffInfo.rightStart(); i < diffInfo.rightEnd(); i++) {
+
+					right += fNextVersion.getFragment(i) + "\n";
+				}
+
+				ranges.getHunkpairs().add(new HunkPair(left, right));
 
 			}
 		}
