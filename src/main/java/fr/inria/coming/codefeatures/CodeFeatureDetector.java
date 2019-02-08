@@ -1927,11 +1927,12 @@ public class CodeFeatureDetector {
 
 			if (ComingProperties.getPropertyBoolean("avoidgroupsubfeatures")) {
 				context = parentContext;
+
 			} else {
 				context = new Cntx<>();
-			}
+				parentContext.put(CodeFeatures.UNARY_PROPERTIES, context);
 
-			parentContext.put(CodeFeatures.UNARY_PROPERTIES, context);
+			}
 
 			List<String> binOps = new ArrayList();
 			CtScanner scanner = new CtScanner() {
@@ -1992,9 +1993,9 @@ public class CodeFeatureDetector {
 				context = parentContext;
 			} else {
 				context = new Cntx<>();
-			}
+				parentContext.put(CodeFeatures.BIN_PROPERTIES, context);
 
-			parentContext.put(CodeFeatures.BIN_PROPERTIES, context);
+			}
 
 			List<String> binOps = new ArrayList();
 			CtScanner scanner = new CtScanner() {
