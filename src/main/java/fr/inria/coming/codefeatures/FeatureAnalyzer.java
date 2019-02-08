@@ -11,11 +11,15 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
+import fr.inria.coming.changeminer.analyzer.commitAnalyzer.HunkDifftAnalyzer;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.engine.Analyzer;
 import fr.inria.coming.core.entities.AnalysisResult;
 import fr.inria.coming.core.entities.DiffResult;
+import fr.inria.coming.core.entities.HunkDiff;
+import fr.inria.coming.core.entities.HunkPair;
 import fr.inria.coming.core.entities.RevisionResult;
+import fr.inria.coming.core.entities.interfaces.Commit;
 import gumtree.spoon.AstComparator;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.DeleteOperation;
@@ -61,7 +65,11 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 
 			filesArray.add(file);
 			file.addProperty("file_name", nameFile.toString());
+
 			JsonArray changesArray = new JsonArray();
+
+			putCodeFromHunk(previousResults, nameFile, file);
+
 			file.add("features", changesArray);
 
 			for (Operation operation : ops) {
@@ -74,10 +82,37 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 				}
 
 			}
-		}
 
+		}
+		JsonObject root = new JsonObject();
+		root.addProperty("id", revision.getName());
+		root.add("files", filesArray);
 		return new FeaturesResult(revision, filesArray);
 
+	}
+
+	public void putCodeFromHunk(RevisionResult previousResults, Object nameFile, JsonObject file) {
+		AnalysisResult resultsHunk = previousResults.get(HunkDifftAnalyzer.class.getSimpleName());
+		if (resultsHunk != null) {
+			DiffResult<Commit, HunkDiff> hunkresults = (DiffResult<Commit, HunkDiff>) resultsHunk;
+			HunkDiff hunks = hunkresults.getDiffOfFiles().get(nameFile);
+			if (hunks != null && hunks.getHunkpairs() != null)
+				if (hunks.getHunkpairs().size() == 1) {
+					HunkPair hunkp = hunks.getHunkpairs().get(0);
+					String patch = hunkp.getLeft() + "<EOS>" + hunkp.getRight();
+					file.addProperty("pairs", patch);
+				} else {
+					JsonArray pairsArray = new JsonArray();
+
+					for (HunkPair hunkp : hunks.getHunkpairs()) {
+						String patch = hunkp.getLeft() + "<EOS>" + hunkp.getRight();
+						pairsArray.add(patch);
+
+					}
+					file.add("pairs", pairsArray);
+				}
+
+		}
 	}
 
 	@SuppressWarnings("unchecked")
