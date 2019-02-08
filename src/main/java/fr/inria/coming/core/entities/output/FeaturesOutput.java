@@ -28,7 +28,7 @@ public class FeaturesOutput implements IOutput {
 	@Override
 	public void generateFinalOutput(FinalResult finalResult) {
 
-		System.out.println("JSON output");
+		log.debug("JSON output");
 		// JsonObject root = new JsonObject();
 		// JsonArray instances = new JsonArray();
 		for (Object commit : finalResult.getAllResults().keySet()) {
@@ -44,20 +44,21 @@ public class FeaturesOutput implements IOutput {
 			FileWriter fw;
 			try {
 				String fileName = ComingProperties.getProperty("output") + File.separator + "features_"
-						+ result.getAnalyzed() + ".json";
+						+ result.getAnalyzed().getName() + ".json";
 				fw = new FileWriter(fileName);
 				Gson gson = new GsonBuilder().setPrettyPrinting().create();
 				JsonParser jp = new JsonParser();
 				JsonElement je = jp.parse(file.toString());
 				String prettyJsonString = gson.toJson(je);
-				System.out.println("\nJSON Code Change Frequency: (file stored at " + fileName + ")\n");
-				System.out.println(prettyJsonString);
+				log.debug("\nJSON Code Change Frequency: (file stored at " + fileName + ")\n");
+				log.debug(prettyJsonString);
 				fw.write(prettyJsonString);
 
 				fw.flush();
 				fw.close();
 			} catch (Exception e) {
 				e.printStackTrace();
+				log.error(e);
 			}
 		}
 
