@@ -20,6 +20,8 @@ import fr.inria.coming.core.entities.HunkDiff;
 import fr.inria.coming.core.entities.HunkPair;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.core.entities.interfaces.Commit;
+import fr.inria.coming.core.entities.output.JSonPatternInstanceOutput;
+import fr.inria.coming.main.ComingProperties;
 import gumtree.spoon.AstComparator;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.DeleteOperation;
@@ -77,8 +79,15 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 
 				if (affectedCtElement != null) {
 					Cntx iContext = cresolver.analyzeFeatures(affectedCtElement);
-					// allContext.add(iContext);
-					changesArray.add(iContext.toJSON());
+
+					JsonObject jsonFeature = iContext.toJSON();
+
+					if (ComingProperties.getPropertyBoolean("addchangeinfoonfeatures")) {
+						JsonObject opjson = JSonPatternInstanceOutput.getJSONFromOperator(operation);
+						jsonFeature.add("ast_info", opjson);
+					}
+
+					changesArray.add(jsonFeature);
 				}
 
 			}
@@ -87,7 +96,7 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 		JsonObject root = new JsonObject();
 		root.addProperty("id", revision.getName());
 		root.add("files", filesArray);
-		return new FeaturesResult(revision, filesArray);
+		return new FeaturesResult(revision, root);
 
 	}
 
