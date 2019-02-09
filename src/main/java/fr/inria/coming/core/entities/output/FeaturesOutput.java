@@ -39,34 +39,46 @@ public class FeaturesOutput implements IOutput {
 				continue;
 
 			FeaturesResult result = (FeaturesResult) rv.getResultFromClass(FeatureAnalyzer.class);
-			JsonElement file = result.getFeatures();
-
-			FileWriter fw;
-			try {
-				String fileName = ComingProperties.getProperty("output") + File.separator + "features_"
-						+ result.getAnalyzed().getName() + ".json";
-				fw = new FileWriter(fileName);
-				Gson gson = new GsonBuilder().setPrettyPrinting().create();
-				JsonParser jp = new JsonParser();
-				JsonElement je = jp.parse(file.toString());
-				String prettyJsonString = gson.toJson(je);
-				log.debug("\nJSON Code Change Frequency: (file stored at " + fileName + ")\n");
-				log.debug(prettyJsonString);
-				fw.write(prettyJsonString);
-
-				fw.flush();
-				fw.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.error(e);
-			}
+			save(result);
 		}
 
 	}
 
+	public JsonElement save(FeaturesResult result) {
+		JsonElement file = result.getFeatures();
+
+		FileWriter fw;
+		try {
+
+			// Create the output dir
+			File fout = new File(ComingProperties.getProperty("output"));
+			fout.mkdirs();
+
+			String fileName = fout.getAbsolutePath() + File.separator + "features_" + result.getAnalyzed().getName()
+					+ ".json";
+			fw = new FileWriter(fileName);
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			JsonParser jp = new JsonParser();
+			JsonElement je = jp.parse(file.toString());
+			String prettyJsonString = gson.toJson(je);
+			log.debug("\nJSON Code Change Frequency: (file stored at " + fileName + ")\n");
+			log.debug(prettyJsonString);
+			fw.write(prettyJsonString);
+
+			fw.flush();
+			fw.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error(e);
+		}
+		return file;
+	}
+
 	@Override
 	public void generateRevisionOutput(RevisionResult resultAllAnalyzed) {
+		FeaturesResult result = (FeaturesResult) resultAllAnalyzed.getResultFromClass(FeatureAnalyzer.class);
 
+		save(result);
 	}
 
 }
