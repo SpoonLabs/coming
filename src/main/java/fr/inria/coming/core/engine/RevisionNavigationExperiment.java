@@ -71,14 +71,17 @@ public abstract class RevisionNavigationExperiment<Data extends IRevision> {
 	}
 
 	protected FinalResult processEnd() {
+		if (ComingProperties.getPropertyBoolean("save_result_revision_analysis")) {
 
-		FinalResult finalResult = new FinalResult(allResults);
+			FinalResult finalResult = new FinalResult(allResults);
 
-		for (IOutput out : this.getOutputProcessors()) {
-			out.generateFinalOutput(finalResult);
-		}
+			for (IOutput out : this.getOutputProcessors()) {
+				out.generateFinalOutput(finalResult);
+			}
 
-		return finalResult;
+			return finalResult;
+		} else
+			return null;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
