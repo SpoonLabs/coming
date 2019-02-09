@@ -64,9 +64,9 @@ public class JSonPatternInstanceOutput implements IOutput {
 							opjson.addProperty("action", pa.getAction().toString());
 							opjson.addProperty("entity", pa.getAffectedEntity().toString());
 							opjson.add("op", getJSONFromOperator(op));
-							ops.add(opjson);
 							opjson.addProperty("code", op.getNode().toString());
 							opjson.addProperty("location", op.getNode().getPath().toString());
+							ops.add(opjson);
 						}
 
 						instance.add("ops", ops);
@@ -98,17 +98,17 @@ public class JSonPatternInstanceOutput implements IOutput {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected JsonObject getJSONFromOperator(Operation operation) {
+	public static JsonObject getJSONFromOperator(Operation operation) {
 		JsonObject op = new JsonObject();
 		op.addProperty("operator", operation.getAction().getName());
 		op.addProperty("src",
 				(operation.getSrcNode() != null) ? operation.getSrcNode().getClass().getSimpleName() : "null");
 		op.addProperty("dst",
-				(operation.getDstNode() != null) ? operation.getDstNode().getParent().getClass().getSimpleName()
-						: "null");
+				(operation.getDstNode() != null) ? operation.getDstNode().getClass().getSimpleName() : "null");
 
 		op.addProperty("srcparent",
-				(operation.getSrcNode() != null) ? operation.getSrcNode().getClass().getSimpleName() : "null");
+				(operation.getSrcNode() != null) ? operation.getSrcNode().getParent().getClass().getSimpleName()
+						: "null");
 		op.addProperty("dstparent",
 				(operation.getDstNode() != null) ? operation.getDstNode().getParent().getClass().getSimpleName()
 						: "null");
