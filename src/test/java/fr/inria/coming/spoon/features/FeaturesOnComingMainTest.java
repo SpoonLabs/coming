@@ -15,21 +15,21 @@ import fr.inria.main.CommandSummary;
  *
  */
 public class FeaturesOnComingMainTest {
-
-	@Test
-	public void testFeaturesOnComing1() throws Exception {
-		ComingMain main = new ComingMain();
-
-		CommandSummary cs = new CommandSummary();
-		cs.append("-location", "repogit4testv0");
-		cs.append("-mode", "features");
-		FinalResult finalResult = null;
-
-		finalResult = main.run(cs.flat());
-
-		CommitFinalResult commitResult = (CommitFinalResult) finalResult;
-
-		assertTrue(commitResult.getAllResults().values().size() > 0);
-	}
+//
+//	@Test
+//	public void testFeaturesOnComing1() throws Exception {
+//		ComingMain main = new ComingMain();
+//
+//		CommandSummary cs = new CommandSummary();
+//		cs.append("-location", "repogit4testv0");
+//		cs.append("-mode", "features");
+//		FinalResult finalResult = null;
+//
+//		finalResult = main.run(cs.flat());
+//
+//		CommitFinalResult commitResult = (CommitFinalResult) finalResult;
+//
+//		assertTrue(commitResult.getAllResults().values().size() > 0);
+//	}
 
 }
