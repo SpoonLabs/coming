@@ -108,16 +108,12 @@ public class FeatureVisitor {
     }
 
     public void traverseStmt(CtElement S) {
-        System.out.println("$$$ 0");
         boolean propagate = true;
         if (S instanceof CtStatement) {
             putStmtType(null, (CtStatement) S);
-            System.out.println("$$$ 1");
             if (S instanceof CtInvocation) {
                 CtInvocation CE = (CtInvocation) S;
-                System.out.println("$$$ 2");
                 if (isAbstractStub(CE)) {
-                    System.out.println("$$$ 3A");
                     propagate = false;
                     CtScanner scanner = new CtScanner() {
                         // todo: does VisitArraySubscriptExpr apply to Java?
@@ -163,7 +159,6 @@ public class FeatureVisitor {
             }
         }
         if (propagate) {
-            System.out.println("$$$ 3B");
             CtScanner scanner = new CtScanner() {
                 // todo: does VisitArraySubscriptExpr apply to Java?
 
@@ -200,7 +195,6 @@ public class FeatureVisitor {
                 @Override
                 public <T> void visitCtBinaryOperator(CtBinaryOperator<T> operator) {
                     super.visitCtBinaryOperator(operator);
-                    System.out.println("$$" + operator);
                     CtExpression LHS = operator.getLeftHandOperand();
                     CtExpression RHS = operator.getRightHandOperand();
                     switch (operator.getKind()) {

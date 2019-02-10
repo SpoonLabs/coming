@@ -302,14 +302,13 @@ public class CodeDiffer {
     public List<FeatureVector> func4Demo(File file0, File file1) throws Exception {
         AstComparator comparator = new AstComparator();
         Diff diff = comparator.compare(file0, file1);
-        System.out.println("========");
-        System.out.println(diff.getRootOperations());
-        System.out.println(diff.commonAncestor());
+//        System.out.println("========");
+//        System.out.println(diff.getRootOperations());
+//        System.out.println(diff.commonAncestor());
         CtElement srcRoot = comparator.getCtType(file0).getParent();
         CtElement dstRoot = comparator.getCtType(file1).getParent();
-
-        System.out.println(srcRoot);
-        System.out.println(dstRoot);
+//        System.out.println(srcRoot);
+//        System.out.println(dstRoot);
         DiffResultEntry res0 = generateDiffResultEntry(diff, srcRoot, dstRoot);
         // todo: check all cast operations
         CtStatement locStmt = (CtStatement) res0.srcElem;
@@ -350,10 +349,10 @@ public class CodeDiffer {
         // todo: check all cast operations
         CtStatement locStmt = (CtStatement) res0.srcElem;
         Map<CtStatement, Integer> locations = fuzzyLocator(locStmt);
-        System.out.println("--------");
-        System.out.println(res0.srcElem);
-        System.out.println(res0.dstElem);
-        System.out.println(res0.kind);
+//        System.out.println("--------");
+//        System.out.println(res0.srcElem);
+//        System.out.println(res0.dstElem);
+//        System.out.println(res0.kind);
 
 //        RepairCandidateGenerator G = new RepairCandidateGenerator(srcRoot, locations, false, false);
 //        List<RepairCandidate> spaces = G.run();
@@ -377,7 +376,7 @@ public class CodeDiffer {
             assert (rc.actions.size() > 0);
             if (rc.actions.get(0).loc_stmt == locStmt)
                 insMatchSet = matchCandidateWithHumanFix(rc, res0);
-            System.out.println(insSet);
+//            System.out.println(insSet);
             for (CtElement expr : insSet) {
                 FeatureVector featureVector = featureExtractor.extractFeature(rc, expr).getFeatureVector();
 //                FeatureVector featureVector = featureResolver.easyExtractor(file0, file1).getFeatureVector();

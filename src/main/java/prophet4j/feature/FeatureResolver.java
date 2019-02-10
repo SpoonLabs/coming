@@ -687,10 +687,10 @@ public class FeatureResolver {
         CtElement dstAncestor = dstStmtList.get(0);
         dstStmtList = getStmtList(dstAncestor);
         int pivot = getPivot(srcStmtList, dstStmtList);
-        System.out.println(pivot);
-        System.out.println(srcStmtList);
-        System.out.println(dstStmtList);
-        System.out.println(diff.getRootOperations());
+//        System.out.println(pivot);
+//        System.out.println(srcStmtList);
+//        System.out.println(dstStmtList);
+//        System.out.println(diff.getRootOperations());
 
         FeatureManager featureManager = new FeatureManager();
         for (Operation operation : diff.getRootOperations()) {
@@ -704,7 +704,7 @@ public class FeatureResolver {
                 featureManager.addFeature(new Feature(JointType.RF_JT, repairFeatures));
             }
             // GlobalFeatureNum     = 3 * AtomFeatureNum * RepairFeatureNum = 450
-            System.out.println("GlobalFeature");
+//            System.out.println("GlobalFeature");
             for (int index = Math.max(0, pivot - 3); index < Math.min(pivot + 4, srcStmtList.size()); index++) {
                 // s in Feature Extraction Algorithm
                 CtElement focusedStmt = srcStmtList.get(index);
@@ -725,7 +725,7 @@ public class FeatureResolver {
                 // n in Feature Extraction Algorithm
                 CtElement patchedStmt = dstStmtList.get(pivot);
                 // VarCrossFeatureNum   = 3 * AtomFeatureNum * AtomFeatureNum   = 2700
-                System.out.println("VarCrossFeature + ValueCrossFeature");
+//                System.out.println("VarCrossFeature + ValueCrossFeature");
                 for (CtElement atom : getAtoms(patchedStmt)) {
                     EnumSet<AtomicFeature> dstAtomicFeatures = getAtomicKinds(atom, patchedStmt, operation instanceof UpdateOperation);
                     for (int index = Math.max(0, pivot - 3); index < Math.min(pivot + 4, srcStmtList.size()); index++) {

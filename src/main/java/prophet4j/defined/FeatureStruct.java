@@ -46,7 +46,7 @@ public interface FeatureStruct {
 
         public boolean containFeatureType(FeatureType featureType) {
             for (Feature feature : features) {
-                System.out.println(feature);
+//                System.out.println(feature);
                 if (feature.containFeatureType(featureType)) {
                     return true;
                 }

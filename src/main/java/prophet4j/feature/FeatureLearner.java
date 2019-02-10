@@ -95,12 +95,12 @@ public class FeatureLearner {
                 for (int j = 0; j < c.cases.size(); j++)
                     a[j] = Theta.dotProduct(c.cases.get(j));
                 int max_beat = 0;
-                System.out.println("c.marked.size():" + c.marked.size() + " c.cases.size():" + c.cases.size());
+//                System.out.println("c.marked.size():" + c.marked.size() + " c.cases.size():" + c.cases.size());
                 for (int k = 0; k < c.marked.size(); k++) {
                     int beat = 0;
                     for (int j = 0; j < c.cases.size(); j++) {
-                        System.out.println("j:" + j + " c.marked.get(k):" + c.marked.get(k));
-                        System.out.println("a[j]:" + a[j] + " a[c.marked.get(k)]:" + a[c.marked.get(k)]);
+//                        System.out.println("j:" + j + " c.marked.get(k):" + c.marked.get(k));
+//                        System.out.println("a[j]:" + a[j] + " a[c.marked.get(k)]:" + a[c.marked.get(k)]);
                         if (a[j] < a[c.marked.get(k)] || ((a[j] == a[c.marked.get(k)]) && (j > c.marked.get(k))))
                             beat++;
                     }
@@ -443,9 +443,7 @@ public class FeatureLearner {
                 break;
             default:
                 logger.log(Level.INFO, "Unsupported algorithm!");
-                System.exit(1);
         }
-        System.exit(0);
     }
 
     // TODO: this is almost same as the unused function above, combine them
