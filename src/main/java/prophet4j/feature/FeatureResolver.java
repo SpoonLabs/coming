@@ -589,7 +589,7 @@ public class FeatureResolver {
             public <T> void visitCtLiteral(CtLiteral<T> ctLiteral) {
                 super.visitCtLiteral(ctLiteral);
                 if (ctLiteral.getValue() instanceof Integer) {
-                    if ((int) ctLiteral.getValue() == 0) {
+                    if ((Integer) ctLiteral.getValue() == 0) {
                         valueFeatures.add(ValueFeature.ZERO_CONST_VF);
                     } else {
                         valueFeatures.add(ValueFeature.NONZERO_CONST_VF);
