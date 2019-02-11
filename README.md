@@ -341,7 +341,3 @@ The argument `-filter withtest` indicates that only commits with at least one mo
 
 To extend Coming, please read the document [Extension points of Coming](./docs/extension_points.md)
 
-
-
-
-
