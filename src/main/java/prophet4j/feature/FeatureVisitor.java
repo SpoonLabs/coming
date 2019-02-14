@@ -1,9 +1,9 @@
 package prophet4j.feature;
 
 import prophet4j.defined.FeatureStruct.*;
-import prophet4j.defined.FeatureType;
+import prophet4j.defined.FeatureType.*;
 import prophet4j.defined.RepairStruct.*;
-import prophet4j.defined.RepairType;
+import prophet4j.defined.RepairType.*;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+// based on FeatureExtract.cpp
 public class FeatureVisitor {
 //        typedef std::multimap<unsigned int, unsigned int> HelperMapTy;
 //        HelperMapTy binOpHelper, uOpHelper, caOpHelper;
@@ -33,7 +34,7 @@ public class FeatureVisitor {
         this.valueExprInfo = valueExprInfo;
     }
 
-    private void putValueFeature(CtElement v, FeatureType.AtomicFeature af) {
+    private void putValueFeature(CtElement v, AtomicFeature af) {
         if (v == null) {
             if (!res.map.containsKey("")) {
                 res.map.put("", new HashSet<>());
@@ -61,20 +62,21 @@ public class FeatureVisitor {
         }
     }
 
+    // todo: consider the importance, if this not exists, then we do not need 7 genXXX()s
     public void traverseRC(RepairCandidate rc, CtElement abst_v) {
         this.abst_v = abst_v;
         if (abst_v != null)
-            putValueFeature(abst_v, FeatureType.AtomicFeature.ABST_V_AF);
-        this.is_replace_strconst = (rc.kind == RepairType.CandidateKind.ReplaceStringKind);
+            putValueFeature(abst_v, AtomicFeature.ABST_V_AF);
+        this.is_replace_strconst = (rc.kind == CandidateKind.ReplaceStringKind);
         assert(rc.actions.size() > 0);
-        isReplace = (rc.actions.get(0).kind == RepairType.RepairActionKind.ReplaceMutationKind);
-        if (rc.kind == RepairType.CandidateKind.TightenConditionKind ||
-                rc.kind == RepairType.CandidateKind.LoosenConditionKind ||
-                rc.kind == RepairType.CandidateKind.GuardKind ||
-                rc.kind == RepairType.CandidateKind.SpecialGuardKind) {
+        isReplace = (rc.actions.get(0).kind == RepairActionKind.ReplaceMutationKind);
+        if (rc.kind == CandidateKind.TightenConditionKind ||
+                rc.kind == CandidateKind.LoosenConditionKind ||
+                rc.kind == CandidateKind.GuardKind ||
+                rc.kind == CandidateKind.SpecialGuardKind) {
             if (rc.actions.get(0).ast_node instanceof CtIf) {
                 CtIf IFS = (CtIf) rc.actions.get(0).ast_node;
-                putValueFeature(null, FeatureType.AtomicFeature.R_STMT_COND_AF);
+                putValueFeature(null, AtomicFeature.R_STMT_COND_AF);
                 CtExpression cond = IFS.getCondition();
                 traverseStmt(cond);
             }
@@ -84,25 +86,25 @@ public class FeatureVisitor {
         }
     }
 
-    private void putStmtType(CtElement v, CtStatement S) {
+    private void putStmtType(CtElement v, CtElement S) {
         if (S instanceof CtIf) {
             if (!isReplace)
-                putValueFeature(v, FeatureType.AtomicFeature.STMT_COND_AF);
+                putValueFeature(v, AtomicFeature.STMT_COND_AF);
         }
         if (S instanceof CtAssignment) {
-            putValueFeature(v, isReplace ? FeatureType.AtomicFeature.R_STMT_ASSIGN_AF : FeatureType.AtomicFeature.STMT_ASSIGN_AF);
+            putValueFeature(v, isReplace ? AtomicFeature.R_STMT_ASSIGN_AF : AtomicFeature.STMT_ASSIGN_AF);
         }
         if (S instanceof CtInvocation) {
             if (isAbstractStub(S))
                 return;
-            putValueFeature(v, isReplace ? FeatureType.AtomicFeature.R_STMT_CALL_AF : FeatureType.AtomicFeature.STMT_CALL_AF);
+            putValueFeature(v, isReplace ? AtomicFeature.R_STMT_CALL_AF : AtomicFeature.STMT_CALL_AF);
         }
-        if (S instanceof CtDo || S instanceof CtFor || S instanceof CtWhile) {
+        if (S instanceof CtLoop) {
             assert(!isReplace);
-            putValueFeature(v, FeatureType.AtomicFeature.STMT_LOOP_AF);
+            putValueFeature(v, AtomicFeature.STMT_LOOP_AF);
         }
         if (S instanceof CtBreak || S instanceof CtReturn)
-            putValueFeature(v, isReplace ? FeatureType.AtomicFeature.R_STMT_CONTROL_AF : FeatureType.AtomicFeature.STMT_CONTROL_AF);
+            putValueFeature(v, isReplace ? AtomicFeature.R_STMT_CONTROL_AF : AtomicFeature.STMT_CONTROL_AF);
 //            if (llvm::isa<LabelStmt>(S)) {
 //                assert(!isReplace);
 //                putValueFeature(v, StmtLabelAF);
@@ -143,19 +145,19 @@ public class FeatureVisitor {
                             if (isAbstractStub(CE)) {
                                 if (abst_v!=null) {
                                     if (isReplace)
-                                        putValueFeature(abst_v, FeatureType.AtomicFeature.R_STMT_CALL_AF);
+                                        putValueFeature(abst_v, AtomicFeature.R_STMT_CALL_AF);
                                     else
-                                        putValueFeature(abst_v, FeatureType.AtomicFeature.STMT_CALL_AF);
+                                        putValueFeature(abst_v, AtomicFeature.STMT_CALL_AF);
                                 }
                                 else if (is_replace_strconst) {
                                     // OK, we are in string const replacement part
-                                    putValueFeature(CE, FeatureType.AtomicFeature.ABST_V_AF);
+                                    putValueFeature(CE, AtomicFeature.ABST_V_AF);
                                 }
                             }
                             else
-                                putValueFeature(callee, FeatureType.AtomicFeature.CALLEE_AF);
+                                putValueFeature(callee, AtomicFeature.CALLEE_AF);
                             for (Object it : CE.getActualTypeArguments())
-                                putValueFeature((CtTypeReference) it, FeatureType.AtomicFeature.CALL_ARGUMENT_AF);
+                                putValueFeature((CtTypeReference) it, AtomicFeature.CALL_ARGUMENT_AF);
                         }
                     };
                     scanner.scan(S);
@@ -171,14 +173,14 @@ public class FeatureVisitor {
                     super.scan(element);
                     // VisitExpr
                     if (element instanceof CtExpression) {
-                        CtStatement TS = (CtStatement) S;
+                        CtElement TS = S;
                         while(!(TS instanceof CtMethod || TS instanceof CtClass || TS instanceof CtIf || TS instanceof CtStatementList)) {
                             if (isAbstractStub(element) && abst_v!=null)
                                 putStmtType(abst_v, TS);
                             else {
                                 putStmtType((CtExpression) element, TS);
                             }
-                            TS = (CtStatement) TS.getParent();
+                            TS = TS.getParent();
                         }
                     }
                 }
@@ -186,14 +188,14 @@ public class FeatureVisitor {
                 @Override
                 public <T> void visitCtField(CtField<T> f) {
                     super.visitCtField(f);
-                    putValueFeature(f, FeatureType.AtomicFeature.MEMBER_ACCESS_AF);
+                    putValueFeature(f, AtomicFeature.MEMBER_ACCESS_AF);
                 }
 
                 @Override
                 public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
                     super.visitCtFieldReference(reference);
-                    putValueFeature(reference, FeatureType.AtomicFeature.DE_REF_AF);
-                    putValueFeature(reference, FeatureType.AtomicFeature.MEMBER_ACCESS_AF);
+                    putValueFeature(reference, AtomicFeature.DE_REF_AF);
+                    putValueFeature(reference, AtomicFeature.MEMBER_ACCESS_AF);
                 }
 
                 @Override
@@ -203,48 +205,48 @@ public class FeatureVisitor {
                     CtExpression RHS = operator.getRightHandOperand();
                     switch (operator.getKind()) {
                         case PLUS:
-                            putValueFeature(LHS, FeatureType.AtomicFeature.OP_ADD_AF);
-                            putValueFeature(RHS, FeatureType.AtomicFeature.OP_ADD_AF);
+                            putValueFeature(LHS, AtomicFeature.OP_ADD_AF);
+                            putValueFeature(RHS, AtomicFeature.OP_ADD_AF);
                             break;
                         case MINUS:
-                            putValueFeature(LHS, FeatureType.AtomicFeature.OP_SUB_AF);
-                            putValueFeature(RHS, FeatureType.AtomicFeature.OP_SUB_AF);
+                            putValueFeature(LHS, AtomicFeature.OP_SUB_AF);
+                            putValueFeature(RHS, AtomicFeature.OP_SUB_AF);
                             break;
                         case MUL:
-                            putValueFeature(LHS, FeatureType.AtomicFeature.OP_MUL_AF);
-                            putValueFeature(RHS, FeatureType.AtomicFeature.OP_MUL_AF);
+                            putValueFeature(LHS, AtomicFeature.OP_MUL_AF);
+                            putValueFeature(RHS, AtomicFeature.OP_MUL_AF);
                             break;
                         case DIV:
-                            putValueFeature(LHS, FeatureType.AtomicFeature.OP_DIV_AF);
-                            putValueFeature(RHS, FeatureType.AtomicFeature.OP_DIV_AF);
+                            putValueFeature(LHS, AtomicFeature.OP_DIV_AF);
+                            putValueFeature(RHS, AtomicFeature.OP_DIV_AF);
                             break;
                         case MOD:
-                            putValueFeature(LHS, FeatureType.AtomicFeature.OP_MOD_AF);
-                            putValueFeature(RHS, FeatureType.AtomicFeature.OP_MOD_AF);
+                            putValueFeature(LHS, AtomicFeature.OP_MOD_AF);
+                            putValueFeature(RHS, AtomicFeature.OP_MOD_AF);
                             break;
                         case LE:
-                            putValueFeature(LHS, FeatureType.AtomicFeature.OP_LE_AF);
-                            putValueFeature(RHS, FeatureType.AtomicFeature.OP_LE_AF);
+                            putValueFeature(LHS, AtomicFeature.OP_LE_AF);
+                            putValueFeature(RHS, AtomicFeature.OP_LE_AF);
                             break;
                         case LT:
-                            putValueFeature(LHS, FeatureType.AtomicFeature.OP_LT_AF);
-                            putValueFeature(RHS, FeatureType.AtomicFeature.OP_LT_AF);
+                            putValueFeature(LHS, AtomicFeature.OP_LT_AF);
+                            putValueFeature(RHS, AtomicFeature.OP_LT_AF);
                             break;
                         case GE:
-                            putValueFeature(LHS, FeatureType.AtomicFeature.OP_GE_AF);
-                            putValueFeature(RHS, FeatureType.AtomicFeature.OP_GE_AF);
+                            putValueFeature(LHS, AtomicFeature.OP_GE_AF);
+                            putValueFeature(RHS, AtomicFeature.OP_GE_AF);
                             break;
                         case GT:
-                            putValueFeature(LHS, FeatureType.AtomicFeature.OP_GT_AF);
-                            putValueFeature(RHS, FeatureType.AtomicFeature.OP_GT_AF);
+                            putValueFeature(LHS, AtomicFeature.OP_GT_AF);
+                            putValueFeature(RHS, AtomicFeature.OP_GT_AF);
                             break;
                         case EQ:
-                            putValueFeature(LHS, FeatureType.AtomicFeature.OP_EQ_AF);
-                            putValueFeature(RHS, FeatureType.AtomicFeature.OP_EQ_AF);
+                            putValueFeature(LHS, AtomicFeature.OP_EQ_AF);
+                            putValueFeature(RHS, AtomicFeature.OP_EQ_AF);
                             break;
                         case NE:
-                            putValueFeature(LHS, FeatureType.AtomicFeature.OP_NE_AF);
-                            putValueFeature(RHS, FeatureType.AtomicFeature.OP_NE_AF);
+                            putValueFeature(LHS, AtomicFeature.OP_NE_AF);
+                            putValueFeature(RHS, AtomicFeature.OP_NE_AF);
                             break;
                     }
                 }
@@ -255,20 +257,20 @@ public class FeatureVisitor {
                     CtExpression operand = operator.getOperand();
                     switch (operator.getKind()) {
                         case POS:
-                            putValueFeature(operand, FeatureType.AtomicFeature.OP_ADD_AF);
+                            putValueFeature(operand, AtomicFeature.OP_ADD_AF);
                             break;
                         case NEG:
-                            putValueFeature(operand, FeatureType.AtomicFeature.OP_SUB_AF);
+                            putValueFeature(operand, AtomicFeature.OP_SUB_AF);
                             break;
                         case PREINC:
                         case POSTINC:
-                            putValueFeature(operand, FeatureType.AtomicFeature.UOP_INC_AF);
-                            putValueFeature(operand, FeatureType.AtomicFeature.CHANGED_AF);
+                            putValueFeature(operand, AtomicFeature.UOP_INC_AF);
+                            putValueFeature(operand, AtomicFeature.CHANGED_AF);
                             break;
                         case PREDEC:
                         case POSTDEC:
-                            putValueFeature(operand, FeatureType.AtomicFeature.UOP_DEC_AF);
-                            putValueFeature(operand, FeatureType.AtomicFeature.CHANGED_AF);
+                            putValueFeature(operand, AtomicFeature.UOP_DEC_AF);
+                            putValueFeature(operand, AtomicFeature.CHANGED_AF);
                             break;
                     }
                 }
@@ -278,21 +280,21 @@ public class FeatureVisitor {
                     super.visitCtAssignment(assignment);
                     CtExpression LHS = assignment.getAssigned();
                     CtExpression RHS = assignment.getAssignment();
-                    putValueFeature(LHS, FeatureType.AtomicFeature.ASSIGN_LHS_AF);
-                    putValueFeature(LHS, FeatureType.AtomicFeature.CHANGED_AF);
+                    putValueFeature(LHS, AtomicFeature.ASSIGN_LHS_AF);
+                    putValueFeature(LHS, AtomicFeature.CHANGED_AF);
                     if (RHS instanceof CtLiteral) {
                         Object v = ((CtLiteral)RHS).getValue();
                         if (v instanceof Integer) {
                             if ((Integer) v == 0) {
-                                putValueFeature(LHS, FeatureType.AtomicFeature.CONST_ZERO_AF);
+                                putValueFeature(LHS, AtomicFeature.CONST_ZERO_AF);
                             } else {
-                                putValueFeature(LHS, FeatureType.AtomicFeature.CONST_NONZERO_AF);
+                                putValueFeature(LHS, AtomicFeature.CONST_NONZERO_AF);
                             }
                         }
                     }
                     if (RHS instanceof CtArrayTypeReference) {
-                        putValueFeature(LHS, FeatureType.AtomicFeature.DE_REF_AF);
-                        putValueFeature(RHS, FeatureType.AtomicFeature.INDEX_AF);
+                        putValueFeature(LHS, AtomicFeature.DE_REF_AF);
+                        putValueFeature(RHS, AtomicFeature.INDEX_AF);
                     }
                 }
 
@@ -303,27 +305,27 @@ public class FeatureVisitor {
                     CtExpression RHS = assignment.getAssignment();
                     switch (assignment.getKind()) {
                         case PLUS:
-                            putValueFeature(LHS, FeatureType.AtomicFeature.OP_ADD_AF);
-                            putValueFeature(RHS, FeatureType.AtomicFeature.OP_ADD_AF);
+                            putValueFeature(LHS, AtomicFeature.OP_ADD_AF);
+                            putValueFeature(RHS, AtomicFeature.OP_ADD_AF);
                             break;
                         case MINUS:
-                            putValueFeature(LHS, FeatureType.AtomicFeature.OP_SUB_AF);
-                            putValueFeature(RHS, FeatureType.AtomicFeature.OP_SUB_AF);
+                            putValueFeature(LHS, AtomicFeature.OP_SUB_AF);
+                            putValueFeature(RHS, AtomicFeature.OP_SUB_AF);
                             break;
                         case MUL:
-                            putValueFeature(LHS, FeatureType.AtomicFeature.OP_MUL_AF);
-                            putValueFeature(RHS, FeatureType.AtomicFeature.OP_MUL_AF);
+                            putValueFeature(LHS, AtomicFeature.OP_MUL_AF);
+                            putValueFeature(RHS, AtomicFeature.OP_MUL_AF);
                             break;
                         case DIV:
-                            putValueFeature(LHS, FeatureType.AtomicFeature.OP_DIV_AF);
-                            putValueFeature(RHS, FeatureType.AtomicFeature.OP_DIV_AF);
+                            putValueFeature(LHS, AtomicFeature.OP_DIV_AF);
+                            putValueFeature(RHS, AtomicFeature.OP_DIV_AF);
                             break;
                         case MOD:
-                            putValueFeature(LHS, FeatureType.AtomicFeature.OP_MOD_AF);
-                            putValueFeature(RHS, FeatureType.AtomicFeature.OP_MOD_AF);
+                            putValueFeature(LHS, AtomicFeature.OP_MOD_AF);
+                            putValueFeature(RHS, AtomicFeature.OP_MOD_AF);
                             break;
                     }
-                    putValueFeature(LHS, FeatureType.AtomicFeature.CHANGED_AF);
+                    putValueFeature(LHS, AtomicFeature.CHANGED_AF);
                 }
             };
             scanner.scan(S);
@@ -334,31 +336,31 @@ public class FeatureVisitor {
         // FIXME: Going to filter out some messy stuff in NULL stmtTypeFeature
         // We just want one type to dominate here
         if (res.map.containsKey("")) {
-            Set<FeatureType.AtomicFeature> tmp = res.map.get("");
-            if (tmp.contains(FeatureType.AtomicFeature.STMT_LOOP_AF)) {
-                tmp.remove(FeatureType.AtomicFeature.STMT_COND_AF);
-                tmp.remove(FeatureType.AtomicFeature.STMT_ASSIGN_AF);
-                tmp.remove(FeatureType.AtomicFeature.STMT_CALL_AF);
-                tmp.remove(FeatureType.AtomicFeature.STMT_CONTROL_AF);
-                tmp.remove(FeatureType.AtomicFeature.STMT_LABEL_AF);
+            Set<AtomicFeature> tmp = res.map.get("");
+            if (tmp.contains(AtomicFeature.STMT_LOOP_AF)) {
+                tmp.remove(AtomicFeature.STMT_COND_AF);
+                tmp.remove(AtomicFeature.STMT_ASSIGN_AF);
+                tmp.remove(AtomicFeature.STMT_CALL_AF);
+                tmp.remove(AtomicFeature.STMT_CONTROL_AF);
+                tmp.remove(AtomicFeature.STMT_LABEL_AF);
             }
-            else if (tmp.contains(FeatureType.AtomicFeature.STMT_COND_AF)) {
-                tmp.remove(FeatureType.AtomicFeature.STMT_ASSIGN_AF);
-                tmp.remove(FeatureType.AtomicFeature.STMT_CALL_AF);
-                tmp.remove(FeatureType.AtomicFeature.STMT_CONTROL_AF);
-                tmp.remove(FeatureType.AtomicFeature.STMT_LABEL_AF);
+            else if (tmp.contains(AtomicFeature.STMT_COND_AF)) {
+                tmp.remove(AtomicFeature.STMT_ASSIGN_AF);
+                tmp.remove(AtomicFeature.STMT_CALL_AF);
+                tmp.remove(AtomicFeature.STMT_CONTROL_AF);
+                tmp.remove(AtomicFeature.STMT_LABEL_AF);
             }
-            else if (tmp.contains(FeatureType.AtomicFeature.STMT_LABEL_AF)) {
-                tmp.remove(FeatureType.AtomicFeature.STMT_CONTROL_AF);
-                tmp.remove(FeatureType.AtomicFeature.STMT_ASSIGN_AF);
-                tmp.remove(FeatureType.AtomicFeature.STMT_CALL_AF);
+            else if (tmp.contains(AtomicFeature.STMT_LABEL_AF)) {
+                tmp.remove(AtomicFeature.STMT_CONTROL_AF);
+                tmp.remove(AtomicFeature.STMT_ASSIGN_AF);
+                tmp.remove(AtomicFeature.STMT_CALL_AF);
             }
-            else if (tmp.contains(FeatureType.AtomicFeature.STMT_CONTROL_AF)) {
-                tmp.remove(FeatureType.AtomicFeature.STMT_CALL_AF);
-                tmp.remove(FeatureType.AtomicFeature.STMT_ASSIGN_AF);
+            else if (tmp.contains(AtomicFeature.STMT_CONTROL_AF)) {
+                tmp.remove(AtomicFeature.STMT_CALL_AF);
+                tmp.remove(AtomicFeature.STMT_ASSIGN_AF);
             }
-            else if (tmp.contains(FeatureType.AtomicFeature.STMT_ASSIGN_AF)) {
-                tmp.remove(FeatureType.AtomicFeature.STMT_CALL_AF);
+            else if (tmp.contains(AtomicFeature.STMT_ASSIGN_AF)) {
+                tmp.remove(AtomicFeature.STMT_CALL_AF);
             }
         }
         return res;

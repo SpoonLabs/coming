@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import prophet4j.defined.FeatureType.*;
-import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtElement;
 
 import java.util.*;
 
@@ -58,7 +58,7 @@ public interface FeatureStruct {
 
         @Override
         public String toString() {
-            return "Context " + features + "\n";
+            return "Features: " + features;
         }
     }
 
@@ -119,7 +119,7 @@ public interface FeatureStruct {
 
         @Override
         public String toString() {
-            return "Feature " + featureTypes + "\n";
+            return "Feature: " + featureTypes;
         }
     }
 
@@ -221,6 +221,6 @@ public interface FeatureStruct {
     }
 
     class Cache { // Cache
-        public Map<CtStatement, ValueToFeatureMapTy> map = new HashMap<>();
+        public Map<CtElement, ValueToFeatureMapTy> map = new HashMap<>();
     }
 }

@@ -1,4 +1,4 @@
-package prophet4j.repair;
+package prophet4j.support;
 
 import gumtree.spoon.AstComparator;
 import gumtree.spoon.diff.Diff;
@@ -10,7 +10,7 @@ import prophet4j.defined.FeatureStruct.*;
 import prophet4j.defined.RepairStruct.*;
 import prophet4j.defined.RepairType.*;
 import prophet4j.feature.FeatureExtractor;
-import prophet4j.feature.FeatureResolver;
+import prophet4j.feature.RepairCandidateGenerator;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtPath;
@@ -28,6 +28,7 @@ public class CodeDiffer {
     private Set<CtElement> lookupCandidateAtoms(RepairCandidate rc, Set<CtElement> expressions) {
         Set<CtElement> atoms = rc.getCandidateAtoms();
         // get the intersection of two sets
+        // fixme: ...
         expressions.retainAll(atoms);
         return expressions;
     }
@@ -39,7 +40,7 @@ public class CodeDiffer {
             case IfExitKind: // INSERT_CONTROL_RF
                 // add if-exit
                 if (res0.kind == DiffActionKindTy.InsertAction || res0.kind == DiffActionKindTy.ReplaceAction) {
-                    //XXX: We specially handle the case where the repair replaces the break/return statement
+                    //XXX: We specially handle the case where the support replaces the break/return statement
                     boolean yes = true;
                     CtStatement S1 = (CtStatement) res0.srcElem;
                     CtStatement S2 = (CtStatement) res0.dstElem;
@@ -226,8 +227,8 @@ public class CodeDiffer {
     }
 
     // based on LocationFuzzer class
-    private Map<CtStatement, Integer> fuzzyLocator(CtStatement statement) {
-        Map<CtStatement, Integer> locations = new HashMap<>();
+    private Map<CtElement, Integer> fuzzyLocator(CtElement statement) {
+        Map<CtElement, Integer> locations = new HashMap<>();
         List<CtStatement> statements = statement.getParent().getElements(new TypeFilter<>(CtStatement.class));
         if (statement.getParent() instanceof CtStatement) {
             statements = statements.subList(1, statements.size());
@@ -241,7 +242,7 @@ public class CodeDiffer {
         return locations;
     }
 
-    private DiffResultEntry generateDiffResultEntry(Diff diff, CtElement srcRoot, CtElement dstRoot) {
+    private DiffResultEntry generateDiffResultEntry(Diff diff, CtElement srcRoot, CtElement dstRoot) throws IndexOutOfBoundsException {
         CtElement ancestor = diff.commonAncestor();
         if (ancestor instanceof CtExpression) {
             while (!(ancestor instanceof CtStatement)){
@@ -300,6 +301,8 @@ public class CodeDiffer {
     }
 
     public List<FeatureVector> func4Demo(File file0, File file1) throws Exception {
+        List<FeatureVector> featureVectors = new ArrayList<>();
+
         AstComparator comparator = new AstComparator();
         Diff diff = comparator.compare(file0, file1);
 //        System.out.println("========");
@@ -310,83 +313,68 @@ public class CodeDiffer {
 
 //        System.out.println(srcRoot);
 //        System.out.println(dstRoot);
-        DiffResultEntry res0 = generateDiffResultEntry(diff, srcRoot, dstRoot);
-        // todo: check all cast operations
-        CtStatement locStmt = (CtStatement) res0.srcElem;
-        Map<CtStatement, Integer> locations = fuzzyLocator(locStmt);
 
-        RepairCandidateGenerator G = new RepairCandidateGenerator(srcRoot, locations, false, false);
-        List<RepairCandidate> spaces = G.run();
-        FeatureExtractor featureExtractor = new FeatureExtractor();
+        try {
+            DiffResultEntry res0 = generateDiffResultEntry(diff, srcRoot, dstRoot);
+            // todo: check all cast operations
+            CtStatement locStmt = (CtStatement) res0.srcElem;
+            Map<CtElement, Integer> locations = fuzzyLocator(locStmt);
+
+            RepairCandidateGenerator G = new RepairCandidateGenerator(srcRoot, locations, false, false);
+            List<RepairCandidate> spaces = G.run();
+            FeatureExtractor featureExtractor = new FeatureExtractor();
 //        FeatureResolver featureResolver = new FeatureResolver();
-        List<FeatureVector> featureVectors = new ArrayList<>();
-        for (RepairCandidate rc: spaces) {
-            Set<CtElement> insSet = rc.getCandidateAtoms();
-            Set<CtElement> insMatchSet = new HashSet<>();
-            assert(rc.actions.size() > 0);
-            if (rc.actions.get(0).loc_stmt == locStmt)
-                insMatchSet = matchCandidateWithHumanFix(rc, res0);
-            for (CtElement expr : insSet) {
-                FeatureVector featureVector = featureExtractor.extractFeature(rc, expr).getFeatureVector();
-//                FeatureVector featureVector = featureResolver.easyExtractor(file0, file1).getFeatureVector();
-                if (insMatchSet.contains(expr)) {
-                    featureVector.setMark();
-                    logger.log(Level.INFO, "CandidateType: " + rc.kind + "Found for:\n " + expr);
+            for (RepairCandidate rc: spaces) {
+                Set<CtElement> insSet = rc.getCandidateAtoms();
+                Set<CtElement> insMatchSet = new HashSet<>();
+                assert(rc.actions.size() > 0);
+                if (rc.actions.get(0).loc_stmt.equals(locStmt)) {
+                    insMatchSet = matchCandidateWithHumanFix(rc, res0);
                 }
-                featureVectors.add(featureVector);
+                System.out.println(insSet.size() + "@@@@" + insSet);
+                System.out.println(insMatchSet.size() + "$$$$" + insMatchSet);
+                // null is the only value in insSet (to implement repair-features)
+                for (CtElement expr : insSet) {
+                    FeatureVector featureVector = featureExtractor.extractFeature(rc, expr).getFeatureVector();
+//                FeatureVector featureVector = featureResolver.easyExtractor(file0, file1).getFeatureVector();
+                    // fixme: why always be false (consider L31)
+//                    if (insMatchSet.contains(expr)) {
+                        featureVector.setMark();
+                        logger.log(Level.INFO, "CandidateType: " + rc.kind + "Found for:\n " + expr);
+//                    }
+                    featureVectors.add(featureVector);
+                }
             }
+        } catch (IndexOutOfBoundsException e) {
+            logger.log(Level.WARN, "diff.commonAncestor() returns null value");
         }
+
         return featureVectors;
     }
 
     // for FeatureExtractorTest.java
-    public List<FeatureVector> func4Test(String str0, String str1) {
+    public List<FeatureVector> func4Test(String str0, String str1, CandidateKind kind) {
+        List<FeatureVector> featureVectors = new ArrayList<>();
+
         AstComparator comparator = new AstComparator();
         Diff diff = comparator.compare(str0, str1);
         CtElement srcRoot = comparator.getCtType(str0).getParent();
         CtElement dstRoot = comparator.getCtType(str1).getParent();
 
-        DiffResultEntry res0 = generateDiffResultEntry(diff, srcRoot, dstRoot);
-        // todo: check all cast operations
-        CtStatement locStmt = (CtStatement) res0.srcElem;
-        Map<CtStatement, Integer> locations = fuzzyLocator(locStmt);
-//        System.out.println("--------");
-//        System.out.println(res0.srcElem);
-//        System.out.println(res0.dstElem);
-//        System.out.println(res0.kind);
-
-//        RepairCandidateGenerator G = new RepairCandidateGenerator(srcRoot, locations, false, false);
-//        List<RepairCandidate> spaces = G.run();
-        List<RepairCandidate> spaces = new ArrayList<>();
-//        spaces.add(new RepairCandidate(res0, CandidateKind.IfExitKind));
-//        spaces.add(new RepairCandidate(res0, CandidateKind.GuardKind));
-//        spaces.add(new RepairCandidate(res0, CandidateKind.SpecialGuardKind));
-//        spaces.add(new RepairCandidate(res0, CandidateKind.AddInitKind));
-//        spaces.add(new RepairCandidate(res0, CandidateKind.AddAndReplaceKind));
-//        spaces.add(new RepairCandidate(res0, CandidateKind.TightenConditionKind));
-//        spaces.add(new RepairCandidate(res0, CandidateKind.LoosenConditionKind));
-        spaces.add(new RepairCandidate(res0, CandidateKind.ReplaceKind));
-//        spaces.add(new RepairCandidate(res0, CandidateKind.ReplaceStringKind));
-
-        FeatureExtractor featureExtractor = new FeatureExtractor();
-//        FeatureResolver featureResolver = new FeatureResolver();
-        List<FeatureVector> featureVectors = new ArrayList<>();
-        for (RepairCandidate rc: spaces) {
+        try {
+            DiffResultEntry res0 = generateDiffResultEntry(diff, srcRoot, dstRoot);
+            RepairCandidate rc = new RepairCandidate(res0, kind);
             Set<CtElement> insSet = rc.getCandidateAtoms();
-            Set<CtElement> insMatchSet = new HashSet<>();
             assert(rc.actions.size() > 0);
-            if (rc.actions.get(0).loc_stmt == locStmt)
-                insMatchSet = matchCandidateWithHumanFix(rc, res0);
-//            System.out.println(insSet);
+            FeatureExtractor featureExtractor = new FeatureExtractor();
             for (CtElement expr : insSet) {
+                System.out.println("********");
+                System.out.println(expr);
                 FeatureVector featureVector = featureExtractor.extractFeature(rc, expr).getFeatureVector();
-//                FeatureVector featureVector = featureResolver.easyExtractor(file0, file1).getFeatureVector();
-                if (insMatchSet.contains(expr)) {
-                    featureVector.setMark();
-                    logger.log(Level.INFO, "CandidateType: " + rc.kind + "Found for:\n " + expr);
-                }
                 featureVectors.add(featureVector);
             }
+        } catch (IndexOutOfBoundsException e) {
+            logger.log(Level.WARN, "diff.commonAncestor() returns null value");
         }
         return featureVectors;
     }

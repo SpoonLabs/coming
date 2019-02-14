@@ -1,4 +1,4 @@
-package prophet4j.repair;
+package prophet4j.feature;
 
 import java.util.*;
 
@@ -16,20 +16,17 @@ import spoon.support.reflect.code.CtLiteralImpl;
 
 /*
 fixme:
-    approximated:
+    to correct:
         genAddIfGuard() genTightCondition() genLooseCondition()
     to implement:
-        genReplaceStmt() genAddIfExit() genAddStatement()
-    if some of them are hard to implement, we could leave these aside now and try to solve them later
+        genAddMemset() genReplaceStmt() genAddIfExit() genAddStatement()
  */
 // based on RepairCandidateGenerator.cpp
 public class RepairCandidateGenerator {
-    final int PRIORITY_ALPHA = 5000;
-
     CtElement root;
     List<RepairCandidate> q = new ArrayList<>();
-    Map<CtStatement, Integer> loc_map;
-    Map<CtStatement, Integer> loc_map1;
+    Map<CtElement, Integer> loc_map;
+    Map<CtElement, Integer> loc_map1;
     Map<CtStatementList, Integer> compound_counter = new HashMap<>();
     // This is a hacky tmp list for fix is_first + is_func_block
     List<Integer> tmp_memo = new ArrayList<>();
@@ -39,7 +36,7 @@ public class RepairCandidateGenerator {
 //     boolean in_yacc_func; // seem meaningless
 
     // todo: consider SourceContextManager and maybe keep it as one input parameter
-    public RepairCandidateGenerator(CtElement root, Map<CtStatement, Integer> locs, boolean naive, boolean learning) {
+    public RepairCandidateGenerator(CtElement root, Map<CtElement, Integer> locs, boolean naive, boolean learning) {
         this.root = root;
         this.loc_map = locs;
         this.naive = naive;
@@ -63,21 +60,6 @@ public class RepairCandidateGenerator {
         }
     }
 
-    private double getPriority(CtStatement n) {
-        // temporary
-        assert (loc_map1.containsKey(n));
-        return -((double) loc_map1.get(n));
-    }
-
-    private double getLocScore(CtStatement n) {
-        assert (loc_map1.containsKey(n));
-        double score = Math.log(1 - GeoP) * loc_map1.get(n) + Math.log(GeoP);
-        // fixme: consider the case of CtLabel as spoon does not support CtLabel right now
-//        if (llvm::isa<LabelStmt>(n))
-//            score += 4.5;
-        return score;
-    }
-
     // The set of mutation generation subroutines
     private void genTightCondition(CtIf n) {
         CtExpression ori_cond = n.getCondition();
@@ -88,6 +70,7 @@ public class RepairCandidateGenerator {
         else
             placeholder = new CtInvocationImpl();
         CtIf S = n.clone();
+
         RepairCandidate rc = new RepairCandidate();
         rc.actions.clear();
         rc.actions.add(new RepairAction(n, RepairActionKind.ReplaceMutationKind, S));
@@ -97,11 +80,6 @@ public class RepairCandidateGenerator {
             List<CtElement> candidateVars = new ArrayList<>();
             rc.actions.add(new RepairAction(S, placeholder, candidateVars));
         }
-        // FIXME: priority!
-        if (learning)
-            rc.score = getLocScore(n);
-        else
-            rc.score = 4 * PRIORITY_ALPHA;
         rc.kind = CandidateKind.TightenConditionKind;
         q.add(rc);
     }
@@ -124,11 +102,6 @@ public class RepairCandidateGenerator {
             List<CtElement> candidateVars = new ArrayList<>();
             rc.actions.add(new RepairAction(S, placeholder, candidateVars));
         }
-        // FIXME: priority!
-        if (learning)
-            rc.score = getLocScore(n);
-        else
-            rc.score = 4 * PRIORITY_ALPHA;
         rc.kind = CandidateKind.LoosenConditionKind;
         q.add(rc);
 
@@ -151,11 +124,6 @@ public class RepairCandidateGenerator {
                     List<CtElement> candidateVars = new ArrayList<>();
                     rc.actions.add(new RepairAction(S, placeholder, candidateVars));
                 }
-                // FIXME: priority!
-                if (learning)
-                    rc.score = getLocScore(n);
-                else
-                    rc.score = 4 * PRIORITY_ALPHA;
                 rc.kind = CandidateKind.LoosenConditionKind;
                 q.add(rc);
             }
@@ -177,11 +145,6 @@ public class RepairCandidateGenerator {
 //                RepairCandidate rc = new RepairCandidate();
 //                rc.actions.clear();
 //                rc.actions.add(new RepairAction(loc, RepairActionKind.ReplaceMutationKind, it));
-//                // FIXME:
-//                if (learning)
-//                    rc.score = getLocScore(n);
-//                else
-//                    rc.score = getPriority(n) + PRIORITY_ALPHA / 2.0;
 //                rc.kind = CandidateKind.ReplaceKind;
 //                rc.is_first = is_first;
 //                rc.oldRExpr = V.getOldRExpr(it);
@@ -204,10 +167,6 @@ public class RepairCandidateGenerator {
 //                rc.is_first = is_first;
 //                rc.oldRExpr = V.getOldRExpr(it.getKey());
 //                rc.newRExpr =  null;
-//                if (learning)
-//                    rc.score = getLocScore(n);
-//                else
-//                    rc.score = getPriority(n) + PRIORITY_ALPHA + PRIORITY_ALPHA / 2.0;
 //                rc.kind = CandidateKind.ReplaceStringKind;
 //                q.add(rc);
 //            }
@@ -221,10 +180,6 @@ public class RepairCandidateGenerator {
 //                RepairCandidate rc = new RepairCandidate();
 //                rc.actions.clear();
 //                rc.actions.add(new RepairAction(loc, RepairActionKind.ReplaceMutationKind, it));
-//                if (learning)
-//                    rc.score = getLocScore(n);
-//                else
-//                    rc.score = getPriority(n) + PRIORITY_ALPHA;
 //                rc.kind = CandidateKind.ReplaceKind;
 //                rc.is_first = is_first;
 //                rc.oldRExpr = V2.getOldRExpr(it);
@@ -258,17 +213,6 @@ public class RepairCandidateGenerator {
 //                RepairCandidate rc = new RepairCandidate();
 //                rc.actions.clear();
 //                rc.actions.add(new RepairAction(loc, RepairActionKind.InsertMutationKind, it2));
-//                if (learning) {
-//                    rc.score = getLocScore(n);
-//                }
-//                else {
-//                    rc.score = getPriority(n);
-//                    if (is_first) {
-//                        rc.score += PRIORITY_ALPHA;
-//                        if (is_func_block)
-//                            rc.score += PRIORITY_ALPHA / 2.0;
-//                    }
-//                }
 //                rc.kind = CandidateKind.AddAndReplaceKind;
 //                rc.is_first = is_first;
 //                tmp_map.get(stmtToString(ctxt, it2)) = rc;
@@ -277,17 +221,6 @@ public class RepairCandidateGenerator {
 //                RepairCandidate rc = new RepairCandidate();
 //                rc.actions.clear();
 //                rc.actions.add(new RepairAction(loc, RepairActionKind.InsertMutationKind, it));
-//                if (learning) {
-//                    rc.score = getLocScore(n);
-//                }
-//                else {
-//                    rc.score = getPriority(n);
-//                    if (is_first) {
-//                        rc.score += PRIORITY_ALPHA;
-//                        if (is_func_block)
-//                            rc.score += PRIORITY_ALPHA / 2.0;
-//                    }
-//                }
 //                rc.kind = CandidateKind.AddAndReplaceKind;
 //                rc.is_first = is_first;
 //                tmp_map.get(stmtToString(ctxt, it)) = rc;
@@ -302,17 +235,6 @@ public class RepairCandidateGenerator {
 //                RepairCandidate rc = new RepairCandidate();
 //                rc.actions.clear();
 //                rc.actions.add(new RepairAction(loc, RepairActionKind.InsertMutationKind, it));
-//                if (learning) {
-//                    rc.score = getLocScore(n);
-//                }
-//                else {
-//                    rc.score = getPriority(n);
-//                    if (is_first) {
-//                        rc.score += PRIORITY_ALPHA;
-//                        if (is_func_block)
-//                            rc.score += PRIORITY_ALPHA / 2.0;
-//                    }
-//                }
 //                rc.kind = CandidateKind.AddAndReplaceKind;
 //                rc.is_first = is_first;
 //                tmp_map.get(stmtToString(ctxt, it)) = rc;
@@ -344,11 +266,6 @@ public class RepairCandidateGenerator {
             List<CtElement> candidateVars = new ArrayList<>();
             rc.actions.add(new RepairAction(new_IF, placeholder, candidateVars));
         }
-        // FIXME: priority!
-        if (learning)
-            rc.score = getLocScore(n);
-        else
-            rc.score = getPriority(n) + PRIORITY_ALPHA;
         rc.kind = CandidateKind.GuardKind;
         rc.is_first = is_first;
         q.add(rc);
@@ -366,11 +283,6 @@ public class RepairCandidateGenerator {
             //  List<CtExpression> candidateVars = L.getCondCandidateVars(n.getLocStart());
             List<CtElement> candidateVars = new ArrayList<>();
             rc.actions.add(new RepairAction(new_IF, placeholder, candidateVars));
-            // FIXME: priority!
-            if (learning)
-                rc.score = getLocScore(n);
-            else
-                rc.score = getPriority(n) + PRIORITY_ALPHA;
             rc.kind = CandidateKind.SpecialGuardKind;
             rc.is_first = is_first;
             q.add(rc);
@@ -399,20 +311,6 @@ public class RepairCandidateGenerator {
 //                List<CtExpression> candidateVars = new ArrayList<>();
 //                rc.actions.add(new RepairAction(new ASTLocTy(file, IFS), placeholder, candidateVars));
 //            }
-//            if (learning)
-//                rc.score = getLocScore(n);
-//            else {
-//                rc.score = getPriority(n) + PRIORITY_ALPHA;
-////                if (llvm::isa<LabelStmt>(n))
-////                    rc.score += PRIORITY_ALPHA / 2.0;
-//               /*if (llvm::isa<IfStmt>(n))
-//                    rc.score -= PRIORITY_ALPHA / 4.0;*/
-//                if (is_first) {
-//                    rc.score += PRIORITY_ALPHA;
-//                    if (is_func_block)
-//                        rc.score += PRIORITY_ALPHA / 2.0;
-//                }
-//            }
 //            rc.kind = CandidateKind.IfExitKind;
 //            rc.is_first = is_first;
 //            q.add(rc);
@@ -431,21 +329,6 @@ public class RepairCandidateGenerator {
 //                    List<CtExpression> candidateVars = new ArrayList<>();
 //                    rc.actions.add(new RepairAction(new ASTLocTy(file, IFS), placeholder, candidateVars));
 //                }
-//                //FIXME: candidate
-//                if (learning)
-//                    rc.score = getLocScore(n);
-//                else {
-//                    rc.score = getPriority(n) + PRIORITY_ALPHA;
-////                    if (llvm::isa<LabelStmt>(n))
-////                        rc.score += PRIORITY_ALPHA / 2.0;
-//                    /*if (llvm::isa<IfStmt>(n))
-//                        rc.score -= PRIORITY_ALPHA / 4.0;*/
-//                    if (is_first) {
-//                        rc.score += PRIORITY_ALPHA;
-//                        if (is_func_block)
-//                            rc.score += PRIORITY_ALPHA / 2.0;
-//                    }
-//                }
 //                rc.kind = CandidateKind.IfExitKind;
 //                rc.is_first = is_first;
 //                q.add(rc);
@@ -461,18 +344,6 @@ public class RepairCandidateGenerator {
 //            //  List<CtExpression> candidateVars = L.getCondCandidateVars(n.getLocStart());
 //            List<CtExpression> candidateVars = new ArrayList<>();
 //            rc.actions.add(new RepairAction(new ASTLocTy(file, IFS), placeholder, candidateVars));
-//            //FIXME: score
-//            if (learning)
-//                rc.score = getLocScore(n);
-//            else {
-//                rc.score = getPriority(n) + PRIORITY_ALPHA;
-////                if (llvm::isa<LabelStmt>(n))
-////                    rc.score += PRIORITY_ALPHA / 2.0;
-//                /*if (llvm::isa<IfStmt>(n))
-//                    rc.score -= PRIORITY_ALPHA / 4.0;*/
-//                if (is_first)
-//                    rc.score += PRIORITY_ALPHA;
-//            }
 //            rc.kind = CandidateKind.IfExitKind;
 //            rc.is_first = is_first;
 //            q.add(rc);
@@ -493,18 +364,6 @@ public class RepairCandidateGenerator {
 //            //  List<CtExpression> candidateVars = L.getCondCandidateVars(n.getLocStart());
 //            List<CtExpression> candidateVars = new ArrayList<>();
 //            rc.actions.add(new RepairAction(new ASTLocTy(file, IFS), placeholder, candidateVars));
-//            if (learning) {
-//                rc.score = getLocScore(n) + 1e-3;
-//            }
-//            else {
-//                rc.score = getPriority(n) + PRIORITY_ALPHA + 200;
-////                if (llvm::isa<LabelStmt>(n))
-////                    rc.score += PRIORITY_ALPHA / 2.0;
-//                /*if (llvm::isa<IfStmt>(n))
-//                    rc.score -= PRIORITY_ALPHA / 4.0;*/
-//                if (is_first)
-//                    rc.score += PRIORITY_ALPHA;
-//            }
 //            rc.kind = CandidateKind.IfExitKind;
 //            rc.is_first = is_first;
 //            q.add(rc);
@@ -524,6 +383,7 @@ public class RepairCandidateGenerator {
                 return false;
             }
 
+            // todo: I need to check all "Decl" in Prophet
             // https://clang.llvm.org/doxygen/classclang_1_1DeclStmt.html
             private boolean isDeclStmt(CtStatement statement) {
                 return statement instanceof CtIf || statement instanceof CtLoop || statement instanceof CtSwitch || statement instanceof CtAssignment;
@@ -579,14 +439,7 @@ public class RepairCandidateGenerator {
                     RepairCandidate rc = q.get(iv);
                     assert(rc.is_first);
                     assert(rc.actions.size() > 0);
-                    int old_loc = loc_map1.get(rc.actions.get(0).loc_stmt);
                     loc_map1.put(rc.actions.get(0).loc_stmt, loc_map1.get(m.getBody()));
-                    if (learning)
-                        rc.score = getLocScore(rc.actions.get(0).loc_stmt) + 0.2;
-                    else {
-                        rc.score += old_loc;
-                        rc.score -= loc_map1.get(rc.actions.get(0).loc_stmt);
-                    }
                 }
             }
 
@@ -614,7 +467,7 @@ public class RepairCandidateGenerator {
                         // todo: exact condition for DeclStmt and LabelStmt
                         if (!isDeclStmt(n) && !isLabelStmt(n))
                             genAddIfGuard(n, is_first);
-//                            genAddMemset(n, is_first); // seems not apply to Java
+//                            genAddMemset(n, is_first); // seems not apply to Java?
                         genAddStatement(n, is_first, n instanceof CtClass); // or "n instanceof CtMethod"
                         genAddIfExit(n, is_first, n instanceof CtClass); // or "n instanceof CtMethod"
                     }

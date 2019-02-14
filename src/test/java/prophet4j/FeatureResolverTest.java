@@ -128,17 +128,17 @@ public class FeatureResolverTest {
             str1 = "class foo{public void bar(){\nSystem.out.println(1);\n}}";
             assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.CALL_ARGUMENT_AF));
         }
-        {
-            str0 = "class foo{public void bar(){\nint a;\n}}";
-            str1 = "class foo{public void bar(){\nint a=1;\na=0;\n}}";
-            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.VARIABLE_AF));
-            str1 = "class foo{public void bar(){\nint a=1;\na=1;\n}}";
-            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.VARIABLE_AF));
-            str1 = "class foo{public void bar(){\nint a=1;\nint b=1;\na=b;}}";
-            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.VARIABLE_AF));
-            str1 = "class foo{public void bar(){\nint a=1;\nint b=1;\na*=b;}}";
-            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.VARIABLE_AF));
-        }
+//        {
+//            str0 = "class foo{public void bar(){\nint a;\n}}";
+//            str1 = "class foo{public void bar(){\nint a=1;\na=0;\n}}";
+//            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.VARIABLE_AF));
+//            str1 = "class foo{public void bar(){\nint a=1;\na=1;\n}}";
+//            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.VARIABLE_AF));
+//            str1 = "class foo{public void bar(){\nint a=1;\nint b=1;\na=b;}}";
+//            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.VARIABLE_AF));
+//            str1 = "class foo{public void bar(){\nint a=1;\nint b=1;\na*=b;}}";
+//            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.VARIABLE_AF));
+//        }
         {
             str0 = "class foo{public void bar(){\nint a;\n}}";
             str1 = "class foo{public void bar(){\nint a=1;\na=0;\n}}";
@@ -161,27 +161,27 @@ public class FeatureResolverTest {
             str1 = "class foo{public void bar(){\nint a=0;\nint b=0;\na*=b;}}";
             assertEquals(Boolean.FALSE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.CONST_NONZERO_AF));
         }
-        {
-            str0 = "class foo{public void bar(){\nint a=1;\n}}";
-            str1 = "class foo{public void bar(){\nint a=0;\n}}";
-            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.EXCLUDE_ATOM_AF));
-            str1 = "class foo{public void bar(){\nint b=1;\n}}";
-            assertEquals(Boolean.FALSE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.EXCLUDE_ATOM_AF));
-        }
-        {
-            str0 = "class foo{public void bar(){\nint a=1;\nint b=1;\na=a+1;\n}}";
-            str1 = "class foo{public void bar(){\nint a=1;\nint b=1;\na=b+1;\n}}";
-            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.OPERATE_LHS_AF));
-            str1 = "class foo{public void bar(){\nint a=1;\nint b=1;\na=1+b;\n}}";
-            assertEquals(Boolean.FALSE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.OPERATE_LHS_AF));
-        }
-        {
-            str0 = "class foo{public void bar(){\nint a=1;\nint b=1;\na=1+a;\n}}";
-            str1 = "class foo{public void bar(){\nint a=1;\nint b=1;\na=1+b;\n}}";
-            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.OPERATE_RHS_AF));
-            str1 = "class foo{public void bar(){\nint a=1;\nint b=1;\na=b+1;\n}}";
-            assertEquals(Boolean.FALSE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.OPERATE_RHS_AF));
-        }
+//        {
+//            str0 = "class foo{public void bar(){\nint a=1;\n}}";
+//            str1 = "class foo{public void bar(){\nint a=0;\n}}";
+//            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.EXCLUDE_ATOM_AF));
+//            str1 = "class foo{public void bar(){\nint b=1;\n}}";
+//            assertEquals(Boolean.FALSE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.EXCLUDE_ATOM_AF));
+//        }
+//        {
+//            str0 = "class foo{public void bar(){\nint a=1;\nint b=1;\na=a+1;\n}}";
+//            str1 = "class foo{public void bar(){\nint a=1;\nint b=1;\na=b+1;\n}}";
+//            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.OPERATE_LHS_AF));
+//            str1 = "class foo{public void bar(){\nint a=1;\nint b=1;\na=1+b;\n}}";
+//            assertEquals(Boolean.FALSE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.OPERATE_LHS_AF));
+//        }
+//        {
+//            str0 = "class foo{public void bar(){\nint a=1;\nint b=1;\na=1+a;\n}}";
+//            str1 = "class foo{public void bar(){\nint a=1;\nint b=1;\na=1+b;\n}}";
+//            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.OPERATE_RHS_AF));
+//            str1 = "class foo{public void bar(){\nint a=1;\nint b=1;\na=b+1;\n}}";
+//            assertEquals(Boolean.FALSE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.OPERATE_RHS_AF));
+//        }
         {
             str0 = "class foo{public void bar(){\nint a;\n}}";
             str1 = "class foo{public void bar(){\nint a=1;\na=0;\n}}";
@@ -193,17 +193,17 @@ public class FeatureResolverTest {
             str1 = "class foo{public void bar(){\nint a=1;\nint b=1;\na*=b;}}";
             assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.ASSIGN_LHS_AF));
         }
-        {
-            str0 = "class foo{public void bar(){\nint a;\n}}";
-            str1 = "class foo{public void bar(){\nint a=1;\na=0;\n}}";
-            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.ASSIGN_RHS_AF));
-            str1 = "class foo{public void bar(){\nint a=1;\na=1;\n}}";
-            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.ASSIGN_RHS_AF));
-            str1 = "class foo{public void bar(){\nint a=1;\nint b=1;\na=b;}}";
-            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.ASSIGN_RHS_AF));
-            str1 = "class foo{public void bar(){\nint a=1;\nint b=1;\na*=b;}}";
-            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.ASSIGN_RHS_AF));
-        }
+//        {
+//            str0 = "class foo{public void bar(){\nint a;\n}}";
+//            str1 = "class foo{public void bar(){\nint a=1;\na=0;\n}}";
+//            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.ASSIGN_RHS_AF));
+//            str1 = "class foo{public void bar(){\nint a=1;\na=1;\n}}";
+//            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.ASSIGN_RHS_AF));
+//            str1 = "class foo{public void bar(){\nint a=1;\nint b=1;\na=b;}}";
+//            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.ASSIGN_RHS_AF));
+//            str1 = "class foo{public void bar(){\nint a=1;\nint b=1;\na*=b;}}";
+//            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.ASSIGN_RHS_AF));
+//        }
         {
             str0 = "class foo{public void bar(){\nint a;\n}}";
             str1 = "class foo{public void bar(){\ndo{}while(true)\n}}";
@@ -301,16 +301,16 @@ public class FeatureResolverTest {
             str1 = "class foo{public void bar(){\nint a=1;\nint b=1;\nb=a;\n}}";
             assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(RepairFeature.REPLACE_STMT_RF));
         }
-        {
+//        {
 //            str0 = "class foo{public void bar(){\nint a;\nint b;\n}}";
 //            str1 = "class foo{public void bar(){\nint a;\n}}";
 //            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(RepairFeature.DELETE_STMT_RF));
-        }
-        {
-            str0 = "class foo{public void bar(){\nint a=1;\nboolean b=true;\n}}";
-            str1 = "class foo{public void bar(){\nboolean b=true;\nint a=1;\n}}";
-            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(RepairFeature.UNKNOWN_STMT_RF));
-        }
+//        }
+//        {
+//            str0 = "class foo{public void bar(){\nint a=1;\nboolean b=true;\n}}";
+//            str1 = "class foo{public void bar(){\nboolean b=true;\nint a=1;\n}}";
+//            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(RepairFeature.UNKNOWN_STMT_RF));
+//        }
         {
             str0 = "class foo{public void bar(){\nint a=0;\na=1;\n}}";
             str1 = "class foo{public void bar(){\nint a=0;\na=1+1;\n}}";
