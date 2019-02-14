@@ -9,7 +9,6 @@ Reference
 
 [Oracle Java Tutorials](https://docs.oracle.com/javase/tutorial/java/index.html)
 
-[Astor Sample Code](https://github.com/SpoonLabs/astor/blob/HEAD/src/main/java/fr/inria/astor/core/entities/CntxResolver.java)
 
 Prophet
 ----
