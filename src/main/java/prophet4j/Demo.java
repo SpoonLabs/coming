@@ -18,7 +18,7 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import prophet4j.defined.FeatureStruct;
-import prophet4j.repair.CodeDiffer;
+import prophet4j.support.CodeDiffer;
 import prophet4j.unused.Main;
 import tech.sourced.siva.IndexEntry;
 import tech.sourced.siva.SivaReader;
@@ -75,10 +75,10 @@ public class Demo {
       "10fb9656a916d1c0ff57c28d7dcbfcb5bd313278.siva"
     ]
      */
-    private static final String SIVA_COMMITS_DIR = "src/main/resources/siva-commits/";
-    private static final String SIVA_VECTORS_DIR = "src/main/resources/siva-vectors/";
     private static final String SIVA_FILES_DIR = "src/main/resources/siva-files/";
     private static final String SIVA_UNPACKED_DIR = "src/main/resources/siva-unpacked/";
+    private static final String SIVA_COMMITS_DIR = "src/main/resources/siva-commits/";
+    private static final String SIVA_VECTORS_DIR = "src/main/resources/siva-vectors/";
     private static final String DEFAULT_SIVA_FILE = SIVA_FILES_DIR + "10fb9656a916d1c0ff57c28d7dcbfcb5bd313278.siva";
     private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
 
@@ -175,7 +175,7 @@ public class Demo {
                     if (oldPath.equals(newPath)) {
                         commitDiffer.addDiffer(oldCommitName, newCommitName, oldPath, newPath);
                     } else {
-                        System.out.println("================");
+                        System.out.println("oldPath is different from newPath");
                     }
                 }
             }
@@ -246,9 +246,12 @@ public class Demo {
 
     // it might be helpful to load notes of commits, maybe consider this someday
     public static void main(String[] args) throws IOException, GitAPIException {
-        // if unpacked files do not exist then uncommented the next line
-//        unpack();
-        // for printing progress
+        // if siva-unpacked files do not exist then uncommented the next line
+        boolean existUnpackDir = new File(SIVA_UNPACKED_DIR).exists();
+        boolean existCommitsDir = new File(SIVA_COMMITS_DIR).exists();
+        if (!existUnpackDir) {
+            unpack();
+        }
         int progressAll, progressNow = 0;
 
         // prepare the whole data-set
@@ -272,12 +275,14 @@ public class Demo {
             System.out.println("LogCommit: " + commit);
             if (lastCommit != null) {
                 // todo: why runDiff() for some commits returns "java.lang.RuntimeException: invalid diff"? (tested on the very first one case)
-//                        runDiff(repository, lastCommit.getName(), commit.getName(), "README.md");
-//                        listDiff(repository, git, lastCommit.getName(), commit.getName());
+//                runDiff(repository, lastCommit.getName(), commit.getName(), "README.md");
+//                listDiff(repository, git, lastCommit.getName(), commit.getName());
                 CommitDiffer commitDiffer = filterDiff(repository, git, lastCommit.getName(), commit.getName());
                 // obtain oldFile and newFile (save files to disk)
-//                        obtainDiff(repository, lastCommit, commitDiffer.getPaths(lastCommit.getName()));
-//                        obtainDiff(repository, commit, commitDiffer.getPaths(commit.getName()));
+                if (!existCommitsDir) {
+                    obtainDiff(repository, lastCommit, commitDiffer.getPaths(lastCommit.getName()));
+                    obtainDiff(repository, commit, commitDiffer.getPaths(commit.getName()));
+                }
                 // add data into the whole data-set
                 differs.addAll(commitDiffer.differs);
                 countDiffers += commitDiffer.differs.size();
@@ -288,13 +293,10 @@ public class Demo {
             if (countCommits >= 10) {
                 break;
             }
-                    /* 10036 != 12813 why? I guess because "we store all references (including all pull requests) from different repositories that share the same initial commit – root" not sure ... todo: maybe create one issue someday
-                    https://github.com/apache/logging-log4j2
-                    10036
-                    [
-                      "10fb9656a916d1c0ff57c28d7dcbfcb5bd313278.siva"
-                    ]
-                     */
+            /* 10036 != 12813 why? I guess because "we store all references (including all pull requests) from different repositories that share the same initial commit – root" not sure ... todo: maybe create one issue someday
+            https://github.com/apache/logging-log4j2
+            10036["10fb9656a916d1c0ff57c28d7dcbfcb5bd313278.siva"]
+            */
         }
         System.out.println(countCommits + " Commits");
         System.out.println(countDiffers + " Differs");
@@ -309,6 +311,10 @@ public class Demo {
                 File vectorFile = new File(differ.vectorFilePath);
                 if (!vectorFile.exists()) {
                     List<FeatureVector> featureVectors = codeDiffer.func4Demo(new File(differ.oldFilePath), new File(differ.newFilePath));
+                    if (featureVectors.size() == 0) {
+                        // diff.commonAncestor() returns null value
+                        continue;
+                    }
                     FeatureStruct.save(vectorFile, featureVectors);
                 }
                 filePaths.add(differ.vectorFilePath);
@@ -323,7 +329,9 @@ public class Demo {
         // clean up here to not keep using more and more disk-space for these samples
 //        FileUtils.deleteDirectory(repoDir.getParentFile());
     }
-    // todo: FeatureExtractorTest.java
-    // todo: discuss the way to generate RC with HeYE or complete RepairCandidateGenerator.java
+    // todo: complete FeatureExtractorTest.java
+    // todo: complete RepairCandidateGenerator.java
+    // create Demo4Patch to handle Patches files (to generate cvs for HeYE)
     // todo: filter out functional changes from revision changes (by Python scripts or in Java Code)
+    // draw graphs on 1k commits for Martin
 }

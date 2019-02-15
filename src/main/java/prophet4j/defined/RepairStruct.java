@@ -1,6 +1,5 @@
 package prophet4j.defined;
 
-import prophet4j.feature.FeatureVisitor;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
@@ -33,17 +32,17 @@ public interface RepairStruct {
         // tag = 2, means a expr level mutation
         public RepairActionKind kind;
         // loc.stmt from "public ASTLocTy loc;"
-        public CtStatement loc_stmt;
+        public CtElement loc_stmt;
         // It is a clang::Stmt or clang::Expr
         // todo: this should just be one placeholder, as replaceExprInCandidate() in CodeRewrite.cpp
         public CtElement ast_node;
         // This will only be used for expr level mutations
-        List<CtElement> candidate_atoms = new ArrayList<>();
+        List<CtElement> candidate_atoms;
 
         // This is a tag to indicate which subroutine created this action
         ExprTagTy tag;
 
-        public RepairAction(CtStatement loc_stmt, RepairActionKind kind, CtElement new_elem) {
+        public RepairAction(CtElement loc_stmt, RepairActionKind kind, CtElement new_elem) {
             this.loc_stmt = loc_stmt;
             this.kind = kind;
             this.ast_node = new_elem;
@@ -51,17 +50,17 @@ public interface RepairStruct {
             this.tag = ExprTagTy.InvalidTag;
         }
 
-        public RepairAction(CtStatement loc_stmt, CtElement expr, List<CtElement> candidate_atoms) {
-            this.kind = RepairActionKind.ExprMutationKind;
+        public RepairAction(CtElement loc_stmt, CtElement expr, List<CtElement> candidate_atoms) {
             this.loc_stmt = loc_stmt;
+            this.kind = RepairActionKind.ExprMutationKind;
             this.ast_node = expr;
             this.candidate_atoms = candidate_atoms;
             this.tag = ExprTagTy.CondTag;
         }
 
-        public RepairAction(CtStatement loc_stmt, CtElement expr, List<CtElement> candidate_atoms, ExprTagTy tag) {
-            this.kind = RepairActionKind.ExprMutationKind;
+        public RepairAction(CtElement loc_stmt, CtElement expr, List<CtElement> candidate_atoms, ExprTagTy tag) {
             this.loc_stmt = loc_stmt;
+            this.kind = RepairActionKind.ExprMutationKind;
             this.ast_node = expr;
             this.candidate_atoms = candidate_atoms;
             assert tag.equals(ExprTagTy.StringConstantTag);
@@ -73,15 +72,16 @@ public interface RepairStruct {
 
         public List<RepairAction> actions;
         // Below are required information to calculate the property
-        // of the repair candidate
+        // of the support candidate
 
         public CandidateKind kind;
         public boolean is_first; // start of a block? not including condition changes
         public CtExpression oldRExpr, newRExpr; // info for replace only
+        // score-related properties are not useful to us
         // This should be the human localization score for learning
         // or the pre-fixed score if not using learning
-        public double score;
-        Map<CtExpression, Double> scoreMap;
+//        public double score;
+//        Map<CtExpression, Double> scoreMap;
 
         public RepairCandidate() {
             this.actions = new ArrayList<>();
@@ -89,44 +89,43 @@ public interface RepairStruct {
             this.is_first = false;
             this.oldRExpr = null;
             this.newRExpr = null;
-            this.score = 0;
-            this.scoreMap = new HashMap<>();
         }
 
         // only for test
         public RepairCandidate(DiffResultEntry res0, CandidateKind kind) {
+            // todo: actually, candidates should be
+            //  List<CtExpression> candidateVars = L.getCondCandidateVars(ori_cond.getLocEnd());
             List<CtElement> candidates = res0.dstElem.getElements(new TypeFilter<>(CtElement.class));
             this.actions = new ArrayList<>();
-            this.actions.add(new RepairAction((CtStatement) res0.srcElem, res0.dstElem, candidates));
-            List<CtStatement> srcStmtList = getStmtList((CtStatement)res0.srcElem);
-            List<CtStatement> dstStmtList = getStmtList((CtStatement)res0.dstElem);
+            this.actions.add(new RepairAction(res0.srcElem, res0.dstElem, candidates));
+            List<CtElement> srcStmtList = getStmtList(res0.srcElem);
+            List<CtElement> dstStmtList = getStmtList(res0.dstElem);
             int pivot = getPivot(srcStmtList, dstStmtList);
             this.is_first = pivot == 0;
 
             this.kind = kind;
             this.oldRExpr = null;
             this.newRExpr = null;
-            this.score = 0;
-            this.scoreMap = new HashMap<>();
         }
 
         // only for test
-        private List<CtStatement> getStmtList(CtStatement statement) {
-            List<CtStatement> stmtList = new ArrayList<>();
+        private List<CtElement> getStmtList(CtElement statement) {
+            List<CtElement> stmtList = new ArrayList<>();
             if (statement instanceof CtClass || statement instanceof CtMethod) {
                 stmtList.add(statement);
             } else {
                 CtElement parent = statement.getParent();
-                stmtList = parent.getElements(new TypeFilter<>(CtStatement.class));
+                List<CtStatement> tmpList = parent.getElements(new TypeFilter<>(CtStatement.class));
                 if (parent instanceof CtStatement) {
-                    stmtList.remove(0);
+                    tmpList.remove(0);
                 }
+                stmtList.addAll(tmpList);
             }
             return stmtList;
         }
 
         // only for test
-        private int getPivot(List<CtStatement> srcStmtList, List<CtStatement> dstStmtList) {
+        private int getPivot(List<CtElement> srcStmtList, List<CtElement> dstStmtList) {
             int pivot = Math.min(srcStmtList.size(), dstStmtList.size());
             for (int i = 0; i < Math.min(srcStmtList.size(), dstStmtList.size()); i++) {
                 if (!srcStmtList.get(i).equals(dstStmtList.get(i))) {
@@ -137,15 +136,16 @@ public interface RepairStruct {
             return pivot;
         }
 
+        // fixme: Repeated Calculation here (check ret)
         public Set<CtElement> getCandidateAtoms() {
             Set<CtElement> ret = new HashSet<>();
             ret.add(null);
-            for (int i = 0; i < actions.size(); i++)
-                if (actions.get(i).kind == RepairActionKind.ExprMutationKind) {
-                    for (int j = 0; j < actions.get(i).candidate_atoms.size(); j++)
-                        ret.add(actions.get(i).candidate_atoms.get(j));
+            for (RepairAction action: actions) {
+                if (action.kind == RepairActionKind.ExprMutationKind) {
+                    ret.addAll(action.candidate_atoms);
                     return ret;
                 }
+            }
             return ret;
         }
 

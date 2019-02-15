@@ -433,13 +433,13 @@ public class FeatureLearner {
         // todo: directly print results right now, turn to save results to files using learner.OutFile
         switch (featureLearner.LearningAlgo) {
             case "entropy":
-                logger.log(Level.INFO, featureLearner.maximumEntropyModel(trainSet, validateSet));
+                featureLearner.maximumEntropyModel(trainSet, validateSet);
                 break;
             case "simple":
-                logger.log(Level.INFO, featureLearner.simpleSVMModel(trainSet, validateSet));
+                featureLearner.simpleSVMModel(trainSet, validateSet);
                 break;
             case "ssvm":
-                logger.log(Level.INFO, featureLearner.hingeLossModel(trainSet, validateSet));
+                featureLearner.hingeLossModel(trainSet, validateSet);
                 break;
             default:
                 logger.log(Level.INFO, "Unsupported algorithm!");
@@ -499,8 +499,8 @@ public class FeatureLearner {
         logger.log(Level.INFO, "Total number for training: " + trainSet.size());
         logger.log(Level.INFO, "Total number for validation: " + validateSet.size());
 
-        logger.log(Level.INFO, maximumEntropyModel(trainSet, validateSet));
-//        logger.log(Level.INFO, extraLearner.simpleSVMModel(trainSet, validateSet));
-//        logger.log(Level.INFO, extraLearner.hingeLossModel(trainSet, validateSet));
+        maximumEntropyModel(trainSet, validateSet);
+//        simpleSVMModel(trainSet, validateSet);
+//        hingeLossModel(trainSet, validateSet);
     }
 }

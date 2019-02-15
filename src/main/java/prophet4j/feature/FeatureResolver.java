@@ -78,11 +78,11 @@ public class FeatureResolver {
                     }
                 }
             } else if (atom instanceof CtVariable || atom instanceof CtVariableAccess) {
-                atomicFeatures.add(AtomicFeature.VARIABLE_AF);
+//                atomicFeatures.add(AtomicFeature.VARIABLE_AF);
             }
 
             if (!getAtoms(element).contains(atom)) {
-                atomicFeatures.add(AtomicFeature.EXCLUDE_ATOM_AF);
+//                atomicFeatures.add(AtomicFeature.EXCLUDE_ATOM_AF);
             } else {
                 List<String> operatorList = new ArrayList<>();
                 // todo: one special case of string const replacement (ABST_V_AF) (one idea is to use contains function)
@@ -94,10 +94,10 @@ public class FeatureResolver {
 
                         if (atom instanceof CtVariable || atom instanceof CtVariableAccess) {
                             if (operator.getLeftHandOperand().equals(atom)) {
-                                atomicFeatures.add(AtomicFeature.OPERATE_LHS_AF);
+//                                atomicFeatures.add(AtomicFeature.OPERATE_LHS_AF);
                             }
                             if (operator.getRightHandOperand().equals(atom)) {
-                                atomicFeatures.add(AtomicFeature.OPERATE_RHS_AF);
+//                                atomicFeatures.add(AtomicFeature.OPERATE_RHS_AF);
                             }
                         }
                         // I guess it should be redundant todo: maybe check again someday
@@ -119,13 +119,13 @@ public class FeatureResolver {
                         super.visitCtAssignment(ctAssignment);
                         if (atom instanceof CtLiteral) {
                             if (ctAssignment.getAssignment().equals(atom)) {
-                                atomicFeatures.add(AtomicFeature.ASSIGN_RHS_AF);
+//                                atomicFeatures.add(AtomicFeature.ASSIGN_RHS_AF);
                             }
                         } else if (atom instanceof CtVariable || atom instanceof CtVariableAccess) {
                             if (ctAssignment.getAssigned().equals(atom)) {
                                 atomicFeatures.add(AtomicFeature.ASSIGN_LHS_AF);
                             } else {
-                                atomicFeatures.add(AtomicFeature.ASSIGN_RHS_AF);
+//                                atomicFeatures.add(AtomicFeature.ASSIGN_RHS_AF);
                             }
                         }
                     }
@@ -135,13 +135,13 @@ public class FeatureResolver {
                         super.visitCtOperatorAssignment(assignment);
                         if (atom instanceof CtLiteral) {
                             if (assignment.getAssignment().equals(atom)) {
-                                atomicFeatures.add(AtomicFeature.ASSIGN_RHS_AF);
+//                                atomicFeatures.add(AtomicFeature.ASSIGN_RHS_AF);
                             }
                         } else if (atom instanceof CtVariable || atom instanceof CtVariableAccess) {
                             if (assignment.getAssigned().equals(atom)) {
                                 atomicFeatures.add(AtomicFeature.ASSIGN_LHS_AF);
                             } else {
-                                atomicFeatures.add(AtomicFeature.ASSIGN_RHS_AF);
+//                                atomicFeatures.add(AtomicFeature.ASSIGN_RHS_AF);
                             }
                         }
                     }
@@ -515,10 +515,10 @@ public class FeatureResolver {
                 repairFeatures.add(RepairFeature.REPLACE_STMT_RF);
             }
         } else if (operation instanceof DeleteOperation) {
-            repairFeatures.add(RepairFeature.DELETE_STMT_RF);
+//            repairFeatures.add(RepairFeature.DELETE_STMT_RF);
         } else {
             // move or some unknown cases
-            repairFeatures.add(RepairFeature.UNKNOWN_STMT_RF);
+//            repairFeatures.add(RepairFeature.UNKNOWN_STMT_RF);
         }
 
 //        System.out.println("----getRepairTypes----");
@@ -627,10 +627,11 @@ public class FeatureResolver {
             stmtList.add(statement);
         } else {
             CtElement parent = statement.getParent();
-            stmtList = parent.getElements(new TypeFilter(CtStatement.class));
+            List<CtStatement> tmpList = parent.getElements(new TypeFilter<>(CtStatement.class));
             if (parent instanceof CtStatement) {
-                stmtList.remove(0);
+                tmpList.remove(0);
             }
+            stmtList.addAll(tmpList);
         }
         return stmtList;
     }

@@ -3,7 +3,7 @@ package prophet4j.unused;
 // based on BenchProgram.cpp
 public class BenchProgram {
     private final String LOCALIZATION_RESULT = "profile_localization.res";
-    private final String CONFIG_FILE_PATH = "repair.conf";
+    private final String CONFIG_FILE_PATH = "support.conf";
     private final String SOURCECODE_BACKUP = "__backup";
     private final String SOURCECODE_BACKUP_LOG = "__backup.log";
     private final String LDBACKUP = "ld-backup";
@@ -81,7 +81,7 @@ public class BenchProgram {
 //            src_dirs.clear();
 //            src_dirs.insert(std::make_pair("src", true));
 //
-//            // If we just in middle of repair, we need to restore before we go on
+//            // If we just in middle of support, we need to restore before we go on
 //            std::ifstream fin((work_dir + "/" + SOURCECODE_BACKUP_LOG).c_str(), std::ifstream::in);
 //            if (fin.is_open()) {
 //                std::string target_file;

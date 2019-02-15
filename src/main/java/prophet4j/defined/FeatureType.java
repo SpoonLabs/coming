@@ -50,14 +50,14 @@ public interface FeatureType {
         ABST_V_AF,
         CALLEE_AF,
         CALL_ARGUMENT_AF,
-        VARIABLE_AF, // variable
+        // VARIABLE_AF, // variable
         CONST_ZERO_AF, // zero constant
         CONST_NONZERO_AF, // not zero constant
-        EXCLUDE_ATOM_AF, // not include
-        OPERATE_LHS_AF, // a+ a- a* a/ a% a&& a|| ...
-        OPERATE_RHS_AF, // +a -a *a /a %a &&a ||a ...
+        // EXCLUDE_ATOM_AF, // not include
+        // OPERATE_LHS_AF, // a+ a- a* a/ a% a&& a|| ...
+        // OPERATE_RHS_AF, // +a -a *a /a %a &&a ||a ...
         ASSIGN_LHS_AF, // a=
-        ASSIGN_RHS_AF, // =a
+        // ASSIGN_RHS_AF, // =a
         STMT_LOOP_AF, // do for while
         STMT_LABEL_AF,
         STMT_ASSIGN_AF, // =
@@ -70,7 +70,7 @@ public interface FeatureType {
         R_STMT_CONTROL_AF, // replace version of STMT_CONTROL_AF
     }
 
-    // todo: consider whether it is still apply to other repair tools similar to SPR, such as Nopol
+    // todo: consider whether it is still apply to other support tools similar to SPR, such as Nopol
     enum RepairFeature implements FeatureType {
         /**
          * inserting a potentially guarded control statement before a program point (AddControlRepair in Prophet4C)
@@ -101,14 +101,8 @@ public interface FeatureType {
          * ReplaceStringKind
          */
         REPLACE_STMT_RF,
-        /**
-         * case of delete one statement
-         */
-        DELETE_STMT_RF,
-        /**
-         * other unknown operations like move one statement or else
-         */
-        UNKNOWN_STMT_RF,
+        // DELETE_STMT_RF, // case of delete one statement
+        // UNKNOWN_STMT_RF, // other unknown operations like move one statement or else
     }
 
     enum ValueFeature implements FeatureType {
@@ -122,5 +116,7 @@ public interface FeatureType {
         ZERO_CONST_VF,
         NONZERO_CONST_VF,
         STRING_LITERAL_VF,
+        POINTER_VF,
+        STRUCT_POINTER_VF,
     }
 }

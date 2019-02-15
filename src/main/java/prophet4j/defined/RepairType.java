@@ -33,7 +33,7 @@ public interface RepairType {
         GuardKind,              // genAddIfGuard()
         SpecialGuardKind,       // genAddIfGuard()
         // INSERT_STMT_RF
-        AddInitKind,            // genAddMemset() seems not apply to Java
+        AddInitKind,            // genAddMemset() seems not apply to Java?
         AddAndReplaceKind,      // genAddStatement()
         // REPLACE_COND_RF
         TightenConditionKind,   // genTightCondition()

@@ -17,7 +17,7 @@ public class Main {
     @Parameters(index = "0", paramLabel = "conf-filename", description = "Specify the configure filename")
     private String ConfigFilename; // Positional
     @Option(names = {"--log"}, paramLabel = "log-filename", description = "Specify the logfile for this run!")
-    private String LogFileName = "repair.log";
+    private String LogFileName = "support.log";
     @Option(names = {"-r", "--run"}, paramLabel = "work dir", description = "Run with particular work dir, if it exists, it will resume the execution.")
     private String RunWorkDir = "";
 
@@ -29,10 +29,10 @@ public class Main {
     private boolean InitOnly = false;
     @Option(names = {"--skip-verify"}, description = "Skip verify the work directory with test cases!")
     private boolean SkipVerify = false;
-    @Option(names = {"--naive"}, description = "Run naive repair that only inserts return/ delete statements/branches!")
+    @Option(names = {"--naive"}, description = "Run naive support that only inserts return/ delete statements/branches!")
     private boolean NaiveRepair = false;
     // todo: the below two should be exclusive, so how to ... ?
-    @Option(names = {"--print-fix-only"}, paramLabel = "output-file", description = "Do not test and generate repair, print all fix candidates only")
+    @Option(names = {"--print-fix-only"}, paramLabel = "output-file", description = "Do not test and generate support, print all fix candidates only")
     private String PrintFixOnly = "";
     @Option(names = {"--print-loc-only"}, paramLabel = "output-file", description = "Only run error localization and print candidate locations")
     private String PrintLocalizationOnly = "";
@@ -90,7 +90,7 @@ public class Main {
             // parameters list for this construct function could be checked to simplify
             P = new BenchProgram(main.ConfigFilename, main.RunWorkDir, main.InitOnly || main.NoCleanUp || !main.RunWorkDir.equals(""));
             if (!main.RunWorkDir.equals("")) {
-                String cmd = "cp -f " + main.ConfigFilename + " " + main.RunWorkDir + "/repair.conf";
+                String cmd = "cp -f " + main.ConfigFilename + " " + main.RunWorkDir + "/support.conf";
                 try {
                     Process process = Runtime.getRuntime().exec(cmd);
                     int status = process.waitFor();
