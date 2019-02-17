@@ -197,8 +197,7 @@ public class CodeFeatureDetector {
 				writeGroupedByVar(context,
 						((invocation.getExecutable() != null) ? invocation.getExecutable().getSimpleName()
 								: invocation.toString()),
-						CodeFeatures.M5_MI_WITH_COMPATIBLE_VAR_TYPE, currentInvocationWithCompVar,
-						"FEATURES_METHOD_INVOCATIONS");
+						CodeFeatures.M5_MI_WITH_COMPATIBLE_VAR_TYPE, currentInvocationWithCompVar, "FEATURES_METHODS");
 
 			}
 		} catch (Exception e) {
