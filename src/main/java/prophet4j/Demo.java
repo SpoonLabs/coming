@@ -19,7 +19,6 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import prophet4j.defined.FeatureStruct;
 import prophet4j.support.CodeDiffer;
-import prophet4j.unused.Main;
 import tech.sourced.siva.IndexEntry;
 import tech.sourced.siva.SivaReader;
 
@@ -32,8 +31,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import prophet4j.feature.FeatureLearner;
 import prophet4j.defined.FeatureStruct.*;
@@ -75,15 +75,15 @@ public class Demo {
       "10fb9656a916d1c0ff57c28d7dcbfcb5bd313278.siva"
     ]
      */
-    private static final String SIVA_FILES_DIR = "src/main/resources/siva-files/";
-    private static final String SIVA_UNPACKED_DIR = "src/main/resources/siva-unpacked/";
-    private static final String SIVA_COMMITS_DIR = "src/main/resources/siva-commits/";
-    private static final String SIVA_VECTORS_DIR = "src/main/resources/siva-vectors/";
-    private static final String DEFAULT_SIVA_FILE = SIVA_FILES_DIR + "10fb9656a916d1c0ff57c28d7dcbfcb5bd313278.siva";
-    private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
+    private final String SIVA_FILES_DIR = "src/main/resources/siva-files/";
+    private final String SIVA_UNPACKED_DIR = "src/main/resources/siva-unpacked/";
+    private final String SIVA_COMMITS_DIR = "src/main/resources/siva-commits/";
+    private final String SIVA_VECTORS_DIR = "src/main/resources/siva-vectors/";
+    private final String DEFAULT_SIVA_FILE = SIVA_FILES_DIR + "10fb9656a916d1c0ff57c28d7dcbfcb5bd313278.siva";
+    private static final Logger logger = LogManager.getLogger(Demo.class.getName());
 
-    private static void unpack() {
-        LOGGER.log(Level.INFO, "unpacking siva files");
+    private void unpack() {
+        logger.log(Level.INFO, "unpacking siva files");
         try {
             SivaReader sivaReader = new SivaReader(new File(DEFAULT_SIVA_FILE));
             List<IndexEntry> index = sivaReader.getIndex().getFilteredIndex().getEntries();
@@ -93,11 +93,11 @@ public class Demo {
                 FileUtils.copyInputStreamToFile(entry, new File(outPath.toString()));
             }
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, ex.toString(), ex);
+            logger.log(Level.ERROR, ex.toString(), ex);
         }
     }
 
-    private static DiffEntry diffFile(Repository repo, String oldCommit,
+    private DiffEntry diffFile(Repository repo, String oldCommit,
                        String newCommit, String path) throws IOException, GitAPIException {
 //        Config config = new Config();
 //        config.setBoolean("diff", null, "renames", true);
@@ -115,7 +115,7 @@ public class Demo {
         return diffList.get(0);
     }
 
-    private static AbstractTreeIterator prepareTreeParser(Repository repository, String objectId) throws IOException {
+    private AbstractTreeIterator prepareTreeParser(Repository repository, String objectId) throws IOException {
         // from the commit we can build the tree which allows us to construct the TreeParser
         //noinspection Duplicates
         RevWalk walk = new RevWalk(repository);
@@ -131,7 +131,7 @@ public class Demo {
         return treeParser;
     }
 
-    private static void runDiff(Repository repo, String oldCommit, String newCommit, String path) throws IOException, GitAPIException {
+    private void runDiff(Repository repo, String oldCommit, String newCommit, String path) throws IOException, GitAPIException {
         // Diff README.md between two commits. The file is named README.md in
         // the new commit (5a10bd6e), but was named "jgit-cookbook README.md" in
         // the old commit (2e1d65e4).
@@ -145,7 +145,7 @@ public class Demo {
         formatter.format(diff);
     }
 
-    private static void listDiff(Repository repository, Git git, String oldCommit, String newCommit) throws GitAPIException, IOException {
+    private void listDiff(Repository repository, Git git, String oldCommit, String newCommit) throws GitAPIException, IOException {
         final List<DiffEntry> diffs = git.diff()
                 .setOldTree(prepareTreeParser(repository, oldCommit))
                 .setNewTree(prepareTreeParser(repository, newCommit))
@@ -158,7 +158,7 @@ public class Demo {
         }
     }
 
-    private static CommitDiffer filterDiff(Repository repository, Git git, String oldCommitName, String newCommitName) throws GitAPIException, IOException {
+    private CommitDiffer filterDiff(Repository repository, Git git, String oldCommitName, String newCommitName) throws GitAPIException, IOException {
         final List<DiffEntry> diffs = git.diff()
                 .setOldTree(prepareTreeParser(repository, oldCommitName))
                 .setNewTree(prepareTreeParser(repository, newCommitName))
@@ -183,7 +183,7 @@ public class Demo {
         return commitDiffer;
     }
 
-    private static void obtainDiff(Repository repository, RevCommit commit, List<String> paths) throws IOException, GitAPIException {
+    private void obtainDiff(Repository repository, RevCommit commit, List<String> paths) throws IOException, GitAPIException {
         // and using commit's tree find the path
         RevTree tree = commit.getTree();
         System.out.println("Having tree: " + tree);
@@ -210,7 +210,7 @@ public class Demo {
         }
     }
 
-    private static class Differ {
+    private class Differ {
         String oldFilePath;
         String newFilePath;
         String vectorFilePath;
@@ -223,7 +223,7 @@ public class Demo {
         }
     }
 
-    private static class CommitDiffer {
+    private class CommitDiffer {
         List<Differ> differs = new ArrayList<>();
         Map<String, ArrayList<String>> paths = new HashMap<>();
 
@@ -244,8 +244,7 @@ public class Demo {
         }
     }
 
-    // it might be helpful to load notes of commits, maybe consider this someday
-    public static void main(String[] args) throws IOException, GitAPIException {
+    private void handleCommits() throws IOException, GitAPIException {
         // if siva-unpacked files do not exist then uncommented the next line
         boolean existUnpackDir = new File(SIVA_UNPACKED_DIR).exists();
         boolean existCommitsDir = new File(SIVA_COMMITS_DIR).exists();
@@ -289,7 +288,7 @@ public class Demo {
             }
             lastCommit = commit;
             countCommits++;
-            // remove 3 lines below to run on all commits (around 10k commits)
+            // remove 3 lines below to genRepairCandidates on all commits (around 10k commits)
             if (countCommits >= 10) {
                 break;
             }
@@ -302,7 +301,7 @@ public class Demo {
         System.out.println(countDiffers + " Differs");
         progressAll = countDiffers;
 //        runDiff(repository, "5fddbeb678bd2c36c5e5c891ab8f2b143ced5baf", "5d7303c49ac984a9fec60523f2d5297682e16646", "README.md");
-        CodeDiffer codeDiffer = new CodeDiffer();
+        CodeDiffer codeDiffer = new CodeDiffer(true);
         List<String> filePaths = new ArrayList<>();
         for (Differ differ : differs) {
 //            filePaths.add(differ.oldFilePath);
@@ -329,9 +328,103 @@ public class Demo {
         // clean up here to not keep using more and more disk-space for these samples
 //        FileUtils.deleteDirectory(repoDir.getParentFile());
     }
-    // todo: complete FeatureExtractorTest.java
-    // todo: complete RepairCandidateGenerator.java
-    // create Demo4Patch to handle Patches files (to generate cvs for HeYE)
-    // todo: filter out functional changes from revision changes (by Python scripts or in Java Code)
+
+    // patch files: kth-tcs/overfitting-analysis(/data/Training/cardumen/)
+    private void handlePatches() throws IOException, GitAPIException {
+        // if siva-unpacked files do not exist then uncommented the next line
+        boolean existUnpackDir = new File(SIVA_UNPACKED_DIR).exists();
+        boolean existCommitsDir = new File(SIVA_COMMITS_DIR).exists();
+        if (!existUnpackDir) {
+            unpack();
+        }
+        int progressAll, progressNow = 0;
+
+        // prepare the whole data-set
+        List<Differ> differs = new ArrayList<>();
+        File repoDir = new File(SIVA_UNPACKED_DIR);
+        // now open the resulting repository with a FileRepositoryBuilder
+        FileRepositoryBuilder builder = new FileRepositoryBuilder();
+        Repository repository = builder.setGitDir(repoDir)
+                .readEnvironment() // scan environment GIT_* variables
+                .findGitDir() // scan up the file system tree
+                .build();
+        System.out.println("Having repository: " + repository.getDirectory());
+
+        Git git = new Git(repository);
+        Iterable<RevCommit> commits = git.log().all().call();
+
+        int countCommits = 0;
+        int countDiffers = 0;
+        RevCommit lastCommit = null;
+        for (RevCommit commit : commits) {
+            System.out.println("LogCommit: " + commit);
+            if (lastCommit != null) {
+                // todo: why runDiff() for some commits returns "java.lang.RuntimeException: invalid diff"? (tested on the very first one case)
+//                runDiff(repository, lastCommit.getName(), commit.getName(), "README.md");
+//                listDiff(repository, git, lastCommit.getName(), commit.getName());
+                CommitDiffer commitDiffer = filterDiff(repository, git, lastCommit.getName(), commit.getName());
+                // obtain oldFile and newFile (save files to disk)
+                if (!existCommitsDir) {
+                    obtainDiff(repository, lastCommit, commitDiffer.getPaths(lastCommit.getName()));
+                    obtainDiff(repository, commit, commitDiffer.getPaths(commit.getName()));
+                }
+                // add data into the whole data-set
+                differs.addAll(commitDiffer.differs);
+                countDiffers += commitDiffer.differs.size();
+            }
+            lastCommit = commit;
+            countCommits++;
+            // remove 3 lines below to genRepairCandidates on all commits (around 10k commits)
+            if (countCommits >= 10) {
+                break;
+            }
+            /* 10036 != 12813 why? I guess because "we store all references (including all pull requests) from different repositories that share the same initial commit – root" not sure ... todo: maybe create one issue someday
+            https://github.com/apache/logging-log4j2
+            10036["10fb9656a916d1c0ff57c28d7dcbfcb5bd313278.siva"]
+            */
+        }
+        System.out.println(countCommits + " Commits");
+        System.out.println(countDiffers + " Differs");
+        progressAll = countDiffers;
+//        runDiff(repository, "5fddbeb678bd2c36c5e5c891ab8f2b143ced5baf", "5d7303c49ac984a9fec60523f2d5297682e16646", "README.md");
+        CodeDiffer codeDiffer = new CodeDiffer(true);
+        List<String> filePaths = new ArrayList<>();
+        for (Differ differ : differs) {
+//            filePaths.add(differ.oldFilePath);
+//            filePaths.add(differ.newFilePath);
+            try {
+                File vectorFile = new File(differ.vectorFilePath);
+                if (!vectorFile.exists()) {
+                    List<FeatureVector> featureVectors = codeDiffer.func4Demo(new File(differ.oldFilePath), new File(differ.newFilePath));
+                    if (featureVectors.size() == 0) {
+                        // diff.commonAncestor() returns null value
+                        continue;
+                    }
+                    FeatureStruct.save(vectorFile, featureVectors);
+                }
+                filePaths.add(differ.vectorFilePath);
+                progressNow += 1;
+                System.out.println(progressNow + " / " + progressAll);
+                System.out.println(differ.vectorFilePath);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        new FeatureLearner().func4Demo(filePaths);
+        // clean up here to not keep using more and more disk-space for these samples
+//        FileUtils.deleteDirectory(repoDir.getParentFile());
+    }
+
+    public static void main(String[] args) throws IOException, GitAPIException {
+        Demo demo = new Demo();
+        // real commits from Git files (how to filter out functional changes from revision changes?)
+        demo.handleCommits();
+        // handle ideal patches such as patches from kth-tcs/overfitting-analysis
+//        demo.handlePatches();
+    }
+    // todo: debug featureExtractor.java (complete genHumanPatch() at RepairGenerator)
+    // todo: test featureExtractor.java and featureLearner.java on HeYE's patches
+    // generate .csv files for HeYE
     // draw graphs on 1k commits for Martin
+    // the plan for integrating Coming and Prophet4J
 }

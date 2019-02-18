@@ -43,23 +43,22 @@ public interface FeatureType {
         UOP_INC_AF, // ++a a++
         UOP_DEC_AF, // --a a--
         CHANGED_AF, // ++a --a a++ a--
+        DE_REF_AF, // []
         INDEX_AF, // []
         MEMBER_ACCESS_AF, // [] * & . -> (only .)
-        ADDRESS_OF_AF,
-        DE_REF_AF,
-        ABST_V_AF,
-        CALLEE_AF,
-        CALL_ARGUMENT_AF,
         // VARIABLE_AF, // variable
-        CONST_ZERO_AF, // zero constant
-        CONST_NONZERO_AF, // not zero constant
+        ASSIGN_ZERO_AF, // zero
+        ASSIGN_CONST_AF, // constant
+        ASSIGN_LHS_AF, // a=
+        // ASSIGN_RHS_AF, // =a
         // EXCLUDE_ATOM_AF, // not include
         // OPERATE_LHS_AF, // a+ a- a* a/ a% a&& a|| ...
         // OPERATE_RHS_AF, // +a -a *a /a %a &&a ||a ...
-        ASSIGN_LHS_AF, // a=
-        // ASSIGN_RHS_AF, // =a
-        STMT_LOOP_AF, // do for while
+        CALLEE_AF,
+        CALL_ARGUMENT_AF,
+        ABST_V_AF,
         STMT_LABEL_AF,
+        STMT_LOOP_AF, // do for while
         STMT_ASSIGN_AF, // =
         STMT_CALL_AF, // print()
         STMT_COND_AF, // if ...
@@ -68,9 +67,9 @@ public interface FeatureType {
         R_STMT_CALL_AF, // replace version of STMT_CALL_AF
         R_STMT_COND_AF, // replace version of STMT_COND_AF
         R_STMT_CONTROL_AF, // replace version of STMT_CONTROL_AF
+        ADDRESS_OF_AF, // Inapplicable to Java
     }
 
-    // todo: consider whether it is still apply to other support tools similar to SPR, such as Nopol
     enum RepairFeature implements FeatureType {
         /**
          * inserting a potentially guarded control statement before a program point (AddControlRepair in Prophet4C)
@@ -116,7 +115,7 @@ public interface FeatureType {
         ZERO_CONST_VF,
         NONZERO_CONST_VF,
         STRING_LITERAL_VF,
-        POINTER_VF,
-        STRUCT_POINTER_VF,
+        POINTER_VF, // Inapplicable to Java
+        STRUCT_POINTER_VF, // Inapplicable to Java
     }
 }

@@ -16,9 +16,9 @@ public class Main {
     // if no init value, default values for String should be "", for boolean should be false, for int should be 0 ... (I guess)
     @Parameters(index = "0", paramLabel = "conf-filename", description = "Specify the configure filename")
     private String ConfigFilename; // Positional
-    @Option(names = {"--log"}, paramLabel = "log-filename", description = "Specify the logfile for this run!")
+    @Option(names = {"--log"}, paramLabel = "log-filename", description = "Specify the logfile for this genRepairCandidates!")
     private String LogFileName = "support.log";
-    @Option(names = {"-r", "--run"}, paramLabel = "work dir", description = "Run with particular work dir, if it exists, it will resume the execution.")
+    @Option(names = {"-r", "--genRepairCandidates"}, paramLabel = "work dir", description = "Run with particular work dir, if it exists, it will resume the execution.")
     private String RunWorkDir = "";
 
     @Option(names = {"--skip-profile-build"}, description = "Skip To Build Profiler")
@@ -34,7 +34,7 @@ public class Main {
     // todo: the below two should be exclusive, so how to ... ?
     @Option(names = {"--print-fix-only"}, paramLabel = "output-file", description = "Do not test and generate support, print all fix candidates only")
     private String PrintFixOnly = "";
-    @Option(names = {"--print-loc-only"}, paramLabel = "output-file", description = "Only run error localization and print candidate locations")
+    @Option(names = {"--print-loc-only"}, paramLabel = "output-file", description = "Only genRepairCandidates error localization and print candidate locations")
     private String PrintLocalizationOnly = "";
 
     @Option(names = {"--try-at-least"}, description = "The number of mutations we try before we terminate.")
@@ -170,16 +170,16 @@ public class Main {
         if (!unused.PrintFixOnly.equals(""))
             fix_only = true;
         if (fix_only) {
-            ret = E.run(unused.PrintFixOnly, 0, fix_only, false);
+            ret = E.genRepairCandidates(unused.PrintFixOnly, 0, fix_only, false);
         } else {
             String fixed_out_file = config -> getStr("fixed_out_file");
             if (fixed_out_file.equals(""))
                 fixed_out_file = "__fixed_";
 
             if (unused.FullExplore)
-                ret = E.run(fixed_out_file, 1000000000, false, unused.FullSynthesis);
+                ret = E.genRepairCandidates(fixed_out_file, 1000000000, false, unused.FullSynthesis);
             else
-                ret = E.run(fixed_out_file, unused.TryAtLeast, false, unused.FullSynthesis);
+                ret = E.genRepairCandidates(fixed_out_file, unused.TryAtLeast, false, unused.FullSynthesis);
         }
         System.exit(ret); */
     }

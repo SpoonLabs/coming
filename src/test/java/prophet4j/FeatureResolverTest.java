@@ -142,24 +142,24 @@ public class FeatureResolverTest {
         {
             str0 = "class foo{public void bar(){\nint a;\n}}";
             str1 = "class foo{public void bar(){\nint a=1;\na=0;\n}}";
-            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.CONST_ZERO_AF));
+            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.ASSIGN_ZERO_AF));
             str1 = "class foo{public void bar(){\nint a=1;\na=1;\n}}";
-            assertEquals(Boolean.FALSE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.CONST_ZERO_AF));
+            assertEquals(Boolean.FALSE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.ASSIGN_ZERO_AF));
             str1 = "class foo{public void bar(){\nint a=1;\nint b=1;\na=b;}}";
-            assertEquals(Boolean.FALSE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.CONST_ZERO_AF));
+            assertEquals(Boolean.FALSE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.ASSIGN_ZERO_AF));
             str1 = "class foo{public void bar(){\nint a=1;\nint b=1;\na*=b;}}";
-            assertEquals(Boolean.FALSE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.CONST_ZERO_AF));
+            assertEquals(Boolean.FALSE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.ASSIGN_ZERO_AF));
         }
         {
             str0 = "class foo{public void bar(){\nint a;\n}}";
             str1 = "class foo{public void bar(){\nint a=0;\na=0;\n}}";
-            assertEquals(Boolean.FALSE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.CONST_NONZERO_AF));
+            assertEquals(Boolean.FALSE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.ASSIGN_CONST_AF));
             str1 = "class foo{public void bar(){\nint a=0;\na=1;\n}}";
-            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.CONST_NONZERO_AF));
+            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.ASSIGN_CONST_AF));
             str1 = "class foo{public void bar(){\nint a=0;\nint b=0;\na=b;}}";
-            assertEquals(Boolean.FALSE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.CONST_NONZERO_AF));
+            assertEquals(Boolean.FALSE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.ASSIGN_CONST_AF));
             str1 = "class foo{public void bar(){\nint a=0;\nint b=0;\na*=b;}}";
-            assertEquals(Boolean.FALSE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.CONST_NONZERO_AF));
+            assertEquals(Boolean.FALSE, featureResolver.easyExtractor(str0, str1).containFeatureType(AtomicFeature.ASSIGN_CONST_AF));
         }
 //        {
 //            str0 = "class foo{public void bar(){\nint a=1;\n}}";
@@ -378,17 +378,10 @@ public class FeatureResolverTest {
             assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(ValueFeature.STRING_LITERAL_VF));
         }
         // todo: add more test cases (for more feature cases) (all features should be complete)
-//        {
-//            str0 = "public class foo{\npublic void bar(){\nint a=0;\nint b=a;\nint c=0;\na=1;\nb=a;\n}\n}";
-//            str1 = "public class foo{\npublic void bar(){\nint a=0;\nint b=1;\nint c=0;\na=b;\n}\n}";
-//            System.out.println("================\n" + featureResolver.easyExtractor(str0, str1));
-//            assertEquals(Boolean.TRUE, containFeatureType(featureResolver.easyExtractor(str0, str1), (FeatureType.STMT_ASSIGN_AF)));
-//        }
-
         // OperationKind: Insert, Update, Move, Delete;
         // NodeKind: context.getTypeLabel(operation.getAction().getNode())
         // NodeLabel: operation.getAction().getNode().getLabel()
-        // just keep it, find usage from LabelFinder & spoon.reflect.code
+        // found usage from LabelFinder & spoon.reflect.code
 //        assertEquals(Boolean.TRUE, diff.containsOperation(OperationKind.Update, "BinaryOperator"));
 //        assertEquals(Boolean.TRUE, diff.containsOperation(OperationKind.Update, "BinaryOperator", "PLUS"));
     }

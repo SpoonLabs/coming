@@ -14,7 +14,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import java.util.*;
 
 // this is the new implementation following the implementation of Prophet4C
-// based on FeatureExtract.cpp, RepairCandidateGenerator.cpp
+// based on FeatureExtract.cpp, RepairGenerator.cpp
 public class FeatureExtractor {
 
     // check these variables
@@ -28,13 +28,13 @@ public class FeatureExtractor {
     Map<String, CtElement> valueExprInfo = new HashMap<>();
     Cache cache = new Cache();
 
-    private EnumSet<RepairFeature> getRepairFeatures(RepairCandidate rc) {
+    private EnumSet<RepairFeature> getRepairFeatures(Repair repair) {
         EnumSet<RepairFeature> repairFeatures = EnumSet.noneOf(RepairFeature.class);
-        if (rc.kind == null) {
+        if (repair.kind == null) {
             // I used null in FeatureExtractorTest.java
             return repairFeatures;
         }
-        switch (rc.kind) {
+        switch (repair.kind) {
             case IfExitKind:
                 // RepairFeature.INSERT_CONTROL_RF == AddControlRepair
                 repairFeatures.add(RepairFeature.INSERT_CONTROL_RF);
@@ -65,17 +65,17 @@ public class FeatureExtractor {
         return repairFeatures;
     }
 
-    private EnumSet<ValueFeature> getValueFeature(final String v_str, final RepairCandidate rc, CtElement abst_v, Map<String, CtElement> valueExprInfo) {
+    private EnumSet<ValueFeature> getValueFeature(final String v_str, final Repair repair, CtElement abst_v, Map<String, CtElement> valueExprInfo) {
         EnumSet<ValueFeature> valueFeatures = EnumSet.noneOf(ValueFeature.class);
-        CtElement element = rc.actions.get(0).ast_node;
+        CtElement element = repair.actions.get(0).ast_node;
     /*if (abst_v != NULL) {
         std::string abst_v_str = stmtToString(*ast, abst_v);
         if (abst_v_str == v_str)
             ret.insert(AbstCondVF);
     }*/
-        if (rc.oldRExpr != null && rc.newRExpr != null) {
-            String old_v_str = rc.oldRExpr.toString();
-            String new_v_str = rc.newRExpr.toString();
+        if (repair.oldRExpr != null && repair.newRExpr != null) {
+            String old_v_str = repair.oldRExpr.toString();
+            String new_v_str = repair.newRExpr.toString();
             if (v_str.equals(new_v_str))
                 valueFeatures.add(ValueFeature.MODIFIED_VF);
             if (old_v_str.length()>0 && new_v_str.length()>0) {
@@ -102,7 +102,7 @@ public class FeatureExtractor {
         CtElement E = valueExprInfo.get(v_str);
         System.out.println("<" + E + ">");
         // fixme: distinguish GLOBAL_VARIABLE_VF from LOCAL_VARIABLE_VF
-        if (E instanceof CtVariableAccess) {
+        if (E instanceof CtVariableAccess || E instanceof CtArrayAccess) {
             valueFeatures.add(ValueFeature.LOCAL_VARIABLE_VF);
         }
 //        if (E instanceof CtVariable) {
@@ -116,6 +116,7 @@ public class FeatureExtractor {
 //            else
 //                valueFeatures.add(ValueFeature.GLOBAL_VARIABLE_VF);
 //        }
+        // fixme: i feel this is not correct
         if (E.getElements(new TypeFilter<>(CtField.class)).size() > 0)
             valueFeatures.add(ValueFeature.MEMBER_VF);
         if (E instanceof CtLiteral) {
@@ -134,7 +135,7 @@ public class FeatureExtractor {
         // A special case, this should only happen when doing
         // string const replacement
         if (isAbstractStub(E)) {
-            assert(rc.kind == CandidateKind.ReplaceStringKind);
+            assert(repair.kind == RepairCandidateKind.ReplaceStringKind);
             valueFeatures.add(ValueFeature.MODIFIED_VF);
             valueFeatures.add(ValueFeature.STRING_LITERAL_VF);
         }
@@ -168,10 +169,10 @@ public class FeatureExtractor {
     }
 
     // this is for CodeDiffer.java
-    public FeatureManager extractFeature(RepairCandidate rc, CtElement expr) {
+    public FeatureManager extractFeature(Repair repair, CtElement expr) {
         // getImmediateFollowStmts() getLocalStmts()
-//        List<CtStatement> srcStmtList = getStmtList((CtStatement)res0.srcElem);
-//        List<CtStatement> dstStmtList = getStmtList((CtStatement)res0.dstElem);
+//        List<CtStatement> srcStmtList = getStmtList((CtStatement)diffEntry.srcElem);
+//        List<CtStatement> dstStmtList = getStmtList((CtStatement)diffEntry.dstElem);
 //        int pivot = getPivot(srcStmtList, dstStmtList);
 
         FeatureManager featureManager = new FeatureManager();
@@ -181,7 +182,7 @@ public class FeatureExtractor {
         ValueToFeatureMapTy resv_loc2 = new ValueToFeatureMapTy();
 
         // RepairFeatureNum     = RepairFeatureNum                      = 5
-        EnumSet<RepairFeature> repairFeatures = getRepairFeatures(rc);
+        EnumSet<RepairFeature> repairFeatures = getRepairFeatures(repair);
         // ModKind should be synonyms of RepairType
         for (FeatureType repairFeature : repairFeatures) {
             // RF_JT
@@ -191,14 +192,14 @@ public class FeatureExtractor {
         }
 
         FeatureVisitor FEV = new FeatureVisitor(valueExprInfo);
-        FEV.traverseRC(rc, expr);
+        FEV.traverseRC(repair, expr);
         resv = FEV.getFeatureResult();
-//        System.out.println("resv");
+        System.out.println("!resv!");
 //        System.out.println(resv.map);
-        List<CtElement> loc_stmts = getImmediateFollowStmts(rc);
+        List<CtElement> loc_stmts = getImmediateFollowStmts(repair);
         List<CtElement> loc1_stmts = new ArrayList<>();
         List<CtElement> loc2_stmts = new ArrayList<>();
-        getLocalStmts(rc, loc1_stmts, loc2_stmts);
+        getLocalStmts(repair, loc1_stmts, loc2_stmts);
         resv_loc.map.clear();
         resv_loc1.map.clear();
         resv_loc2.map.clear();
@@ -209,7 +210,7 @@ public class FeatureExtractor {
                 FEV = new FeatureVisitor(valueExprInfo);
                 FEV.traverseStmt(it);
                 ValueToFeatureMapTy resM = FEV.getFeatureResult();
-//                System.out.println("resM");
+                System.out.println("!resM!");
 //                System.out.println(resM.map);
                 orMap(resv_loc, resM);
                 cache.map.put(it, resM);
@@ -222,7 +223,7 @@ public class FeatureExtractor {
                 FEV = new FeatureVisitor(valueExprInfo);
                 FEV.traverseStmt(it);
                 ValueToFeatureMapTy resM = FEV.getFeatureResult();
-//                System.out.println("resM-1");
+                System.out.println("!resM-1!");
 //                System.out.println(resM.map);
                 orMap(resv_loc1, resM);
                 cache.map.put(it, resM);
@@ -235,7 +236,7 @@ public class FeatureExtractor {
                 FEV = new FeatureVisitor(valueExprInfo);
                 FEV.traverseStmt(it);
                 ValueToFeatureMapTy resM = FEV.getFeatureResult();
-//                System.out.println("resM-2");
+                System.out.println("!resM-2!");
 //                System.out.println(resM.map);
                 orMap(resv_loc2, resM);
                 cache.map.put(it, resM);
@@ -341,7 +342,7 @@ public class FeatureExtractor {
             System.out.println(key);
             Set<AtomicFeature> atomicFeatures = resv.map.get(key);
             // fixme: todo: check getValueFeature
-            Set<ValueFeature> valueFeatures = getValueFeature(key, rc, expr, valueExprInfo);
+            Set<ValueFeature> valueFeatures = getValueFeature(key, repair, expr, valueExprInfo);
             System.out.println(atomicFeatures.size() + " " + atomicFeatures);
             System.out.println(valueFeatures.size()  + " " + valueFeatures);
             for (FeatureType atomicFeature : atomicFeatures) {
@@ -416,18 +417,18 @@ public class FeatureExtractor {
         return featureManager;
     }
 
-    private List<CtElement> getImmediateFollowStmts(RepairCandidate rc) {
+    private List<CtElement> getImmediateFollowStmts(Repair repair) {
         List<CtElement> ret = new ArrayList<>();
-        CtElement loc_stmt = rc.actions.get(0).loc_stmt;
-        if (rc.actions.get(0).kind != RepairActionKind.ReplaceMutationKind) {
+        CtElement loc_stmt = repair.actions.get(0).loc_stmt;
+        if (repair.actions.get(0).kind != RepairActionKind.ReplaceMutationKind) {
             ret.add(loc_stmt);
             return ret;
         }
         else {
             ret.add(loc_stmt);
             CtStatement ElseB = null;
-            if (rc.actions.get(0).ast_node instanceof CtIf) {
-                CtIf IFS = (CtIf) rc.actions.get(0).ast_node;
+            if (repair.actions.get(0).ast_node instanceof CtIf) {
+                CtIf IFS = (CtIf) repair.actions.get(0).ast_node;
                 if (IFS.getThenStatement() instanceof CtStatementList) {
                     CtStatementList CS = (CtStatementList) IFS.getThenStatement();
                     ret.addAll(CS.getStatements());
@@ -462,11 +463,11 @@ public class FeatureExtractor {
         }
     }
 
-    private void getLocalStmts(RepairCandidate rc, List<CtElement> ret_before, List<CtElement> ret_after) {
+    private void getLocalStmts(Repair repair, List<CtElement> ret_before, List<CtElement> ret_after) {
         final int LOOKUP_DIS = 3;
         ret_before.clear();
         ret_after.clear();
-        CtElement loc_stmt = rc.actions.get(0).loc_stmt;
+        CtElement loc_stmt = repair.actions.get(0).loc_stmt;
         // Grab all compound stmt that is around the original stmt
         if (loc_stmt.getParent() instanceof CtStatementList) {
             CtStatementList CS = (CtStatementList) loc_stmt.getParent();
@@ -499,7 +500,7 @@ public class FeatureExtractor {
                     before = false;
             }
         }
-        if (rc.actions.get(0).kind != RepairActionKind.ReplaceMutationKind)
+        if (repair.actions.get(0).kind != RepairActionKind.ReplaceMutationKind)
             ret_after.add(loc_stmt);
     }
 

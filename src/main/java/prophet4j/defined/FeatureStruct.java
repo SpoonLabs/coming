@@ -15,14 +15,12 @@ public interface FeatureStruct {
     static void save(File vectorFile, List<FeatureVector> featureVectors) throws IOException {
         StringBuilder sb = new StringBuilder();
         for (FeatureVector featureVector: featureVectors) {
-            for (int fid : featureVector.featureIds) {
-                sb.append(fid);
+            for (int featureId : featureVector.featureArray) {
+                sb.append(featureId);
                 sb.append(" ");
             }
-            sb.append(featureVector.mark);
-            sb.append("\n");
         }
-        FileUtils.writeStringToFile(vectorFile, sb.toString(), Charset.defaultCharset(), true);
+        FileUtils.writeStringToFile(vectorFile, sb.toString().trim() + "\n", Charset.defaultCharset(), true);
     }
     static List<FeatureVector> load(File vectorFile) throws IOException {
         List<FeatureVector> featureVectors = new ArrayList<>();
@@ -36,14 +34,14 @@ public interface FeatureStruct {
 
     class FeatureManager {
 
-        private Set<Feature> features = new HashSet<>();
+        private Set<Feature> featureSet = new HashSet<>();
 
         public void addFeature(Feature feature) {
-            features.add(feature);
+            featureSet.add(feature);
         }
 
         public boolean containFeatureType(FeatureType featureType) {
-            for (Feature feature : features) {
+            for (Feature feature : featureSet) {
 //                System.out.println(feature);
                 if (feature.containFeatureType(featureType)) {
                     return true;
@@ -53,12 +51,12 @@ public interface FeatureStruct {
         }
 
         public FeatureVector getFeatureVector() {
-            return new FeatureVector(features);
+            return new FeatureVector(featureSet);
         }
 
         @Override
         public String toString() {
-            return "Features: " + features;
+            return "Features: " + featureSet;
         }
     }
 
@@ -109,7 +107,7 @@ public interface FeatureStruct {
             this.featureTypes = featureTypes;
         }
 
-        Integer getFeatureId() {
+        public Integer getFeatureId() {
             return featureId;
         }
 
@@ -125,61 +123,46 @@ public interface FeatureStruct {
 
     class FeatureVector {
 
-        private boolean mark = false;
-        private Set<Feature> features = new HashSet<>();
-        int[] featureIds = new int[FeatureType.FEATURE_SIZE];
+        private Set<Feature> featureSet = new HashSet<>();
+        int[] featureArray = new int[FeatureType.FEATURE_SIZE];
 
         public FeatureVector() {
         }
 
         public FeatureVector(String string) {
             String[] substrings = string.split(" ");
-            assert substrings.length == FeatureType.FEATURE_SIZE + 1;
+            assert substrings.length == FeatureType.FEATURE_SIZE;
             for (int i = 0; i < FeatureType.FEATURE_SIZE; i++) {
-                featureIds[i] = Integer.valueOf(substrings[i]);
+                featureArray[i] = Integer.valueOf(substrings[i]);
             }
-            mark = Boolean.valueOf(substrings[FeatureType.FEATURE_SIZE]);
         }
 
-        FeatureVector(Set<Feature> features) {
-            this.features = features;
-            for (Feature feature : features) {
-                featureIds[feature.getFeatureId()] = 1; // ? todo: compare with FeatureVector.h
+        FeatureVector(Set<Feature> featureSet) {
+            this.featureSet = featureSet;
+            for (Feature feature : featureSet) {
+                featureArray[feature.getFeatureId()] = 1;
             }
         }
 
         public Set<Feature> getFeatures() {
-            // valid only constructed by FeatureVector(Set<Feature> features)
-            return features;
+            // only valid when constructed by FeatureVector(Set<Feature> featureSet)
+            return featureSet;
         }
 
         public int size() {
-            return featureIds.length;
+            return featureArray.length;
         }
 
         public int get(int index) {
-            return featureIds[index];
-        }
-
-        // just follow prophet4c
-        public void setMark() {
-            mark = true;
-        }
-
-        public void setMark(boolean value) {
-            mark = value;
-        }
-
-        public boolean getMark() {
-            return mark;
+            return featureArray[index];
         }
 
         public void set(int index, int value) {
-            featureIds[index] = value;
+            featureArray[index] = value;
         }
 
         public void clone(FeatureVector featureVector) {
-            this.featureIds = featureVector.featureIds.clone();
+            this.featureArray = featureVector.featureArray.clone();
         }
     }
 
@@ -205,15 +188,16 @@ public interface FeatureStruct {
 
         public double dotProduct(FeatureVector featureVector) {
             double res = 0;
-            for (int i = 0; i < featureVector.featureIds.length; i++)
-                res += parameterArray[featureVector.featureIds[i]];
+            for (Feature feature : featureVector.getFeatures()) {
+                res += parameterArray[feature.featureId];
+            }
             return res;
         }
     }
 
-    class TrainingCase {
-        public List<FeatureVector> cases = new ArrayList<>();
-        public List<Integer> marked = new ArrayList<>();
+    class Sample { // namely TrainingCase
+        // the first one is for human patch, others are for candidate patches
+        public List<FeatureVector> featureVectors = new ArrayList<>();
     }
 
     class ValueToFeatureMapTy { // ValueToFeatureMapTy
