@@ -10,6 +10,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtScanner;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.code.CtIfImpl;
 import spoon.support.reflect.code.CtInvocationImpl;
 import spoon.support.reflect.code.CtLiteralImpl;
@@ -21,35 +22,28 @@ fixme:
     to implement:
         genAddMemset() genReplaceStmt() genAddIfExit() genAddStatement()
  */
-// based on RepairCandidateGenerator.cpp
-public class RepairCandidateGenerator {
-    CtElement root;
-    List<RepairCandidate> q = new ArrayList<>();
-    Map<CtElement, Integer> loc_map;
-    Map<CtElement, Integer> loc_map1;
-    Map<CtStatementList, Integer> compound_counter = new HashMap<>();
-    // This is a hacky tmp list for fix is_first + is_func_block
-    List<Integer> tmp_memo = new ArrayList<>();
-    boolean naive;
-    boolean learning;
-    double GeoP;
-//     boolean in_yacc_func; // seem meaningless
+// based on RepairGenerator.cpp
+public class RepairGenerator {
+    private DiffEntry diffEntry;
+    private Set<CtElement> area; // loc_map
+    private List<Repair> repairs = new ArrayList<>();
+    private Map<CtStatementList, Integer> compound_counter = new HashMap<>();
+    // todo: consider naive and in_yacc_func
+    private boolean naive;
+//     boolean in_yacc_func;
 
-    // todo: consider SourceContextManager and maybe keep it as one input parameter
-    public RepairCandidateGenerator(CtElement root, Map<CtElement, Integer> locs, boolean naive, boolean learning) {
-        this.root = root;
-        this.loc_map = locs;
+    public RepairGenerator(DiffEntry diffEntry, boolean naive) {
+        this.diffEntry = diffEntry;
+        this.area = fuzzyLocator(diffEntry.srcElem);
         this.naive = naive;
-        this.learning = learning;
+        repairs.clear();
         compound_counter.clear();
-        q.clear();
-        GeoP = 0.01;
-        this.loc_map1 = loc_map;
     }
 
+    // todo: check this function
     private boolean isTainted(CtStatement S) {
         if (S == null) return false;
-        if (loc_map.containsKey(S))
+        if (area.contains(S))
             return true;
         // todo: the second condition is added by myself, to find out why Prophet does not need this
         if (S instanceof CtStatementList && compound_counter.containsKey(S)) {
@@ -71,17 +65,17 @@ public class RepairCandidateGenerator {
             placeholder = new CtInvocationImpl();
         CtIf S = n.clone();
 
-        RepairCandidate rc = new RepairCandidate();
-        rc.actions.clear();
-        rc.actions.add(new RepairAction(n, RepairActionKind.ReplaceMutationKind, S));
+        Repair repair = new Repair();
+        repair.actions.clear();
+        repair.actions.add(new RepairAction(RepairActionKind.ReplaceMutationKind, n, S));
         if (!naive) {
-            // fixme: it might only be important to patch-generation
+            // fixme: check and complete this to make demo run
             //  List<CtExpression> candidateVars = L.getCondCandidateVars(ori_cond.getLocEnd());
             List<CtElement> candidateVars = new ArrayList<>();
-            rc.actions.add(new RepairAction(S, placeholder, candidateVars));
+            repair.actions.add(new RepairAction(S, placeholder, candidateVars));
         }
-        rc.kind = CandidateKind.TightenConditionKind;
-        q.add(rc);
+        repair.kind = RepairCandidateKind.TightenConditionKind;
+        repairs.add(repair);
     }
 
     private void genLooseCondition(CtIf n) {
@@ -93,17 +87,17 @@ public class RepairCandidateGenerator {
         else
             placeholder = new CtInvocationImpl();
         CtIf S = n.clone();
-        RepairCandidate rc = new RepairCandidate();
-        rc.actions.clear();
-        rc.actions.add(new RepairAction(n, RepairActionKind.ReplaceMutationKind, S));
+        Repair repair = new Repair();
+        repair.actions.clear();
+        repair.actions.add(new RepairAction(RepairActionKind.ReplaceMutationKind, n, S));
         if (!naive) {
-            // fixme: it might only be important to patch-generation
+            // fixme: check and complete this to make demo run
             //  List<CtExpression> candidateVars = L.getCondCandidateVars(ori_cond.getLocEnd());
             List<CtElement> candidateVars = new ArrayList<>();
-            rc.actions.add(new RepairAction(S, placeholder, candidateVars));
+            repair.actions.add(new RepairAction(S, placeholder, candidateVars));
         }
-        rc.kind = CandidateKind.LoosenConditionKind;
-        q.add(rc);
+        repair.kind = RepairCandidateKind.LoosenConditionKind;
+        repairs.add(repair);
 
         if (naive) return;
 
@@ -115,23 +109,22 @@ public class RepairCandidateGenerator {
             CtBinaryOperator ori_BO = (CtBinaryOperator) ori_cond;
             if (ori_BO.getKind() == BinaryOperatorKind.AND) {
                 S = n.clone();
-                rc = new RepairCandidate();
-                rc.actions.clear();
-                rc.actions.add(new RepairAction(n, RepairActionKind.ReplaceMutationKind, S));
+                repair = new Repair();
+                repair.actions.clear();
+                repair.actions.add(new RepairAction(RepairActionKind.ReplaceMutationKind, n, S));
                 if (!naive) {
-                    // fixme: it might only be important to patch-generation
+                    // fixme: check and complete this to make demo run
                     //  List<CtExpression> candidateVars = L.getCondCandidateVars(ori_cond.getLocEnd());
                     List<CtElement> candidateVars = new ArrayList<>();
-                    rc.actions.add(new RepairAction(S, placeholder, candidateVars));
+                    repair.actions.add(new RepairAction(S, placeholder, candidateVars));
                 }
-                rc.kind = CandidateKind.LoosenConditionKind;
-                q.add(rc);
+                repair.kind = RepairCandidateKind.LoosenConditionKind;
+                repairs.add(repair);
             }
         }
-
     }
 
-    private void genReplaceStmt(CtStatement n, boolean is_first) {
+    private void genReplaceStmt(CtStatement n) {
 //        if (naive) return;
 //        ASTLocTy loc = new ASTLocTy(file, n);
 //        LocalAnalyzer L = M.getLocalAnalyzer(loc);
@@ -142,14 +135,13 @@ public class RepairCandidateGenerator {
 //            V.TraverseStmt(n);
 //            Set<CtStatement> res = V.getResult();
 //            for (CtStatement it : res) {
-//                RepairCandidate rc = new RepairCandidate();
-//                rc.actions.clear();
-//                rc.actions.add(new RepairAction(loc, RepairActionKind.ReplaceMutationKind, it));
-//                rc.kind = CandidateKind.ReplaceKind;
-//                rc.is_first = is_first;
-//                rc.oldRExpr = V.getOldRExpr(it);
-//                rc.newRExpr = V.getNewRExpr(it);
-//                q.add(rc);
+//                Repair repair = new Repair();
+//                repair.actions.clear();
+//                repair.actions.add(new RepairAction(loc, RepairActionKind.ReplaceMutationKind, it));
+//                repair.kind = RepairCandidateKind.ReplaceKind;
+//                repair.oldRExpr = V.getOldRExpr(it);
+//                repair.newRExpr = V.getNewRExpr(it);
+//                repairs.add(rc);
 //            }
 //        }
 //
@@ -160,15 +152,14 @@ public class RepairCandidateGenerator {
 //            // here set<map.entry> is actually the same as map, but map.entry is equivalent to std::pair
 //            Set<Map.Entry<CtStatement, CtExpression>> res = V.getResult();
 //            for (Map.Entry<CtStatement, CtExpression> it: res) {
-//                RepairCandidate rc = new RepairCandidate();
-//                rc.actions.clear();
-//                rc.actions.add(new RepairAction(loc, RepairActionKind.ReplaceMutationKind, it.getKey()));
-//                rc.actions.add(new RepairAction(new ASTLocTy(file, it.getKey()), it.getValue(), new ArrayList<CtExpression>(), ExprTagTy.StringConstantTag));
-//                rc.is_first = is_first;
-//                rc.oldRExpr = V.getOldRExpr(it.getKey());
-//                rc.newRExpr =  null;
-//                rc.kind = CandidateKind.ReplaceStringKind;
-//                q.add(rc);
+//                Repair repair = new Repair();
+//                repair.actions.clear();
+//                repair.actions.add(new RepairAction(loc, RepairActionKind.ReplaceMutationKind, it.getKey()));
+//                repair.actions.add(new RepairAction(new ASTLocTy(file, it.getKey()), it.getValue(), new ArrayList<CtExpression>(), ExprTagTy.StringConstantTag));
+//                repair.oldRExpr = V.getOldRExpr(it.getKey());
+//                repair.newRExpr =  null;
+//                repair.kind = RepairCandidateKind.ReplaceStringKind;
+//                repairs.add(rc);
 //            }
 //        }
 //
@@ -177,24 +168,23 @@ public class RepairCandidateGenerator {
 //            V2.TraverseStmt(n);
 //            List<CtStatement> res2 = V2.getResult();
 //            for (CtStatement it : res2) {
-//                RepairCandidate rc = new RepairCandidate();
-//                rc.actions.clear();
-//                rc.actions.add(new RepairAction(loc, RepairActionKind.ReplaceMutationKind, it));
-//                rc.kind = CandidateKind.ReplaceKind;
-//                rc.is_first = is_first;
-//                rc.oldRExpr = V2.getOldRExpr(it);
-//                rc.newRExpr = V2.getNewRExpr(it);
-//                q.add(rc);
+//                Repair repair = new Repair();
+//                repair.actions.clear();
+//                repair.actions.add(new RepairAction(loc, RepairActionKind.ReplaceMutationKind, it));
+//                repair.kind = RepairCandidateKind.ReplaceKind;
+//                repair.oldRExpr = V2.getOldRExpr(it);
+//                repair.newRExpr = V2.getNewRExpr(it);
+//                repairs.add(rc);
 //            }
 //        }
     }
 
-    private void genAddStatement(CtStatement n, boolean is_first, boolean is_func_block) {
+    private void genAddStatement(CtStatement n) {
 //        if (naive) return;
 //        ASTLocTy loc = new ASTLocTy(file, n);
 //        LocalAnalyzer L = M.getLocalAnalyzer(loc);
 //        Set<CtExpression> exprs = L.getGlobalCandidateExprs();
-//        Map<String, RepairCandidate> tmp_map;
+//        Map<String, Repair> tmp_map;
 //        tmp_map.clear();
 //        for (CtExpression it: exprs) {
 //            AtomReplaceVisitor V(ctxt, L, it, false);
@@ -210,19 +200,17 @@ public class RepairCandidateGenerator {
 //            for (CtStatement it2 : stmts) {
 //                boolean valid_after_replace = L.isValidStmt(it2,  null);
 //                if (!valid_after_replace) continue;
-//                RepairCandidate rc = new RepairCandidate();
-//                rc.actions.clear();
-//                rc.actions.add(new RepairAction(loc, RepairActionKind.InsertMutationKind, it2));
-//                rc.kind = CandidateKind.AddAndReplaceKind;
-//                rc.is_first = is_first;
+//                Repair repair = new Repair();
+//                repair.actions.clear();
+//                repair.actions.add(new RepairAction(loc, RepairActionKind.InsertMutationKind, it2));
+//                repair.kind = RepairCandidateKind.AddAndReplaceKind;
 //                tmp_map.get(stmtToString(ctxt, it2)) = rc;
 //            }
 //            if (valid) {
-//                RepairCandidate rc = new RepairCandidate();
-//                rc.actions.clear();
-//                rc.actions.add(new RepairAction(loc, RepairActionKind.InsertMutationKind, it));
-//                rc.kind = CandidateKind.AddAndReplaceKind;
-//                rc.is_first = is_first;
+//                Repair repair = new Repair();
+//                repair.actions.clear();
+//                repair.actions.add(new RepairAction(loc, RepairActionKind.InsertMutationKind, it));
+//                repair.kind = RepairCandidateKind.AddAndReplaceKind;
 //                tmp_map.get(stmtToString(ctxt, it)) = rc;
 //            }
 //        }
@@ -232,43 +220,33 @@ public class RepairCandidateGenerator {
 //        for (CtStatement it : stmts) {
 //            boolean valid = L.isValidStmt(it,  null);
 //            if (valid) {
-//                RepairCandidate rc = new RepairCandidate();
-//                rc.actions.clear();
-//                rc.actions.add(new RepairAction(loc, RepairActionKind.InsertMutationKind, it));
-//                rc.kind = CandidateKind.AddAndReplaceKind;
-//                rc.is_first = is_first;
+//                Repair repair = new Repair();
+//                repair.actions.clear();
+//                repair.actions.add(new RepairAction(loc, RepairActionKind.InsertMutationKind, it));
+//                repair.kind = RepairCandidateKind.AddAndReplaceKind;
 //                tmp_map.get(stmtToString(ctxt, it)) = rc;
 //            }
 //        }
-//
-//        // This tmp_map is used to eliminate identical candidate generated
-//        for (RepairCandidate rc: tmp_map.values()) {
-//            // see TraverseFuncDecl, some hacky way to fix loc score for is_first && is_func_block
-//            if (is_first && is_func_block)
-//                tmp_memo.add(q.size());
-//            q.add(rc);
-//        }
     }
 
-    private void genAddIfGuard(CtStatement n, boolean is_first) {
+    private void genAddIfGuard(CtStatement n) {
         CtExpression placeholder;
         if (naive)
             placeholder = new CtLiteralImpl();
         else
             placeholder = new CtInvocationImpl();
         CtIf new_IF = new CtIfImpl();
-        RepairCandidate rc = new RepairCandidate();
-        rc.actions.clear();
-        rc.actions.add(new RepairAction(n, RepairActionKind.ReplaceMutationKind, new_IF));
+        Repair repair = new Repair();
+        repair.actions.clear();
+        repair.actions.add(new RepairAction(RepairActionKind.ReplaceMutationKind, n, new_IF));
         if (!naive) {
-            // fixme: it might only be important to patch-generation
+            // fixme: check and complete this to make demo run
             //  List<CtExpression> candidateVars = L.getCondCandidateVars(n.getLocStart());
             List<CtElement> candidateVars = new ArrayList<>();
-            rc.actions.add(new RepairAction(new_IF, placeholder, candidateVars));
+            repair.actions.add(new RepairAction(new_IF, placeholder, candidateVars));
         }
-        rc.kind = CandidateKind.GuardKind;
-        rc.is_first = is_first;
-        q.add(rc);
+        repair.kind = RepairCandidateKind.GuardKind;
+        repairs.add(repair);
         if (naive) return;
 
         // for if statement, we also try guard the execution of the condition by adding is_neg in before
@@ -276,21 +254,20 @@ public class RepairCandidateGenerator {
 //            if (hasCallExpr(n)) {
             CtIf IfS = (CtIf) n;
             new_IF = IfS.clone();
-            rc = new RepairCandidate();
-            rc.actions.clear();
-            rc.actions.add(new RepairAction(n, RepairActionKind.ReplaceMutationKind, new_IF));
-            // fixme: it might only be important to patch-generation
+            repair = new Repair();
+            repair.actions.clear();
+            repair.actions.add(new RepairAction(RepairActionKind.ReplaceMutationKind, n, new_IF));
+            // fixme: check and complete this to make demo run
             //  List<CtExpression> candidateVars = L.getCondCandidateVars(n.getLocStart());
             List<CtElement> candidateVars = new ArrayList<>();
-            rc.actions.add(new RepairAction(new_IF, placeholder, candidateVars));
-            rc.kind = CandidateKind.SpecialGuardKind;
-            rc.is_first = is_first;
-            q.add(rc);
+            repair.actions.add(new RepairAction(new_IF, placeholder, candidateVars));
+            repair.kind = RepairCandidateKind.SpecialGuardKind;
+            repairs.add(repair);
 //            }
         }
     }
 
-    private void genAddIfExit(CtStatement n, boolean is_first, boolean is_func_block) {
+    private void genAddIfExit(CtStatement n) {
 //        ASTLocTy loc = new ASTLocTy(file, n);
 //        LocalAnalyzer L = M.getLocalAnalyzer(loc);
 //        CtExpression placeholder;
@@ -299,21 +276,20 @@ public class RepairCandidateGenerator {
 //        else
 //            placeholder = new CtInvocationImpl();
 //        FunctionDecl curFD = L.getCurrentFunction();
-//        RepairCandidate rc = new RepairCandidate();
+//        Repair repair = new Repair();
 //        if (curFD.getCallResultType() == ctxt.VoidTy) {
 //            CtReturn RS = new(ctxt) ReturnStmt(SourceLocation(),  null, 0);
 //            CtIf IFS = new(ctxt) IfStmt(ctxt, SourceLocation(), 0, placeholder, RS);
-//            rc.actions.clear();
-//            rc.actions.add(new RepairAction(loc, RepairActionKind.InsertMutationKind, IFS));
+//            repair.actions.clear();
+//            repair.actions.add(new RepairAction(loc, RepairActionKind.InsertMutationKind, IFS));
 //            if (!naive) {
-//                // fixme: it might only be important to patch-generation
+//                // fixme: check and complete this to make demo run
 //                //  List<CtExpression> candidateVars = L.getCondCandidateVars(n.getLocStart());
 //                List<CtExpression> candidateVars = new ArrayList<>();
-//                rc.actions.add(new RepairAction(new ASTLocTy(file, IFS), placeholder, candidateVars));
+//                repair.actions.add(new RepairAction(new ASTLocTy(file, IFS), placeholder, candidateVars));
 //            }
-//            rc.kind = CandidateKind.IfExitKind;
-//            rc.is_first = is_first;
-//            q.add(rc);
+//            repair.kind = RepairCandidateKind.IfExitKind;
+//            repairs.add(rc);
 //        }
 //        else {
 //            List<CtExpression> exprs = L.getCandidateReturnExpr();
@@ -321,32 +297,30 @@ public class RepairCandidateGenerator {
 //                CtExpression placeholder2 = exprs.get(i);
 //                CtReturn RS = new(ctxt) CtReturn(SourceLocation(), placeholder2, 0);
 //                CtIf IFS = new(ctxt) CtIf(ctxt, SourceLocation(), 0, placeholder, RS);
-//                rc.actions.clear();
-//                rc.actions.add(new RepairAction(loc, RepairActionKind.InsertMutationKind, IFS));
+//                repair.actions.clear();
+//                repair.actions.add(new RepairAction(loc, RepairActionKind.InsertMutationKind, IFS));
 //                if (!naive) {
-//                    // fixme: it might only be important to patch-generation
+//                    // fixme: check and complete this to make demo run
 //                    //  List<CtExpression> candidateVars = L.getCondCandidateVars(n.getLocStart());
 //                    List<CtExpression> candidateVars = new ArrayList<>();
-//                    rc.actions.add(new RepairAction(new ASTLocTy(file, IFS), placeholder, candidateVars));
+//                    repair.actions.add(new RepairAction(new ASTLocTy(file, IFS), placeholder, candidateVars));
 //                }
-//                rc.kind = CandidateKind.IfExitKind;
-//                rc.is_first = is_first;
-//                q.add(rc);
+//                repair.kind = RepairCandidateKind.IfExitKind;
+//                repairs.add(rc);
 //            }
 //        }
 //        if (naive) return;
 //        if (L.isInsideLoop()) {
 //            CtBreak BS = new(ctxt) CtBreak(SourceLocation());
 //            CtIf IFS = new(ctxt) IfStmt(ctxt, SourceLocation(), 0, placeholder, BS);
-//            rc.actions.clear();
-//            rc.actions.add(new RepairAction(loc, RepairActionKind.InsertMutationKind, IFS));
-//            // fixme: it might only be important to patch-generation
+//            repair.actions.clear();
+//            repair.actions.add(new RepairAction(loc, RepairActionKind.InsertMutationKind, IFS));
+//            // fixme: check and complete this to make demo run
 //            //  List<CtExpression> candidateVars = L.getCondCandidateVars(n.getLocStart());
 //            List<CtExpression> candidateVars = new ArrayList<>();
-//            rc.actions.add(new RepairAction(new ASTLocTy(file, IFS), placeholder, candidateVars));
-//            rc.kind = CandidateKind.IfExitKind;
-//            rc.is_first = is_first;
-//            q.add(rc);
+//            repair.actions.add(new RepairAction(new ASTLocTy(file, IFS), placeholder, candidateVars));
+//            repair.kind = RepairCandidateKind.IfExitKind;
+//            repairs.add(rc);
 //        }
 //        // insert if goto, this is beyond the reach of expr synthesizer,
 //        // so we need a loop
@@ -358,24 +332,56 @@ public class RepairCandidateGenerator {
 //                continue;
 //            GotoStmt GS = new(ctxt) GotoStmt(labels.get(i), SourceLocation(), SourceLocation());
 //            CtIf IFS = new(ctxt) IfStmt(ctxt, SourceLocation(), 0, placeholder, GS);
-//            rc.actions.clear();
-//            rc.actions.add(new RepairAction(loc, RepairActionKind.InsertMutationKind, IFS));
-//            // fixme: it might only be important to patch-generation
+//            repair.actions.clear();
+//            repair.actions.add(new RepairAction(loc, RepairActionKind.InsertMutationKind, IFS));
+//            // fixme: check and complete this to make demo run
 //            //  List<CtExpression> candidateVars = L.getCondCandidateVars(n.getLocStart());
 //            List<CtExpression> candidateVars = new ArrayList<>();
-//            rc.actions.add(new RepairAction(new ASTLocTy(file, IFS), placeholder, candidateVars));
-//            rc.kind = CandidateKind.IfExitKind;
-//            rc.is_first = is_first;
-//            q.add(rc);
+//            repair.actions.add(new RepairAction(new ASTLocTy(file, IFS), placeholder, candidateVars));
+//            repair.kind = RepairCandidateKind.IfExitKind;
+//            repairs.add(rc);
 //        }
     }
 
-    // only used by RepairSearchEngine
-    public void setFlipP(double GeoP) {
-        this.GeoP = GeoP;
+    public Repair genHumanPatch() {
+        Repair repair = new Repair();
+
+        // based on matchCandidateWithHumanFix() todo: check
+        switch (diffEntry.type) {
+            case DeleteAction:
+                // GuardKind: // INSERT_GUARD_RF
+                break;
+            case InsertAction:
+                // IfExitKind: // INSERT_CONTROL_RF
+                // AddInitKind: // INSERT_STMT_RF
+                // AddAndReplaceKind: // INSERT_STMT_RF
+                break;
+            case ReplaceAction:
+                // IfExitKind: // INSERT_CONTROL_RF
+                // GuardKind: // INSERT_GUARD_RF
+                // SpecialGuardKind: // INSERT_GUARD_RF
+                // LoosenConditionKind: // REPLACE_COND_RF
+                // TightenConditionKind: // REPLACE_COND_RF
+                // ReplaceKind: // REPLACE_STMT_RF
+                // ReplaceStringKind: // REPLACE_STMT_RF
+                break;
+            case UnknownAction:
+                break;
+        }
+
+        repair.kind = null; // kind is related to RepairFeature
+        repair.oldRExpr = null; // is this important?
+        repair.newRExpr = null; // is this important?
+
+        // todo: actually, candidates should be
+        //  List<CtExpression> candidateVars = L.getCondCandidateVars(ori_cond.getLocEnd());
+        List<CtElement> candidates = diffEntry.dstElem.getElements(new TypeFilter<>(CtElement.class));
+        repair.actions.add(new RepairAction(diffEntry.srcElem, diffEntry.dstElem, candidates));
+
+        return repair;
     }
 
-    public List<RepairCandidate> run() {
+    public List<Repair> genRepairCandidates() {
         CtScanner scanner = new CtScanner() {
 
             // https://clang.llvm.org/doxygen/classclang_1_1LabelStmt.html
@@ -383,7 +389,7 @@ public class RepairCandidateGenerator {
                 return false;
             }
 
-            // todo: I need to check all "Decl" in Prophet
+            // todo: check all "Decl" in Prophet
             // https://clang.llvm.org/doxygen/classclang_1_1DeclStmt.html
             private boolean isDeclStmt(CtStatement statement) {
                 return statement instanceof CtIf || statement instanceof CtLoop || statement instanceof CtSwitch || statement instanceof CtAssignment;
@@ -395,14 +401,6 @@ public class RepairCandidateGenerator {
                 super.visitCtIf(n);
                 CtStatement ThenCS = n.getThenStatement();
                 CtStatement ElseCS = n.getElseStatement();
-                if (isTainted(n) || isTainted(ThenCS) || isTainted(ElseCS)) {
-                    if (!loc_map1.containsKey(n))
-                        loc_map1.put(n, 10000000);
-                    if (loc_map1.get(n) > loc_map1.get(ThenCS))
-                        loc_map1.put(n, loc_map1.get(ThenCS));
-                    if (loc_map1.get(n) > loc_map1.get(ElseCS))
-                        loc_map1.put(n, loc_map1.get(ElseCS));
-                }
                 if (isTainted(n) || isTainted(ThenCS))
                     genTightCondition(n);
                 if (isTainted(n) || isTainted(ElseCS))
@@ -412,34 +410,11 @@ public class RepairCandidateGenerator {
             @Override
             public void visitCtStatementList(CtStatementList n) {
                 super.visitCtStatementList(n);
-                assert n instanceof CtStatement; // that is to say, n instanceof CtBlock
                 compound_counter.put(n, 0);
-                int best = 1000000;
                 for (CtStatement it : n) {
                     if (isTainted(it)) {
                         compound_counter.put(n, compound_counter.get(n) + 1);
-                        assert loc_map1.containsKey(it);
-                        if (best > loc_map1.get(n))
-                            best = loc_map1.get(n);
                     }
-                }
-                loc_map1.put((CtStatement) n, best);
-            }
-
-            @Override
-            public <T> void visitCtMethod(CtMethod<T> m) {
-                super.visitCtMethod(m);
-                // seems not apply to Java as no goto in Java
-//                in_yacc_func = isYaccFunc(FD);
-                // This is to fix the first statement in the function block,
-                // a little bit hacky though, because we use a temporary memo<`2`> list
-                // todo: this seems weird
-                tmp_memo.clear();
-                for (int iv : tmp_memo) {
-                    RepairCandidate rc = q.get(iv);
-                    assert(rc.is_first);
-                    assert(rc.actions.size() > 0);
-                    loc_map1.put(rc.actions.get(0).loc_stmt, loc_map1.get(m.getBody()));
                 }
             }
 
@@ -448,28 +423,17 @@ public class RepairCandidateGenerator {
                 super.scan(role, element);
                 if (element instanceof CtStatement && !(element instanceof CtStatementList)) {
                     CtStatement n = (CtStatement) element;
-                    boolean is_first = false;
-                    if (n.getParent() instanceof CtStatementList) {
-                        CtStatementList CS = (CtStatementList) n.getParent();
-                        is_first = true;
-                        for (CtStatement it: CS.getStatements()) {
-                            if (it == n) break;
-                            if (!isDeclStmt(it))
-                                is_first = false;
-                        }
-                    }
-                    is_first = is_first && !isDeclStmt(n);
 
                     if (isTainted(n)) {
                         // This is to compute whether Stmt n is the first
                         // non-decl statement in a CompoundStmt
-                        genReplaceStmt(n, is_first);
+                        genReplaceStmt(n);
                         // todo: exact condition for DeclStmt and LabelStmt
                         if (!isDeclStmt(n) && !isLabelStmt(n))
-                            genAddIfGuard(n, is_first);
-//                            genAddMemset(n, is_first); // seems not apply to Java?
-                        genAddStatement(n, is_first, n instanceof CtClass); // or "n instanceof CtMethod"
-                        genAddIfExit(n, is_first, n instanceof CtClass); // or "n instanceof CtMethod"
+                            genAddIfGuard(n);
+//                        genAddMemset(n); // inapplicable to Java?
+                        genAddStatement(n);
+                        genAddIfExit(n);
                     }
                     else if (n instanceof CtIf) {
                         CtIf IFS = (CtIf) n;
@@ -481,18 +445,38 @@ public class RepairCandidateGenerator {
                                 firstS = CS.getStatements().get(0);
                         }
                         if (isTainted(thenBlock) || isTainted(firstS)) {
-                            if (isTainted(thenBlock))
-                                loc_map1.put(n, loc_map1.get(thenBlock));
-                            else
-                                loc_map1.put(n, loc_map1.get(firstS));
-                            genAddStatement(n, is_first, n instanceof CtClass); // or "n instanceof CtMethod"
+                            genAddStatement(n);
                         }
                     }
                 }
             }
         };
         // traverse (i.e. go to each node) the AST of clang::ASTContext (the top declaration context)
-        scanner.scan(root);
-        return q;
+        scanner.scan(diffEntry.srcElem);
+        return repairs;
+    }
+
+    // based on LocationFuzzer class
+    private Set<CtElement> fuzzyLocator(CtElement statement) {
+        Set<CtElement> locations = new HashSet<>();
+        // todo: check all conditions like this
+        if (statement instanceof CtMethod || statement instanceof CtClass || statement instanceof CtIf || statement instanceof CtStatementList) {
+            locations.add(statement);
+        } else {
+            List<CtStatement> statements = statement.getParent().getElements(new TypeFilter<>(CtStatement.class));
+            System.out.println(statement);
+            System.out.println(statements);
+            if (statement.getParent() instanceof CtStatement) {
+                statements = statements.subList(1, statements.size());
+            }
+            assert statements.contains(statement);
+            int idx = statements.indexOf(statement);
+            if (idx > 0)
+                locations.add(statements.get(idx - 1));
+            locations.add(statements.get(idx));
+            if (idx < statements.size() - 1)
+                locations.add(statements.get(idx + 1));
+        }
+        return locations;
     }
 }

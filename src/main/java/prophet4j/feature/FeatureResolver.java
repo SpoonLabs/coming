@@ -19,7 +19,7 @@ import picocli.CommandLine.Option;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 // this is the old implementation which will be removed someday
-// based on FeatureExtract.cpp, RepairCandidateGenerator.cpp
+// based on FeatureExtract.cpp, RepairGenerator.cpp
 public class FeatureResolver {
 
     // check these variables
@@ -72,9 +72,9 @@ public class FeatureResolver {
                 Object value = ((CtLiteral) atom).getValue();
                 if (value != null) {
                     if (value.equals(0)) {
-                        atomicFeatures.add(AtomicFeature.CONST_ZERO_AF);
+                        atomicFeatures.add(AtomicFeature.ASSIGN_ZERO_AF);
                     } else {
-                        atomicFeatures.add(AtomicFeature.CONST_NONZERO_AF);
+                        atomicFeatures.add(AtomicFeature.ASSIGN_CONST_AF);
                     }
                 }
             } else if (atom instanceof CtVariable || atom instanceof CtVariableAccess) {
@@ -611,7 +611,7 @@ public class FeatureResolver {
         }
         // todo: one special case of string const replacement (one idea is to use contains function)
 //        if (isAbstractStub(E)) {
-//            assert(rc.kind == RepairCandidate::ReplaceStringKind);
+//            assert(rc.kind == Repair::ReplaceStringKind);
 //            ret.insert(ModifiedVF);
 //            ret.insert(StringLiteralVF);
 //        }

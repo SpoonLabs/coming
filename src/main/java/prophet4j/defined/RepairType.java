@@ -1,8 +1,7 @@
 package prophet4j.defined;
 
 public interface RepairType {
-    // i feel there are some definitions redundant
-    enum DiffActionKindTy {
+    enum DiffActionType {
         DeleteAction,
         InsertAction,
         ReplaceAction,
@@ -10,30 +9,22 @@ public interface RepairType {
     }
 
     // originally defined at struct RepairAction
-    enum ExprTagTy {
-        InvalidTag,
-        CondTag,
-        StringConstantTag, // i do not know why this tag is specialized (refer to ExprSynthesizer.cpp someday)
-        // tag is used in ExprSynthesizer.cpp
-    }
-
-    // originally defined at struct RepairAction
-    enum RepairActionKind {
+    enum RepairActionKind { // what are their differences?
         ReplaceMutationKind,
-        InsertMutationKind, // no need to consider memset as it does not apply to Java
+        InsertMutationKind,
         InsertAfterMutationKind,
         ExprMutationKind
     }
 
-    // originally defined at struct RepairCandidate
-    enum CandidateKind { // implementation is at RepairCandidateGenerator.java
+    // originally defined at struct Repair
+    enum RepairCandidateKind { // implementation is at RepairGenerator.java
         // INSERT_CONTROL_RF
         IfExitKind,             // genAddIfExit()
         // INSERT_GUARD_RF
         GuardKind,              // genAddIfGuard()
         SpecialGuardKind,       // genAddIfGuard()
         // INSERT_STMT_RF
-        AddInitKind,            // genAddMemset() seems not apply to Java?
+        AddInitKind,            // genAddMemset() seems inapplicable to Java?
         AddAndReplaceKind,      // genAddStatement()
         // REPLACE_COND_RF
         TightenConditionKind,   // genTightCondition()

@@ -9,18 +9,16 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
-import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-// based on FeatureExtract.cpp
+// based on FeatureExtract.cpp todo: what is the difference between CtXXX and CtXXXReference?
 public class FeatureVisitor {
 //        typedef std::multimap<unsigned int, unsigned int> HelperMapTy;
 //        HelperMapTy binOpHelper, uOpHelper, caOpHelper;
@@ -49,9 +47,9 @@ public class FeatureVisitor {
                 return;
             }
             // todo: CtInvocation or CtExecutable ?
-            if (v.getElements(new TypeFilter<>(CtInvocation.class)).size() > 0 && !isAbstractStub(v)) {
-                return;
-            }
+//            if (v.getElements(new TypeFilter<>(CtInvocation.class)).size() > 0 && !isAbstractStub(v)) {
+//                return;
+//            }
             if (!res.map.containsKey(tmp)) {
                 res.map.put(tmp, new HashSet<>());
             }
@@ -63,26 +61,28 @@ public class FeatureVisitor {
     }
 
     // todo: consider the importance, if this not exists, then we do not need 7 genXXX()s
-    public void traverseRC(RepairCandidate rc, CtElement abst_v) {
+    public void traverseRC(Repair repair, CtElement abst_v) {
         this.abst_v = abst_v;
         if (abst_v != null)
             putValueFeature(abst_v, AtomicFeature.ABST_V_AF);
-        this.is_replace_strconst = (rc.kind == CandidateKind.ReplaceStringKind);
-        assert(rc.actions.size() > 0);
-        isReplace = (rc.actions.get(0).kind == RepairActionKind.ReplaceMutationKind);
-        if (rc.kind == CandidateKind.TightenConditionKind ||
-                rc.kind == CandidateKind.LoosenConditionKind ||
-                rc.kind == CandidateKind.GuardKind ||
-                rc.kind == CandidateKind.SpecialGuardKind) {
-            if (rc.actions.get(0).ast_node instanceof CtIf) {
-                CtIf IFS = (CtIf) rc.actions.get(0).ast_node;
+        this.is_replace_strconst = (repair.kind == RepairCandidateKind.ReplaceStringKind);
+        assert(repair.actions.size() > 0);
+        isReplace = (repair.actions.get(0).kind == RepairActionKind.ReplaceMutationKind);
+        if (repair.kind == RepairCandidateKind.TightenConditionKind ||
+                repair.kind == RepairCandidateKind.LoosenConditionKind ||
+                repair.kind == RepairCandidateKind.GuardKind ||
+                repair.kind == RepairCandidateKind.SpecialGuardKind) {
+            if (repair.actions.get(0).ast_node instanceof CtIf) {
+                CtIf IFS = (CtIf) repair.actions.get(0).ast_node;
                 putValueFeature(null, AtomicFeature.R_STMT_COND_AF);
                 CtExpression cond = IFS.getCondition();
                 traverseStmt(cond);
             }
         }
         else {
-            traverseStmt(rc.actions.get(0).ast_node);
+            System.out.println("travelRC~");
+            System.out.println(abst_v);
+            traverseStmt(repair.actions.get(0).ast_node);
         }
     }
 
@@ -113,61 +113,69 @@ public class FeatureVisitor {
 
     public void traverseStmt(CtElement S) {
         boolean propagate = true;
-        if (S instanceof CtStatement) {
-            putStmtType(null, (CtStatement) S);
-            if (S instanceof CtInvocation) {
-                CtInvocation CE = (CtInvocation) S;
-                if (isAbstractStub(CE)) {
-                    propagate = false;
-                    CtScanner scanner = new CtScanner() {
-                        // todo: does VisitArraySubscriptExpr apply to Java?
-                        @Override
-                        public void scan(CtElement element) {
-                            super.scan(element);
-                            // VisitExpr
-                            if (element instanceof CtExpression) {
-                                CtStatement TS = (CtStatement) S;
-                                while(!(TS instanceof CtMethod || TS instanceof CtClass || TS instanceof CtIf || TS instanceof CtStatementList)) {
-                                    if (isAbstractStub(element) && abst_v!=null)
-                                        putStmtType(abst_v, TS);
-                                    else {
-                                        putStmtType((CtExpression) element, TS);
-                                    }
-                                    TS = (CtStatement) TS.getParent();
+        System.out.println("V-0");
+        System.out.println(S);
+        System.out.println(S instanceof CtExpression);
+        System.out.println(S instanceof CtStatement);
+        System.out.println(S instanceof CtInvocation);
+        putStmtType(null, S);
+        if (S instanceof CtInvocation) {
+            CtInvocation CE = (CtInvocation) S;
+            System.out.println("V-1");
+            if (isAbstractStub(CE)) {
+                System.out.println("V-2");
+                propagate = false;
+                CtScanner scanner = new CtScanner() {
+                    // VisitExpr
+                    @Override
+                    public void scan(CtElement element) {
+                        super.scan(element);
+                        if (element instanceof CtExpression) {
+                            CtStatement TS = (CtStatement) S;
+                            while(!(TS instanceof CtMethod || TS instanceof CtClass || TS instanceof CtIf || TS instanceof CtStatementList)) {
+                                if (isAbstractStub(element) && abst_v!=null)
+                                    putStmtType(abst_v, TS);
+                                else {
+                                    putStmtType((CtExpression) element, TS);
                                 }
+                                TS = (CtStatement) TS.getParent();
                             }
                         }
+                    }
 
-                        @Override
-                        public <T> void visitCtInvocation(CtInvocation<T> invocation) {
-                            super.visitCtInvocation(invocation);
-                            CtElement callee = invocation.getExecutable();
-                            if (isAbstractStub(CE)) {
-                                if (abst_v!=null) {
-                                    if (isReplace)
-                                        putValueFeature(abst_v, AtomicFeature.R_STMT_CALL_AF);
-                                    else
-                                        putValueFeature(abst_v, AtomicFeature.STMT_CALL_AF);
-                                }
-                                else if (is_replace_strconst) {
-                                    // OK, we are in string const replacement part
-                                    putValueFeature(CE, AtomicFeature.ABST_V_AF);
-                                }
+                    // VisitCallExpr
+                    @Override
+                    public <T> void visitCtInvocation(CtInvocation<T> invocation) {
+                        super.visitCtInvocation(invocation);
+                        CtElement callee = invocation.getExecutable();
+                        // fixme: fix this condition
+                        if (isAbstractStub(invocation) && false) {
+                            if (abst_v!=null) {
+                                if (isReplace)
+                                    putValueFeature(abst_v, AtomicFeature.R_STMT_CALL_AF);
+                                else
+                                    putValueFeature(abst_v, AtomicFeature.STMT_CALL_AF);
                             }
-                            else
-                                putValueFeature(callee, AtomicFeature.CALLEE_AF);
-                            for (Object it : CE.getActualTypeArguments())
-                                putValueFeature((CtTypeReference) it, AtomicFeature.CALL_ARGUMENT_AF);
+                            else if (is_replace_strconst) {
+                                // OK, we are in string const replacement part
+                                putValueFeature(invocation, AtomicFeature.ABST_V_AF);
+                            }
                         }
-                    };
-                    scanner.scan(S);
-                }
+                        else {
+                            System.out.println("^^^^^^^^^^^^^^^^^^^^^^^");
+                            putValueFeature(callee, AtomicFeature.CALLEE_AF);
+                            System.out.println("^^^^^^^^^^^^^^^^^^^^^^^");
+                        }
+                        for (Object it : invocation.getActualTypeArguments())
+                            putValueFeature((CtTypeReference) it, AtomicFeature.CALL_ARGUMENT_AF);
+                    }
+                };
+                scanner.scan(S);
             }
         }
+        System.out.println("propagate: " + propagate);
         if (propagate) {
             CtScanner scanner = new CtScanner() {
-                // todo: does VisitArraySubscriptExpr apply to Java?
-
                 @Override
                 public void scan(CtElement element) {
                     super.scan(element);
@@ -188,13 +196,16 @@ public class FeatureVisitor {
                 @Override
                 public <T> void visitCtField(CtField<T> f) {
                     super.visitCtField(f);
+//                    if (f instanceof CtArrayAccess)
+//                        putValueFeature(f, AtomicFeature.DE_REF_AF);
                     putValueFeature(f, AtomicFeature.MEMBER_ACCESS_AF);
                 }
 
                 @Override
                 public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
                     super.visitCtFieldReference(reference);
-                    putValueFeature(reference, AtomicFeature.DE_REF_AF);
+//                    if (reference instanceof CtArrayAccess)
+//                        putValueFeature(reference, AtomicFeature.DE_REF_AF);
                     putValueFeature(reference, AtomicFeature.MEMBER_ACCESS_AF);
                 }
 
@@ -286,13 +297,12 @@ public class FeatureVisitor {
                         Object v = ((CtLiteral)RHS).getValue();
                         if (v instanceof Integer) {
                             if ((Integer) v == 0) {
-                                putValueFeature(LHS, AtomicFeature.CONST_ZERO_AF);
-                            } else {
-                                putValueFeature(LHS, AtomicFeature.CONST_NONZERO_AF);
+                                putValueFeature(LHS, AtomicFeature.ASSIGN_ZERO_AF);
                             }
+                            putValueFeature(LHS, AtomicFeature.ASSIGN_CONST_AF);
                         }
                     }
-                    if (RHS instanceof CtArrayTypeReference) {
+                    if (RHS instanceof CtArrayAccess) {
                         putValueFeature(LHS, AtomicFeature.DE_REF_AF);
                         putValueFeature(RHS, AtomicFeature.INDEX_AF);
                     }

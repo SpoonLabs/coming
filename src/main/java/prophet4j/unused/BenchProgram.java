@@ -54,7 +54,7 @@ public class BenchProgram {
 //            cmd += work_dir;
 //            ret = system(cmd.c_str());
 //            if (ret != 0) {
-//                fprintf(stderr, "You should run it with root permission!\n");
+//                fprintf(stderr, "You should genRepairCandidates it with root permission!\n");
 //                exit(1);
 //            }
 //            cmd = "chmod a+w ";
