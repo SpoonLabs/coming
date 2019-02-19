@@ -42,6 +42,7 @@ import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypedElement;
@@ -63,6 +64,8 @@ import spoon.reflect.visitor.filter.TypeFilter;
  */
 public class CodeFeatureDetector {
 
+	public static final String ENUM_KEY = "ENUM_KEY";
+	public static final String CONSTANT_KEY = "CONSTANT";
 	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -195,7 +198,7 @@ public class CodeFeatureDetector {
 
 				}
 				writeGroupedByVar(context,
-						((invocation.getExecutable() != null) ? invocation.getExecutable().getSimpleName()
+						((invocation.getExecutable() != null) ? invocation.getExecutable().getSignature()
 								: invocation.toString()),
 						CodeFeatures.M5_MI_WITH_COMPATIBLE_VAR_TYPE, currentInvocationWithCompVar, "FEATURES_METHODS");
 
@@ -246,44 +249,48 @@ public class CodeFeatureDetector {
 		try {
 			boolean hasSimilarLiterals = false;
 
-			List<CtExpression> allConstant = new ArrayList();
+			List<CtTypedElement> allConstant = new ArrayList();
 
 			allConstant.addAll(literalsFromFaultyLine);
 
 			// we filter all variables that are constant
-			List<CtVariableAccess> contantVars = varsAffected.stream().filter(e -> isConstantVariableAccess(e))
-					.collect(Collectors.toList());
+			List<CtVariable> contantVars = varsAffected.stream().filter(e -> isConstantVariableAccess(e))
+					.map(e -> e.getVariable().getDeclaration()).collect(Collectors.toList());
 
 			allConstant.addAll(contantVars);
 
+			// Get all literals from the class under repair
 			List<CtLiteral> literalsFromClass = parentClass.getElements(e -> (e instanceof CtLiteral)).stream()
 					.map(CtLiteral.class::cast).collect(Collectors.toList());
 
-			List<CtTypedElement> constantVarsInScope = varsInScope.stream().filter(e -> isConstantVariableAccess(e))
-					.map(CtTypedElement.class::cast).collect(Collectors.toList());
+			// Get all constant in from the var in scope
+			List<CtVariable> constantVarsInScope = varsInScope.stream().filter(e -> isConstantVariable(e))
+					.map(CtVariable.class::cast).collect(Collectors.toList());
 
+			// Literals + constants in scope can be use for replacing the faulty literal
 			List<CtTypedElement> allTypeInScope = new ArrayList();
 			allTypeInScope.addAll(constantVarsInScope);
 			allTypeInScope.addAll(literalsFromClass);
 
 			if (allConstant.size() > 0) {
 
-				for (CtExpression literalFormFaulty : allConstant) {
-
+				for (CtTypedElement literalFormFaulty : allConstant) {
+					boolean currentLiteralHasSimilarLiteral = false;
 					for (CtTypedElement anotherConstant : allTypeInScope) {
 						if (// Compare types
 						compareTypes(anotherConstant.getType(), literalFormFaulty.getType())
 								&& !anotherConstant.toString().equals(literalFormFaulty.toString())) {
 
-							// Compare value
-							// && !(anotherLiteral.getValue() != null && literalFormFaulty.getValue() !=
-							// null
-							// && anotherLiteral.getValue().equals(literalFormFaulty.getValue()))) {
 							hasSimilarLiterals = true;
+							currentLiteralHasSimilarLiteral = true;
 							break;
 						}
 					}
-
+					String name = (literalFormFaulty instanceof CtNamedElement)
+							? ((CtNamedElement) literalFormFaulty).getSimpleName()
+							: literalFormFaulty.toString();
+					writeGroupedByVar(context, name, CodeFeatures.C1_SAME_TYPE_CONSTANT,
+							currentLiteralHasSimilarLiteral, CONSTANT_KEY);
 				}
 
 			}
@@ -308,7 +315,7 @@ public class CodeFeatureDetector {
 		return false;
 	}
 
-	public static boolean isConstantVariableAccess(CtVariable ctVariable) {
+	public static boolean isConstantVariable(CtVariable ctVariable) {
 		Set<ModifierKind> modifiers = ctVariable.getModifiers();
 		if (modifiers.contains(ModifierKind.FINAL)) {
 			return true;
@@ -369,17 +376,22 @@ public class CodeFeatureDetector {
 
 			if (parentClass == null)
 				return;
-
+			// Get all enums
 			List<CtEnum> enums = parentClass.getElements(new TypeFilter<>(CtEnum.class));
 
+			// Get variable read from suspicious element
 			List<CtVariableRead> varAccessFromSusp = element.getElements(new TypeFilter<>(CtVariableRead.class));
 
+			// For each var access
 			for (CtVariableRead varAccess : varAccessFromSusp) {
-
+				boolean isVarAccessTypeEnum = false;
 				if (varAccess.getVariable().getType() != null
 						&& enums.contains(varAccess.getVariable().getType().getDeclaration())) {
 					useEnum = true;
+					isVarAccessTypeEnum = true;
 				}
+				writeGroupedByVar(context, varAccess.getVariable().getSimpleName(), CodeFeatures.C2_USES_ENUMERATION,
+						isVarAccessTypeEnum, ENUM_KEY);
 			}
 
 			context.put(CodeFeatures.C2_USES_ENUMERATION, useEnum);
