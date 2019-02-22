@@ -13,7 +13,7 @@ public interface RepairType {
         ReplaceMutationKind,
         InsertMutationKind,
         InsertAfterMutationKind,
-        ExprMutationKind
+        ExprMutationKind,
     }
 
     // originally defined at struct Repair
@@ -24,7 +24,7 @@ public interface RepairType {
         GuardKind,              // genAddIfGuard()
         SpecialGuardKind,       // genAddIfGuard()
         // INSERT_STMT_RF
-        AddInitKind,            // genAddMemset() seems inapplicable to Java?
+        AddInitKind,            // Inapplicable to Java
         AddAndReplaceKind,      // genAddStatement()
         // REPLACE_COND_RF
         TightenConditionKind,   // genTightCondition()

@@ -15,8 +15,10 @@ import prophet4j.defined.RepairType.RepairCandidateKind;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtCFlowBreak;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -36,7 +38,7 @@ fixme:
     to correct:
         genAddIfGuard() genTightCondition() genLooseCondition()
     to implement:
-        genAddMemset() genReplaceStmt() genAddIfExit() genAddStatement()
+        genReplaceStmt() genAddIfExit() genAddStatement()
  */
 // based on RepairGenerator.cpp
 public class RepairGenerator {
@@ -50,7 +52,7 @@ public class RepairGenerator {
 
     public RepairGenerator(DiffEntry diffEntry, boolean naive) {
         this.diffEntry = diffEntry;
-        this.area = fuzzyLocator(diffEntry.srcElem);
+        this.area = fuzzyLocator(diffEntry.srcCommonAncestor);
         this.naive = naive;
         repairs.clear();
         compound_counter.clear();
@@ -86,9 +88,9 @@ public class RepairGenerator {
         repair.actions.add(new RepairAction(RepairActionKind.ReplaceMutationKind, n, S));
         if (!naive) {
             // fixme: check and complete this to make demo run
-            //  List<CtExpression> candidateVars = L.getCondCandidateVars(ori_cond.getLocEnd());
-            List<CtElement> candidateVars = new ArrayList<>();
-            repair.actions.add(new RepairAction(S, placeholder, candidateVars));
+            //  List<CtExpression> atoms = L.getCondCandidateVars(ori_cond.getLocEnd());
+            List<CtElement> atoms = new ArrayList<>();
+            repair.actions.add(new RepairAction(S, placeholder, atoms));
         }
         repair.kind = RepairCandidateKind.TightenConditionKind;
         repairs.add(repair);
@@ -108,9 +110,9 @@ public class RepairGenerator {
         repair.actions.add(new RepairAction(RepairActionKind.ReplaceMutationKind, n, S));
         if (!naive) {
             // fixme: check and complete this to make demo run
-            //  List<CtExpression> candidateVars = L.getCondCandidateVars(ori_cond.getLocEnd());
-            List<CtElement> candidateVars = new ArrayList<>();
-            repair.actions.add(new RepairAction(S, placeholder, candidateVars));
+            //  List<CtExpression> atoms = L.getCondCandidateVars(ori_cond.getLocEnd());
+            List<CtElement> atoms = new ArrayList<>();
+            repair.actions.add(new RepairAction(S, placeholder, atoms));
         }
         repair.kind = RepairCandidateKind.LoosenConditionKind;
         repairs.add(repair);
@@ -130,9 +132,9 @@ public class RepairGenerator {
                 repair.actions.add(new RepairAction(RepairActionKind.ReplaceMutationKind, n, S));
                 if (!naive) {
                     // fixme: check and complete this to make demo run
-                    //  List<CtExpression> candidateVars = L.getCondCandidateVars(ori_cond.getLocEnd());
-                    List<CtElement> candidateVars = new ArrayList<>();
-                    repair.actions.add(new RepairAction(S, placeholder, candidateVars));
+                    //  List<CtExpression> atoms = L.getCondCandidateVars(ori_cond.getLocEnd());
+                    List<CtElement> atoms = new ArrayList<>();
+                    repair.actions.add(new RepairAction(S, placeholder, atoms));
                 }
                 repair.kind = RepairCandidateKind.LoosenConditionKind;
                 repairs.add(repair);
@@ -257,9 +259,9 @@ public class RepairGenerator {
         repair.actions.add(new RepairAction(RepairActionKind.ReplaceMutationKind, n, new_IF));
         if (!naive) {
             // fixme: check and complete this to make demo run
-            //  List<CtExpression> candidateVars = L.getCondCandidateVars(n.getLocStart());
-            List<CtElement> candidateVars = new ArrayList<>();
-            repair.actions.add(new RepairAction(new_IF, placeholder, candidateVars));
+            //  List<CtExpression> atoms = L.getCondCandidateVars(n.getLocStart());
+            List<CtElement> atoms = new ArrayList<>();
+            repair.actions.add(new RepairAction(new_IF, placeholder, atoms));
         }
         repair.kind = RepairCandidateKind.GuardKind;
         repairs.add(repair);
@@ -274,9 +276,9 @@ public class RepairGenerator {
             repair.actions.clear();
             repair.actions.add(new RepairAction(RepairActionKind.ReplaceMutationKind, n, new_IF));
             // fixme: check and complete this to make demo run
-            //  List<CtExpression> candidateVars = L.getCondCandidateVars(n.getLocStart());
-            List<CtElement> candidateVars = new ArrayList<>();
-            repair.actions.add(new RepairAction(new_IF, placeholder, candidateVars));
+            //  List<CtExpression> atoms = L.getCondCandidateVars(n.getLocStart());
+            List<CtElement> atoms = new ArrayList<>();
+            repair.actions.add(new RepairAction(new_IF, placeholder, atoms));
             repair.kind = RepairCandidateKind.SpecialGuardKind;
             repairs.add(repair);
 //            }
@@ -300,9 +302,9 @@ public class RepairGenerator {
 //            repair.actions.add(new RepairAction(loc, RepairActionKind.InsertMutationKind, IFS));
 //            if (!naive) {
 //                // fixme: check and complete this to make demo run
-//                //  List<CtExpression> candidateVars = L.getCondCandidateVars(n.getLocStart());
-//                List<CtExpression> candidateVars = new ArrayList<>();
-//                repair.actions.add(new RepairAction(new ASTLocTy(file, IFS), placeholder, candidateVars));
+//                //  List<CtExpression> atoms = L.getCondCandidateVars(n.getLocStart());
+//                List<CtExpression> atoms = new ArrayList<>();
+//                repair.actions.add(new RepairAction(new ASTLocTy(file, IFS), placeholder, atoms));
 //            }
 //            repair.kind = RepairCandidateKind.IfExitKind;
 //            repairs.add(rc);
@@ -317,9 +319,9 @@ public class RepairGenerator {
 //                repair.actions.add(new RepairAction(loc, RepairActionKind.InsertMutationKind, IFS));
 //                if (!naive) {
 //                    // fixme: check and complete this to make demo run
-//                    //  List<CtExpression> candidateVars = L.getCondCandidateVars(n.getLocStart());
-//                    List<CtExpression> candidateVars = new ArrayList<>();
-//                    repair.actions.add(new RepairAction(new ASTLocTy(file, IFS), placeholder, candidateVars));
+//                    //  List<CtExpression> atoms = L.getCondCandidateVars(n.getLocStart());
+//                    List<CtExpression> atoms = new ArrayList<>();
+//                    repair.actions.add(new RepairAction(new ASTLocTy(file, IFS), placeholder, atoms));
 //                }
 //                repair.kind = RepairCandidateKind.IfExitKind;
 //                repairs.add(rc);
@@ -332,9 +334,9 @@ public class RepairGenerator {
 //            repair.actions.clear();
 //            repair.actions.add(new RepairAction(loc, RepairActionKind.InsertMutationKind, IFS));
 //            // fixme: check and complete this to make demo run
-//            //  List<CtExpression> candidateVars = L.getCondCandidateVars(n.getLocStart());
-//            List<CtExpression> candidateVars = new ArrayList<>();
-//            repair.actions.add(new RepairAction(new ASTLocTy(file, IFS), placeholder, candidateVars));
+//            //  List<CtExpression> atoms = L.getCondCandidateVars(n.getLocStart());
+//            List<CtExpression> atoms = new ArrayList<>();
+//            repair.actions.add(new RepairAction(new ASTLocTy(file, IFS), placeholder, atoms));
 //            repair.kind = RepairCandidateKind.IfExitKind;
 //            repairs.add(rc);
 //        }
@@ -351,28 +353,50 @@ public class RepairGenerator {
 //            repair.actions.clear();
 //            repair.actions.add(new RepairAction(loc, RepairActionKind.InsertMutationKind, IFS));
 //            // fixme: check and complete this to make demo run
-//            //  List<CtExpression> candidateVars = L.getCondCandidateVars(n.getLocStart());
-//            List<CtExpression> candidateVars = new ArrayList<>();
-//            repair.actions.add(new RepairAction(new ASTLocTy(file, IFS), placeholder, candidateVars));
+//            //  List<CtExpression> atoms = L.getCondCandidateVars(n.getLocStart());
+//            List<CtExpression> atoms = new ArrayList<>();
+//            repair.actions.add(new RepairAction(new ASTLocTy(file, IFS), placeholder, atoms));
 //            repair.kind = RepairCandidateKind.IfExitKind;
 //            repairs.add(rc);
 //        }
     }
 
-    public Repair genHumanPatch() {
+    public Repair genHumanRepair(DiffEntry diffEntry) {
         Repair repair = new Repair();
 
-        // based on matchCandidateWithHumanFix() todo: check
+        repair.kind = null; // related to RepairFeature
+        repair.oldRExpr = null; // related to ValueFeature
+        repair.newRExpr = null; // related to ValueFeature
+
+        // todo: more checks
+        // based on matchCandidateWithHumanFix(), repair.kind should have one RepairFeature
+//        System.out.println("------------");
+//        System.out.println(diffEntry.type);
+        CtElement srcCommonAncestor = diffEntry.srcCommonAncestor;
+        if (srcCommonAncestor instanceof CtStatementList) {
+            srcCommonAncestor = diffEntry.srcCommonAncestor.getParent();
+        }
+        CtElement dstCommonAncestor = diffEntry.dstCommonAncestor;
+        if (dstCommonAncestor instanceof CtStatementList) {
+            dstCommonAncestor = diffEntry.dstCommonAncestor.getParent();
+        }
         switch (diffEntry.type) {
-            case DeleteAction:
+            case DeleteAction: // kind
                 // GuardKind: // INSERT_GUARD_RF
+                repair.kind = RepairCandidateKind.GuardKind;
                 break;
-            case InsertAction:
+            case InsertAction: // kind
                 // IfExitKind: // INSERT_CONTROL_RF
-                // AddInitKind: // INSERT_STMT_RF
                 // AddAndReplaceKind: // INSERT_STMT_RF
+                if (dstCommonAncestor instanceof CtIf) {
+                    repair.kind = RepairCandidateKind.IfExitKind;
+                } else {
+                    repair.kind = RepairCandidateKind.AddAndReplaceKind;
+                }
+                // compare with others in genRepairCandidates()
+                repair.actions.add(new RepairAction(RepairActionKind.InsertMutationKind, diffEntry.srcCommonAncestor, diffEntry.dstCommonAncestor));
                 break;
-            case ReplaceAction:
+            case ReplaceAction: // kind // oldRExpr // newRExpr
                 // IfExitKind: // INSERT_CONTROL_RF
                 // GuardKind: // INSERT_GUARD_RF
                 // SpecialGuardKind: // INSERT_GUARD_RF
@@ -380,20 +404,53 @@ public class RepairGenerator {
                 // TightenConditionKind: // REPLACE_COND_RF
                 // ReplaceKind: // REPLACE_STMT_RF
                 // ReplaceStringKind: // REPLACE_STMT_RF
+                if (dstCommonAncestor instanceof CtIf) {
+                    CtIf IF2 = (CtIf) dstCommonAncestor;
+                    if (srcCommonAncestor instanceof CtIf) {
+                        // make sure repair.kind would be assigned one value
+                        repair.kind = RepairCandidateKind.SpecialGuardKind;
+                        CtIf IF1 = (CtIf) srcCommonAncestor;
+                        if (IF1.getThenStatement().equals(IF2.getThenStatement())) {
+                            // LoosenConditionKind and TightenConditionKind are almost same as both are REPLACE_COND_RF
+                            if (IF1.getElseStatement()!=null && IF2.getElseStatement()!=null) {
+                                if (IF1.getElseStatement().equals(IF2.getElseStatement())) {
+                                    repair.kind = RepairCandidateKind.LoosenConditionKind;
+                                }
+                            } else {
+                                repair.kind = RepairCandidateKind.LoosenConditionKind;
+                            }
+                        }
+                    } else {
+                        CtStatement S = IF2.getThenStatement();
+                        if (S instanceof CtCFlowBreak) {
+                            repair.kind = RepairCandidateKind.IfExitKind;
+                        } else {
+                            repair.kind = RepairCandidateKind.GuardKind;
+                        }
+                    }
+                } else {
+                    // in both cases, oldRExpr is not null
+                    repair.oldRExpr = diffEntry.srcCommonAncestor;
+                    if (diffEntry.srcCommonAncestor instanceof CtLiteral) {
+                        repair.kind = RepairCandidateKind.ReplaceStringKind;
+                    } else {
+                        // in this case, newRExpr is not null either
+                        repair.newRExpr = diffEntry.dstCommonAncestor;
+                        repair.kind = RepairCandidateKind.ReplaceKind;
+                    }
+                }
+                // compare with others in genRepairCandidates()
+                repair.actions.add(new RepairAction(RepairActionKind.ReplaceMutationKind, diffEntry.srcCommonAncestor, diffEntry.dstCommonAncestor));
                 break;
             case UnknownAction:
                 break;
         }
 
-        repair.kind = null; // kind is related to RepairFeature
-        repair.oldRExpr = null; // is this important?
-        repair.newRExpr = null; // is this important?
+        List<CtElement> candidates = diffEntry.dstCommonAncestor.getElements(new TypeFilter<>(CtElement.class));
+        repair.actions.add(new RepairAction(diffEntry.srcCommonAncestor, diffEntry.dstCommonAncestor, candidates));
 
-        // todo: actually, candidates should be
-        //  List<CtExpression> candidateVars = L.getCondCandidateVars(ori_cond.getLocEnd());
-        List<CtElement> candidates = diffEntry.dstElem.getElements(new TypeFilter<>(CtElement.class));
-        repair.actions.add(new RepairAction(diffEntry.srcElem, diffEntry.dstElem, candidates));
-
+//        System.out.println("::::::::::::::");
+//        System.out.println(repair.kind);
         return repair;
     }
 
@@ -447,7 +504,6 @@ public class RepairGenerator {
                         // todo: exact condition for DeclStmt and LabelStmt
                         if (!isDeclStmt(n) && !isLabelStmt(n))
                             genAddIfGuard(n);
-//                        genAddMemset(n); // inapplicable to Java?
                         genAddStatement(n);
                         genAddIfExit(n);
                     }
@@ -468,7 +524,7 @@ public class RepairGenerator {
             }
         };
         // traverse (i.e. go to each node) the AST of clang::ASTContext (the top declaration context)
-        scanner.scan(diffEntry.srcElem);
+        scanner.scan(diffEntry.srcCommonAncestor);
         return repairs;
     }
 
@@ -480,8 +536,8 @@ public class RepairGenerator {
             locations.add(statement);
         } else {
             List<CtStatement> statements = statement.getParent().getElements(new TypeFilter<>(CtStatement.class));
-            System.out.println(statement);
-            System.out.println(statements);
+//            System.out.println(statement);
+//            System.out.println(statements);
             if (statement.getParent() instanceof CtStatement) {
                 statements = statements.subList(1, statements.size());
             }

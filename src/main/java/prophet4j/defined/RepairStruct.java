@@ -8,7 +8,6 @@ import java.util.Set;
 import prophet4j.defined.RepairType.DiffActionType;
 import prophet4j.defined.RepairType.RepairActionKind;
 import prophet4j.defined.RepairType.RepairCandidateKind;
-import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtElement;
 
 public interface RepairStruct {
@@ -16,42 +15,50 @@ public interface RepairStruct {
     class DiffEntry { // DiffResultEntry
         // the reason why CtElement is used here is because clang::Expr isa clang::Stmt
         public DiffActionType type;
-        public CtElement srcElem, dstElem;
-        public DiffEntry(DiffActionType type, CtElement srcElem, CtElement dstElem) {
+        public CtElement srcCommonAncestor, dstCommonAncestor;
+        public DiffEntry(DiffActionType type, CtElement srcCommonAncestor, CtElement dstCommonAncestor) {
             this.type = type;
-            this.srcElem = srcElem;
-            this.dstElem = dstElem;
+            this.srcCommonAncestor = srcCommonAncestor;
+            this.dstCommonAncestor = dstCommonAncestor;
         }
     }
 
     class RepairAction {
         public RepairActionKind kind;
         // loc.stmt from "public ASTLocTy loc;"
-        public CtElement loc_stmt;
+        public CtElement srcElem;
         // It is a clang::Stmt or clang::Expr
         // todo: this should just be one placeholder, as replaceExprInCandidate() in CodeRewrite.cpp
-        public CtElement ast_node;
+        public CtElement dstElem;
         // This will only be used for expr level mutations
-        List<CtElement> candidate_atoms;
+        List<CtElement> atoms;
 
-        public RepairAction(RepairActionKind kind, CtElement loc_stmt, CtElement new_elem) {
+        public RepairAction(RepairActionKind kind, CtElement srcElem, CtElement dstElem) {
             this.kind = kind;
-            this.loc_stmt = loc_stmt;
-            this.ast_node = new_elem;
-            this.candidate_atoms = new ArrayList<>();
+            this.srcElem = srcElem;
+            this.dstElem = dstElem;
+            this.atoms = new ArrayList<>();
         }
 
-        public RepairAction(CtElement loc_stmt, CtElement expr, List<CtElement> candidate_atoms) {
+        public RepairAction(CtElement srcElem, CtElement dstElem, List<CtElement> atoms) {
             this.kind = RepairActionKind.ExprMutationKind;
-            this.loc_stmt = loc_stmt;
-            this.ast_node = expr;
-            this.candidate_atoms = candidate_atoms;
+            this.srcElem = srcElem;
+            this.dstElem = dstElem;
+            this.atoms = atoms;
         }
+
+        // for human repair (as well as test) // todo: check and replace the other constructs
+//        public RepairAction(RepairActionKind kind, CtElement srcCommonAncestor, CtElement expr, List<CtElement> atoms) {
+//            this.kind = kind; // RepairActionKind.ReplaceMutationKind
+//            this.srcCommonAncestor = srcCommonAncestor;
+//            this.dstCommonAncestor = expr;
+//            this.atoms = atoms;
+//        }
     }
 
     class Repair {
         public RepairCandidateKind kind;
-        public CtExpression oldRExpr, newRExpr; // info for replace only
+        public CtElement oldRExpr, newRExpr; // info for replace only
         public List<RepairAction> actions;
 
         public Repair() {
@@ -61,13 +68,13 @@ public interface RepairStruct {
             this.actions = new ArrayList<>();
         }
 
-        // fixme: "candidate_atoms"
+        // fixme: "atoms"
         public Set<CtElement> getCandidateAtoms() {
             Set<CtElement> ret = new HashSet<>();
             ret.add(null);
             for (RepairAction action: actions) {
                 if (action.kind == RepairActionKind.ExprMutationKind) {
-                    ret.addAll(action.candidate_atoms);
+                    ret.addAll(action.atoms);
                     return ret;
                 }
             }

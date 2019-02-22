@@ -42,27 +42,27 @@ public interface FeatureType {
         OP_NE_AF, // !=
         UOP_INC_AF, // ++a a++
         UOP_DEC_AF, // --a a--
-        CHANGED_AF, // ++a --a a++ a--
-        DE_REF_AF, // []
-        INDEX_AF, // []
-        MEMBER_ACCESS_AF, // [] * & . -> (only .)
         // VARIABLE_AF, // variable
-        ASSIGN_ZERO_AF, // zero
-        ASSIGN_CONST_AF, // constant
         ASSIGN_LHS_AF, // a=
         // ASSIGN_RHS_AF, // =a
+        ASSIGN_ZERO_AF, // zero
+        ASSIGN_CONST_AF, // constant
         // EXCLUDE_ATOM_AF, // not include
         // OPERATE_LHS_AF, // a+ a- a* a/ a% a&& a|| ...
         // OPERATE_RHS_AF, // +a -a *a /a %a &&a ||a ...
+        CHANGED_AF, // ++a --a a++ a--
+        DEREF_AF, // []
+        INDEX_AF, // []
+        MEMBER_ACCESS_AF, // [] * & . -> (only .)
         CALLEE_AF,
         CALL_ARGUMENT_AF,
         ABST_V_AF,
-        STMT_LABEL_AF,
-        STMT_LOOP_AF, // do for while
+        STMT_LABEL_AF, // label
+        STMT_LOOP_AF, // for foreach do while
         STMT_ASSIGN_AF, // =
         STMT_CALL_AF, // print()
         STMT_COND_AF, // if ...
-        STMT_CONTROL_AF, // switch case break continue return
+        STMT_CONTROL_AF, // break continue return throw
         R_STMT_ASSIGN_AF, // replace version of STMT_ASSIGN_AF
         R_STMT_CALL_AF, // replace version of STMT_CALL_AF
         R_STMT_COND_AF, // replace version of STMT_COND_AF
@@ -108,13 +108,13 @@ public interface FeatureType {
         MODIFIED_VF,
         MODIFIED_SIMILAR_VF,
         FUNC_ARGUMENT_VF,
+        MEMBER_VF,
         LOCAL_VARIABLE_VF,
         GLOBAL_VARIABLE_VF,
-        MEMBER_VF,
-        SIZE_LITERAL_VF,
         ZERO_CONST_VF,
         NONZERO_CONST_VF,
         STRING_LITERAL_VF,
+        SIZE_LITERAL_VF,
         POINTER_VF, // Inapplicable to Java
         STRUCT_POINTER_VF, // Inapplicable to Java
     }

@@ -8,12 +8,8 @@ import prophet4j.defined.FeatureType.AtomicFeature;
 import prophet4j.defined.FeatureType.RepairFeature;
 import prophet4j.defined.FeatureType.ValueFeature;
 import prophet4j.feature.FeatureResolver;
-//import spoon.reflect.declaration.CtType;
-//import spoon.reflect.factory.Factory;
-//import spoon.reflect.factory.FactoryImpl;
-//import spoon.defined.DefaultCoreFactory;
-//import spoon.defined.StandardEnvironment;
 
+// keep this for one period of time for reference
 public class FeatureResolverTest {
     @Test
     public void testFeatureResolver() {
