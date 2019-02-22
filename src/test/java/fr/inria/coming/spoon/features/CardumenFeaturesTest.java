@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.main.ComingMain;
-import fr.inria.main.CommandSummary;
+import fr.inria.coming.utils.CommandSummary;
 
 public class CardumenFeaturesTest {
 

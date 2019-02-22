@@ -1,14 +1,15 @@
 package prophet4j.unused;
 
+import java.io.IOException;
+
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
-import prophet4j.defined.FeatureStruct.*;
-
-import java.io.IOException;
+import prophet4j.defined.FeatureStruct.ParameterVector;
 
 // based on Main.cpp
 public class Main {

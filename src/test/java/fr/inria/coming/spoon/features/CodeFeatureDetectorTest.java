@@ -11,10 +11,10 @@ import java.util.List;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.coming.codefeatures.Cntx;
 import fr.inria.coming.codefeatures.CodeFeatureDetector;
 import fr.inria.coming.codefeatures.CodeFeatures;
+import fr.inria.coming.main.ComingProperties;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
@@ -2454,22 +2454,11 @@ public class CodeFeatureDetectorTest {
 
 		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 		CtElement element = null;
-		Cntx cntx = null;
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("mv = ")).findFirst()
 				.get();
 		System.out.println(element);
-		ConfigurationProperties.setProperty("max_synthesis_step", "100");
-		cntx = cntxResolver.analyzeFeatures(element);
-
-		// List<?> space = (List<?>) cntx.get(CNTX_Property.PSPACE);
-		int i = 0;
-		// for (Object spaceeleemnt : space) {
-		// System.out.println((i++) + "--> " + spaceeleemnt);
-		// }
-
-		// assertEquals(Boolean.FALSE,
-		// cntx.get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
+		ComingProperties.properties.setProperty("max_synthesis_step", "100");
 
 	}
 

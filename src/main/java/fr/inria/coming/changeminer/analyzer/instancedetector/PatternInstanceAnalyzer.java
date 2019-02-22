@@ -31,7 +31,6 @@ public class PatternInstanceAnalyzer implements Analyzer {
 	}
 
 	public void loadPattern() {
-		// TODO:
 	}
 
 	@Override

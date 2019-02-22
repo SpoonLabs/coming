@@ -1,10 +1,28 @@
 package prophet4j.feature;
 
-import prophet4j.defined.FeatureStruct.*;
-import prophet4j.defined.FeatureType.*;
-import prophet4j.defined.RepairStruct.*;
-import prophet4j.defined.RepairType.*;
-import spoon.reflect.code.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import prophet4j.defined.FeatureStruct.ValueToFeatureMapTy;
+import prophet4j.defined.FeatureType.AtomicFeature;
+import prophet4j.defined.RepairStruct.Repair;
+import prophet4j.defined.RepairType.RepairActionKind;
+import prophet4j.defined.RepairType.RepairCandidateKind;
+import spoon.reflect.code.CtArrayAccess;
+import spoon.reflect.code.CtAssignment;
+import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtBreak;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtLoop;
+import spoon.reflect.code.CtOperatorAssignment;
+import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
@@ -13,10 +31,6 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
-
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 // based on FeatureExtract.cpp todo: what is the difference between CtXXX and CtXXXReference?
 public class FeatureVisitor {

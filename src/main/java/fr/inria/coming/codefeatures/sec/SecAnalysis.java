@@ -7,9 +7,9 @@ import com.github.gumtreediff.tree.ITree;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import fr.inria.astor.util.MapList;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.entities.DiffResult;
+import fr.inria.coming.utils.MapList;
 import fr.inria.coming.utils.OperationClassifier;
 import gumtree.spoon.builder.Json4SpoonGenerator;
 import gumtree.spoon.diff.Diff;

@@ -83,7 +83,10 @@ public class FileDiff implements IRevision {
 		// check if add the revision name in the file name
 				+ (ComingProperties.getPropertyBoolean("excludecommitnameinfile") ? "" : (diffFolder.getName() + "_"))
 				// File name
-				+ fileModif.getName();
+				+ fileModif.getName()
+				// TODO:
+			//	+ "_0"
+				;
 
 	}
 

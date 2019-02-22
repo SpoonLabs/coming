@@ -10,7 +10,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -19,8 +18,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.main.AstorOutputStatus;
+import fr.inria.coming.main.ComingProperties;
 
 public class Cntx<I> {
 
@@ -81,7 +79,7 @@ public class Cntx<I> {
 			try {
 				JsonElement value = calculateValue(parser, vStat);
 				generalStatsjson.add(generalStat, value);
-			} catch (ParseException e) {
+			} catch (Exception e) {
 				System.out.println("Error property: " + generalStat);
 				log.error(e);
 				e.printStackTrace();
@@ -93,7 +91,7 @@ public class Cntx<I> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public JsonElement calculateValue(JSONParser parser, Object vStat) throws ParseException {
+	public JsonElement calculateValue(JSONParser parser, Object vStat) throws Exception {
 		JsonElement value = null;
 		if (vStat instanceof Cntx) {
 			Cntx<Object> cntx = (Cntx) vStat;
@@ -103,7 +101,7 @@ public class Cntx<I> {
 				composed.add(property, v);
 			}
 			return composed;
-		} else if (vStat instanceof AstorOutputStatus || vStat instanceof String) {
+		} else if (/* vStat instanceof AstorOutputStatus || */ vStat instanceof String) {
 			JsonPrimitive p = new JsonPrimitive(JSONObject.escape(vStat.toString()));
 			value = p;
 		} else if (vStat instanceof Collection<?>) {
@@ -131,7 +129,7 @@ public class Cntx<I> {
 	}
 
 	public void save(JsonObject statsjsonRoot) {
-		String output = ConfigurationProperties.getProperty("workingDirectory");
+		String output = ComingProperties.getProperty("workingDirectory");
 		String filename = "CNTX_" + ((this.identifier != null) ? this.identifier.toString() : "0");
 		String absoluteFileName = output + "/" + filename + ".json";
 		try (FileWriter file = new FileWriter(absoluteFileName)) {

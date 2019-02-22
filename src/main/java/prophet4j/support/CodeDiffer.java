@@ -1,23 +1,30 @@
 package prophet4j.support;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import gumtree.spoon.AstComparator;
 import gumtree.spoon.diff.Diff;
-import gumtree.spoon.diff.operations.*;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-import prophet4j.defined.FeatureStruct.*;
-import prophet4j.defined.RepairStruct.*;
-import prophet4j.defined.RepairType.*;
+import gumtree.spoon.diff.operations.DeleteOperation;
+import gumtree.spoon.diff.operations.InsertOperation;
+import gumtree.spoon.diff.operations.Operation;
+import gumtree.spoon.diff.operations.UpdateOperation;
+import prophet4j.defined.FeatureStruct.FeatureVector;
+import prophet4j.defined.RepairStruct.DiffEntry;
+import prophet4j.defined.RepairStruct.Repair;
+import prophet4j.defined.RepairType.DiffActionType;
 import prophet4j.feature.FeatureExtractor;
 import prophet4j.feature.RepairGenerator;
-import spoon.reflect.code.*;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtPath;
 import spoon.reflect.path.CtPathStringBuilder;
-
-import java.io.File;
-import java.util.*;
 
 // based on pdiffer.cpp, ASTDiffer.cpp
 public class CodeDiffer {

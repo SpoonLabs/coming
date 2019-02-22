@@ -1,6 +1,19 @@
 package prophet4j;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -17,26 +30,13 @@ import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
+
 import prophet4j.defined.FeatureStruct;
+import prophet4j.defined.FeatureStruct.FeatureVector;
+import prophet4j.feature.FeatureLearner;
 import prophet4j.support.CodeDiffer;
 import tech.sourced.siva.IndexEntry;
 import tech.sourced.siva.SivaReader;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import prophet4j.feature.FeatureLearner;
-import prophet4j.defined.FeatureStruct.*;
 
 // https://github.com/src-d/datasets/tree/master/PublicGitArchive/pga
 // https://pga.sourced.tech

@@ -27,7 +27,7 @@ import fr.inria.coming.changeminer.util.PatternXMLParser;
 import fr.inria.coming.core.entities.DiffResult;
 import fr.inria.coming.core.entities.interfaces.Commit;
 import fr.inria.coming.main.ComingMain;
-import fr.inria.main.CommandSummary;
+import fr.inria.coming.utils.CommandSummary;
 import gumtree.spoon.diff.Diff;
 
 /**

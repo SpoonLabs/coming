@@ -1,14 +1,16 @@
 package prophet4j;
 
-import org.junit.Test;
-import prophet4j.defined.FeatureStruct.*;
-import prophet4j.defined.FeatureType;
-import prophet4j.defined.FeatureType.*;
-import prophet4j.support.CodeDiffer;
-
-import java.util.*;
-
 import static org.junit.Assert.assertEquals;
+
+import java.util.List;
+
+import org.junit.Test;
+
+import prophet4j.defined.FeatureStruct.Feature;
+import prophet4j.defined.FeatureStruct.FeatureVector;
+import prophet4j.defined.FeatureType;
+import prophet4j.defined.FeatureType.AtomicFeature;
+import prophet4j.support.CodeDiffer;
 
 // todo: test features at different position
 // replace FeatureResolverTest.java someday

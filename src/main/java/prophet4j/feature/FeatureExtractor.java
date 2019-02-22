@@ -1,17 +1,40 @@
 package prophet4j.feature;
 
-import picocli.CommandLine.Option;
-import prophet4j.defined.FeatureStruct.*;
-import prophet4j.defined.FeatureType;
-import prophet4j.defined.FeatureType.*;
-import prophet4j.defined.RepairStruct.*;
-import prophet4j.defined.RepairType.*;
-import spoon.reflect.code.*;
-import spoon.reflect.declaration.*;
-import spoon.reflect.reference.*;
-import spoon.reflect.visitor.filter.TypeFilter;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import java.util.*;
+import picocli.CommandLine.Option;
+import prophet4j.defined.FeatureStruct.Cache;
+import prophet4j.defined.FeatureStruct.Feature;
+import prophet4j.defined.FeatureStruct.FeatureManager;
+import prophet4j.defined.FeatureStruct.ValueToFeatureMapTy;
+import prophet4j.defined.FeatureType;
+import prophet4j.defined.FeatureType.AtomicFeature;
+import prophet4j.defined.FeatureType.JointType;
+import prophet4j.defined.FeatureType.Position;
+import prophet4j.defined.FeatureType.RepairFeature;
+import prophet4j.defined.FeatureType.ValueFeature;
+import prophet4j.defined.RepairStruct.Repair;
+import prophet4j.defined.RepairType.RepairActionKind;
+import prophet4j.defined.RepairType.RepairCandidateKind;
+import spoon.reflect.code.CtArrayAccess;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 // this is the new implementation following the implementation of Prophet4C
 // based on FeatureExtract.cpp, RepairGenerator.cpp

@@ -1,10 +1,26 @@
 package prophet4j.feature;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import prophet4j.defined.RepairType.*;
-import prophet4j.defined.RepairStruct.*;
-import spoon.reflect.code.*;
+import prophet4j.defined.RepairStruct.DiffEntry;
+import prophet4j.defined.RepairStruct.Repair;
+import prophet4j.defined.RepairStruct.RepairAction;
+import prophet4j.defined.RepairType.RepairActionKind;
+import prophet4j.defined.RepairType.RepairCandidateKind;
+import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CtAssignment;
+import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtLoop;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.CtSwitch;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
