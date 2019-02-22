@@ -1,16 +1,18 @@
 package prophet4j;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
-import prophet4j.defined.FeatureType.*;
+import prophet4j.defined.FeatureType.AtomicFeature;
+import prophet4j.defined.FeatureType.RepairFeature;
+import prophet4j.defined.FeatureType.ValueFeature;
 import prophet4j.feature.FeatureResolver;
 //import spoon.reflect.declaration.CtType;
 //import spoon.reflect.factory.Factory;
 //import spoon.reflect.factory.FactoryImpl;
 //import spoon.defined.DefaultCoreFactory;
 //import spoon.defined.StandardEnvironment;
-
-import static org.junit.Assert.*;
 
 public class FeatureResolverTest {
     @Test

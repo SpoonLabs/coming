@@ -1,10 +1,11 @@
 package prophet4j;
 
-import org.junit.Test;
-import prophet4j.defined.FeatureType.*;
-import prophet4j.feature.FeatureResolver;
-
 import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
+import prophet4j.defined.FeatureType.AtomicFeature;
+import prophet4j.feature.FeatureResolver;
 
 public class FeatureLearnerTest {
     @Test

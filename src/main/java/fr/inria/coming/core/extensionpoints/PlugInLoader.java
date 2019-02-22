@@ -2,7 +2,7 @@ package fr.inria.coming.core.extensionpoints;
 
 import org.apache.log4j.Logger;
 
-import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.coming.main.ComingProperties;
 
 /**
  * 
@@ -30,7 +30,7 @@ public class PlugInLoader {
 	}
 
 	public static Object loadPlugin(ExtensionPoints ep, Class[] typesConst, Object[] args) throws Exception {
-		String property = ConfigurationProperties.getProperty(ep.identifier);
+		String property = ComingProperties.getProperty(ep.identifier);
 		if (property == null || property.trim().isEmpty())
 			return null;
 

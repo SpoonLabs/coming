@@ -11,7 +11,6 @@ import com.github.gumtreediff.actions.model.Insert;
 import com.github.gumtreediff.actions.model.Move;
 import com.github.gumtreediff.actions.model.Update;
 
-import fr.inria.astor.util.MapList;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.analyzer.patternspecification.EntityRelation;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ParentPatternEntity;
@@ -19,6 +18,7 @@ import fr.inria.coming.changeminer.analyzer.patternspecification.PatternAction;
 import fr.inria.coming.changeminer.analyzer.patternspecification.PatternEntity;
 import fr.inria.coming.changeminer.analyzer.patternspecification.PatternRelations;
 import fr.inria.coming.changeminer.entity.ActionType;
+import fr.inria.coming.utils.MapList;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
 import gumtree.spoon.diff.operations.UpdateOperation;

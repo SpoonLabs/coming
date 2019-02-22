@@ -1,6 +1,6 @@
 package fr.inria.coming.core.extensionpoints;
 
-import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
+import fr.inria.coming.core.engine.RevisionNavigationExperiment;
 
 /**
  * Enum with all extension points
@@ -10,7 +10,7 @@ import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
  */
 public enum ExtensionPoints {
 
-	NAVIGATION_ENGINE("customengine", AstorCoreEngine.class), //
+	NAVIGATION_ENGINE("customengine", RevisionNavigationExperiment.class), //
 	;
 	public String identifier;
 	public Class<?> _class;

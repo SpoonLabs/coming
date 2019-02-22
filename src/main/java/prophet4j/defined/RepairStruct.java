@@ -1,10 +1,15 @@
 package prophet4j.defined;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import prophet4j.defined.RepairType.DiffActionType;
+import prophet4j.defined.RepairType.RepairActionKind;
+import prophet4j.defined.RepairType.RepairCandidateKind;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtElement;
-import prophet4j.defined.RepairType.*;
-
-import java.util.*;
 
 public interface RepairStruct {
 

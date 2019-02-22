@@ -1,19 +1,5 @@
 package prophet4j.unused;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import picocli.CommandLine;
-import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
-import prophet4j.defined.FeatureStruct;
-import prophet4j.defined.FeatureType;
-import prophet4j.defined.FeatureStruct.*;
-
 // based on learner.cpp (follow the way of ProphetCode) // bugs exist
 public class FeatureLearner {
 //    // check these variables

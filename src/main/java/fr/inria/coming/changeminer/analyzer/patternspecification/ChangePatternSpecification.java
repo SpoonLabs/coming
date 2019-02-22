@@ -3,7 +3,7 @@ package fr.inria.coming.changeminer.analyzer.patternspecification;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.inria.astor.util.MapList;
+import fr.inria.coming.utils.MapList;
 
 /**
  * Specification of a Pattern

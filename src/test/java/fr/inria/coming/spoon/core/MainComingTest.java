@@ -41,7 +41,7 @@ import fr.inria.coming.spoon.core.dummies.MyTestFilter;
 import fr.inria.coming.spoon.core.dummies.MyTestInput;
 import fr.inria.coming.spoon.core.dummies.MyTestOutput;
 import fr.inria.coming.spoon.core.dummies.MyTestParser;
-import fr.inria.main.CommandSummary;
+import fr.inria.coming.utils.CommandSummary;
 import gumtree.spoon.diff.Diff;
 
 /**

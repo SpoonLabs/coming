@@ -1,12 +1,5 @@
 package prophet4j.support;
 
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.reference.CtReference;
-
-import java.util.*;
-
 // based on LocalAnalyzer.cpp (maybe not necessary to implement)
 public class LocalAnalyzer {
 //

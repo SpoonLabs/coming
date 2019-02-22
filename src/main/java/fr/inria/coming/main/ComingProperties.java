@@ -28,6 +28,10 @@ public class ComingProperties {
 		}
 	}
 
+	public static void setProperty(String key, String value) {
+		properties.setProperty(key, value);
+	}
+
 	public static String getProperty(String key) {
 		return properties.getProperty(key);
 	}

@@ -1,14 +1,23 @@
 package prophet4j.defined;
 
-import org.apache.commons.io.FileUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import prophet4j.defined.FeatureType.*;
-import spoon.reflect.declaration.CtElement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import java.util.*;
+import org.apache.commons.io.FileUtils;
+
+import prophet4j.defined.FeatureType.AtomicFeature;
+import prophet4j.defined.FeatureType.JointType;
+import prophet4j.defined.FeatureType.Position;
+import prophet4j.defined.FeatureType.RepairFeature;
+import prophet4j.defined.FeatureType.ValueFeature;
+import spoon.reflect.declaration.CtElement;
 
 public interface FeatureStruct {
     // it seems weird to place load() and save() here

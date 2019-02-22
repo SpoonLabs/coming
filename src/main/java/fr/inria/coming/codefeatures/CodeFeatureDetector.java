@@ -8,12 +8,11 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
-import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
-import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.util.StringDistance;
 import fr.inria.coming.main.ComingProperties;
 import fr.inria.coming.utils.MapCounter;
+import fr.inria.coming.utils.StringDistance;
 import fr.inria.coming.utils.TimeChrono;
+import fr.inria.coming.utils.VariableResolver;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
@@ -2313,7 +2312,7 @@ public class CodeFeatureDetector {
 	private void writeDetailedInformationFromMethod(Cntx<Object> context, CtMethod affectedMethod,
 			CodeFeatures property, Boolean value) {
 
-		if (ConfigurationProperties.getPropertyBool("write_composed_feature"))
+		if (ComingProperties.getPropertyBoolean("write_composed_feature"))
 			context.getInformation().put(property.name() + "_" + affectedMethod.getSignature(), value);
 		writeGroupedByVar(context, affectedMethod.getSignature(), property, value, "FEATURES_METHODS");
 
@@ -2322,7 +2321,7 @@ public class CodeFeatureDetector {
 	private void writeDetailedInformationFromVariables(Cntx<Object> context, String key, CodeFeatures property,
 			Boolean value) {
 
-		if (ConfigurationProperties.getPropertyBool("write_composed_feature"))
+		if (ComingProperties.getPropertyBoolean("write_composed_feature"))
 			context.getInformation().put(property.name() + "_" + key, value);
 		writeGroupedByVar(context, key, property, value, "FEATURES_VARS");
 
