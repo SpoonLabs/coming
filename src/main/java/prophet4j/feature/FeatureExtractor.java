@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 
 import picocli.CommandLine.Option;
-import prophet4j.defined.FeatureStruct.Cache;
 import prophet4j.defined.FeatureStruct.Feature;
 import prophet4j.defined.FeatureStruct.FeatureManager;
 import prophet4j.defined.FeatureStruct.ValueToFeatureMapTy;
@@ -20,11 +19,10 @@ import prophet4j.defined.FeatureType.RepairFeature;
 import prophet4j.defined.FeatureType.ValueFeature;
 import prophet4j.defined.RepairStruct.Repair;
 import prophet4j.defined.RepairType.RepairActionKind;
-import prophet4j.defined.RepairType.RepairCandidateKind;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtVariableAccess;
@@ -49,7 +47,6 @@ public class FeatureExtractor {
     private boolean DisableSemanticValueFeatures = false;
 
     Map<String, CtElement> valueExprInfo = new HashMap<>();
-    Cache cache = new Cache();
 
     private EnumSet<RepairFeature> getRepairFeatures(Repair repair) {
         EnumSet<RepairFeature> repairFeatures = EnumSet.noneOf(RepairFeature.class);
@@ -88,23 +85,24 @@ public class FeatureExtractor {
         return repairFeatures;
     }
 
-    private EnumSet<ValueFeature> getValueFeature(final String v_str, final Repair repair, CtElement abst_v, Map<String, CtElement> valueExprInfo) {
+    private EnumSet<ValueFeature> getValueFeature(final String valueStr, final Repair repair, Map<String, CtElement> valueExprInfo) {
         EnumSet<ValueFeature> valueFeatures = EnumSet.noneOf(ValueFeature.class);
-        CtElement element = repair.actions.get(0).ast_node;
-    /*if (abst_v != NULL) {
-        std::string abst_v_str = stmtToString(*ast, abst_v);
-        if (abst_v_str == v_str)
-            ret.insert(AbstCondVF);
-    }*/
+//        System.out.println("@@@@@@");
+//        System.out.println(v_str);
+//        System.out.println(repair.kind);
+//        System.out.println(repair.oldRExpr);
+//        System.out.println(repair.newRExpr);
+//        System.out.println(repair.getCandidateAtoms());
+        CtElement element = repair.actions.get(0).dstElem;
         if (repair.oldRExpr != null && repair.newRExpr != null) {
-            String old_v_str = repair.oldRExpr.toString();
-            String new_v_str = repair.newRExpr.toString();
-            if (v_str.equals(new_v_str))
+            String oldStr = repair.oldRExpr.toString();
+            String newStr = repair.newRExpr.toString();
+            if (valueStr.equals(newStr))
                 valueFeatures.add(ValueFeature.MODIFIED_VF);
-            if (old_v_str.length()>0 && new_v_str.length()>0) {
-                double ratio = ((double)old_v_str.length()) / new_v_str.length();
-                if (ratio > 0.5 && ratio < 2 && old_v_str.length() > 3 && new_v_str.length() > 3)
-                    if (old_v_str.contains(new_v_str) || new_v_str.contains(old_v_str))
+            if (oldStr.length()>0 && newStr.length()>0) {
+                double ratio = ((double)oldStr.length()) / newStr.length();
+                if (ratio > 0.5 && ratio < 2 && oldStr.length() > 3 && newStr.length() > 3)
+                    if (oldStr.contains(newStr) || newStr.contains(oldStr))
                         valueFeatures.add(ValueFeature.MODIFIED_SIMILAR_VF);
             }
         }
@@ -113,19 +111,34 @@ public class FeatureExtractor {
             for (Object it: FD.getParameters()) {
                 if (it instanceof CtParameter) {
                     CtParameter VD = (CtParameter) it;
-                    if (VD.getSimpleName().equals(v_str))
+                    if (VD.getSimpleName().equals(valueStr))
                         valueFeatures.add(ValueFeature.FUNC_ARGUMENT_VF);
                 }
             }
         }
-        if (v_str.contains("length") || v_str.contains("size"))
+        if (valueStr.contains("length") || valueStr.contains("size"))
             valueFeatures.add(ValueFeature.SIZE_LITERAL_VF);
-        assert(valueExprInfo.containsKey(v_str));
+        assert(valueExprInfo.containsKey(valueStr));
 //        CtStatement E = stripParenAndCast(valueExprInfo.get(v_str));
-        CtElement E = valueExprInfo.get(v_str);
-        System.out.println("<" + E + ">");
-        // fixme: distinguish GLOBAL_VARIABLE_VF from LOCAL_VARIABLE_VF
-        if (E instanceof CtVariableAccess || E instanceof CtArrayAccess) {
+        CtElement E = valueExprInfo.get(valueStr);
+//        System.out.println("<" + E + ">");
+//        System.out.println(E instanceof CtInvocation);
+//        System.out.println(E instanceof CtMethod);
+        if (E instanceof CtVariableAccess || E instanceof CtArrayAccess || E instanceof CtLocalVariable) {
+            if (E instanceof CtLocalVariable) {
+                valueFeatures.add(ValueFeature.LOCAL_VARIABLE_VF);
+            } else {
+                valueFeatures.add(ValueFeature.GLOBAL_VARIABLE_VF);
+            }
+        } else if (E instanceof CtExecutableReference){
+            // fixme: ...
+            // to make CALLEE_AF be meaningful
+            if (((CtExecutableReference) E).getParameters().size() > 0){
+                valueFeatures.add(ValueFeature.LOCAL_VARIABLE_VF);
+            }
+        } else if (E instanceof CtIf){
+            // fixme: ...
+            // to make R_STMT_COND_AF be meaningful
             valueFeatures.add(ValueFeature.LOCAL_VARIABLE_VF);
         }
 //        if (E instanceof CtVariable) {
@@ -139,28 +152,20 @@ public class FeatureExtractor {
 //            else
 //                valueFeatures.add(ValueFeature.GLOBAL_VARIABLE_VF);
 //        }
-        // fixme: i feel this is not correct
+        // fixme: i feel this may be incorrect
         if (E.getElements(new TypeFilter<>(CtField.class)).size() > 0)
             valueFeatures.add(ValueFeature.MEMBER_VF);
         if (E instanceof CtLiteral) {
-            Object ev = ((CtLiteral)E).getValue();
-            if (ev instanceof String) {
+            Object value = ((CtLiteral)E).getValue();
+            if (value instanceof String) {
                 valueFeatures.add(ValueFeature.STRING_LITERAL_VF);
-            } else if (ev instanceof Integer) { // ?
-                if ((Integer) ev == 0) {
+            } else if (value instanceof Integer) { // ?
+                if ((Integer) value == 0) {
                     valueFeatures.add(ValueFeature.ZERO_CONST_VF);
                 } else {
                     valueFeatures.add(ValueFeature.NONZERO_CONST_VF);
                 }
             }
-        }
-
-        // A special case, this should only happen when doing
-        // string const replacement
-        if (isAbstractStub(E)) {
-            assert(repair.kind == RepairCandidateKind.ReplaceStringKind);
-            valueFeatures.add(ValueFeature.MODIFIED_VF);
-            valueFeatures.add(ValueFeature.STRING_LITERAL_VF);
         }
         return valueFeatures;
     }
@@ -192,10 +197,10 @@ public class FeatureExtractor {
     }
 
     // this is for CodeDiffer.java
-    public FeatureManager extractFeature(Repair repair, CtElement expr) {
+    public FeatureManager extractFeature(Repair repair, CtElement atom) {
         // getImmediateFollowStmts() getLocalStmts()
-//        List<CtStatement> srcStmtList = getStmtList((CtStatement)diffEntry.srcElem);
-//        List<CtStatement> dstStmtList = getStmtList((CtStatement)diffEntry.dstElem);
+//        List<CtStatement> srcStmtList = getStmtList((CtStatement)diffEntry.srcCommonAncestor);
+//        List<CtStatement> dstStmtList = getStmtList((CtStatement)diffEntry.dstCommonAncestor);
 //        int pivot = getPivot(srcStmtList, dstStmtList);
 
         FeatureManager featureManager = new FeatureManager();
@@ -215,9 +220,9 @@ public class FeatureExtractor {
         }
 
         FeatureVisitor FEV = new FeatureVisitor(valueExprInfo);
-        FEV.traverseRC(repair, expr);
+        FEV.traverseRepair(repair, atom);
         resv = FEV.getFeatureResult();
-        System.out.println("!resv!");
+//        System.out.println("!resv!");
 //        System.out.println(resv.map);
         List<CtElement> loc_stmts = getImmediateFollowStmts(repair);
         List<CtElement> loc1_stmts = new ArrayList<>();
@@ -227,43 +232,28 @@ public class FeatureExtractor {
         resv_loc1.map.clear();
         resv_loc2.map.clear();
         for (CtElement it : loc_stmts) {
-            if (cache.map.containsKey(it))
-                orMap(resv_loc, cache.map.get(it));
-            else {
-                FEV = new FeatureVisitor(valueExprInfo);
-                FEV.traverseStmt(it);
-                ValueToFeatureMapTy resM = FEV.getFeatureResult();
-                System.out.println("!resM!");
-//                System.out.println(resM.map);
-                orMap(resv_loc, resM);
-                cache.map.put(it, resM);
-            }
+            FEV = new FeatureVisitor(valueExprInfo);
+            FEV.traverseStmt(it);
+            ValueToFeatureMapTy resM = FEV.getFeatureResult();
+//            System.out.println("!resM!");
+//            System.out.println(resM.map);
+            orMap(resv_loc, resM);
         }
         for (CtElement it : loc1_stmts) {
-            if (cache.map.containsKey(it))
-                orMap(resv_loc1, cache.map.get(it));
-            else {
-                FEV = new FeatureVisitor(valueExprInfo);
-                FEV.traverseStmt(it);
-                ValueToFeatureMapTy resM = FEV.getFeatureResult();
-                System.out.println("!resM-1!");
-//                System.out.println(resM.map);
-                orMap(resv_loc1, resM);
-                cache.map.put(it, resM);
-            }
+            FEV = new FeatureVisitor(valueExprInfo);
+            FEV.traverseStmt(it);
+            ValueToFeatureMapTy resM = FEV.getFeatureResult();
+//            System.out.println("!resM-1!");
+//            System.out.println(resM.map);
+            orMap(resv_loc1, resM);
         }
         for (CtElement it : loc2_stmts) {
-            if (cache.map.containsKey(it))
-                orMap(resv_loc2, cache.map.get(it));
-            else {
-                FEV = new FeatureVisitor(valueExprInfo);
-                FEV.traverseStmt(it);
-                ValueToFeatureMapTy resM = FEV.getFeatureResult();
-                System.out.println("!resM-2!");
-//                System.out.println(resM.map);
-                orMap(resv_loc2, resM);
-                cache.map.put(it, resM);
-            }
+            FEV = new FeatureVisitor(valueExprInfo);
+            FEV.traverseStmt(it);
+            ValueToFeatureMapTy resM = FEV.getFeatureResult();
+//            System.out.println("!resM-2!");
+//            System.out.println(resM.map);
+            orMap(resv_loc2, resM);
         }
 
         // GlobalFeatureNum     = 3 * AtomFeatureNum * RepairFeatureNum = 450
@@ -359,15 +349,14 @@ public class FeatureExtractor {
             }
         }
 
-        System.out.println(">>>>>>");
+//        System.out.println(">>>>>>");
         // ValueCrossFeatureNum = AtomFeatureNum * ValueFeatureNum      = 360
         for (String key : resv.map.keySet()) {
-            System.out.println(key);
+//            System.out.println("=>" + key);
             Set<AtomicFeature> atomicFeatures = resv.map.get(key);
-            // fixme: todo: check getValueFeature
-            Set<ValueFeature> valueFeatures = getValueFeature(key, repair, expr, valueExprInfo);
-            System.out.println(atomicFeatures.size() + " " + atomicFeatures);
-            System.out.println(valueFeatures.size()  + " " + valueFeatures);
+            Set<ValueFeature> valueFeatures = getValueFeature(key, repair, valueExprInfo);
+//            System.out.println(atomicFeatures.size() + " >=< " + atomicFeatures);
+//            System.out.println(valueFeatures.size()  + " >=< " + valueFeatures);
             for (FeatureType atomicFeature : atomicFeatures) {
                 for (FeatureType valueFeature : valueFeatures) {
                     // AF_VF_JT
@@ -378,8 +367,8 @@ public class FeatureExtractor {
                 }
             }
         }
-        System.out.println("<<<<<<");
-        System.out.println(featureManager);
+//        System.out.println("<<<<<<");
+//        System.out.println(featureManager);
 
 //        // GlobalFeatureNum     = 3 * AtomFeatureNum * RepairFeatureNum = 450
 //        System.out.println("GlobalFeature");
@@ -442,18 +431,18 @@ public class FeatureExtractor {
 
     private List<CtElement> getImmediateFollowStmts(Repair repair) {
         List<CtElement> ret = new ArrayList<>();
-        CtElement loc_stmt = repair.actions.get(0).loc_stmt;
+        CtElement srcElem = repair.actions.get(0).srcElem;
         if (repair.actions.get(0).kind != RepairActionKind.ReplaceMutationKind) {
-            ret.add(loc_stmt);
+            ret.add(srcElem);
             return ret;
         }
         else {
-            ret.add(loc_stmt);
+            ret.add(srcElem);
             CtStatement ElseB = null;
-            if (repair.actions.get(0).ast_node instanceof CtIf) {
-                CtIf IFS = (CtIf) repair.actions.get(0).ast_node;
+            if (repair.actions.get(0).dstElem instanceof CtIf) {
+                CtIf IFS = (CtIf) repair.actions.get(0).dstElem;
                 if (IFS.getThenStatement() instanceof CtStatementList) {
-                    CtStatementList CS = (CtStatementList) IFS.getThenStatement();
+                    CtStatementList CS = IFS.getThenStatement();
                     ret.addAll(CS.getStatements());
                 }
                 else
@@ -461,7 +450,7 @@ public class FeatureExtractor {
                 ElseB = IFS.getElseStatement();
                 if (ElseB != null) {
                     if (ElseB instanceof CtStatementList) {
-                        CtStatementList CS = (CtStatementList) IFS.getThenStatement();
+                        CtStatementList CS = IFS.getThenStatement();
                         ret.addAll(CS.getStatements());
                     }
                     else
@@ -469,15 +458,15 @@ public class FeatureExtractor {
                 }
             }
             if (ElseB==null) {
-                if (loc_stmt.getParent() instanceof CtStatementList) {
-                    CtStatementList CS = (CtStatementList) loc_stmt.getParent();
+                if (srcElem.getParent() instanceof CtStatementList) {
+                    CtStatementList CS = (CtStatementList) srcElem.getParent();
                     boolean found = false;
                     for (CtStatement it : CS.getStatements()) {
                         if (found) {
                             ret.add(it);
                             break;
                         }
-                        if (it.equals(loc_stmt))
+                        if (it.equals(srcElem))
                             found = true;
                     }
                 }
@@ -490,15 +479,15 @@ public class FeatureExtractor {
         final int LOOKUP_DIS = 3;
         ret_before.clear();
         ret_after.clear();
-        CtElement loc_stmt = repair.actions.get(0).loc_stmt;
+        CtElement srcElem = repair.actions.get(0).srcElem;
         // Grab all compound stmt that is around the original stmt
-        if (loc_stmt.getParent() instanceof CtStatementList) {
-            CtStatementList CS = (CtStatementList) loc_stmt.getParent();
+        if (srcElem.getParent() instanceof CtStatementList) {
+            CtStatementList CS = (CtStatementList) srcElem.getParent();
             List<CtStatement> tmp = new ArrayList<>();
             int idx = 0;
             boolean found = false;
             for (CtStatement it: CS.getStatements()) {
-                if (it.equals(loc_stmt)) {
+                if (it.equals(srcElem)) {
                     found = true;
                     idx = tmp.size();
                 }
@@ -513,29 +502,18 @@ public class FeatureExtractor {
                 e = idx + LOOKUP_DIS + 1;
             boolean before = true;
             for (int i = s; i < e; i++) {
-                if (tmp.get(i).equals(loc_stmt)) {
+                if (tmp.get(i).equals(srcElem)) {
                     if (before)
                         ret_before.add(tmp.get(i));
                     else
                         ret_after.add(tmp.get(i));
                 }
-                if (tmp.get(i).equals(loc_stmt))
+                if (tmp.get(i).equals(srcElem))
                     before = false;
             }
         }
         if (repair.actions.get(0).kind != RepairActionKind.ReplaceMutationKind)
-            ret_after.add(loc_stmt);
-    }
-
-    private boolean isAbstractStub(CtElement E) {
-        if (E instanceof CtInvocation) {
-            CtInvocation CE = (CtInvocation) E;
-            CtExecutableReference FD = CE.getExecutable();
-            // fixme...
-            return FD.isImplicit();
-        } else {
-            return false;
-        }
+            ret_after.add(srcElem);
     }
 
     private void orMap(ValueToFeatureMapTy m1, final ValueToFeatureMapTy m2) {

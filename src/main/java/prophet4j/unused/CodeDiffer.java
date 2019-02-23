@@ -22,8 +22,8 @@ public class CodeDiffer {
 //                if (res0.kind == DiffActionType.InsertAction || res0.kind == DiffActionType.ReplaceAction) {
 //                    //XXX: We specially handle the case where the support replaces the break/return statement
 //                    boolean yes = true;
-//                    CtStatement S1 = (CtStatement) res0.srcElem;
-//                    CtStatement S2 = (CtStatement) res0.dstElem;
+//                    CtStatement S1 = (CtStatement) res0.srcCommonAncestor;
+//                    CtStatement S2 = (CtStatement) res0.dstCommonAncestor;
 //                    if (res0.kind == DiffActionType.ReplaceAction) {
 //                        if (!(S1 instanceof CtBreak || S1 instanceof CtReturn))
 //                            yes = false;
@@ -53,7 +53,7 @@ public class CodeDiffer {
 //                            }
 //                            assert(rc.actions.size() == 2);
 //                            assert(rc.actions.get(0).kind == RepairActionKind.InsertMutationKind);
-//                            CtIf rc_IFS = (CtIf) rc.actions.get(0).ast_node;
+//                            CtIf rc_IFS = (CtIf) rc.actions.get(0).dstCommonAncestor;
 //                            CtStatement rc_S = rc_IFS.getThenStatement();
 //                            if (S instanceof CtBreak || S instanceof CtReturn)
 //                                if (rc_S.equals(S)) {
@@ -70,9 +70,9 @@ public class CodeDiffer {
 //            case GuardKind: // INSERT_GUARD_RF
 //                // add guard
 //                if (res0.kind == DiffActionType.ReplaceAction) {
-//                    CtStatement S1 = (CtStatement) res0.srcElem;
-//                    if (res0.dstElem instanceof CtIf) {
-//                        CtIf IF2 = (CtIf) res0.dstElem;
+//                    CtStatement S1 = (CtStatement) res0.srcCommonAncestor;
+//                    if (res0.dstCommonAncestor instanceof CtIf) {
+//                        CtIf IF2 = (CtIf) res0.dstCommonAncestor;
 //                        CtStatement ThenS = IF2.getThenStatement();
 //                        // Avoid common single statement compound stmt
 //                        if (ThenS instanceof CtStatementList && S1 instanceof CtStatementList) {
@@ -96,9 +96,9 @@ public class CodeDiffer {
 //            case SpecialGuardKind: // INSERT_GUARD_RF
 //                // add special guard
 //                if (res0.kind == DiffActionType.ReplaceAction) {
-//                    if (res0.srcElem instanceof CtIf && res0.dstElem instanceof CtIf) {
-//                        CtIf IF1 = (CtIf) res0.srcElem;
-//                        CtIf IF2 = (CtIf) res0.dstElem;
+//                    if (res0.srcCommonAncestor instanceof CtIf && res0.dstCommonAncestor instanceof CtIf) {
+//                        CtIf IF1 = (CtIf) res0.srcCommonAncestor;
+//                        CtIf IF2 = (CtIf) res0.dstCommonAncestor;
 //                        if (IF2.getCondition() instanceof CtBinaryOperator) {
 //                            CtBinaryOperator condE = (CtBinaryOperator) IF2.getCondition();
 //                            if (condE.getKind() == BinaryOperatorKind.AND)
@@ -121,8 +121,8 @@ public class CodeDiffer {
 //                if (res0.kind == DiffActionType.InsertAction) {
 //                    assert(rc.actions.size() == 1);
 //                    assert(rc.actions.get(0).kind == RepairActionKind.InsertMutationKind);
-//                    CtStatement S1 = (CtStatement) rc.actions.get(0).ast_node;
-//                    CtStatement S2 = (CtStatement) res0.dstElem;
+//                    CtStatement S1 = (CtStatement) rc.actions.get(0).dstCommonAncestor;
+//                    CtStatement S2 = (CtStatement) res0.dstCommonAncestor;
 //                    if(S1.equals(S2)) {
 //                        insMatchSet.add(null);
 //                    }
@@ -132,11 +132,11 @@ public class CodeDiffer {
 //            case TightenConditionKind: // REPLACE_COND_RF
 //                // change a condition
 //                if (res0.kind == DiffActionType.ReplaceAction) {
-//                    if (res0.srcElem instanceof CtIf && res0.dstElem instanceof CtIf) {
-//                        CtIf IF1 = (CtIf) res0.srcElem;
-//                        CtIf IF2 = (CtIf) res0.dstElem;
+//                    if (res0.srcCommonAncestor instanceof CtIf && res0.dstCommonAncestor instanceof CtIf) {
+//                        CtIf IF1 = (CtIf) res0.srcCommonAncestor;
+//                        CtIf IF2 = (CtIf) res0.dstCommonAncestor;
 //                        assert(rc.actions.size() > 0);
-//                        CtIf locIF = (CtIf) rc.actions.get(0).loc_stmt;
+//                        CtIf locIF = (CtIf) rc.actions.get(0).srcCommonAncestor;
 //                        if (locIF.equals(IF1))
 //                            if (IF1.getThenStatement().equals(IF2.getThenStatement()) &&
 //                                    IF1.getElseStatement().equals(IF2.getElseStatement()))
@@ -183,8 +183,8 @@ public class CodeDiffer {
 //                if (res0.kind == DiffActionType.ReplaceAction) {
 //                    assert(rc.actions.size() == 1);
 //                    assert(rc.actions.get(0).kind == RepairActionKind.ReplaceMutationKind);
-//                    CtStatement S1 = (CtStatement) rc.actions.get(0).ast_node;
-//                    CtStatement S2 = (CtStatement) res0.dstElem;
+//                    CtStatement S1 = (CtStatement) rc.actions.get(0).dstCommonAncestor;
+//                    CtStatement S2 = (CtStatement) res0.dstCommonAncestor;
 //                    if (S1.equals(S2)) {
 //                        insMatchSet.add(null);
 //                    }
@@ -193,9 +193,9 @@ public class CodeDiffer {
 //            case ReplaceStringKind: // REPLACE_STMT_RF
 //                // replace string kind
 //                if (res0.kind == DiffActionType.ReplaceAction) {
-//                    if (rc.oldRExpr instanceof CtLiteral && res0.srcElem instanceof CtLiteral) {
+//                    if (rc.oldRExpr instanceof CtLiteral && res0.srcCommonAncestor instanceof CtLiteral) {
 //                        CtLiteral SL1 = (CtLiteral) rc.oldRExpr;
-//                        CtLiteral SL2 = (CtLiteral) res0.srcElem;
+//                        CtLiteral SL2 = (CtLiteral) res0.srcCommonAncestor;
 //                        if (SL1.equals(SL2)) {
 //                            insMatchSet.add(null);
 //                        }
@@ -297,7 +297,7 @@ public class CodeDiffer {
 //        try {
 //            DiffEntry res0 = generateDiffResultEntry(diff, srcRoot, dstRoot);
 //            // todo: check all cast operations
-//            CtStatement locStmt = (CtStatement) res0.srcElem;
+//            CtStatement locStmt = (CtStatement) res0.srcCommonAncestor;
 //            Map<CtElement, Integer> locations = fuzzyLocator(locStmt);
 //
 //            RepairGenerator G = new RepairGenerator(srcRoot, locations, false, false);
@@ -308,7 +308,7 @@ public class CodeDiffer {
 //                Set<CtElement> insSet = rc.getCandidateAtoms();
 //                Set<CtElement> insMatchSet = new HashSet<>();
 //                assert(rc.actions.size() > 0);
-//                if (rc.actions.get(0).loc_stmt.equals(locStmt)) {
+//                if (rc.actions.get(0).srcCommonAncestor.equals(locStmt)) {
 //                    insMatchSet = matchCandidateWithHumanFix(rc, res0);
 //                }
 //                System.out.println(insSet.size() + "@@@@" + insSet);

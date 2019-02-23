@@ -17,7 +17,6 @@ import prophet4j.defined.FeatureType.JointType;
 import prophet4j.defined.FeatureType.Position;
 import prophet4j.defined.FeatureType.RepairFeature;
 import prophet4j.defined.FeatureType.ValueFeature;
-import spoon.reflect.declaration.CtElement;
 
 public interface FeatureStruct {
     // it seems weird to place load() and save() here
@@ -211,9 +210,5 @@ public interface FeatureStruct {
 
     class ValueToFeatureMapTy { // ValueToFeatureMapTy
         public Map<String, Set<AtomicFeature>> map = new HashMap<>();
-    }
-
-    class Cache { // Cache
-        public Map<CtElement, ValueToFeatureMapTy> map = new HashMap<>();
     }
 }

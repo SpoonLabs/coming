@@ -422,8 +422,9 @@ public class Demo {
         // handle ideal patches such as patches from kth-tcs/overfitting-analysis
 //        demo.handlePatches();
     }
-    // todo: debug featureExtractor.java (complete genHumanPatch() at RepairGenerator)
-    // todo: test featureExtractor.java and featureLearner.java on HeYE's patches
+    // todo: test featureExtractor.java on HeYE's patches
+    // todo: complete 3 genXXX()s and check all 6 genXXX()s
+    // todo: test featureLearner.java on HeYE's patches
     // generate .csv files for HeYE
     // draw graphs on 1k commits for Martin
     // the plan for integrating Coming and Prophet4J

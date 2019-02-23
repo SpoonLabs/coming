@@ -51,11 +51,11 @@ public class CodeDiffer {
         ancestorPath = new CtPathStringBuilder().fromString(ancestorPathString);
         List<CtElement> srcStmtList = new ArrayList<>(ancestorPath.evaluateOn(srcRoot));
         assert srcStmtList.size() == 1;
-        CtElement srcAncestor = srcStmtList.get(0);
+        CtElement srcCommonAncestor = srcStmtList.get(0);
 //        srcStmtList = getStmtList(srcAncestor);
         List<CtElement> dstStmtList = new ArrayList<>(ancestorPath.evaluateOn(dstRoot));
         assert dstStmtList.size() == 1;
-        CtElement dstAncestor = dstStmtList.get(0);
+        CtElement dstCommonAncestor = dstStmtList.get(0);
 //        dstStmtList = getStmtList(dstAncestor);
 
         // here is the DiffActionType wrapper for Spoon OperationKind
@@ -91,7 +91,7 @@ public class CodeDiffer {
         }
         // todo: add more asserts in other places to help debug
         assert type != DiffActionType.UnknownAction;
-        return new DiffEntry(type, srcAncestor, dstAncestor);
+        return new DiffEntry(type, srcCommonAncestor, dstCommonAncestor);
     }
 
     private List<FeatureVector> genFeatureVectors(Diff diff, CtElement srcRoot, CtElement dstRoot) {
@@ -102,18 +102,18 @@ public class CodeDiffer {
 
             List<Repair> repairs = new ArrayList<>();
             RepairGenerator generator = new RepairGenerator(diffEntry, false);
-            // human patch (at index 0)
-            repairs.add(generator.genHumanPatch());
+            // human repair (at index 0)
+            repairs.add(generator.genHumanRepair(diffEntry));
             if (forDemo) {
                 // repair candidates (at indexes after 0)
                 repairs.addAll(generator.genRepairCandidates());
             }
             for (Repair repair: repairs) {
                 assert(repair.actions.size() > 0);
-                for (CtElement expr : repair.getCandidateAtoms()) {
+                for (CtElement atom : repair.getCandidateAtoms()) {
 //                System.out.println("********");
-//                System.out.println(expr);
-                    FeatureVector featureVector = featureExtractor.extractFeature(repair, expr).getFeatureVector();
+//                System.out.println(atom);
+                    FeatureVector featureVector = featureExtractor.extractFeature(repair, atom).getFeatureVector();
                     featureVectors.add(featureVector);
                 }
             }
