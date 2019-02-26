@@ -6,12 +6,10 @@
     GlobalFeatureNum     = 3 * AtomFeatureNum * RepairFeatureNum = 450  => 495
     VarCrossFeatureNum   = 3 * AtomFeatureNum * AtomFeatureNum   = 2700 => 3267
     ValueCrossFeatureNum = AtomFeatureNum * ValueFeatureNum      = 360  => 330
-    
+
     There are some features mentioned in ProphetPaper but not implemented in ProphetCode, like VARIABLE_AF, EXCLUDE_ATOM_AF, OPERATE_LHS_AF, OPERATE_RHS_AF, ASSIGN_RHS_AF. As well as some features seem useful but not introduced in ProphetPaper and ProphetCode, such as DELETE_STMT_RF, UNKNOWN_STMT_RF. Prophet4J follows the way of ProphetCode, excluding these features.
     
     Some features are inapplicable to Java, namely ADDRESS_OF_AF, POINTER_VF, STRUCT_POINTER_VF, marked with :no_entry_sign:. In addition, there are some features are extended from original features, that is, OP_DIV_AF and OP_MOD_AF are from DivOpAF, OP_LE_AF and OP_LT_AF are from LessOpAF, OP_GE_AF and OP_GT_AF are from GreaterOpAF, as well as OP_EQ_AF and OP_NE_AF are from EqOpAF.
-
-    There are two versions of implementation for extracting features, `FeatureResolver.java` follows the way described by ProphetPaper while `FeatureExtractor.java` follows the way implemented by ProphetCode. In order to power the `FeatureLearner.java`, we have to utilize FeatureExtractor.java right now.
 
 |FeatureCate|FeatureType4C|FeatureType4J|Test|
 |:-:|:-:|:-:|:-:|

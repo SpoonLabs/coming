@@ -1,4 +1,4 @@
-package prophet4j.feature;
+package prophet4j.util;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,12 +10,12 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import prophet4j.defined.FeatureStruct;
-import prophet4j.defined.FeatureStruct.Feature;
-import prophet4j.defined.FeatureStruct.FeatureVector;
-import prophet4j.defined.FeatureStruct.ParameterVector;
-import prophet4j.defined.FeatureStruct.Sample;
-import prophet4j.defined.FeatureType;
+import prophet4j.meta.FeatureStruct;
+import prophet4j.meta.FeatureStruct.Feature;
+import prophet4j.meta.FeatureStruct.FeatureVector;
+import prophet4j.meta.FeatureStruct.ParameterVector;
+import prophet4j.meta.FeatureStruct.Sample;
+import prophet4j.meta.FeatureType;
 
 // based on learner.cpp (follow the way of ProphetPaper)
 public class FeatureLearner {

@@ -4,12 +4,12 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import prophet4j.defined.FeatureType.AtomicFeature;
-import prophet4j.defined.FeatureType.RepairFeature;
-import prophet4j.defined.FeatureType.ValueFeature;
-import prophet4j.feature.FeatureResolver;
+import prophet4j.meta.FeatureType.AtomicFeature;
+import prophet4j.meta.FeatureType.RepairFeature;
+import prophet4j.meta.FeatureType.ValueFeature;
+import prophet4j.util.FeatureResolver;
 
-// keep this for one period of time for reference
+// deprecated but keep for one while for reference
 public class FeatureResolverTest {
     @Test
     public void testFeatureResolver() {
@@ -291,7 +291,7 @@ public class FeatureResolverTest {
         {
 //            str0 = "class foo{public void bar(){\nif(true && false){}\n}}";
 //            str1 = "class foo{public void bar(){\nif(true || false){}\n}}";
-//            // todo: consider based on child feature kind
+//            // todo: consider based on child util kind
 //            assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(RepairType.REPLACE_COND_RF));
         }
         {
@@ -375,7 +375,7 @@ public class FeatureResolverTest {
             str1 = "class foo{public void bar(){\nString a=\"\";\n}}";
             assertEquals(Boolean.TRUE, featureResolver.easyExtractor(str0, str1).containFeatureType(ValueFeature.STRING_LITERAL_VF));
         }
-        // todo: add more test cases (for more feature cases) (all features should be complete)
+        // todo: add more test cases (for more util cases) (all features should be complete)
         // OperationKind: Insert, Update, Move, Delete;
         // NodeKind: context.getTypeLabel(operation.getAction().getNode())
         // NodeLabel: operation.getAction().getNode().getLabel()

@@ -31,10 +31,10 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
-import prophet4j.defined.FeatureStruct;
-import prophet4j.defined.FeatureStruct.FeatureVector;
-import prophet4j.feature.FeatureLearner;
-import prophet4j.support.CodeDiffer;
+import prophet4j.meta.FeatureStruct;
+import prophet4j.meta.FeatureStruct.FeatureVector;
+import prophet4j.util.FeatureLearner;
+import prophet4j.util.CodeDiffer;
 import tech.sourced.siva.IndexEntry;
 import tech.sourced.siva.SivaReader;
 
@@ -422,10 +422,8 @@ public class Demo {
         // handle ideal patches such as patches from kth-tcs/overfitting-analysis
 //        demo.handlePatches();
     }
-    // todo: test featureExtractor.java on HeYE's patches
-    // todo: complete 3 genXXX()s and check all 6 genXXX()s
-    // todo: test featureLearner.java on HeYE's patches
-    // generate .csv files for HeYE
-    // draw graphs on 1k commits for Martin
-    // the plan for integrating Coming and Prophet4J
+    // todo: run featureExtractor.java & featureLearner.java on HeYE's patches
+    // todo: generate .csv files for HeYE
+    // todo: draw graphs on 1k commits for Martin
+    // todo: the plan for integrating Coming and Prophet4J
 }

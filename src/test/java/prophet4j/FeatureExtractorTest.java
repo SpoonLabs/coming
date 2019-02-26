@@ -6,13 +6,13 @@ import java.util.List;
 
 import org.junit.Test;
 
-import prophet4j.defined.FeatureStruct.Feature;
-import prophet4j.defined.FeatureStruct.FeatureVector;
-import prophet4j.defined.FeatureType;
-import prophet4j.defined.FeatureType.AtomicFeature;
-import prophet4j.defined.FeatureType.RepairFeature;
-import prophet4j.defined.FeatureType.ValueFeature;
-import prophet4j.support.CodeDiffer;
+import prophet4j.meta.FeatureStruct.Feature;
+import prophet4j.meta.FeatureStruct.FeatureVector;
+import prophet4j.meta.FeatureType;
+import prophet4j.meta.FeatureType.AtomicFeature;
+import prophet4j.meta.FeatureType.RepairFeature;
+import prophet4j.meta.FeatureType.ValueFeature;
+import prophet4j.util.CodeDiffer;
 
 // replace FeatureResolverTest.java someday
 public class FeatureExtractorTest {
@@ -157,7 +157,7 @@ public class FeatureExtractorTest {
                     str1 = "class Foo{public void bar(){\nint a=1;\nMath.abs(a);\n}}";
                     assertEquals(Boolean.TRUE, check(helper.func4Test(str0, str1), checkFeatureType));
                     break;
-                case ABST_V_AF: // i do not know the meaning of this feature
+                case ABST_V_AF: // i do not know the meaning of this util
                     test(AtomicFeature.OP_LE_AF, checkFeatureType);
                     test(AtomicFeature.OP_LT_AF, checkFeatureType);
                     test(AtomicFeature.OP_GE_AF, checkFeatureType);

@@ -1,13 +1,13 @@
-package prophet4j.defined;
+package prophet4j.meta;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import prophet4j.defined.RepairType.DiffActionType;
-import prophet4j.defined.RepairType.RepairActionKind;
-import prophet4j.defined.RepairType.RepairCandidateKind;
+import prophet4j.meta.RepairType.DiffActionType;
+import prophet4j.meta.RepairType.RepairActionKind;
+import prophet4j.meta.RepairType.RepairCandidateKind;
 import spoon.reflect.declaration.CtElement;
 
 public interface RepairStruct {
@@ -46,14 +46,6 @@ public interface RepairStruct {
             this.dstElem = dstElem;
             this.atoms = atoms;
         }
-
-        // for human repair (as well as test) // todo: check and replace the other constructs
-//        public RepairAction(RepairActionKind kind, CtElement srcCommonAncestor, CtElement expr, List<CtElement> atoms) {
-//            this.kind = kind; // RepairActionKind.ReplaceMutationKind
-//            this.srcCommonAncestor = srcCommonAncestor;
-//            this.dstCommonAncestor = expr;
-//            this.atoms = atoms;
-//        }
     }
 
     class Repair {
