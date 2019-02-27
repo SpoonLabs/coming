@@ -1,4 +1,4 @@
-package prophet4j.feature;
+package prophet4j.util;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -8,17 +8,17 @@ import java.util.Map;
 import java.util.Set;
 
 import picocli.CommandLine.Option;
-import prophet4j.defined.FeatureStruct.Feature;
-import prophet4j.defined.FeatureStruct.FeatureManager;
-import prophet4j.defined.FeatureStruct.ValueToFeatureMapTy;
-import prophet4j.defined.FeatureType;
-import prophet4j.defined.FeatureType.AtomicFeature;
-import prophet4j.defined.FeatureType.JointType;
-import prophet4j.defined.FeatureType.Position;
-import prophet4j.defined.FeatureType.RepairFeature;
-import prophet4j.defined.FeatureType.ValueFeature;
-import prophet4j.defined.RepairStruct.Repair;
-import prophet4j.defined.RepairType.RepairActionKind;
+import prophet4j.meta.FeatureStruct.Feature;
+import prophet4j.meta.FeatureStruct.FeatureManager;
+import prophet4j.meta.FeatureStruct.ValueToFeatureMapTy;
+import prophet4j.meta.FeatureType;
+import prophet4j.meta.FeatureType.AtomicFeature;
+import prophet4j.meta.FeatureType.JointType;
+import prophet4j.meta.FeatureType.Position;
+import prophet4j.meta.FeatureType.RepairFeature;
+import prophet4j.meta.FeatureType.ValueFeature;
+import prophet4j.meta.RepairStruct.Repair;
+import prophet4j.meta.RepairType.RepairActionKind;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLiteral;

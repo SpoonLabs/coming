@@ -1,12 +1,12 @@
-package prophet4j.feature;
+package prophet4j.util;
 
 import java.util.HashSet;
 import java.util.Map;
 
-import prophet4j.defined.FeatureStruct.ValueToFeatureMapTy;
-import prophet4j.defined.FeatureType.AtomicFeature;
-import prophet4j.defined.RepairStruct.Repair;
-import prophet4j.defined.RepairType.RepairActionKind;
+import prophet4j.meta.FeatureStruct.ValueToFeatureMapTy;
+import prophet4j.meta.FeatureType.AtomicFeature;
+import prophet4j.meta.RepairStruct.Repair;
+import prophet4j.meta.RepairType.RepairActionKind;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;

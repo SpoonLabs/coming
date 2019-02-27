@@ -1,4 +1,4 @@
-package prophet4j.feature;
+package prophet4j.util;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,14 +12,14 @@ import gumtree.spoon.diff.operations.InsertOperation;
 import gumtree.spoon.diff.operations.Operation;
 import gumtree.spoon.diff.operations.UpdateOperation;
 import picocli.CommandLine.Option;
-import prophet4j.defined.FeatureStruct.Feature;
-import prophet4j.defined.FeatureStruct.FeatureManager;
-import prophet4j.defined.FeatureType;
-import prophet4j.defined.FeatureType.AtomicFeature;
-import prophet4j.defined.FeatureType.JointType;
-import prophet4j.defined.FeatureType.Position;
-import prophet4j.defined.FeatureType.RepairFeature;
-import prophet4j.defined.FeatureType.ValueFeature;
+import prophet4j.meta.FeatureStruct.Feature;
+import prophet4j.meta.FeatureStruct.FeatureManager;
+import prophet4j.meta.FeatureType;
+import prophet4j.meta.FeatureType.AtomicFeature;
+import prophet4j.meta.FeatureType.JointType;
+import prophet4j.meta.FeatureType.Position;
+import prophet4j.meta.FeatureType.RepairFeature;
+import prophet4j.meta.FeatureType.ValueFeature;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtArrayRead;
 import spoon.reflect.code.CtArrayWrite;
@@ -60,7 +60,7 @@ import spoon.reflect.path.CtPathStringBuilder;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 
-// this is the old implementation which will be removed someday
+// deprecated but keep for one while for reference
 // based on FeatureExtract.cpp, RepairGenerator.cpp
 public class FeatureResolver {
 

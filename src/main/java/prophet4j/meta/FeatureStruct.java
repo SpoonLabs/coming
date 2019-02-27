@@ -1,4 +1,4 @@
-package prophet4j.defined;
+package prophet4j.meta;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,11 +12,11 @@ import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 
-import prophet4j.defined.FeatureType.AtomicFeature;
-import prophet4j.defined.FeatureType.JointType;
-import prophet4j.defined.FeatureType.Position;
-import prophet4j.defined.FeatureType.RepairFeature;
-import prophet4j.defined.FeatureType.ValueFeature;
+import prophet4j.meta.FeatureType.AtomicFeature;
+import prophet4j.meta.FeatureType.JointType;
+import prophet4j.meta.FeatureType.Position;
+import prophet4j.meta.FeatureType.RepairFeature;
+import prophet4j.meta.FeatureType.ValueFeature;
 
 public interface FeatureStruct {
     // it seems weird to place load() and save() here
@@ -50,7 +50,7 @@ public interface FeatureStruct {
 
         public boolean containFeatureType(FeatureType featureType) {
             for (Feature feature : featureSet) {
-//                System.out.println(feature);
+//                System.out.println(util);
                 if (feature.containFeatureType(featureType)) {
                     return true;
                 }

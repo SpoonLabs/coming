@@ -1,4 +1,4 @@
-package prophet4j.support;
+package prophet4j.util;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -14,12 +14,10 @@ import gumtree.spoon.diff.operations.DeleteOperation;
 import gumtree.spoon.diff.operations.InsertOperation;
 import gumtree.spoon.diff.operations.Operation;
 import gumtree.spoon.diff.operations.UpdateOperation;
-import prophet4j.defined.FeatureStruct.FeatureVector;
-import prophet4j.defined.RepairStruct.DiffEntry;
-import prophet4j.defined.RepairStruct.Repair;
-import prophet4j.defined.RepairType.DiffActionType;
-import prophet4j.feature.FeatureExtractor;
-import prophet4j.feature.RepairGenerator;
+import prophet4j.meta.FeatureStruct.FeatureVector;
+import prophet4j.meta.RepairStruct.DiffEntry;
+import prophet4j.meta.RepairStruct.Repair;
+import prophet4j.meta.RepairType.DiffActionType;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
@@ -101,7 +99,8 @@ public class CodeDiffer {
             DiffEntry diffEntry = genDiffEntry(diff, srcRoot, dstRoot);
 
             List<Repair> repairs = new ArrayList<>();
-            RepairGenerator generator = new RepairGenerator(diffEntry, false);
+            // as RepairGenerator receive diffEntry as parameter, we do not need ErrorLocalizer
+            RepairGenerator generator = new RepairGenerator(diffEntry);
             // human repair (at index 0)
             repairs.add(generator.genHumanRepair(diffEntry));
             if (forDemo) {

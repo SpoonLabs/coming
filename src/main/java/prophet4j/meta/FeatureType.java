@@ -1,4 +1,4 @@
-package prophet4j.defined;
+package prophet4j.meta;
 
 public interface FeatureType {
 
