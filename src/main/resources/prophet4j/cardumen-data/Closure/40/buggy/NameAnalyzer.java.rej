@@ -1,0 +1,17 @@
+***************
+*** 356,362 ****
+  					com.google.javascript.rhino.Node nameNode = n.getFirstChild();
+  					com.google.javascript.jscomp.NameAnalyzer.NameInformation ns = createNameInformation(t, nameNode, n);
+  					if ((ns != null) && (ns.onlyAffectsClassDef)) {
+- 						com.google.javascript.jscomp.NameAnalyzer.JsName name = getName(ns.name, false);
+  						if (name != null) {
+  							refNodes.add(new com.google.javascript.jscomp.NameAnalyzer.ClassDefiningFunctionNode(name, n, parent, parent.getParent()));
+  
+--- 356,362 ----
+  					com.google.javascript.rhino.Node nameNode = n.getFirstChild();
+  					com.google.javascript.jscomp.NameAnalyzer.NameInformation ns = createNameInformation(t, nameNode, n);
+  					if ((ns != null) && (ns.onlyAffectsClassDef)) {
++ 						com.google.javascript.jscomp.NameAnalyzer.JsName name = getName(ns.name, ((n.getFirstChild().getNext()) != null));
+  						if (name != null) {
+  							refNodes.add(new com.google.javascript.jscomp.NameAnalyzer.ClassDefiningFunctionNode(name, n, parent, parent.getParent()));
+  

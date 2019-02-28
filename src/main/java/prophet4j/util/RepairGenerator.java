@@ -35,7 +35,7 @@ public class RepairGenerator {
 //     boolean in_yacc_func;
 
     public RepairGenerator(DiffEntry diffEntry) {
-        this.area = fuzzyLocator(diffEntry.srcCommonAncestor);
+        this.area = fuzzyLocator(diffEntry.srcNode);
         this.diffEntry = diffEntry;
         this.factory = new Launcher().getFactory().Core();
         repairs.clear();
@@ -252,7 +252,7 @@ public class RepairGenerator {
         }
     }
 
-    public Repair genHumanRepair(DiffEntry diffEntry) {
+    public Repair genHumanRepair() {
         Repair repair = new Repair();
 
         repair.kind = null; // related to RepairFeature
@@ -263,13 +263,13 @@ public class RepairGenerator {
         // based on matchCandidateWithHumanFix(), repair.kind should have one RepairFeature
 //        System.out.println("------------");
 //        System.out.println(diffEntry.type);
-        CtElement srcCommonAncestor = diffEntry.srcCommonAncestor;
+        CtElement srcCommonAncestor = diffEntry.srcNode;
         if (srcCommonAncestor instanceof CtStatementList) {
-            srcCommonAncestor = diffEntry.srcCommonAncestor.getParent();
+            srcCommonAncestor = diffEntry.srcNode.getParent();
         }
-        CtElement dstCommonAncestor = diffEntry.dstCommonAncestor;
+        CtElement dstCommonAncestor = diffEntry.dstNode;
         if (dstCommonAncestor instanceof CtStatementList) {
-            dstCommonAncestor = diffEntry.dstCommonAncestor.getParent();
+            dstCommonAncestor = diffEntry.dstNode.getParent();
         }
         switch (diffEntry.type) {
             case DeleteAction: // kind
@@ -285,7 +285,7 @@ public class RepairGenerator {
                     repair.kind = RepairCandidateKind.AddAndReplaceKind;
                 }
                 // compare with others in genRepairCandidates()
-                repair.actions.add(new RepairAction(RepairActionKind.InsertMutationKind, diffEntry.srcCommonAncestor, diffEntry.dstCommonAncestor));
+                repair.actions.add(new RepairAction(RepairActionKind.InsertMutationKind, diffEntry.srcNode, diffEntry.dstNode));
                 break;
             case ReplaceAction: // kind // oldRExpr // newRExpr
                 // IfExitKind: // INSERT_CONTROL_RF
@@ -295,12 +295,22 @@ public class RepairGenerator {
                 // TightenConditionKind: // REPLACE_COND_RF
                 // ReplaceKind: // REPLACE_STMT_RF
                 // ReplaceStringKind: // REPLACE_STMT_RF
+                CtIf IF2;
                 if (dstCommonAncestor instanceof CtIf) {
-                    CtIf IF2 = (CtIf) dstCommonAncestor;
+                    IF2 = (CtIf) dstCommonAncestor;
+                } else {
+                    IF2 = dstCommonAncestor.getParent(new TypeFilter<>(CtIf.class));
+                }
+                if (IF2 != null) {
+                    CtIf IF1;
                     if (srcCommonAncestor instanceof CtIf) {
+                        IF1 = (CtIf) srcCommonAncestor;
+                    } else {
+                        IF1 = srcCommonAncestor.getParent(new TypeFilter<>(CtIf.class));
+                    }
+                    if (IF1 != null) {
                         // make sure repair.kind would be assigned one value
                         repair.kind = RepairCandidateKind.SpecialGuardKind;
-                        CtIf IF1 = (CtIf) srcCommonAncestor;
                         if (IF1.getThenStatement().equals(IF2.getThenStatement())) {
                             // LoosenConditionKind and TightenConditionKind are almost same as both are REPLACE_COND_RF
                             if (IF1.getElseStatement()!=null && IF2.getElseStatement()!=null) {
@@ -321,28 +331,25 @@ public class RepairGenerator {
                     }
                 } else {
                     // in both cases, oldRExpr is not null
-                    repair.oldRExpr = diffEntry.srcCommonAncestor;
-                    if (diffEntry.srcCommonAncestor instanceof CtLiteral) {
+                    repair.oldRExpr = diffEntry.srcNode;
+                    if (diffEntry.srcNode instanceof CtLiteral) {
                         // in this case, oldRExpr seems meaningless as newRExpr is null
                         repair.kind = RepairCandidateKind.ReplaceStringKind;
                     } else {
                         // in this case, newRExpr is not null either
-                        repair.newRExpr = diffEntry.dstCommonAncestor;
+                        repair.newRExpr = diffEntry.dstNode;
                         repair.kind = RepairCandidateKind.ReplaceKind;
                     }
                 }
                 // compare with others in genRepairCandidates()
-                repair.actions.add(new RepairAction(RepairActionKind.ReplaceMutationKind, diffEntry.srcCommonAncestor, diffEntry.dstCommonAncestor));
+                repair.actions.add(new RepairAction(RepairActionKind.ReplaceMutationKind, diffEntry.srcNode, diffEntry.dstNode));
                 break;
             case UnknownAction:
                 break;
         }
 
-        List<CtElement> candidates = diffEntry.dstCommonAncestor.getElements(new TypeFilter<>(CtElement.class));
-        repair.actions.add(new RepairAction(diffEntry.srcCommonAncestor, diffEntry.dstCommonAncestor, candidates));
-
-//        System.out.println("::::::::::::::");
-//        System.out.println(repair.kind);
+        List<CtElement> candidates = diffEntry.dstNode.getElements(new TypeFilter<>(CtElement.class));
+        repair.actions.add(new RepairAction(diffEntry.srcNode, diffEntry.dstNode, candidates));
         return repair;
     }
 
@@ -417,7 +424,7 @@ public class RepairGenerator {
             }
         };
         // traverse (i.e. go to each node) the AST of clang::ASTContext (the top declaration context)
-        scanner.scan(diffEntry.srcCommonAncestor);
+        scanner.scan(diffEntry.srcNode);
         return repairs;
     }
 
@@ -428,9 +435,8 @@ public class RepairGenerator {
         if (statement instanceof CtMethod || statement instanceof CtClass || statement instanceof CtIf || statement instanceof CtStatementList) {
             locations.add(statement);
         } else {
-            List<CtStatement> statements = statement.getParent().getElements(new TypeFilter<>(CtStatement.class));
-//            System.out.println(statement);
-//            System.out.println(statements);
+            // "int a;" is not CtStatement?
+            List<CtElement> statements = statement.getParent().getElements(new TypeFilter<>(CtElement.class));
             if (statement.getParent() instanceof CtStatement) {
                 statements = statements.subList(1, statements.size());
             }

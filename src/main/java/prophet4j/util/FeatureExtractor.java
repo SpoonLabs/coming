@@ -199,8 +199,8 @@ public class FeatureExtractor {
     // this is for CodeDiffer.java
     public FeatureManager extractFeature(Repair repair, CtElement atom) {
         // getImmediateFollowStmts() getLocalStmts()
-//        List<CtStatement> srcStmtList = getStmtList((CtStatement)diffEntry.srcCommonAncestor);
-//        List<CtStatement> dstStmtList = getStmtList((CtStatement)diffEntry.dstCommonAncestor);
+//        List<CtStatement> srcStmtList = getStmtList((CtStatement)diffEntry.srcNode);
+//        List<CtStatement> dstStmtList = getStmtList((CtStatement)diffEntry.dstNode);
 //        int pivot = getPivot(srcStmtList, dstStmtList);
 
         FeatureManager featureManager = new FeatureManager();

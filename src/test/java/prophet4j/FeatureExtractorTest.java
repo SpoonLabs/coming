@@ -8,13 +8,13 @@ import org.junit.Test;
 
 import prophet4j.meta.FeatureStruct.Feature;
 import prophet4j.meta.FeatureStruct.FeatureVector;
+import prophet4j.meta.FeatureStruct.FeatureManager;
 import prophet4j.meta.FeatureType;
 import prophet4j.meta.FeatureType.AtomicFeature;
 import prophet4j.meta.FeatureType.RepairFeature;
 import prophet4j.meta.FeatureType.ValueFeature;
 import prophet4j.util.CodeDiffer;
 
-// replace FeatureResolverTest.java someday
 public class FeatureExtractorTest {
     private void test(FeatureType caseFeatureType, FeatureType checkFeatureType) {
         String str0, str1;
@@ -180,14 +180,14 @@ public class FeatureExtractorTest {
                     assertEquals(Boolean.TRUE, check(helper.func4Test(str0, str1), checkFeatureType));
                     break;
                 case STMT_LOOP_AF:
-                    str0 = "class Foo{public void bar(){\nboolean a=true;\ndo{}while(a)\n}}";
-                    str1 = "class Foo{public void bar(){\nboolean a=true;\ndo{a=false;}while(a)\n}}";
+                    str0 = "class Foo{public void bar(){\nboolean a=true;\n}}";
+                    str1 = "class Foo{public void bar(){\nboolean a=true;\ndo{}while(a)\n}}";
                     assertEquals(Boolean.TRUE, check(helper.func4Test(str0, str1), checkFeatureType));
-                    str0 = "class Foo{public void bar(){\nboolean a=true;\nfor(;a;){}\n}}";
-                    str1 = "class Foo{public void bar(){\nboolean a=true;\nfor(;a;){a=false;}\n}}";
+                    str0 = "class Foo{public void bar(){\nboolean a=true;\n}}";
+                    str1 = "class Foo{public void bar(){\nboolean a=true;\nfor(;a;){}\n}}";
                     assertEquals(Boolean.TRUE, check(helper.func4Test(str0, str1), checkFeatureType));
-                    str0 = "class Foo{public void bar(){\nboolean a=true;\nwhile(a){}\n}}";
-                    str1 = "class Foo{public void bar(){\nboolean a=true;\nwhile(a){a=false;}\n}}";
+                    str0 = "class Foo{public void bar(){\nboolean a=true;\n}}";
+                    str1 = "class Foo{public void bar(){\nboolean a=true;\nwhile(a){}\n}}";
                     assertEquals(Boolean.TRUE, check(helper.func4Test(str0, str1), checkFeatureType));
                     break;
                 case STMT_ASSIGN_AF:
@@ -238,13 +238,13 @@ public class FeatureExtractorTest {
             RepairFeature repairFeature = (RepairFeature) caseFeatureType;
             switch (repairFeature) {
                 case INSERT_CONTROL_RF:
-                    str0 = "class Foo{public void bar(){\nboolean a=true;\nif(a){}\n}}";
-                    str1 = "class Foo{public void bar(){\nboolean a=true;\nif(a){a=false;}\n}}";
+                    str0 = "class Foo{public void bar(){\nboolean a=true;\n}}";
+                    str1 = "class Foo{public void bar(){\nboolean a=true;\nif(a){}\n}}";
                     assertEquals(Boolean.TRUE, check(helper.func4Test(str0, str1), checkFeatureType));
                     break;
                 case INSERT_GUARD_RF:
-                    str0 = "class Foo{public void bar(){\nboolean a=true;\nif(a){System.exit();}\n}}";
-                    str1 = "class Foo{public void bar(){\nboolean a=true;\nif(a){return;}\n}}";
+                    str0 = "class Foo{public void bar(){\nboolean a=true;\nif(a){return;}\n}}";
+                    str1 = "class Foo{public void bar(){\nboolean a=true;\nif(a){System.exit(0)}\n}}";
                     assertEquals(Boolean.TRUE, check(helper.func4Test(str0, str1), checkFeatureType));
                     break;
                 case INSERT_STMT_RF:
@@ -323,8 +323,10 @@ public class FeatureExtractorTest {
         }
     }
 
-    private boolean check(List<FeatureVector> featureVectors, FeatureType featureType) {
-        for (FeatureVector featureVector : featureVectors) {
+    private boolean check(List<FeatureManager> featureManagers, FeatureType featureType) {
+        // we check feature on featureVector but not featureSet as the former is stricter
+        for (FeatureManager featureManager : featureManagers) {
+            FeatureVector featureVector = featureManager.getFeatureVector();
             for (Feature feature: featureVector.getFeatures()) {
                 if (feature.containFeatureType(featureType)) {
                     return true;
