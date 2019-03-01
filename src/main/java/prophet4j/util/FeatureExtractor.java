@@ -99,7 +99,7 @@ public class FeatureExtractor {
             String newStr = repair.newRExpr.toString();
             if (valueStr.equals(newStr))
                 valueFeatures.add(ValueFeature.MODIFIED_VF);
-            if (oldStr.length()>0 && newStr.length()>0) {
+            if (oldStr.length() > 0 && newStr.length() > 0) {
                 double ratio = ((double)oldStr.length()) / newStr.length();
                 if (ratio > 0.5 && ratio < 2 && oldStr.length() > 3 && newStr.length() > 3)
                     if (oldStr.contains(newStr) || newStr.contains(oldStr))
@@ -199,8 +199,8 @@ public class FeatureExtractor {
     // this is for CodeDiffer.java
     public FeatureManager extractFeature(Repair repair, CtElement atom) {
         // getImmediateFollowStmts() getLocalStmts()
-//        List<CtStatement> srcStmtList = getStmtList((CtStatement)diffEntry.srcCommonAncestor);
-//        List<CtStatement> dstStmtList = getStmtList((CtStatement)diffEntry.dstCommonAncestor);
+//        List<CtStatement> srcStmtList = getStmtList((CtStatement)diffEntry.srcNode);
+//        List<CtStatement> dstStmtList = getStmtList((CtStatement)diffEntry.dstNode);
 //        int pivot = getPivot(srcStmtList, dstStmtList);
 
         FeatureManager featureManager = new FeatureManager();
@@ -352,11 +352,8 @@ public class FeatureExtractor {
 //        System.out.println(">>>>>>");
         // ValueCrossFeatureNum = AtomFeatureNum * ValueFeatureNum      = 360
         for (String key : resv.map.keySet()) {
-//            System.out.println("=>" + key);
             Set<AtomicFeature> atomicFeatures = resv.map.get(key);
             Set<ValueFeature> valueFeatures = getValueFeature(key, repair, valueExprInfo);
-//            System.out.println(atomicFeatures.size() + " >=< " + atomicFeatures);
-//            System.out.println(valueFeatures.size()  + " >=< " + valueFeatures);
             for (FeatureType atomicFeature : atomicFeatures) {
                 for (FeatureType valueFeature : valueFeatures) {
                     // AF_VF_JT

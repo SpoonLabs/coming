@@ -66,41 +66,6 @@ public class FeatureVisitor {
         }
     }
 
-    // todo: check the difference between putValueFeature(null, xx) and putValueFeature(v, xx)
-    private void putStmtType(CtElement v, CtElement S) {
-//        System.out.println("><><><><><><><><");
-//        System.out.println("><" + v);
-//        System.out.println("><" + S);
-//        System.out.println("><" + isReplace);
-        if (S instanceof CtLoop) {
-//            assert !isReplace;
-            putValueFeature(null, AtomicFeature.STMT_LOOP_AF);
-            putValueFeature(v, AtomicFeature.STMT_LOOP_AF);
-        }
-        if (S instanceof CtAssignment) {
-            putValueFeature(null, isReplace ? AtomicFeature.R_STMT_ASSIGN_AF : AtomicFeature.STMT_ASSIGN_AF);
-            putValueFeature(v, isReplace ? AtomicFeature.R_STMT_ASSIGN_AF : AtomicFeature.STMT_ASSIGN_AF);
-        }
-        if (S instanceof CtInvocation) {
-            putValueFeature(null, isReplace ? AtomicFeature.R_STMT_CALL_AF : AtomicFeature.STMT_CALL_AF);
-            putValueFeature(v, isReplace ? AtomicFeature.R_STMT_CALL_AF : AtomicFeature.STMT_CALL_AF);
-        }
-        if (S instanceof CtIf) {
-            putValueFeature(null, isReplace ? AtomicFeature.R_STMT_COND_AF : AtomicFeature.STMT_COND_AF);
-            putValueFeature(v, isReplace ? AtomicFeature.R_STMT_COND_AF : AtomicFeature.STMT_COND_AF);
-        }
-        if (S instanceof CtCFlowBreak) {
-            if (S instanceof CtLabelledFlowBreak) {
-//                assert !isReplace;
-                putValueFeature(null, AtomicFeature.STMT_LABEL_AF);
-                putValueFeature(v, AtomicFeature.STMT_LABEL_AF);
-            } else {
-                putValueFeature(null, isReplace ? AtomicFeature.R_STMT_CONTROL_AF : AtomicFeature.STMT_CONTROL_AF);
-                putValueFeature(v, isReplace ? AtomicFeature.R_STMT_CONTROL_AF : AtomicFeature.STMT_CONTROL_AF);
-            }
-        }
-    }
-
     public void traverseRepair(Repair repair, CtElement atom) { // traverseRC
         if (atom != null) {
             // for the return value of getCandidateAtoms() when null is not its only element
@@ -142,13 +107,33 @@ public class FeatureVisitor {
             @Override
             public void scan(CtElement element) { // VisitExpr
                 super.scan(element);
-//                System.out.println("!!!!!!" + element);
-//                System.out.println(element instanceof CtCFlowBreak);
-                if (element instanceof CtLoop || element instanceof CtAssignment || element instanceof CtInvocation || element instanceof CtIf || element instanceof CtCFlowBreak) {
-                    putStmtType(element, element);
-//                    for (CtElement e: element.getElements(new TypeFilter<>(CtElement.class))) {
-//                        putStmtType(e, element);
-//                    }
+                // todo: check the difference between putValueFeature(null, xx) and putValueFeature(v, xx)
+                if (element instanceof CtLoop || element instanceof CtExpression && element.getParent() instanceof CtLoop) {
+//                    assert !isReplace;
+                    putValueFeature(null, AtomicFeature.STMT_LOOP_AF);
+                    putValueFeature(element, AtomicFeature.STMT_LOOP_AF);
+                }
+                if (element instanceof CtAssignment) {
+                    putValueFeature(null, isReplace ? AtomicFeature.R_STMT_ASSIGN_AF : AtomicFeature.STMT_ASSIGN_AF);
+                    putValueFeature(element, isReplace ? AtomicFeature.R_STMT_ASSIGN_AF : AtomicFeature.STMT_ASSIGN_AF);
+                }
+                if (element instanceof CtInvocation) {
+                    putValueFeature(null, isReplace ? AtomicFeature.R_STMT_CALL_AF : AtomicFeature.STMT_CALL_AF);
+                    putValueFeature(element, isReplace ? AtomicFeature.R_STMT_CALL_AF : AtomicFeature.STMT_CALL_AF);
+                }
+                if (element instanceof CtIf || element instanceof CtExpression && element.getParent() instanceof CtIf) {
+                    putValueFeature(null, isReplace ? AtomicFeature.R_STMT_COND_AF : AtomicFeature.STMT_COND_AF);
+                    putValueFeature(element, isReplace ? AtomicFeature.R_STMT_COND_AF : AtomicFeature.STMT_COND_AF);
+                }
+                if (element instanceof CtCFlowBreak) {
+                    if (element instanceof CtLabelledFlowBreak) {
+//                        assert !isReplace;
+                        putValueFeature(null, AtomicFeature.STMT_LABEL_AF);
+                        putValueFeature(element, AtomicFeature.STMT_LABEL_AF);
+                    } else {
+                        putValueFeature(null, isReplace ? AtomicFeature.R_STMT_CONTROL_AF : AtomicFeature.STMT_CONTROL_AF);
+                        putValueFeature(element, isReplace ? AtomicFeature.R_STMT_CONTROL_AF : AtomicFeature.STMT_CONTROL_AF);
+                    }
                 }
             }
 

@@ -8,6 +8,10 @@ import java.util.Set;
 import prophet4j.meta.RepairType.DiffActionType;
 import prophet4j.meta.RepairType.RepairActionKind;
 import prophet4j.meta.RepairType.RepairCandidateKind;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtLoop;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 
 public interface RepairStruct {
@@ -15,11 +19,27 @@ public interface RepairStruct {
     class DiffEntry { // DiffResultEntry
         // the reason why CtElement is used here is because clang::Expr isa clang::Stmt
         public DiffActionType type;
-        public CtElement srcCommonAncestor, dstCommonAncestor;
-        public DiffEntry(DiffActionType type, CtElement srcCommonAncestor, CtElement dstCommonAncestor) {
+        public CtElement srcNode, dstNode;
+        public DiffEntry(DiffActionType type, CtElement srcNode, CtElement dstNode) {
             this.type = type;
-            this.srcCommonAncestor = srcCommonAncestor;
-            this.dstCommonAncestor = dstCommonAncestor;
+            this.srcNode = srcNode;
+            this.dstNode = dstNode;
+            if (this.srcNode instanceof CtExpression) {
+                while (!(this.srcNode instanceof CtStatement)){
+                    CtElement parent = this.srcNode.getParent();
+                    // avoid analyzing all body of CtIf or CtLoop, caused by head expression
+                    if (parent instanceof CtIf || parent instanceof CtLoop) break;
+                    this.srcNode = parent;
+                }
+            }
+            if (this.dstNode instanceof CtExpression) {
+                while (!(this.dstNode instanceof CtStatement)){
+                    CtElement parent = this.dstNode.getParent();
+                    // avoid analyzing all body of CtIf or CtLoop, caused by head expression
+                    if (parent instanceof CtIf || parent instanceof CtLoop) break;
+                    this.dstNode = parent;
+                }
+            }
         }
     }
 
@@ -60,7 +80,6 @@ public interface RepairStruct {
             this.actions = new ArrayList<>();
         }
 
-        // fixme: "atoms"
         public Set<CtElement> getCandidateAtoms() {
             Set<CtElement> ret = new HashSet<>();
             ret.add(null);

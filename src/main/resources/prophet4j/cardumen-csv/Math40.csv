@@ -1,0 +1,13 @@
+entryName,OP_ADD_AF,OP_SUB_AF,OP_MUL_AF,OP_DIV_AF,OP_MOD_AF,OP_LE_AF,OP_LT_AF,OP_GE_AF,OP_GT_AF,OP_EQ_AF,OP_NE_AF,UOP_INC_AF,UOP_DEC_AF,ASSIGN_LHS_AF,ASSIGN_ZERO_AF,ASSIGN_CONST_AF,CHANGED_AF,DEREF_AF,INDEX_AF,MEMBER_ACCESS_AF,CALLEE_AF,CALL_ARGUMENT_AF,ABST_V_AF,STMT_LABEL_AF,STMT_LOOP_AF,STMT_ASSIGN_AF,STMT_CALL_AF,STMT_COND_AF,STMT_CONTROL_AF,R_STMT_ASSIGN_AF,R_STMT_CALL_AF,R_STMT_COND_AF,R_STMT_CONTROL_AF,ADDRESS_OF_AF,INSERT_CONTROL_RF,INSERT_GUARD_RF,INSERT_STMT_RF,REPLACE_COND_RF,REPLACE_STMT_RF,MODIFIED_VF,MODIFIED_SIMILAR_VF,FUNC_ARGUMENT_VF,MEMBER_VF,LOCAL_VARIABLE_VF,GLOBAL_VARIABLE_VF,ZERO_CONST_VF,NONZERO_CONST_VF,STRING_LITERAL_VF,SIZE_LITERAL_VF,POINTER_VF,STRUCT_POINTER_VF
+Math40-BracketingNthOrderBrentSolver.java-patch8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,1,0,0,0,1,1,1,1,0,0,0,0
+Math40-BracketingNthOrderBrentSolver.java-patch1,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0,0
+Math40-BracketingNthOrderBrentSolver.java-patch6,1,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,1,0,0,0,0,1,0,1,0,0,0,0
+Math40-BracketingNthOrderBrentSolver.java-patch12,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,1,0,1,0,0,0,0
+Math40-BracketingNthOrderBrentSolver.java-patch7,1,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,1,0,0,0,0,1,1,0,1,0,0,0,0,1,0,1,0,0,0,0
+Math40-BracketingNthOrderBrentSolver.java-patch9,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,1,0,1,0,0,0,0
+Math40-BracketingNthOrderBrentSolver.java-patch11,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,1,0,1,0,0,0,0
+Math40-BracketingNthOrderBrentSolver.java-patch5,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,1,0,1,0,0,0,0
+Math40-BracketingNthOrderBrentSolver.java-patch2,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0
+Math40-BracketingNthOrderBrentSolver.java-patch10,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,1,0,1,0,0,0,0
+Math40-BracketingNthOrderBrentSolver.java-patch3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,1,0,0,0,1,1,1,1,0,0,0,0
+Math40-BracketingNthOrderBrentSolver.java-patch4,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0

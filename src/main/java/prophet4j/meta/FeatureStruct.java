@@ -1,15 +1,16 @@
 package prophet4j.meta;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.io.FileUtils;
 
 import prophet4j.meta.FeatureType.AtomicFeature;
@@ -19,25 +20,67 @@ import prophet4j.meta.FeatureType.RepairFeature;
 import prophet4j.meta.FeatureType.ValueFeature;
 
 public interface FeatureStruct {
-    // it seems weird to place load() and save() here
-    static void save(File vectorFile, List<FeatureVector> featureVectors) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        for (FeatureVector featureVector: featureVectors) {
-            for (int featureId : featureVector.featureArray) {
-                sb.append(featureId);
-                sb.append(" ");
-            }
-        }
-        FileUtils.writeStringToFile(vectorFile, sb.toString().trim() + "\n", Charset.defaultCharset(), true);
-    }
     static List<FeatureVector> load(File vectorFile) throws IOException {
         List<FeatureVector> featureVectors = new ArrayList<>();
         String string = FileUtils.readFileToString(vectorFile, Charset.defaultCharset());
-        String[] substrings = string.split("\n");
-        for (String substring: substrings) {
-            featureVectors.add(new FeatureVector(substring));
+        StringTokenizer stringTokenizer = new StringTokenizer(string, "\n");
+        while (stringTokenizer.hasMoreTokens()) {
+            featureVectors.add(new FeatureVector(stringTokenizer.nextToken()));
         }
         return featureVectors;
+    }
+
+    static void save(File vectorFile, List<FeatureManager> featureManagers) throws IOException {
+        StringJoiner stringJoiner = new StringJoiner(" ", "", "\n");
+        for (FeatureManager featureManager : featureManagers) {
+            FeatureVector featureVector = featureManager.getFeatureVector();
+            for (int featureId : featureVector.featureArray) {
+                stringJoiner.add(String.valueOf(featureId));
+            }
+        }
+        FileUtils.writeStringToFile(vectorFile, stringJoiner.toString(), Charset.defaultCharset(), true);
+    }
+
+    static void generateCSV(String csvFileName, Map<String, List<FeatureManager>> metadata) {
+        List<String> header = new ArrayList<>();
+        AtomicFeature[] atomicFeatures = AtomicFeature.values();
+        RepairFeature[] repairFeatures = RepairFeature.values();
+        ValueFeature[] valueFeatures = ValueFeature.values();
+        header.add("entryName");
+        header.addAll(Arrays.stream(atomicFeatures).map(AtomicFeature::name).collect(Collectors.toList()));
+        header.addAll(Arrays.stream(repairFeatures).map(RepairFeature::name).collect(Collectors.toList()));
+        header.addAll(Arrays.stream(valueFeatures).map(ValueFeature::name).collect(Collectors.toList()));
+        try {
+            BufferedWriter writer = Files.newBufferedWriter(Paths.get(csvFileName));
+            CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])));
+            for (String key : metadata.keySet()) {
+                List<String> entry = new ArrayList<>();
+                Set<Feature> overallFeatureSet = new HashSet<>();
+                for (FeatureManager featureManager : metadata.get(key)) {
+                    overallFeatureSet.addAll(featureManager.featureSet);
+                }
+                Set<FeatureType> featureTypeSet = new HashSet<>();
+                for (Feature feature : overallFeatureSet) {
+                    featureTypeSet.addAll(feature.getFeatureTypes());
+                }
+                List<String> featureTypeVector = new ArrayList<>();
+                for (AtomicFeature atomicFeature : atomicFeatures) {
+                    featureTypeVector.add(featureTypeSet.contains(atomicFeature) ? "1" : "0");
+                }
+                for (RepairFeature repairFeature : repairFeatures) {
+                    featureTypeVector.add(featureTypeSet.contains(repairFeature) ? "1" : "0");
+                }
+                for (ValueFeature valueFeature : valueFeatures) {
+                    featureTypeVector.add(featureTypeSet.contains(valueFeature) ? "1" : "0");
+                }
+                entry.add(key);
+                entry.addAll(featureTypeVector);
+                csvPrinter.printRecord(entry);
+            }
+            csvPrinter.flush();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     class FeatureManager {
@@ -50,7 +93,6 @@ public interface FeatureStruct {
 
         public boolean containFeatureType(FeatureType featureType) {
             for (Feature feature : featureSet) {
-//                System.out.println(util);
                 if (feature.containFeatureType(featureType)) {
                     return true;
                 }
@@ -119,6 +161,10 @@ public interface FeatureStruct {
             return featureId;
         }
 
+        public List<FeatureType> getFeatureTypes() {
+            return featureTypes;
+        }
+
         public boolean containFeatureType(FeatureType featureType) {
             return featureTypes.contains(featureType);
         }
@@ -133,9 +179,6 @@ public interface FeatureStruct {
 
         private Set<Feature> featureSet = new HashSet<>();
         int[] featureArray = new int[FeatureType.FEATURE_SIZE];
-
-        public FeatureVector() {
-        }
 
         public FeatureVector(String string) {
             String[] substrings = string.split(" ");

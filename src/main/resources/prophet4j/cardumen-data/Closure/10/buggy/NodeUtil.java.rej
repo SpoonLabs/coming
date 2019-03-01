@@ -1,0 +1,17 @@
+***************
+*** 956,962 ****
+  	static final com.google.javascript.jscomp.NodeUtil.MayBeStringResultPredicate MAY_BE_STRING_PREDICATE = new com.google.javascript.jscomp.NodeUtil.MayBeStringResultPredicate();
+  
+  	static boolean mayBeString(com.google.javascript.rhino.Node n) {
+- 		return com.google.javascript.jscomp.NodeUtil.mayBeString(n, true);
+  	}
+  
+  
+--- 956,962 ----
+  	static final com.google.javascript.jscomp.NodeUtil.MayBeStringResultPredicate MAY_BE_STRING_PREDICATE = new com.google.javascript.jscomp.NodeUtil.MayBeStringResultPredicate();
+  
+  	static boolean mayBeString(com.google.javascript.rhino.Node n) {
++ 		return com.google.javascript.jscomp.NodeUtil.mayBeString(n, ((n.hasChildren()) && (n.getFirstChild().isCatch())));
+  	}
+  
+  

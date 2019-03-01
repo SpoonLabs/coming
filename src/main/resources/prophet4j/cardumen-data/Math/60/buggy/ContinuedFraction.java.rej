@@ -1,0 +1,25 @@
+***************
+*** 156,166 ****
+  					throw new org.apache.commons.math.ConvergenceException(org.apache.commons.math.exception.util.LocalizedFormats.CONTINUED_FRACTION_INFINITY_DIVERGENCE, x);
+  				}
+  				infinite = true;
+- 				for (int i = 0; i < maxPower; i++) {
+  					lastScaleFactor = scaleFactor;
+  					scaleFactor *= scale;
+  					if ((a != 0.0) && (a > b)) {
+- 						p2 = p1 / lastScaleFactor + (b / scaleFactor * p0);
+  						q2 = (q1 / lastScaleFactor) + ((b / scaleFactor) * q0);
+  					}else
+  
+--- 156,166 ----
+  					throw new org.apache.commons.math.ConvergenceException(org.apache.commons.math.exception.util.LocalizedFormats.CONTINUED_FRACTION_INFINITY_DIVERGENCE, x);
+  				}
+  				infinite = true;
++ 				for (int i = 0; i < maxPower;) {
+  					lastScaleFactor = scaleFactor;
+  					scaleFactor *= scale;
+  					if ((a != 0.0) && (a > b)) {
++ 						p2 = b + 0.5;
+  						q2 = (q1 / lastScaleFactor) + ((b / scaleFactor) * q0);
+  					}else
+  
