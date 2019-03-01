@@ -72,6 +72,7 @@ public class Demo {
      */
     private final String CARDUMEN_DATA_DIR = "src/main/resources/prophet4j/cardumen-data/";
     private final String CARDUMEN_TEST_DIR = "src/main/resources/prophet4j/cardumen-test/";
+    private final String CARDUMEN_CSV_DIR = "src/main/resources/prophet4j/cardumen-csv/";
     private final String CARDUMEN_VECTORS_DIR = "src/main/resources/prophet4j/cardumen-vectors/";
     private final String SIVA_FILES_DIR = "src/main/resources/prophet4j/siva-files/";
     private final String SIVA_UNPACKED_DIR = "src/main/resources/prophet4j/siva-unpacked/";
@@ -326,33 +327,33 @@ public class Demo {
 //        FileUtils.deleteDirectory(repoDir.getParentFile());
     }
 
-    private Map<File, List<File>> loadCardumenData() throws NullPointerException {
-        Map<File, List<File>> catalogs = new LinkedHashMap<>();
+    private Map<String, Map<File, List<File>>> loadCardumenData() throws NullPointerException {
+        Map<String, Map<File, List<File>>> catalogs = new HashMap<>();
         // CARDUMEN_DATA_DIR CARDUMEN_TEST_DIR
-        for (File typeFile : new File(CARDUMEN_DATA_DIR).listFiles()) {
-            if (typeFile.getName().startsWith(".")) continue;
-            for (File numFile : typeFile.listFiles()) {
-                if (numFile.getName().startsWith(".")) continue;
+        for (File typeFile : new File(CARDUMEN_DATA_DIR).listFiles((dir, name) -> !name.startsWith("."))) {
+            for (File numFile : typeFile.listFiles((dir, name) -> !name.startsWith("."))) {
+                String pathName = typeFile.getName() + numFile.getName();
+                if (!catalogs.containsKey(pathName)) {
+                    catalogs.put(pathName, new LinkedHashMap<>());
+                }
+                Map<File, List<File>> catalog = catalogs.get(pathName);
                 File[] buggyFiles = null;
                 File[] patchedFiles = null;
-                for (File dataFile : numFile.listFiles()) {
-                    if (dataFile.getName().startsWith(".")) continue;
+                for (File dataFile : numFile.listFiles((dir, name) -> !name.startsWith("."))) {
                     if (dataFile.getName().contains("buggy")) {
-                        buggyFiles = dataFile.listFiles();
+                        buggyFiles = dataFile.listFiles((dir, name) -> !name.startsWith("."));
                     } else if (dataFile.getName().contains("patched")) {
-                        patchedFiles = dataFile.listFiles();
+                        patchedFiles = dataFile.listFiles((dir, name) -> !name.startsWith("."));
                     }
                 }
                 List<File> keys = new ArrayList<>();
                 List<File> values = new ArrayList<>();
                 for (File buggyFile : buggyFiles) {
-                    if (buggyFile.getName().startsWith(".")) continue;
                     if (buggyFile.getName().endsWith(".java")) {
                         keys.add(buggyFile);
                     }
                 }
                 for (File patchedFile : patchedFiles) {
-                    if (patchedFile.getName().startsWith(".")) continue;
                     FilenameFilter filter = (dir, name) -> name.endsWith(".java");
                     values.addAll(Arrays.asList(patchedFile.listFiles(filter)));
                 }
@@ -361,10 +362,10 @@ public class Demo {
                     for (File value : values) {
                         String valueName = value.getName();
                         if (keyName.equals(valueName)) {
-                            if (!catalogs.containsKey(key)) {
-                                catalogs.put(key, new ArrayList<>());
+                            if (!catalog.containsKey(key)) {
+                                catalog.put(key, new ArrayList<>());
                             }
-                            catalogs.get(key).add(value);
+                            catalog.get(key).add(value);
                         }
                     }
                 }
@@ -375,72 +376,78 @@ public class Demo {
 
     // patches: kth-tcs/overfitting-analysis(/data/Training/patched_cardumen/)
     private void handleData() throws NullPointerException {
-        Map<File, List<File>> catalogs = loadCardumenData();
-        CodeDiffer codeDiffer = new CodeDiffer(true);
-
-        int progressAll = catalogs.size(), progressNow = 0;
         List<String> filePaths = new ArrayList<>();
-        for (File oldFile : catalogs.keySet()) {
-            for (File newFile : catalogs.get(oldFile)) {
-                try {
-                    String vectorFilePath = CARDUMEN_VECTORS_DIR + oldFile.getName() + "/" + newFile.getParentFile().getName();
-                    System.out.println(vectorFilePath);
-                    File vectorFile = new File(vectorFilePath);
-                    if (!vectorFile.exists()) {
-                        List<FeatureManager> featureManagers = codeDiffer.func4Demo(oldFile, newFile);
-                        if (featureManagers.size() == 0) {
-                            // diff.commonAncestor() returns null value
-                            continue;
+        CodeDiffer codeDiffer = new CodeDiffer(true);
+        Map<String, Map<File, List<File>>> catalogs = loadCardumenData();
+        for (String pathName : catalogs.keySet()) {
+            int progressAll = catalogs.size(), progressNow = 0;
+            Map<File, List<File>> catalog = catalogs.get(pathName);
+            for (File oldFile : catalog.keySet()) {
+                for (File newFile : catalog.get(oldFile)) {
+                    try {
+                        String vectorFilePath = CARDUMEN_VECTORS_DIR + oldFile.getName() + "/" + newFile.getParentFile().getName();
+                        System.out.println(vectorFilePath);
+                        File vectorFile = new File(vectorFilePath);
+                        if (!vectorFile.exists()) {
+                            List<FeatureManager> featureManagers = codeDiffer.func4Demo(oldFile, newFile);
+                            if (featureManagers.size() == 0) {
+                                // diff.commonAncestor() returns null value
+                                continue;
+                            }
+                            FeatureStruct.save(vectorFile, featureManagers);
                         }
-                        FeatureStruct.save(vectorFile, featureManagers);
+                        filePaths.add(vectorFilePath);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
-                    filePaths.add(vectorFilePath);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
                 }
+                progressNow += 1;
+                System.out.println(pathName + " : " + progressNow + " / " + progressAll);
             }
-            progressNow += 1;
-            System.out.println(progressNow + " / " + progressAll);
         }
         new FeatureLearner().func4Demo(filePaths);
     }
 
     // patches: kth-tcs/overfitting-analysis(/data/Training/patched_cardumen/)
     private void generateCSV() throws NullPointerException {
-        Map<File, List<File>> catalogs = loadCardumenData();
+        // if only one large csv file is needed, we could just combine all generated ones
         CodeDiffer codeDiffer = new CodeDiffer(false);
-
-        int progressAll = catalogs.size(), progressNow = 0;
-        Map<String, List<FeatureManager>> metadata = new LinkedHashMap<>();
-        for (File oldFile : catalogs.keySet()) {
-            for (File newFile : catalogs.get(oldFile)) {
-                try {
-                    String buggyFileName = oldFile.getName(); // xxx.java
-                    String patchedFileName = newFile.getParentFile().getName(); // patchX
-                    File tmpFile = oldFile.getParentFile().getParentFile();
-                    String numFileName = tmpFile.getName(); // X
-                    tmpFile = tmpFile.getParentFile();
-                    String typeFileName = tmpFile.getName(); // xxx
-                    String entryName = typeFileName + numFileName + "-" + buggyFileName + "-" + patchedFileName;
-                    System.out.print(entryName);
-                    List<FeatureManager> featureManagers = codeDiffer.func4Demo(oldFile, newFile);
-                    if (featureManagers.size() == 0) {
-                        // diff.commonAncestor() returns null value
-                        System.out.println("patched file in patched_cardumen/ does not match patch file in cardumen/");
+        Map<String, Map<File, List<File>>> catalogs = loadCardumenData();
+        for (String pathName : catalogs.keySet()) {
+            Map<String, List<FeatureManager>> metadata = new LinkedHashMap<>();
+            Map<File, List<File>> catalog = catalogs.get(pathName);
+            int progressAll = catalog.size(), progressNow = 0;
+            String csvFileName = CARDUMEN_CSV_DIR + pathName + ".csv";
+            File csvFile = new File(csvFileName);
+            if (!csvFile.exists()) {
+                for (File oldFile : catalog.keySet()) {
+                    for (File newFile : catalog.get(oldFile)) {
+                        try {
+                            String buggyFileName = oldFile.getName(); // xxx.java
+                            String patchedFileName = newFile.getParentFile().getName(); // patchX
+                            String entryName = pathName + "-" + buggyFileName + "-" + patchedFileName;
+                            System.out.print(entryName);
+                            List<FeatureManager> featureManagers = codeDiffer.func4Demo(oldFile, newFile);
+                            if (featureManagers.size() == 0) {
+                                // diff.commonAncestor() returns null value
+                                System.out.println("patched file in patched_cardumen/ does not match patch file in cardumen/");
+                            }
+                            metadata.put(entryName, featureManagers);
+                            System.out.println("\tokay");
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
-                    metadata.put(entryName, featureManagers);
-                    System.out.println("\tokay");
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                    progressNow += 1;
+                    System.out.println(pathName + " : " + progressNow + " / " + progressAll);
                 }
+                // generate csv file
+                FeatureStruct.generateCSV(csvFileName, metadata);
+                System.out.println("csv generated");
+            } else {
+                System.out.println("csv existed");
             }
-            progressNow += 1;
-            System.out.println(progressNow + " / " + progressAll);
         }
-        // generate csv file
-        String csvFileName = "src/main/resources/prophet4j/cardumen.csv";
-        FeatureStruct.generateCSV(csvFileName, metadata);
-        System.out.println("csv generated");
     }
 
     public static void main(String[] args) {
@@ -456,7 +463,6 @@ public class Demo {
             e.printStackTrace();
         }
     }
-    // Spoon>=7.2.0 fixed one bug of gumtree-spoon-ast-diff so i upgraded both to latest versions
     // todo: run featureLearner.java on HeYE's patches
     // todo: draw graphs on 1k commits for Martin
     // todo: the plan for integrating Coming and Prophet4J

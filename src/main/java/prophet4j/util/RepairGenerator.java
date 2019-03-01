@@ -254,23 +254,18 @@ public class RepairGenerator {
 
     public Repair genHumanRepair() {
         Repair repair = new Repair();
-
         repair.kind = null; // related to RepairFeature
         repair.oldRExpr = null; // related to ValueFeature
         repair.newRExpr = null; // related to ValueFeature
 
         // todo: more checks
-        // based on matchCandidateWithHumanFix(), repair.kind should have one RepairFeature
+        // based on matchCandidateWithHumanFix()
 //        System.out.println("------------");
 //        System.out.println(diffEntry.type);
-        CtElement srcCommonAncestor = diffEntry.srcNode;
-        if (srcCommonAncestor instanceof CtStatementList) {
-            srcCommonAncestor = diffEntry.srcNode.getParent();
-        }
-        CtElement dstCommonAncestor = diffEntry.dstNode;
-        if (dstCommonAncestor instanceof CtStatementList) {
-            dstCommonAncestor = diffEntry.dstNode.getParent();
-        }
+//        System.out.println(diffEntry.srcNode);
+//        System.out.println(diffEntry.dstNode);
+        CtElement srcNode = diffEntry.srcNode;
+        CtElement dstNode = diffEntry.dstNode;
         switch (diffEntry.type) {
             case DeleteAction: // kind
                 // GuardKind: // INSERT_GUARD_RF
@@ -279,7 +274,7 @@ public class RepairGenerator {
             case InsertAction: // kind
                 // IfExitKind: // INSERT_CONTROL_RF
                 // AddAndReplaceKind: // INSERT_STMT_RF
-                if (dstCommonAncestor instanceof CtIf) {
+                if (dstNode instanceof CtIf) {
                     repair.kind = RepairCandidateKind.IfExitKind;
                 } else {
                     repair.kind = RepairCandidateKind.AddAndReplaceKind;
@@ -296,17 +291,17 @@ public class RepairGenerator {
                 // ReplaceKind: // REPLACE_STMT_RF
                 // ReplaceStringKind: // REPLACE_STMT_RF
                 CtIf IF2;
-                if (dstCommonAncestor instanceof CtIf) {
-                    IF2 = (CtIf) dstCommonAncestor;
+                if (dstNode instanceof CtIf) {
+                    IF2 = (CtIf) dstNode;
                 } else {
-                    IF2 = dstCommonAncestor.getParent(new TypeFilter<>(CtIf.class));
+                    IF2 = dstNode.getParent(new TypeFilter<>(CtIf.class));
                 }
                 if (IF2 != null) {
                     CtIf IF1;
-                    if (srcCommonAncestor instanceof CtIf) {
-                        IF1 = (CtIf) srcCommonAncestor;
+                    if (srcNode instanceof CtIf) {
+                        IF1 = (CtIf) srcNode;
                     } else {
-                        IF1 = srcCommonAncestor.getParent(new TypeFilter<>(CtIf.class));
+                        IF1 = srcNode.getParent(new TypeFilter<>(CtIf.class));
                     }
                     if (IF1 != null) {
                         // make sure repair.kind would be assigned one value
@@ -330,17 +325,14 @@ public class RepairGenerator {
                         }
                     }
                 } else {
-                    // in both cases, oldRExpr is not null
-                    repair.oldRExpr = diffEntry.srcNode;
                     if (diffEntry.srcNode instanceof CtLiteral) {
-                        // in this case, oldRExpr seems meaningless as newRExpr is null
                         repair.kind = RepairCandidateKind.ReplaceStringKind;
                     } else {
-                        // in this case, newRExpr is not null either
-                        repair.newRExpr = diffEntry.dstNode;
                         repair.kind = RepairCandidateKind.ReplaceKind;
                     }
                 }
+                repair.oldRExpr = diffEntry.srcNode;
+                repair.newRExpr = diffEntry.dstNode;
                 // compare with others in genRepairCandidates()
                 repair.actions.add(new RepairAction(RepairActionKind.ReplaceMutationKind, diffEntry.srcNode, diffEntry.dstNode));
                 break;

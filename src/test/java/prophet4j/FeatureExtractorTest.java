@@ -191,7 +191,7 @@ public class FeatureExtractorTest {
                     assertEquals(Boolean.TRUE, check(helper.func4Test(str0, str1), checkFeatureType));
                     break;
                 case STMT_ASSIGN_AF:
-                    str0 = "class Foo{public void bar(){\nint a=1;\na=1;\n}}";
+                    str0 = "class Foo{public void bar(){\nint a=1;\n}}";
                     str1 = "class Foo{public void bar(){\nint a=1;\na=0;\n}}";
                     assertEquals(Boolean.TRUE, check(helper.func4Test(str0, str1), checkFeatureType));
                     break;
@@ -201,8 +201,8 @@ public class FeatureExtractorTest {
                     assertEquals(Boolean.TRUE, check(helper.func4Test(str0, str1), checkFeatureType));
                     break;
                 case STMT_COND_AF:
-                    str0 = "class Foo{public void bar(){\nboolean a=true;\nif(a){}\n}}";
-                    str1 = "class Foo{public void bar(){\nboolean a=true;\nif(!a){}\n}}";
+                    str0 = "class Foo{public void bar(){\nboolean a=true;\n}}";
+                    str1 = "class Foo{public void bar(){\nboolean a=true;\nif(a){}\n}}";
                     assertEquals(Boolean.TRUE, check(helper.func4Test(str0, str1), checkFeatureType));
                     break;
                 case STMT_CONTROL_AF:
