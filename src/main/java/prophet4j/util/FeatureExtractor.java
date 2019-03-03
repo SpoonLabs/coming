@@ -80,20 +80,11 @@ public class FeatureExtractor {
                 repairFeatures.add(RepairFeature.REPLACE_STMT_RF);
                 break;
         }
-//        System.out.println("----getRepairTypes----");
-//        System.out.println(repairFeatures);
         return repairFeatures;
     }
 
     private EnumSet<ValueFeature> getValueFeature(final String valueStr, final Repair repair, Map<String, CtElement> valueExprInfo) {
         EnumSet<ValueFeature> valueFeatures = EnumSet.noneOf(ValueFeature.class);
-//        System.out.println("@@@@@@");
-//        System.out.println(v_str);
-//        System.out.println(repair.kind);
-//        System.out.println(repair.oldRExpr);
-//        System.out.println(repair.newRExpr);
-//        System.out.println(repair.getCandidateAtoms());
-        CtElement element = repair.actions.get(0).dstElem;
         if (repair.oldRExpr != null && repair.newRExpr != null) {
             String oldStr = repair.oldRExpr.toString();
             String newStr = repair.newRExpr.toString();
@@ -106,6 +97,7 @@ public class FeatureExtractor {
                         valueFeatures.add(ValueFeature.MODIFIED_SIMILAR_VF);
             }
         }
+        CtElement element = repair.actions.get(0).dstElem;
         CtMethod FD = element.getParent(new TypeFilter<>(CtMethod.class));
         if (FD != null) {
             for (Object it: FD.getParameters()) {
@@ -121,9 +113,6 @@ public class FeatureExtractor {
         assert(valueExprInfo.containsKey(valueStr));
 //        CtStatement E = stripParenAndCast(valueExprInfo.get(v_str));
         CtElement E = valueExprInfo.get(valueStr);
-//        System.out.println("<" + E + ">");
-//        System.out.println(E instanceof CtInvocation);
-//        System.out.println(E instanceof CtMethod);
         if (E instanceof CtVariableAccess || E instanceof CtArrayAccess || E instanceof CtLocalVariable) {
             if (E instanceof CtLocalVariable) {
                 valueFeatures.add(ValueFeature.LOCAL_VARIABLE_VF);
@@ -222,8 +211,6 @@ public class FeatureExtractor {
         FeatureVisitor FEV = new FeatureVisitor(valueExprInfo);
         FEV.traverseRepair(repair, atom);
         resv = FEV.getFeatureResult();
-//        System.out.println("!resv!");
-//        System.out.println(resv.map);
         List<CtElement> loc_stmts = getImmediateFollowStmts(repair);
         List<CtElement> loc1_stmts = new ArrayList<>();
         List<CtElement> loc2_stmts = new ArrayList<>();
@@ -235,24 +222,18 @@ public class FeatureExtractor {
             FEV = new FeatureVisitor(valueExprInfo);
             FEV.traverseStmt(it);
             ValueToFeatureMapTy resM = FEV.getFeatureResult();
-//            System.out.println("!resM!");
-//            System.out.println(resM.map);
             orMap(resv_loc, resM);
         }
         for (CtElement it : loc1_stmts) {
             FEV = new FeatureVisitor(valueExprInfo);
             FEV.traverseStmt(it);
             ValueToFeatureMapTy resM = FEV.getFeatureResult();
-//            System.out.println("!resM-1!");
-//            System.out.println(resM.map);
             orMap(resv_loc1, resM);
         }
         for (CtElement it : loc2_stmts) {
             FEV = new FeatureVisitor(valueExprInfo);
             FEV.traverseStmt(it);
             ValueToFeatureMapTy resM = FEV.getFeatureResult();
-//            System.out.println("!resM-2!");
-//            System.out.println(resM.map);
             orMap(resv_loc2, resM);
         }
 
@@ -349,7 +330,6 @@ public class FeatureExtractor {
             }
         }
 
-//        System.out.println(">>>>>>");
         // ValueCrossFeatureNum = AtomFeatureNum * ValueFeatureNum      = 360
         for (String key : resv.map.keySet()) {
             Set<AtomicFeature> atomicFeatures = resv.map.get(key);
@@ -364,65 +344,6 @@ public class FeatureExtractor {
                 }
             }
         }
-//        System.out.println("<<<<<<");
-//        System.out.println(featureManager);
-
-//        // GlobalFeatureNum     = 3 * AtomFeatureNum * RepairFeatureNum = 450
-//        System.out.println("GlobalFeature");
-//        for (int index = Math.max(0, pivot - 3); index < Math.min(pivot + 4, srcStmtList.size()); index++) {
-//            // s in Feature Extraction Algorithm
-//            CtElement focusedStmt = srcStmtList.get(index);
-//            FeatureType position = index < pivot ? Position.POS_P : (index > pivot ? Position.POS_N : Position.POS_C);
-//            // StmtKind should be one subset of AtomicFeature
-//            for (FeatureType atomicKind : getAtomicKinds(null, focusedStmt, operation instanceof UpdateOperation)) {
-//                for (FeatureType repairType : repairKinds) {
-//                    // POS_AF_RF_JT
-//                    List<FeatureType> globalFeatures = new ArrayList<>();
-//                    globalFeatures.add(position);
-//                    globalFeatures.add(atomicKind);
-//                    globalFeatures.add(repairType);
-//                    featureManager.addFeature(new Feature(JointType.POS_AF_RF_JT, globalFeatures));
-//                }
-//            }
-//        }
-//
-//        if (pivot < dstStmtList.size()) { // handle DELETE action
-//            // n in Feature Extraction Algorithm
-//            CtElement patchedStmt = dstStmtList.get(pivot);
-//            // VarCrossFeatureNum   = 3 * AtomFeatureNum * AtomFeatureNum   = 2700
-//            System.out.println("VarCrossFeature + ValueCrossFeature");
-//            for (CtElement atom : getAtoms(patchedStmt)) {
-//                EnumSet<AtomicFeature> dstAtomicFeatures = getAtomicKinds(atom, patchedStmt, operation instanceof UpdateOperation);
-//                for (int index = Math.max(0, pivot - 3); index < Math.min(pivot + 4, srcStmtList.size()); index++) {
-//                    CtElement focusedStmt = srcStmtList.get(index);
-//                    EnumSet<AtomicFeature> srcAtomicFeatures = getAtomicKinds(atom, focusedStmt, operation instanceof UpdateOperation);
-//                    FeatureType position = index < pivot ? Position.POS_P : (index > pivot ? Position.POS_N : Position.POS_C);
-//                    for (FeatureType dstAtomicKind : dstAtomicFeatures) {
-//                        for (FeatureType srcAtomicKind : srcAtomicFeatures) {
-//                            // POS_AF_AF_JT
-//                            List<FeatureType> varCrossFeatures = new ArrayList<>();
-//                            varCrossFeatures.add(position);
-//                            varCrossFeatures.add(srcAtomicKind);
-//                            varCrossFeatures.add(dstAtomicKind);
-//                            featureManager.addFeature(new Feature(JointType.POS_AF_AF_JT, varCrossFeatures));
-//                        }
-//                    }
-//                }
-//                // ValueCrossFeatureNum = AtomFeatureNum * ValueFeatureNum      = 360
-//                // this is not mentioned at prophet paper but implemented in prophet code
-//                if (pivot < srcStmtList.size()) { // handle DELETE action
-//                    for (AtomicFeature atomicFeature : dstAtomicFeatures) {
-//                        for (FeatureType valueKind : getValueKinds(atomicFeature, srcStmtList.get(pivot), patchedStmt)) {
-//                            // AF_VF_JT
-//                            List<FeatureType> valueCrossFeature = new ArrayList<>();
-//                            valueCrossFeature.add(atomicFeature);
-//                            valueCrossFeature.add(valueKind);
-//                            featureManager.addFeature(new Feature(JointType.AF_VF_JT, valueCrossFeature));
-//                        }
-//                    }
-//                }
-//            }
-//        }
         return featureManager;
     }
 

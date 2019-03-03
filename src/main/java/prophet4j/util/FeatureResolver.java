@@ -79,14 +79,12 @@ public class FeatureResolver {
             @Override
             public <T> void visitCtVariableRead(CtVariableRead<T> variableRead) {
                 super.visitCtVariableRead(variableRead);
-//                System.out.println("R:" + variableRead.toString());
                 atoms.add(variableRead);
             }
 
             @Override
             public <T> void visitCtVariableWrite(CtVariableWrite<T> variableWrite) {
                 super.visitCtVariableWrite(variableWrite);
-//                System.out.println("W:" + variableWrite.toString());
                 atoms.add(variableWrite);
             }
 
@@ -97,9 +95,6 @@ public class FeatureResolver {
             }
         };
         scanner.scan(element);
-
-//        System.out.println("----getAtoms----");
-//        System.out.println(atoms);
         return atoms;
     }
 
@@ -467,9 +462,6 @@ public class FeatureResolver {
 //        } else if (atomicFeatures.contains(AtomicFeature.STMT_ASSIGN_AF)) {
 //            atomicFeatures.remove(AtomicFeature.STMT_CALL_AF);
 //        }
-
-//        System.out.println("----getAtomicKinds----");
-//        System.out.println(atomicFeatures);
         return atomicFeatures;
     }
 
@@ -562,9 +554,6 @@ public class FeatureResolver {
             // move or some unknown cases
 //            repairFeatures.add(RepairFeature.UNKNOWN_STMT_RF);
         }
-
-//        System.out.println("----getRepairTypes----");
-//        System.out.println(repairFeatures);
         return repairFeatures;
     }
 
@@ -657,9 +646,6 @@ public class FeatureResolver {
 //            ret.insert(ModifiedVF);
 //            ret.insert(StringLiteralVF);
 //        }
-
-//        System.out.println("----getValueKinds----");
-//        System.out.println(valueFeatures);
         return valueFeatures;
     }
 
@@ -730,10 +716,6 @@ public class FeatureResolver {
         CtElement dstAncestor = dstStmtList.get(0);
         dstStmtList = getStmtList(dstAncestor);
         int pivot = getPivot(srcStmtList, dstStmtList);
-//        System.out.println(pivot);
-//        System.out.println(srcStmtList);
-//        System.out.println(dstStmtList);
-//        System.out.println(diff.getRootOperations());
 
         FeatureManager featureManager = new FeatureManager();
         for (Operation operation : diff.getRootOperations()) {
@@ -747,7 +729,6 @@ public class FeatureResolver {
                 featureManager.addFeature(new Feature(JointType.RF_JT, repairFeatures));
             }
             // GlobalFeatureNum     = 3 * AtomFeatureNum * RepairFeatureNum = 450
-//            System.out.println("GlobalFeature");
             for (int index = Math.max(0, pivot - 3); index < Math.min(pivot + 4, srcStmtList.size()); index++) {
                 // s in Feature Extraction Algorithm
                 CtElement focusedStmt = srcStmtList.get(index);
@@ -768,7 +749,6 @@ public class FeatureResolver {
                 // n in Feature Extraction Algorithm
                 CtElement patchedStmt = dstStmtList.get(pivot);
                 // VarCrossFeatureNum   = 3 * AtomFeatureNum * AtomFeatureNum   = 2700
-//                System.out.println("VarCrossFeature + ValueCrossFeature");
                 for (CtElement atom : getAtoms(patchedStmt)) {
                     EnumSet<AtomicFeature> dstAtomicFeatures = getAtomicKinds(atom, patchedStmt, operation instanceof UpdateOperation);
                     for (int index = Math.max(0, pivot - 3); index < Math.min(pivot + 4, srcStmtList.size()); index++) {
@@ -858,8 +838,8 @@ public class FeatureResolver {
 //
 //            return target.getPosition() != null && stst.getParent() != null
 //                    && target.getPosition().getSourceStart() > stst.getPosition().getSourceStart();
-//        } catch (Exception e) {
-//            // e.printStackTrace();
+//        } catch (Exception ex) {
+//            // ex.printStackTrace();
 //        }
 //        return false;
 //

@@ -37,7 +37,6 @@ public class FeatureVisitor {
     }
 
     private void putValueFeature(CtElement v, AtomicFeature af) {
-//        System.out.println("??"+v+">>"+af);
         if (v == null) {
             if (!res.map.containsKey("")) {
                 res.map.put("", new HashSet<>());
@@ -73,11 +72,6 @@ public class FeatureVisitor {
         }
         assert(repair.actions.size() > 0);
         isReplace = (repair.actions.get(0).kind == RepairActionKind.ReplaceMutationKind);
-//        System.out.println("repair.actions.get(0)");
-//        System.out.println(repair.actions.get(0).srcElem);
-//        System.out.println(repair.actions.get(0).dstElem);
-//        System.out.println(repair.actions.get(0).kind);
-//        System.out.println(isReplace);
         // no meanings todo: check
 //        if (repair.kind == RepairCandidateKind.TightenConditionKind ||
 //                repair.kind == RepairCandidateKind.LoosenConditionKind ||
@@ -91,17 +85,11 @@ public class FeatureVisitor {
 //            }
 //        }
 //        else {
-//            System.out.println("travelRC~");
             traverseStmt(repair.actions.get(0).dstElem);
 //        }
     }
 
     public void traverseStmt(CtElement S) {
-//        System.out.println("V-0");
-//        System.out.println(S);
-//        System.out.println(S instanceof CtExpression);
-//        System.out.println(S instanceof CtStatement);
-//        System.out.println(S instanceof CtInvocation);
 //        putStmtType(null, S);
         CtScanner scanner = new CtScanner() {
             @Override
@@ -141,8 +129,6 @@ public class FeatureVisitor {
             public <T> void visitCtInvocation(CtInvocation<T> invocation) { // VisitCallExpr
                 super.visitCtInvocation(invocation);
                 CtElement callee = invocation.getExecutable();
-//                System.out.println("^^^^^^^^^^^^^^^^^^^^^^^");
-//                System.out.println(callee);
                 putValueFeature(callee, AtomicFeature.CALLEE_AF);
                 for (CtExpression it : invocation.getArguments()) {
                     putValueFeature(it, AtomicFeature.CALL_ARGUMENT_AF);
@@ -301,9 +287,6 @@ public class FeatureVisitor {
     public ValueToFeatureMapTy getFeatureResult() {
         // FIXME: Going to filter out some messy stuff in NULL stmtTypeFeature
         // We just want one type to dominate here
-//        System.out.println(">>>>>>>>");
-//        System.out.println(res.map);
-//        System.out.println("<<<<<<<<");
 //        if (res.map.containsKey("")) {
 //            Set<AtomicFeature> tmp = res.map.get("");
 //            if (tmp.contains(AtomicFeature.STMT_LOOP_AF)) {

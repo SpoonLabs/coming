@@ -20,6 +20,7 @@ import prophet4j.meta.FeatureType.RepairFeature;
 import prophet4j.meta.FeatureType.ValueFeature;
 
 public interface FeatureStruct {
+    // the first one is for human patch, others are for candidate patches
     static List<FeatureVector> load(File vectorFile) throws IOException {
         List<FeatureVector> featureVectors = new ArrayList<>();
         String string = FileUtils.readFileToString(vectorFile, Charset.defaultCharset());
@@ -27,16 +28,25 @@ public interface FeatureStruct {
         while (stringTokenizer.hasMoreTokens()) {
             featureVectors.add(new FeatureVector(stringTokenizer.nextToken()));
         }
+        // we deduplicate FeatureVectors as they should have no positive effect
+        // we make sure the first one is for human patch by using LinkedHashSet
+        Set<FeatureVector> linkedHashSet = new LinkedHashSet<>(featureVectors.size());
+        linkedHashSet.addAll(featureVectors);
+        featureVectors.clear();
+        featureVectors.addAll(linkedHashSet);
+        // todo: I need to ensure featureVectors.size() always larger than 1
         return featureVectors;
     }
 
     static void save(File vectorFile, List<FeatureManager> featureManagers) throws IOException {
-        StringJoiner stringJoiner = new StringJoiner(" ", "", "\n");
+        StringJoiner stringJoiner = new StringJoiner("\n");
         for (FeatureManager featureManager : featureManagers) {
+            StringJoiner subStringJoiner = new StringJoiner(" ");
             FeatureVector featureVector = featureManager.getFeatureVector();
             for (int featureId : featureVector.featureArray) {
-                stringJoiner.add(String.valueOf(featureId));
+                subStringJoiner.add(String.valueOf(featureId));
             }
+            stringJoiner.add(subStringJoiner.toString());
         }
         FileUtils.writeStringToFile(vectorFile, stringJoiner.toString(), Charset.defaultCharset(), true);
     }
@@ -115,6 +125,37 @@ public interface FeatureStruct {
         private Integer featureId;
         private List<FeatureType> featureTypes;
 
+        public Feature(Integer featureId) {
+            this.featureId = featureId;
+            this.featureTypes = new ArrayList<>();
+            if (featureId >= FeatureType.FEATURE_BASE_3) {
+                int tmp = featureId - FeatureType.FEATURE_BASE_3;
+                int ordinal0 = tmp / FeatureType.VF_SIZE;
+                int ordinal1 = tmp % FeatureType.VF_SIZE;
+                featureTypes.add(AtomicFeature.values()[ordinal0]);
+                featureTypes.add(ValueFeature.values()[ordinal1]);
+            } else if (featureId >= FeatureType.FEATURE_BASE_2) {
+                int tmp = featureId - FeatureType.FEATURE_BASE_2;
+                int ordinal0 = tmp / (FeatureType.AF_SIZE * FeatureType.AF_SIZE);
+                int ordinal1 = (tmp % (FeatureType.AF_SIZE * FeatureType.AF_SIZE)) / FeatureType.AF_SIZE;
+                int ordinal2 = (tmp % (FeatureType.AF_SIZE * FeatureType.AF_SIZE)) % FeatureType.AF_SIZE;
+                featureTypes.add(Position.values()[ordinal0]);
+                featureTypes.add(AtomicFeature.values()[ordinal1]);
+                featureTypes.add(AtomicFeature.values()[ordinal2]);
+            } else if (featureId >= FeatureType.FEATURE_BASE_1) {
+                int tmp = featureId - FeatureType.FEATURE_BASE_1;
+                int ordinal0 = tmp / (FeatureType.AF_SIZE * FeatureType.RF_SIZE);
+                int ordinal1 = (tmp % (FeatureType.AF_SIZE * FeatureType.RF_SIZE)) / FeatureType.RF_SIZE;
+                int ordinal2 = (tmp % (FeatureType.AF_SIZE * FeatureType.RF_SIZE)) % FeatureType.RF_SIZE;
+                featureTypes.add(Position.values()[ordinal0]);
+                featureTypes.add(AtomicFeature.values()[ordinal1]);
+                featureTypes.add(RepairFeature.values()[ordinal2]);
+            } else if (featureId >= FeatureType.FEATURE_BASE_0) {
+                int ordinal0 = featureId - FeatureType.FEATURE_BASE_0;
+                featureTypes.add(RepairFeature.values()[ordinal0]);
+            }
+        }
+
         public Feature(JointType jointType, List<FeatureType> featureTypes) {
             int ordinal0, ordinal1, ordinal2;
 
@@ -180,11 +221,15 @@ public interface FeatureStruct {
         private Set<Feature> featureSet = new HashSet<>();
         int[] featureArray = new int[FeatureType.FEATURE_SIZE];
 
-        public FeatureVector(String string) {
+        FeatureVector(String string) {
             String[] substrings = string.split(" ");
             assert substrings.length == FeatureType.FEATURE_SIZE;
             for (int i = 0; i < FeatureType.FEATURE_SIZE; i++) {
-                featureArray[i] = Integer.valueOf(substrings[i]);
+                int value = Integer.valueOf(substrings[i]);
+                featureArray[i] = value;
+                if (value == 1) {
+                    featureSet.add(new Feature(i));
+                }
             }
         }
 
@@ -196,7 +241,6 @@ public interface FeatureStruct {
         }
 
         public Set<Feature> getFeatures() {
-            // only valid when constructed by FeatureVector(Set<Feature> featureSet)
             return featureSet;
         }
 
@@ -244,11 +288,48 @@ public interface FeatureStruct {
             }
             return res;
         }
+
+        public void read(File vectorFile) {
+            try {
+                List<Double> parameterList = new ArrayList<>();
+                String string = FileUtils.readFileToString(vectorFile, Charset.defaultCharset());
+                StringTokenizer stringTokenizer = new StringTokenizer(string, " ");
+                while (stringTokenizer.hasMoreTokens()) {
+                    parameterList.add(Double.valueOf(stringTokenizer.nextToken()));
+                }
+                parameterArray = parameterList.stream().mapToDouble(Double::doubleValue).toArray();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        public void write(File vectorFile) {
+            try {
+                StringJoiner stringJoiner = new StringJoiner(" ");
+                for (double parameter : parameterArray) {
+                    stringJoiner.add(String.valueOf(parameter));
+                }
+                FileUtils.writeStringToFile(vectorFile, stringJoiner.toString(), Charset.defaultCharset(), true);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 
     class Sample { // namely TrainingCase
-        // the first one is for human patch, others are for candidate patches
-        public List<FeatureVector> featureVectors = new ArrayList<>();
+        private String filePath;
+        public Sample(String filePath) {
+            this.filePath = filePath;
+        }
+        // avoid java.lang.OutOfMemoryError: GC overhead limit exceeded
+        public List<FeatureVector> getFeatureVectors() {
+            try {
+                return FeatureStruct.load(new File(filePath));
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            return new ArrayList<>();
+        }
     }
 
     class ValueToFeatureMapTy { // ValueToFeatureMapTy

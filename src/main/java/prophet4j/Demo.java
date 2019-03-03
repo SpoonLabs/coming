@@ -70,14 +70,17 @@ public class Demo {
       "10fb9656a916d1c0ff57c28d7dcbfcb5bd313278.siva"
     ]
      */
-    private final String CARDUMEN_DATA_DIR = "src/main/resources/prophet4j/cardumen-data/";
-    private final String CARDUMEN_TEST_DIR = "src/main/resources/prophet4j/cardumen-test/";
-    private final String CARDUMEN_CSV_DIR = "src/main/resources/prophet4j/cardumen-csv/";
-    private final String CARDUMEN_VECTORS_DIR = "src/main/resources/prophet4j/cardumen-vectors/";
-    private final String SIVA_FILES_DIR = "src/main/resources/prophet4j/siva-files/";
-    private final String SIVA_UNPACKED_DIR = "src/main/resources/prophet4j/siva-unpacked/";
-    private final String SIVA_COMMITS_DIR = "src/main/resources/prophet4j/siva-commits/";
-    private final String SIVA_VECTORS_DIR = "src/main/resources/prophet4j/siva-vectors/";
+    private final String PROPHET4J_DIR = "src/main/resources/prophet4j/";
+    private final String CARDUMEN_DATA_DIR = PROPHET4J_DIR + "cardumen-data/";
+    private final String CARDUMEN_TEST_DIR = PROPHET4J_DIR + "cardumen-test/";
+    private final String CARDUMEN_CSV_DIR = PROPHET4J_DIR + "cardumen-csv/";
+    private final String CARDUMEN_VECTORS_DIR = PROPHET4J_DIR + "cardumen-vectors/";
+    private final String CARDUMEN_PARAMETERS_DIR = PROPHET4J_DIR + "cardumen-parameters/";
+    private final String SIVA_FILES_DIR = PROPHET4J_DIR + "siva-files/";
+    private final String SIVA_UNPACKED_DIR = PROPHET4J_DIR + "siva-unpacked/";
+    private final String SIVA_COMMITS_DIR = PROPHET4J_DIR + "siva-commits/";
+    private final String SIVA_VECTORS_DIR = PROPHET4J_DIR + "siva-vectors/";
+    private final String SIVA_PARAMETERS_DIR = PROPHET4J_DIR + "siva-parameters/";
     private static final Logger logger = LogManager.getLogger(Demo.class.getName());
 
     private void unpack() {
@@ -286,7 +289,7 @@ public class Demo {
             }
             lastCommit = commit;
             countCommits++;
-            // remove 3 lines below to genRepairCandidates on all commits (around 10k commits)
+            // remove 3 lines below to obtainRepairCandidates on all commits (around 10k commits)
             if (countCommits >= 10) {
                 break;
             }
@@ -322,7 +325,7 @@ public class Demo {
                 ex.printStackTrace();
             }
         }
-        new FeatureLearner().func4Demo(filePaths);
+        new FeatureLearner().func4Demo(filePaths, SIVA_PARAMETERS_DIR + "PV");
         // clean up here to not keep using more and more disk-space for these samples
 //        FileUtils.deleteDirectory(repoDir.getParentFile());
     }
@@ -380,8 +383,8 @@ public class Demo {
         CodeDiffer codeDiffer = new CodeDiffer(true);
         Map<String, Map<File, List<File>>> catalogs = loadCardumenData();
         for (String pathName : catalogs.keySet()) {
-            int progressAll = catalogs.size(), progressNow = 0;
             Map<File, List<File>> catalog = catalogs.get(pathName);
+            int progressAll = catalog.size(), progressNow = 0;
             for (File oldFile : catalog.keySet()) {
                 for (File newFile : catalog.get(oldFile)) {
                     try {
@@ -405,7 +408,7 @@ public class Demo {
                 System.out.println(pathName + " : " + progressNow + " / " + progressAll);
             }
         }
-        new FeatureLearner().func4Demo(filePaths);
+        new FeatureLearner().func4Demo(filePaths, CARDUMEN_PARAMETERS_DIR + "PV");
     }
 
     // patches: kth-tcs/overfitting-analysis(/data/Training/patched_cardumen/)
@@ -456,14 +459,14 @@ public class Demo {
             // real commits from Git files (how to filter out functional changes from revision changes?)
 //             demo.handleCommits();
             // handle ideal patches such as patches from kth-tcs/overfitting-analysis
-//            demo.handleData();
+            demo.handleData();
             // generate .csv files for HeYE
-            demo.generateCSV();
-        } catch (Exception e) {
-            e.printStackTrace();
+//            demo.generateCSV();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
-    // todo: run featureLearner.java on HeYE's patches
+    // todo: distinguish functionality changes from revision changes?
     // todo: draw graphs on 1k commits for Martin
     // todo: the plan for integrating Coming and Prophet4J
     /*

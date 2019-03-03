@@ -1,7 +1,6 @@
 package prophet4j.util;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,7 +9,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import prophet4j.meta.FeatureStruct;
 import prophet4j.meta.FeatureStruct.Feature;
 import prophet4j.meta.FeatureStruct.FeatureVector;
 import prophet4j.meta.FeatureStruct.ParameterVector;
@@ -35,20 +33,22 @@ public class FeatureLearner {
         ParameterVector thetaBest = new ParameterVector();
 
         int count = 0;
+//        while (count < 20) {
         while (count < 200) {
             ParameterVector delta = new ParameterVector();
             // training set
             for (Sample sample: trainingSet) {
-                double[] tmp = new double[sample.featureVectors.size()];
-                for (int i = 0; i < sample.featureVectors.size(); i++) {
-                    tmp[i] = Math.exp(theta.dotProduct(sample.featureVectors.get(i)));
+                List<FeatureVector> featureVectors = sample.getFeatureVectors();
+                double[] tmp = new double[featureVectors.size()];
+                for (int i = 0; i < featureVectors.size(); i++) {
+                    tmp[i] = Math.exp(theta.dotProduct(featureVectors.get(i)));
                 }
                 double sumExp = Arrays.stream(tmp).sum();
-                for (int i = 0; i < sample.featureVectors.size(); i++) {
+                for (int i = 0; i < featureVectors.size(); i++) {
                     tmp[i] /= sumExp;
                 }
-                for (int i = 0; i < sample.featureVectors.size(); i++) {
-                    FeatureVector featureVector = sample.featureVectors.get(i);
+                for (int i = 0; i < featureVectors.size(); i++) {
+                    FeatureVector featureVector = featureVectors.get(i);
                     for (Feature feature: featureVector.getFeatures()) {
                         int featureId = feature.getFeatureId();
                         delta.set(featureId, delta.get(featureId) + tmp[i]);
@@ -66,17 +66,18 @@ public class FeatureLearner {
             // validation set
             double gamma = 0;
             for (Sample sample: validationSet) {
+                List<FeatureVector> featureVectors = sample.getFeatureVectors();
                 // here tmp means values of phi dotProduct theta
-                double[] tmp = new double[sample.featureVectors.size()];
-                for (int i = 0; i < sample.featureVectors.size(); i++)
-                    tmp[i] = theta.dotProduct(sample.featureVectors.get(i));
+                double[] tmp = new double[featureVectors.size()];
+                for (int i = 0; i < featureVectors.size(); i++)
+                    tmp[i] = theta.dotProduct(featureVectors.get(i));
                 int rank = 0;
-                // fixme: to make sure the first one corresponds to the human-patch
-                for (int i = 1; i < sample.featureVectors.size(); i++) {
+                // the first one corresponds to the human-patch
+                for (int i = 1; i < featureVectors.size(); i++) {
                     if (tmp[i] >= tmp[0])
                         rank++;
                 }
-                gamma += ((double) rank) / sample.featureVectors.size() / validationSet.size();
+                gamma += ((double) rank) / featureVectors.size() / validationSet.size();
             }
             // update results
             count += 1;
@@ -94,18 +95,10 @@ public class FeatureLearner {
         return thetaBest;
     }
 
-    public void func4Demo(List<String> filePaths) {
-        try {
-            for (String filePath : filePaths) {
-                File file = new File(filePath);
-                logger.log(Level.INFO, "Processing file " + filePath);
-                // check this initialization
-                Sample sample = new Sample();
-                sample.featureVectors = FeatureStruct.load(file);
-                sampleSet.add(sample);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void func4Demo(List<String> filePaths, String vectorFilePath) {
+        for (String filePath : filePaths) {
+            logger.log(Level.INFO, "Processing file " + filePath);
+            sampleSet.add(new Sample(filePath));
         }
 
         logger.log(Level.INFO, "Size of Features: " + FeatureType.FEATURE_SIZE);
@@ -116,7 +109,6 @@ public class FeatureLearner {
 
         trainingSet.clear();
         validationSet.clear();
-        // split validation
         int k = sampleSet.size() / sizeValidationSet;
         for (int i = 0; i < sampleSet.size(); i++)
             if (i % k == 0)
@@ -127,6 +119,8 @@ public class FeatureLearner {
         logger.log(Level.INFO, "Size of Training-Set: " + trainingSet.size());
         logger.log(Level.INFO, "Size of Validation-Set: " + validationSet.size());
 
-        modelMaximumEntropy();
+        modelMaximumEntropy().write(new File(vectorFilePath));
     }
+
+    // todo: create one method to score patch utilizing ParameterVector
 }
