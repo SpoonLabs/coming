@@ -104,23 +104,19 @@ public class CodeDiffer {
                 // as RepairGenerator receive diffEntry as parameter, we do not need ErrorLocalizer
                 RepairGenerator generator = new RepairGenerator(diffEntry);
                 // human repair (at index 0)
-                repairs.add(generator.genHumanRepair());
-//                System.out.println(repairs.size());
+                repairs.add(generator.obtainHumanRepair());
                 if (forLearner) {
                     // repair candidates (at indexes after 0)
-                    repairs.addAll(generator.genRepairCandidates());
+                    repairs.addAll(generator.obtainRepairCandidates());
                 }
-//                System.out.println(repairs.size());
                 for (Repair repair: repairs) {
                     assert(repair.actions.size() > 0);
                     for (CtElement atom : repair.getCandidateAtoms()) {
-//                        System.out.println("********");
-//                        System.out.println(atom);
                         featureManagers.add(featureExtractor.extractFeature(repair, atom));
                     }
                 }
             }
-        } catch (IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException ex) {
             logger.log(Level.WARN, "diff.commonAncestor() returns null value");
         }
         return featureManagers;
@@ -129,9 +125,6 @@ public class CodeDiffer {
     public List<FeatureManager> func4Demo(File file0, File file1) throws Exception {
         AstComparator comparator = new AstComparator();
         Diff diff = comparator.compare(file0, file1);
-//        System.out.println(diff.getRootOperations());
-//        System.out.println(diff.commonAncestor());
-//        System.out.println("========");
         return genFeatureManagers(diff);
     }
 
@@ -139,9 +132,6 @@ public class CodeDiffer {
     public List<FeatureManager> func4Test(String str0, String str1) {
         AstComparator comparator = new AstComparator();
         Diff diff = comparator.compare(str0, str1);
-//        System.out.println(diff.getRootOperations());
-//        System.out.println(diff.commonAncestor());
-//        System.out.println("========");
         return genFeatureManagers(diff);
     }
 }

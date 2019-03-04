@@ -91,8 +91,8 @@ public class RepairAnalyzer {
     }
 
     class AtomReplaceVisitor { // this class could be reduced as one method
-        Set<CtElement> res;
-        Map<CtElement, HashMap.SimpleEntry<CtElement, CtElement>> resRExpr;
+        Set<CtElement> res = new HashSet<>();
+        Map<CtElement, HashMap.SimpleEntry<CtElement, CtElement>> resRExpr = new HashMap<>();
 
         // we implement one equivalent method instead of CtScanner
         void TraverseStmt(CtElement element) {
@@ -109,7 +109,7 @@ public class RepairAnalyzer {
             for (CtBinaryOperator binaryOperator : binaryOperators) {
                 CtExpression RHS = binaryOperator.getRightHandOperand();
                 if (RHS instanceof CtLiteral || RHS instanceof CtVariableAccess) {
-                    if (((CtVariableAccess) RHS).getClass().getGenericSuperclass().equals(Integer.class)) {
+                    if (RHS.getClass().getGenericSuperclass().equals(Integer.class)) {
                         List<CtElement> exprs = getCandidateConstantInType(element, Integer.class);
                         for (CtElement expr : exprs) {
                             res.add(expr);
@@ -146,7 +146,7 @@ public class RepairAnalyzer {
         List<CtInvocation> invocations = ownedMethod.getElements(new TypeFilter<>(CtInvocation.class));
 
         for (CtInvocation invocation : invocations) {
-            if (CE.getLabel().equals(invocation.getLabel())) {
+            if (CE == invocation) {
                 continue;
             }
             if (CE.getExecutable() != invocation.getExecutable()) {

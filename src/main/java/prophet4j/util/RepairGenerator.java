@@ -70,6 +70,8 @@ public class RepairGenerator {
 
         CtIf S = n.clone();
         S.setCondition(newCondition);
+        // S is n.clone() so S is guessed owning same parent as n
+//        S.setParent(n.getParent()); // for FUNC_ARGUMENT_VF
 
         Repair repair = new Repair();
         repair.actions.clear();
@@ -91,6 +93,8 @@ public class RepairGenerator {
 
         CtIf S = n.clone();
         S.setCondition(newCondition);
+        // S is n.clone() so S is guessed owning same parent as n
+//        S.setParent(n.getParent()); // for FUNC_ARGUMENT_VF
 
         Repair repair = new Repair();
         repair.actions.clear();
@@ -110,7 +114,8 @@ public class RepairGenerator {
 
         CtIf guardIf = factory.createIf();
         guardIf.setCondition(guardCondition);
-        guardIf.setThenStatement(n);
+        guardIf.setThenStatement(n.clone()); // i guess guardIf would be n.clone()'s parent automatically
+        guardIf.setParent(n.getParent()); // for FUNC_ARGUMENT_VF
 
         Repair repair = new Repair();
         repair.actions.clear();
@@ -126,9 +131,14 @@ public class RepairGenerator {
         placeholder.setValue(true); // consider the placeholder, should this be more concrete?
         Repair repair = new Repair();
         CtMethod curFD = repairAnalyzer.getCurrentFunction(n);
-        CtReturn ctReturn = curFD.getBody().getLastStatement();
-        // i guess this condition should be valid
-        Type returnType = ctReturn.getClass().getGenericSuperclass();
+        CtStatement lastStatement = curFD.getBody().getLastStatement();
+//        CtReturn ctReturn = curFD.getBody().getLastStatement();
+//        Type returnType = ctReturn.getClass().getGenericSuperclass();
+        List<CtReturn> ctReturns = lastStatement.getElements(new TypeFilter<>(CtReturn.class));
+        Type returnType = void.class;
+        if (ctReturns.size() > 0) {
+            returnType = ctReturns.get(0).getClass().getGenericSuperclass();
+        }
         if (returnType == void.class) {
             CtLiteral<Object> returnValue = factory.createLiteral();
             returnValue.setValue(null); // is it equivalent to void ?
@@ -137,6 +147,7 @@ public class RepairGenerator {
             CtIf IFS = factory.createIf();
             IFS.setCondition(placeholder);
             IFS.setThenStatement(RS);
+            IFS.setParent(n.getParent()); // for FUNC_ARGUMENT_VF
             repair.actions.clear();
             repair.actions.add(new RepairAction(RepairActionKind.InsertMutationKind, n, IFS));
             repair.actions.add(new RepairAction(IFS, placeholder, repairAnalyzer.getCondCandidateVars(n)));
@@ -151,6 +162,7 @@ public class RepairGenerator {
                 CtIf IFS = factory.createIf();
                 IFS.setCondition(placeholder);
                 IFS.setThenStatement(RS);
+                IFS.setParent(n.getParent()); // for FUNC_ARGUMENT_VF
                 repair.actions.clear();
                 repair.actions.add(new RepairAction(RepairActionKind.InsertMutationKind, n, IFS));
                 repair.actions.add(new RepairAction(IFS, placeholder, repairAnalyzer.getCondCandidateVars(n)));
@@ -163,6 +175,7 @@ public class RepairGenerator {
             CtIf IFS = factory.createIf();
             IFS.setCondition(placeholder);
             IFS.setThenStatement(BS);
+            IFS.setParent(n.getParent()); // for FUNC_ARGUMENT_VF
             repair.actions.clear();
             repair.actions.add(new RepairAction(RepairActionKind.InsertMutationKind, n, IFS));
             repair.actions.add(new RepairAction(IFS, placeholder, repairAnalyzer.getCondCandidateVars(n)));
@@ -252,7 +265,7 @@ public class RepairGenerator {
         }
     }
 
-    public Repair genHumanRepair() {
+    public Repair obtainHumanRepair() {
         Repair repair = new Repair();
         repair.kind = null; // related to RepairFeature
         repair.oldRExpr = null; // related to ValueFeature
@@ -260,10 +273,6 @@ public class RepairGenerator {
 
         // todo: more checks
         // based on matchCandidateWithHumanFix()
-//        System.out.println("------------");
-//        System.out.println(diffEntry.type);
-//        System.out.println(diffEntry.srcNode);
-//        System.out.println(diffEntry.dstNode);
         CtElement srcNode = diffEntry.srcNode;
         CtElement dstNode = diffEntry.dstNode;
         switch (diffEntry.type) {
@@ -279,7 +288,7 @@ public class RepairGenerator {
                 } else {
                     repair.kind = RepairCandidateKind.AddAndReplaceKind;
                 }
-                // compare with others in genRepairCandidates()
+                // compare with others in obtainRepairCandidates()
                 repair.actions.add(new RepairAction(RepairActionKind.InsertMutationKind, diffEntry.srcNode, diffEntry.dstNode));
                 break;
             case ReplaceAction: // kind // oldRExpr // newRExpr
@@ -333,7 +342,7 @@ public class RepairGenerator {
                 }
                 repair.oldRExpr = diffEntry.srcNode;
                 repair.newRExpr = diffEntry.dstNode;
-                // compare with others in genRepairCandidates()
+                // compare with others in obtainRepairCandidates()
                 repair.actions.add(new RepairAction(RepairActionKind.ReplaceMutationKind, diffEntry.srcNode, diffEntry.dstNode));
                 break;
             case UnknownAction:
@@ -346,7 +355,7 @@ public class RepairGenerator {
     }
 
     // https://people.csail.mit.edu/fanl/papers/spr-fse15.pdf <3.2 Transformation Schemas> Figure 4
-    public List<Repair> genRepairCandidates() {
+    public List<Repair> obtainRepairCandidates() {
         CtScanner scanner = new CtScanner() {
 
             // https://clang.llvm.org/doxygen/classclang_1_1LabelStmt.html
