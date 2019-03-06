@@ -16,7 +16,9 @@ import prophet4j.meta.FeatureStruct.FeatureManager;
 import prophet4j.meta.RepairStruct.DiffEntry;
 import prophet4j.meta.RepairStruct.Repair;
 import prophet4j.meta.RepairType.DiffActionType;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtMethod;
 
 // based on pdiffer.cpp, ASTDiffer.cpp
 public class CodeDiffer {
@@ -59,9 +61,17 @@ public class CodeDiffer {
                 }
             }
             if (deleteOperation != null && insertOperation != null) {
-                DiffActionType type = DiffActionType.ReplaceAction;
                 CtElement srcNode = deleteOperation.getSrcNode();
                 CtElement dstNode = insertOperation.getSrcNode();
+                DiffActionType type = DiffActionType.ReplaceAction;
+//                System.out.println(srcNode);
+//                System.out.println(dstNode);
+//                System.out.println("++++++++");
+                // human rule to distinguish functionality changes from revision changes
+                if (srcNode instanceof CtClass || srcNode instanceof CtMethod ||
+                        dstNode instanceof CtClass || dstNode instanceof CtMethod) {
+                    continue;
+                }
                 diffEntries.add(new DiffEntry(type, srcNode, dstNode));
             } else {
                 for (Operation operation : operationList) {
@@ -69,11 +79,11 @@ public class CodeDiffer {
                     CtElement dstNode = operation.getDstNode();
                     DiffActionType type = DiffActionType.UnknownAction;
                     if (operation instanceof DeleteOperation) {
-                        // dstNode should be null
+                        if (srcNode == null) srcNode = dstNode;
                         if (dstNode == null) dstNode = srcNode;
                         type = DiffActionType.DeleteAction;
                     } else if (operation instanceof InsertOperation) {
-                        // dstNode should be null
+                        if (srcNode == null) srcNode = dstNode;
                         if (dstNode == null) dstNode = srcNode;
                         type = DiffActionType.InsertAction;
                     } else if (operation instanceof UpdateOperation) {
@@ -82,6 +92,14 @@ public class CodeDiffer {
                     }
                     // as we ignored all MoveOperations
                     assert type != DiffActionType.UnknownAction;
+//                    System.out.println(srcNode);
+//                    System.out.println(dstNode);
+//                    System.out.println("++++++++");
+                    // human rule to distinguish functionality changes from revision changes
+                    if (srcNode instanceof CtClass || srcNode instanceof CtMethod ||
+                            dstNode instanceof CtClass || dstNode instanceof CtMethod) {
+                        continue;
+                    }
                     diffEntries.add(new DiffEntry(type, srcNode, dstNode));
                 }
             }
@@ -110,7 +128,6 @@ public class CodeDiffer {
                     repairs.addAll(generator.obtainRepairCandidates());
                 }
                 for (Repair repair: repairs) {
-                    assert(repair.actions.size() > 0);
                     for (CtElement atom : repair.getCandidateAtoms()) {
                         featureManagers.add(featureExtractor.extractFeature(repair, atom));
                     }
@@ -118,6 +135,33 @@ public class CodeDiffer {
             }
         } catch (IndexOutOfBoundsException ex) {
             logger.log(Level.WARN, "diff.commonAncestor() returns null value");
+        }
+        return featureManagers;
+    }
+
+    // in this case we do not need to obtainRepairCandidates as they are given
+    public List<FeatureManager> func4Demo(File oldFile, List<File> newFiles) throws Exception {
+        AstComparator comparator = new AstComparator();
+        List<FeatureManager> featureManagers = new ArrayList<>();
+        for (File newFile : newFiles) { // the first one in newFiles is human patch
+            Diff diff = comparator.compare(oldFile, newFile);
+            try {
+                FeatureExtractor featureExtractor = new FeatureExtractor();
+                for (DiffEntry diffEntry : genDiffEntries(diff)) {
+                    List<Repair> repairs = new ArrayList<>();
+                    // as RepairGenerator receive diffEntry as parameter, we do not need ErrorLocalizer
+                    RepairGenerator generator = new RepairGenerator(diffEntry);
+                    repairs.add(generator.obtainHumanRepair());
+                    for (Repair repair: repairs) {
+                        assert(repair.actions.size() > 0);
+                        for (CtElement atom : repair.getCandidateAtoms()) {
+                            featureManagers.add(featureExtractor.extractFeature(repair, atom));
+                        }
+                    }
+                }
+            } catch (IndexOutOfBoundsException ex) {
+                logger.log(Level.WARN, "diff.commonAncestor() returns null value");
+            }
         }
         return featureManagers;
     }

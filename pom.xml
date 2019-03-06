@@ -99,7 +99,6 @@
 			<version>3.0.3</version>
 		</dependency>
 
-
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-csv</artifactId>
@@ -127,6 +126,12 @@
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
 			<version>1.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>27.0.1-jre</version>
 		</dependency>
 
 		<!--one alternative lib is JCommander, but not recommend Apache Commons 

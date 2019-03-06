@@ -90,6 +90,7 @@ public class FeatureExtractor {
             String newStr = repair.newRExpr.toString();
             if (valueStr.equals(newStr))
                 valueFeatures.add(ValueFeature.MODIFIED_VF);
+            // I can not figure out the meaning of MODIFIED_SIMILAR_VF
             if (oldStr.length() > 0 && newStr.length() > 0) {
                 double ratio = ((double)oldStr.length()) / newStr.length();
                 if (ratio > 0.5 && ratio < 2 && oldStr.length() > 3 && newStr.length() > 3)
@@ -98,13 +99,15 @@ public class FeatureExtractor {
             }
         }
         CtElement element = repair.actions.get(0).dstElem;
-        CtMethod FD = element.getParent(new TypeFilter<>(CtMethod.class));
-        if (FD != null) {
-            for (Object it: FD.getParameters()) {
-                if (it instanceof CtParameter) {
-                    CtParameter VD = (CtParameter) it;
-                    if (VD.getSimpleName().equals(valueStr))
-                        valueFeatures.add(ValueFeature.FUNC_ARGUMENT_VF);
+        if (element != null) {
+            CtMethod FD = element.getParent(new TypeFilter<>(CtMethod.class));
+            if (FD != null) {
+                for (Object it: FD.getParameters()) {
+                    if (it instanceof CtParameter) {
+                        CtParameter VD = (CtParameter) it;
+                        if (VD.getSimpleName().equals(valueStr))
+                            valueFeatures.add(ValueFeature.FUNC_ARGUMENT_VF);
+                    }
                 }
             }
         }
@@ -165,11 +168,13 @@ public class FeatureExtractor {
             stmtList.add(statement);
         } else {
             CtElement parent = statement.getParent();
-            List<CtStatement> tmpList = parent.getElements(new TypeFilter<>(CtStatement.class));
-            if (parent instanceof CtStatement) {
-                tmpList.remove(0);
+            if (parent != null) {
+                List<CtStatement> tmpList = parent.getElements(new TypeFilter<>(CtStatement.class));
+                if (parent instanceof CtStatement) {
+                    tmpList.remove(0);
+                }
+                stmtList.addAll(tmpList);
             }
-            stmtList.addAll(tmpList);
         }
         return stmtList;
     }
@@ -376,8 +381,9 @@ public class FeatureExtractor {
                 }
             }
             if (ElseB==null) {
-                if (srcElem.getParent() instanceof CtStatementList) {
-                    CtStatementList CS = (CtStatementList) srcElem.getParent();
+                CtElement parent = srcElem.getParent();
+                if (parent instanceof CtStatementList) {
+                    CtStatementList CS = (CtStatementList) parent;
                     boolean found = false;
                     for (CtStatement it : CS.getStatements()) {
                         if (found) {
@@ -399,8 +405,9 @@ public class FeatureExtractor {
         ret_after.clear();
         CtElement srcElem = repair.actions.get(0).srcElem;
         // Grab all compound stmt that is around the original stmt
-        if (srcElem.getParent() instanceof CtStatementList) {
-            CtStatementList CS = (CtStatementList) srcElem.getParent();
+        CtElement parent = srcElem.getParent();
+        if (parent instanceof CtStatementList) {
+            CtStatementList CS = (CtStatementList) parent;
             List<CtStatement> tmp = new ArrayList<>();
             int idx = 0;
             boolean found = false;

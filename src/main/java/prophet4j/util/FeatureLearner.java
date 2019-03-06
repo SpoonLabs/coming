@@ -3,6 +3,7 @@ package prophet4j.util;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.logging.log4j.Level;
@@ -33,7 +34,6 @@ public class FeatureLearner {
         ParameterVector thetaBest = new ParameterVector();
 
         int count = 0;
-//        while (count < 20) {
         while (count < 200) {
             ParameterVector delta = new ParameterVector();
             // training set
@@ -74,8 +74,8 @@ public class FeatureLearner {
                 int rank = 0;
                 // the first one corresponds to the human-patch
                 for (int i = 1; i < featureVectors.size(); i++) {
-                    if (tmp[i] >= tmp[0])
-                        rank++;
+//                    if (tmp[i] >= tmp[0]) rank++;
+                    if (tmp[i] > tmp[0]) rank++;
                 }
                 gamma += ((double) rank) / featureVectors.size() / validationSet.size();
             }
@@ -85,10 +85,12 @@ public class FeatureLearner {
                 thetaBest.clone(theta);
                 gammaBest = gamma;
                 count = 0;
-                logger.log(Level.INFO, "Update best!");
+                logger.log(Level.INFO, count + " Update best gamma " + gammaBest);
             } else if (alpha > 0.01) {
                 alpha *= 0.9;
-                logger.log(Level.INFO, "Drop alpha to " + alpha);
+                logger.log(Level.INFO, count + " Drop alpha to " + alpha);
+            } else {
+                logger.log(Level.INFO, count + " Keep alpha as " + alpha);
             }
         }
         logger.log(Level.INFO, "BestGamma " + gammaBest);
@@ -100,6 +102,7 @@ public class FeatureLearner {
             logger.log(Level.INFO, "Processing file " + filePath);
             sampleSet.add(new Sample(filePath));
         }
+        Collections.shuffle(sampleSet);
 
         logger.log(Level.INFO, "Size of Features: " + FeatureType.FEATURE_SIZE);
         logger.log(Level.INFO, "Size of Sample-Set: " + sampleSet.size());

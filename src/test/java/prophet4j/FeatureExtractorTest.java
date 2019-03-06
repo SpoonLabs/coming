@@ -273,8 +273,8 @@ public class FeatureExtractorTest {
                     assertEquals(Boolean.TRUE, check(helper.func4Test(str0, str1), checkFeatureType));
                     break;
                 case MODIFIED_SIMILAR_VF:
-                    str0 = "class Foo{public void bar(){\nboolean a=true;\n}}";
-                    str1 = "class Foo{public void bar(){\nboolean a=true||a;\n}}";
+                    str0 = "class Foo{public void bar(){\nboolean a=10000;\n}}";
+                    str1 = "class Foo{public void bar(){\nboolean a=10000*1;\n}}";
                     assertEquals(Boolean.TRUE, check(helper.func4Test(str0, str1), checkFeatureType));
                     break;
                 case FUNC_ARGUMENT_VF:
