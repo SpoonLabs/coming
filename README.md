@@ -42,7 +42,7 @@ mvn test
 The main class is: `fr.inria.coming.main.ComingMain`.
 
 
-####  Default Values 
+####  Parameters 
 
 
 Most of the properties are configured in file "configuration.properties"
@@ -72,6 +72,11 @@ java -classpath ./coming.jar fr.inria.coming.main.ComingMain -location  ./repogi
 
 The argument `-mode` indicates the analyzer that Coming will use.
 The value `-mode mineinstance` means to detect instances of a change pattern (in the previous example, insert a binary operator AST node).
+
+The argument `-location` indicates the location of the project to analyze. 
+By default, Coming analyzes Git projects, so the `-location`  should be the path to the cloned project. Moreover, the argument `branch` allows to specify the Git branch to analyze (by default, it analyzes  the `master` branch).
+
+
 
 The argument  `-output` is used to indicate the folder where Coming will write the results.
 
