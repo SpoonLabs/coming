@@ -8,10 +8,6 @@ import java.util.Set;
 import prophet4j.meta.RepairType.DiffActionType;
 import prophet4j.meta.RepairType.RepairActionKind;
 import prophet4j.meta.RepairType.RepairCandidateKind;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtLoop;
-import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 
 public interface RepairStruct {
@@ -24,22 +20,6 @@ public interface RepairStruct {
             this.type = type;
             this.srcNode = srcNode;
             this.dstNode = dstNode;
-            if (this.srcNode instanceof CtExpression) {
-                while (!(this.srcNode instanceof CtStatement)){
-                    CtElement parent = this.srcNode.getParent();
-                    // avoid analyzing all body of CtIf or CtLoop, caused by head expression
-                    if (parent instanceof CtIf || parent instanceof CtLoop) break;
-                    this.srcNode = parent;
-                }
-            }
-            if (this.dstNode instanceof CtExpression) {
-                while (!(this.dstNode instanceof CtStatement)){
-                    CtElement parent = this.dstNode.getParent();
-                    // avoid analyzing all body of CtIf or CtLoop, caused by head expression
-                    if (parent instanceof CtIf || parent instanceof CtLoop) break;
-                    this.dstNode = parent;
-                }
-            }
         }
     }
 

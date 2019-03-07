@@ -90,7 +90,6 @@ public class FeatureVisitor {
     }
 
     public void traverseStmt(CtElement S) {
-//        putStmtType(null, S);
         CtScanner scanner = new CtScanner() {
             @Override
             public void scan(CtElement element) { // VisitExpr
@@ -101,20 +100,8 @@ public class FeatureVisitor {
                     putValueFeature(null, AtomicFeature.STMT_LOOP_AF);
                     putValueFeature(element, AtomicFeature.STMT_LOOP_AF);
                 }
-                if (element instanceof CtAssignment) {
-                    putValueFeature(null, isReplace ? AtomicFeature.R_STMT_ASSIGN_AF : AtomicFeature.STMT_ASSIGN_AF);
-                    putValueFeature(element, isReplace ? AtomicFeature.R_STMT_ASSIGN_AF : AtomicFeature.STMT_ASSIGN_AF);
-                }
-                if (element instanceof CtInvocation) {
-                    putValueFeature(null, isReplace ? AtomicFeature.R_STMT_CALL_AF : AtomicFeature.STMT_CALL_AF);
-                    putValueFeature(element, isReplace ? AtomicFeature.R_STMT_CALL_AF : AtomicFeature.STMT_CALL_AF);
-                }
-                if (element instanceof CtIf || element instanceof CtExpression && element.getParent() instanceof CtIf) {
-                    putValueFeature(null, isReplace ? AtomicFeature.R_STMT_COND_AF : AtomicFeature.STMT_COND_AF);
-                    putValueFeature(element, isReplace ? AtomicFeature.R_STMT_COND_AF : AtomicFeature.STMT_COND_AF);
-                }
-                if (element instanceof CtCFlowBreak) {
-                    if (element instanceof CtLabelledFlowBreak) {
+                if (element instanceof CtCFlowBreak || element instanceof CtExpression && element.getParent() instanceof CtCFlowBreak) {
+                    if (element instanceof CtLabelledFlowBreak || element instanceof CtExpression && element.getParent() instanceof CtLabelledFlowBreak) {
 //                        assert !isReplace;
                         putValueFeature(null, AtomicFeature.STMT_LABEL_AF);
                         putValueFeature(element, AtomicFeature.STMT_LABEL_AF);
@@ -122,6 +109,18 @@ public class FeatureVisitor {
                         putValueFeature(null, isReplace ? AtomicFeature.R_STMT_CONTROL_AF : AtomicFeature.STMT_CONTROL_AF);
                         putValueFeature(element, isReplace ? AtomicFeature.R_STMT_CONTROL_AF : AtomicFeature.STMT_CONTROL_AF);
                     }
+                }
+                if (element instanceof CtAssignment || element instanceof CtExpression && element.getParent() instanceof CtAssignment) {
+                    putValueFeature(null, isReplace ? AtomicFeature.R_STMT_ASSIGN_AF : AtomicFeature.STMT_ASSIGN_AF);
+                    putValueFeature(element, isReplace ? AtomicFeature.R_STMT_ASSIGN_AF : AtomicFeature.STMT_ASSIGN_AF);
+                }
+                if (element instanceof CtInvocation || element instanceof CtExpression && element.getParent() instanceof CtInvocation) {
+                    putValueFeature(null, isReplace ? AtomicFeature.R_STMT_CALL_AF : AtomicFeature.STMT_CALL_AF);
+                    putValueFeature(element, isReplace ? AtomicFeature.R_STMT_CALL_AF : AtomicFeature.STMT_CALL_AF);
+                }
+                if (element instanceof CtIf || element instanceof CtExpression && element.getParent() instanceof CtIf) {
+                    putValueFeature(null, isReplace ? AtomicFeature.R_STMT_COND_AF : AtomicFeature.STMT_COND_AF);
+                    putValueFeature(element, isReplace ? AtomicFeature.R_STMT_COND_AF : AtomicFeature.STMT_COND_AF);
                 }
             }
 

@@ -130,14 +130,16 @@ public class RepairGenerator {
         CtLiteral<Boolean> placeholder = factory.createLiteral();
         placeholder.setValue(true); // consider the placeholder, should this be more concrete?
         Repair repair = new Repair();
-        CtMethod curFD = repairAnalyzer.getCurrentFunction(n);
-        CtStatement lastStatement = curFD.getBody().getLastStatement();
-//        CtReturn ctReturn = curFD.getBody().getLastStatement();
-//        Type returnType = ctReturn.getClass().getGenericSuperclass();
-        List<CtReturn> ctReturns = lastStatement.getElements(new TypeFilter<>(CtReturn.class));
         Type returnType = void.class;
-        if (ctReturns.size() > 0) {
-            returnType = ctReturns.get(0).getClass().getGenericSuperclass();
+        CtMethod curFD = repairAnalyzer.getCurrentFunction(n);
+        if (curFD != null) {
+            CtStatement lastStatement = curFD.getBody().getLastStatement();
+//            CtReturn ctReturn = curFD.getBody().getLastStatement();
+//            Type returnType = ctReturn.getClass().getGenericSuperclass();
+            List<CtReturn> ctReturns = lastStatement.getElements(new TypeFilter<>(CtReturn.class));
+            if (ctReturns.size() > 0) {
+                returnType = ctReturns.get(0).getClass().getGenericSuperclass();
+            }
         }
         if (returnType == void.class) {
             CtLiteral<Object> returnValue = factory.createLiteral();
@@ -342,6 +344,20 @@ public class RepairGenerator {
                 }
                 repair.oldRExpr = diffEntry.srcNode;
                 repair.newRExpr = diffEntry.dstNode;
+//                if (repair.oldRExpr instanceof CtExpression) {
+//                    if (!(repair.oldRExpr instanceof CtAnnotation || repair.oldRExpr instanceof CtImport)) {
+//                        while (!(repair.oldRExpr instanceof CtStatement)){
+//                            repair.oldRExpr = repair.oldRExpr.getParent();
+//                        }
+//                    }
+//                }
+//                if (repair.newRExpr instanceof CtExpression) {
+//                    if (!(repair.newRExpr instanceof CtAnnotation || repair.newRExpr instanceof CtImport)) {
+//                        while (!(repair.newRExpr instanceof CtStatement)){
+//                            repair.newRExpr = repair.newRExpr.getParent();
+//                        }
+//                    }
+//                }
                 // compare with others in obtainRepairCandidates()
                 repair.actions.add(new RepairAction(RepairActionKind.ReplaceMutationKind, diffEntry.srcNode, diffEntry.dstNode));
                 break;
@@ -437,17 +453,20 @@ public class RepairGenerator {
             locations.add(statement);
         } else {
             // "int a;" is not CtStatement?
-            List<CtElement> statements = statement.getParent().getElements(new TypeFilter<>(CtElement.class));
-            if (statement.getParent() instanceof CtStatement) {
-                statements = statements.subList(1, statements.size());
+            CtElement parent = statement.getParent();
+            if (parent != null) {
+                List<CtElement> statements = parent.getElements(new TypeFilter<>(CtElement.class));
+                if (parent instanceof CtStatement) {
+                    statements = statements.subList(1, statements.size());
+                }
+                assert statements.contains(statement);
+                int idx = statements.indexOf(statement);
+                if (idx > 0)
+                    locations.add(statements.get(idx - 1));
+                locations.add(statements.get(idx));
+                if (idx < statements.size() - 1)
+                    locations.add(statements.get(idx + 1));
             }
-            assert statements.contains(statement);
-            int idx = statements.indexOf(statement);
-            if (idx > 0)
-                locations.add(statements.get(idx - 1));
-            locations.add(statements.get(idx));
-            if (idx < statements.size() - 1)
-                locations.add(statements.get(idx + 1));
         }
         return locations;
     }

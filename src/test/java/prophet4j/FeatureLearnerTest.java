@@ -2,13 +2,34 @@ package prophet4j;
 
 import static org.junit.Assert.assertEquals;
 
+import gumtree.spoon.AstComparator;
+import gumtree.spoon.diff.Diff;
+import gumtree.spoon.diff.operations.Operation;
 import org.junit.Test;
+
+import java.io.File;
+import java.util.List;
 
 public class FeatureLearnerTest {
     @Test
     public void testFeatureLearner() {
         assertEquals(Boolean.TRUE, true);
     }
+
+    @Test
+    public void testComplexStr() throws Exception {
+        AstComparator comparator = new AstComparator();
+        File oldFile = new File("src/test/resources/prophet4j/old.java");
+        File newFile = new File("src/test/resources/prophet4j/new.java");
+        Diff diff = comparator.compare(oldFile, newFile);
+        List<Operation> operations = diff.getRootOperations();
+        for (Operation operation : operations) {
+            System.out.println(operation);
+            System.out.println("================");
+        }
+        assertEquals(Boolean.TRUE, true);
+    }
+
     /* it may be helpful to create one PR for gumtree-spoon-ast-diff
     Diff diff = comparator.compare(file0, file1);
     CtElement srcRoot = comparator.getCtType(file0).getParent();

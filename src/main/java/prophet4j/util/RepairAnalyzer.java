@@ -13,11 +13,15 @@ public class RepairAnalyzer {
         List<CtElement> ret = new ArrayList<>();
         // Global variables
         CtClass ownedClass = element.getParent(new TypeFilter<>(CtClass.class));
-        ret.addAll(ownedClass.getElements(new TypeFilter<>(CtVariableAccess.class)));
-        ret.addAll(ownedClass.getElements(new TypeFilter<>(CtArrayAccess.class)));
+        if (ownedClass != null) {
+            ret.addAll(ownedClass.getElements(new TypeFilter<>(CtVariableAccess.class)));
+            ret.addAll(ownedClass.getElements(new TypeFilter<>(CtArrayAccess.class)));
+        }
         // Local variables
         CtMethod ownedMethod = element.getParent(new TypeFilter<>(CtMethod.class));
-        ret.addAll(ownedMethod.getElements(new TypeFilter<>(CtLocalVariable.class)));
+        if (ownedMethod != null) {
+            ret.addAll(ownedMethod.getElements(new TypeFilter<>(CtLocalVariable.class)));
+        }
         return ret;
     }
 
@@ -32,14 +36,16 @@ public class RepairAnalyzer {
     public List<CtElement> getCandidateConstantInType(CtElement element, Type type) {
         List<CtElement> ret = new ArrayList<>();
         CtClass ownedClass = element.getParent(new TypeFilter<>(CtClass.class));
-        for (CtLiteral tmp : ownedClass.getElements(new TypeFilter<>(CtLiteral.class))) {
-            if (tmp.getClass().getGenericSuperclass() == type) {
-                ret.add(tmp);
+        if (ownedClass != null) {
+            for (CtLiteral tmp : ownedClass.getElements(new TypeFilter<>(CtLiteral.class))) {
+                if (tmp.getClass().getGenericSuperclass() == type) {
+                    ret.add(tmp);
+                }
             }
-        }
-        for (CtVariableAccess tmp : ownedClass.getElements(new TypeFilter<>(CtVariableAccess.class))) {
-            if (tmp.getClass().getGenericSuperclass() == type) {
-                ret.add(tmp);
+            for (CtVariableAccess tmp : ownedClass.getElements(new TypeFilter<>(CtVariableAccess.class))) {
+                if (tmp.getClass().getGenericSuperclass() == type) {
+                    ret.add(tmp);
+                }
             }
         }
         return ret;
@@ -48,14 +54,16 @@ public class RepairAnalyzer {
     public List<CtExpression> getCandidateReturnExpr(CtElement element, Type type) {
         List<CtExpression> ret = new ArrayList<>();
         CtClass ownedClass = element.getParent(new TypeFilter<>(CtClass.class));
-        for (CtLiteral tmp : ownedClass.getElements(new TypeFilter<>(CtLiteral.class))) {
-            if (tmp.getClass().getGenericSuperclass() == type) {
-                ret.add(tmp);
+        if (ownedClass != null) {
+            for (CtLiteral tmp : ownedClass.getElements(new TypeFilter<>(CtLiteral.class))) {
+                if (tmp.getClass().getGenericSuperclass() == type) {
+                    ret.add(tmp);
+                }
             }
-        }
-        for (CtVariableAccess tmp : ownedClass.getElements(new TypeFilter<>(CtVariableAccess.class))) {
-            if (tmp.getClass().getGenericSuperclass() == type) {
-                ret.add(tmp);
+            for (CtVariableAccess tmp : ownedClass.getElements(new TypeFilter<>(CtVariableAccess.class))) {
+                if (tmp.getClass().getGenericSuperclass() == type) {
+                    ret.add(tmp);
+                }
             }
         }
         return ret;
@@ -64,9 +72,11 @@ public class RepairAnalyzer {
     public List<CtElement> getCandidateLocalVars(CtElement element, Type type) {
         List<CtElement> ret = new ArrayList<>();
         CtMethod ownedMethod = element.getParent(new TypeFilter<>(CtMethod.class));
-        for (CtLocalVariable tmp : ownedMethod.getElements(new TypeFilter<>(CtLocalVariable.class))) {
-            if (tmp.getClass().getGenericSuperclass() == type) {
-                ret.add(tmp);
+        if (ownedMethod != null) {
+            for (CtLocalVariable tmp : ownedMethod.getElements(new TypeFilter<>(CtLocalVariable.class))) {
+                if (tmp.getClass().getGenericSuperclass() == type) {
+                    ret.add(tmp);
+                }
             }
         }
         return ret;
@@ -75,14 +85,18 @@ public class RepairAnalyzer {
     public Set<CtElement> getGlobalCandidateExprs(CtElement element) {
         Set<CtElement> ret = new HashSet<>();
         CtClass ownedClass = element.getParent(new TypeFilter<>(CtClass.class));
-        ret.addAll(ownedClass.getElements(new TypeFilter<>(CtExpression.class)));
+        if (ownedClass != null) {
+            ret.addAll(ownedClass.getElements(new TypeFilter<>(CtExpression.class)));
+        }
         return ret;
     }
 
     public Set<CtElement> getGlobalCandidateIfStmts(CtElement element) {
         Set<CtElement> ret = new HashSet<>();
         CtClass ownedClass = element.getParent(new TypeFilter<>(CtClass.class));
-        ret.addAll(ownedClass.getElements(new TypeFilter<>(CtIf.class)));
+        if (ownedClass != null) {
+            ret.addAll(ownedClass.getElements(new TypeFilter<>(CtIf.class)));
+        }
         return ret;
     }
 
@@ -143,19 +157,20 @@ public class RepairAnalyzer {
         List<CtInvocation> ret = new ArrayList<>();
 
         CtMethod ownedMethod = CE.getParent(new TypeFilter<>(CtMethod.class));
-        List<CtInvocation> invocations = ownedMethod.getElements(new TypeFilter<>(CtInvocation.class));
-
-        for (CtInvocation invocation : invocations) {
-            if (CE == invocation) {
-                continue;
+        if (ownedMethod != null) {
+            List<CtInvocation> invocations = ownedMethod.getElements(new TypeFilter<>(CtInvocation.class));
+            for (CtInvocation invocation : invocations) {
+                if (CE == invocation) {
+                    continue;
+                }
+                if (CE.getExecutable() != invocation.getExecutable()) {
+                    continue;
+                }
+                if (CE.getArguments().size() != invocation.getArguments().size()) {
+                    continue;
+                }
+                ret.add(invocation);
             }
-            if (CE.getExecutable() != invocation.getExecutable()) {
-                continue;
-            }
-            if (CE.getArguments().size() != invocation.getArguments().size()) {
-                continue;
-            }
-            ret.add(invocation);
         }
         return ret;
     }
