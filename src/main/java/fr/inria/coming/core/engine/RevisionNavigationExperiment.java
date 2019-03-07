@@ -21,32 +21,32 @@ import fr.inria.coming.main.ComingProperties;
  * @author Matias Martinez
  *
  */
-public abstract class RevisionNavigationExperiment<Data extends IRevision> {
+public abstract class RevisionNavigationExperiment<R extends IRevision> {
 
-	protected RevisionOrder<Data> navigationStrategy = null;
+	protected RevisionOrder<R> navigationStrategy = null;
 	protected List<Analyzer> analyzers = new ArrayList<>();
 	protected List<IFilter> filters = null;
 	protected List<IOutput> outputProcessors = new ArrayList<>();
 
-	protected Map<Data, RevisionResult> allResults = new HashMap<>();
+	protected Map<R, RevisionResult> allResults = new HashMap<>();
 
 	public RevisionNavigationExperiment() {
 	}
 
-	public RevisionNavigationExperiment(RevisionOrder<Data> navigationStrategy) {
+	public RevisionNavigationExperiment(RevisionOrder<R> navigationStrategy) {
 		super();
 		this.navigationStrategy = navigationStrategy;
 	}
 
-	public RevisionOrder<Data> getNavigationStrategy() {
+	public RevisionOrder<R> getNavigationStrategy() {
 		return navigationStrategy;
 	}
 
-	public void setNavigationStrategy(RevisionOrder<Data> navigationStrategy) {
+	public void setNavigationStrategy(RevisionOrder<R> navigationStrategy) {
 		this.navigationStrategy = navigationStrategy;
 	}
 
-	public abstract RevisionDataset<Data> loadDataset();
+	public abstract RevisionDataset<R> loadDataset();
 
 	public List<Analyzer> getAnalyzers() {
 		return this.analyzers;
@@ -57,7 +57,7 @@ public abstract class RevisionNavigationExperiment<Data extends IRevision> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void processEndRevision(Data element, RevisionResult resultAllAnalyzed) {
+	public void processEndRevision(R element, RevisionResult resultAllAnalyzed) {
 
 		if (ComingProperties.getPropertyBoolean("save_result_revision_analysis")) {
 			allResults.put(element, resultAllAnalyzed);
@@ -96,25 +96,25 @@ public abstract class RevisionNavigationExperiment<Data extends IRevision> {
 
 		int size = data.size();
 
-		for (Iterator<Data> iterator = it; iterator.hasNext();) {
+		for (Iterator<R> iterator = it; iterator.hasNext();) {
 
-			Data element = iterator.next();
+			R oneRevision = iterator.next();
 
 			System.out.println("\n***********\nAnalyzing " + i + "/" + size);
-			if (!accept(element)) {
+			if (!accept(oneRevision)) {
 				continue;
 			}
 
-			RevisionResult resultAllAnalyzed = new RevisionResult();
+			RevisionResult resultAllAnalyzed = new RevisionResult(oneRevision);
 			for (Analyzer analyzer : analyzers) {
 
-				AnalysisResult resultAnalyzer = analyzer.analyze(element, resultAllAnalyzed);
+				AnalysisResult resultAnalyzer = analyzer.analyze(oneRevision, resultAllAnalyzed);
 				resultAllAnalyzed.put(analyzer.getClass().getSimpleName(), resultAnalyzer);
 				if (resultAnalyzer == null || !resultAnalyzer.sucessful())
 					break;
 			}
 
-			processEndRevision(element, resultAllAnalyzed);
+			processEndRevision(oneRevision, resultAllAnalyzed);
 
 			i++;
 			if (i > ComingProperties.getPropertyInteger("maxrevision"))
@@ -124,7 +124,7 @@ public abstract class RevisionNavigationExperiment<Data extends IRevision> {
 		return processEnd();
 	}
 
-	protected boolean accept(Data element) {
+	protected boolean accept(R element) {
 		if (this.getFilters() == null)
 			return true;
 
