@@ -1,5 +1,7 @@
 # Prophet4J
 
+Besides original feature-set, we have one extended version.
+
 Prophet
 ----
 
