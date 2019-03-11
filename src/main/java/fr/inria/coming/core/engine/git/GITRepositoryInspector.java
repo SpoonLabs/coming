@@ -21,7 +21,7 @@ import fr.inria.coming.main.ComingProperties;
  */
 public class GITRepositoryInspector extends RevisionNavigationExperiment<Commit> {
 
-	Logger log = Logger.getLogger(GITRepositoryInspector.class.getName());
+	protected Logger log = Logger.getLogger(GITRepositoryInspector.class.getName());
 
 	RevisionDataset<Commit> history = null;
 
