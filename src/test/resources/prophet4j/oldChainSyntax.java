@@ -36,7 +36,6 @@ public class ConfigurationBuilderTest {
 
     private String string = buffer
             .append("a")
-            .append("c")
-            .toString();
+            .append("c");
 
 }
