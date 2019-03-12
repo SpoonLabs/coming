@@ -151,7 +151,11 @@ public class ComingMain {
 		}
 
 		if (cmd.hasOption("parameters")) {
-			String[] pars = cmd.getOptionValue("parameters").split(File.pathSeparator);
+			String[] pars = cmd.getOptionValue("parameters").split(":");
+			if (pars.length % 2 != 0){
+				throw new RuntimeException("The number of input parameters must be even.");
+			}
+
 			for (int i = 0; i < pars.length; i = i + 2) {
 				String key = pars[i];
 				String value = pars[i + 1];
@@ -204,7 +208,7 @@ public class ComingMain {
 
 	private void loadModelAnalyzers(String modes) {
 
-		String[] modesp = modes.split(File.pathSeparator);
+		String[] modesp = modes.split(":");
 
 		for (String mode : modesp) {
 
@@ -254,7 +258,7 @@ public class ComingMain {
 	}
 
 	private void loadOutputProcessors(String output) {
-		String[] outputs = output.split(File.pathSeparator);
+		String[] outputs = output.split(":");
 
 		for (String singlefoutput : outputs) {
 			try {
@@ -294,7 +298,7 @@ public class ComingMain {
 		if (filterProperty == null || filterProperty.isEmpty())
 			return filters;
 
-		String[] filter = filterProperty.split(File.pathSeparator);
+		String[] filter = filterProperty.split(":");
 
 		for (String singlefilter : filter) {
 

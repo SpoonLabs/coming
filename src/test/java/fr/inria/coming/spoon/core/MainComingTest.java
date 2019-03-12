@@ -444,7 +444,7 @@ public class MainComingTest {
 		ComingMain cm = new ComingMain();
 		Object result = cm.run(new String[] { "-location", "repogit4testv0",
 
-				"-mode", MyTestAnalyzer.class.getName() + File.pathSeparator + HunkDifftAnalyzer.class.getName(),
+				"-mode", MyTestAnalyzer.class.getName() + ":" + HunkDifftAnalyzer.class.getName(),
 				"-parameters", "maxrevision:0" });
 
 		assertEquals(2, cm.getExperiment().getAnalyzers().size());
