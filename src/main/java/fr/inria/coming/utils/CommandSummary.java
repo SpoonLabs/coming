@@ -55,7 +55,7 @@ public class CommandSummary {
 	public void append(String k, String v) {
 		if (this.command.containsKey(k)) {
 			String vold = this.command.get(k);
-			this.command.put(k, vold + File.pathSeparator + v);
+			this.command.put(k, vold + ":" + v);
 		} else {
 			this.command.put(k, v);
 		}
