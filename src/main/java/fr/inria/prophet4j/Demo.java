@@ -1,9 +1,9 @@
 package fr.inria.prophet4j;
 
 import fr.inria.prophet4j.defined.Structure.FeatureOption;
-import fr.inria.prophet4j.dataset.Cardumen;
-import fr.inria.prophet4j.dataset.PGA;
-import fr.inria.prophet4j.dataset.SANER;
+import fr.inria.prophet4j.utility.dataport.Cardumen;
+//import fr.inria.prophet4j.utility.dataport.PGA;
+//import fr.inria.prophet4j.utility.dataport.SANER;
 
 public class Demo {
     public static void main(String[] args) {
@@ -17,7 +17,27 @@ public class Demo {
             // real commits from Git files (how to filter out functional changes from revision changes?)
 //            new PGA().handleCommits(doShuffle, featureOption);
             // handle diff files from monperrus/bug-fixes-saner16
-            new SANER().handleData(doShuffle, featureOption);
+//            new SANER().handleData(doShuffle, featureOption);
+
+            // improve 1 features & 3 learner algorithm
+            // baseline (original)
+            //
+            //
+            // baseline (extended)
+            //
+            //
+            new Cardumen().handleData(doShuffle, FeatureOption.ORIGINAL);
+            new Cardumen().handleData(doShuffle, FeatureOption.EXTENDED);
+
+            // improve 2 candidates patches generator
+            // baseline (original)
+            //
+            //
+            // baseline (extended)
+            //
+            //
+//            new SANER().handleData(doShuffle, FeatureOption.ORIGINAL);
+//            new SANER().handleData(doShuffle, FeatureOption.EXTENDED);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

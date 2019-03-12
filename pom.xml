@@ -130,11 +130,9 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>27.0.1-jre</version>
+			<version>27.1-jre</version>
 		</dependency>
 
-		<!--this is used to read and unpack siva files from Public Git Archive -->
-		<!--if it is outdated then turn to use go-siva which is mainly maintained -->
 		<dependency>
 			<groupId>tech.sourced</groupId>
 			<artifactId>siva-java</artifactId>

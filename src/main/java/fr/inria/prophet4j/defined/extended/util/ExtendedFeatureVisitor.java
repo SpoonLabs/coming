@@ -1,12 +1,12 @@
-package fr.inria.prophet4j.utility.original.util;
+package fr.inria.prophet4j.defined.extended.util;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
-import fr.inria.prophet4j.defined.original.OriginalFeature.AtomicFeature;
-import fr.inria.prophet4j.defined.Structure.RepairActionKind;
+import fr.inria.prophet4j.defined.extended.ExtendedFeature.AtomicFeature;
 import fr.inria.prophet4j.defined.Structure.Repair;
-import fr.inria.prophet4j.defined.Structure.Value2FeatureMap4Original;
 
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssignment;
@@ -26,23 +26,21 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.CtScanner;
 
 // based on FeatureExtract.cpp todo: what is the difference between CtXXX and CtXXXReference?
-public class OriginalFeatureVisitor {
-//        typedef std::multimap<unsigned int, unsigned int> HelperMapTy;
-//        HelperMapTy binOpHelper, uOpHelper, caOpHelper;
-    Value2FeatureMap4Original res = new Value2FeatureMap4Original();
+public class ExtendedFeatureVisitor {
     boolean isReplace = false;
     Map<String, CtElement> valueExprInfo;
+    Map<String, Set<AtomicFeature>> resMap = new HashMap<>();
 
-    public OriginalFeatureVisitor(Map<String, CtElement> valueExprInfo) {
+    public ExtendedFeatureVisitor(Map<String, CtElement> valueExprInfo) {
         this.valueExprInfo = valueExprInfo;
     }
 
     private void putValueFeature(CtElement v, AtomicFeature af) {
         if (v == null) {
-            if (!res.map.containsKey("")) {
-                res.map.put("", new HashSet<>());
+            if (!resMap.containsKey("@")) {
+                resMap.put("@", new HashSet<>());
             }
-            res.map.get("").add(af);
+            resMap.get("@").add(af);
         }
         else {
 //            CtExpression e = stripParenAndCast(v);
@@ -56,28 +54,27 @@ public class OriginalFeatureVisitor {
 //            if (v.getElements(new TypeFilter<>(CtInvocation.class)).size() > 0 && !isAbstractStub(v)) {
 //                return;
 //            }
-            if (!res.map.containsKey(tmp)) {
-                res.map.put(tmp, new HashSet<>());
+            if (!resMap.containsKey(tmp)) {
+                resMap.put(tmp, new HashSet<>());
             }
-            res.map.get(tmp).add(af);
+            resMap.get(tmp).add(af);
             if (!valueExprInfo.containsKey(tmp)) {
                 valueExprInfo.put(tmp, v);
             }
         }
     }
 
-    public void traverseRepair(Repair repair, CtElement atom) { // traverseRC
+    public Map<String, Set<AtomicFeature>> traverseRepair(Repair repair, CtElement atom) { // traverseRC
         if (atom != null) {
             // for the return value of getCandidateAtoms() when null is not its only element
             putValueFeature(atom, AtomicFeature.ABST_V_AF);
         }
-        assert(repair.actions.size() > 0);
-        isReplace = (repair.actions.get(0).kind == RepairActionKind.ReplaceMutationKind);
-        // no meanings todo: check
-//        if (repair.kind == RepairCandidateKind.TightenConditionKind ||
-//                repair.kind == RepairCandidateKind.LoosenConditionKind ||
-//                repair.kind == RepairCandidateKind.GuardKind ||
-//                repair.kind == RepairCandidateKind.SpecialGuardKind) {
+        isReplace = repair.isReplace;
+        // meaningless todo: check
+//        if (repair.kind == RepairKind.TightenConditionKind ||
+//                repair.kind == RepairKind.LoosenConditionKind ||
+//                repair.kind == RepairKind.GuardKind ||
+//                repair.kind == RepairKind.SpecialGuardKind) {
 //            if (repair.actions.get(0).dstElem instanceof CtIf) {
 //                CtIf IFS = (CtIf) repair.actions.get(0).dstElem;
 //                putValueFeature(null, AtomicFeature.R_STMT_COND_AF);
@@ -86,11 +83,11 @@ public class OriginalFeatureVisitor {
 //            }
 //        }
 //        else {
-            traverseStmt(repair.actions.get(0).dstElem);
+        return traverseStmt(repair.dstElem);
 //        }
     }
 
-    public void traverseStmt(CtElement S) {
+    public Map<String, Set<AtomicFeature>> traverseStmt(CtElement S) {
         CtScanner scanner = new CtScanner() {
             @Override
             public void scan(CtElement element) { // VisitExpr
@@ -281,14 +278,15 @@ public class OriginalFeatureVisitor {
             }
         };
         scanner.scan(S);
+        return getFeatureResult();
     }
 
     // i really do not know why we need to remove some atomic features
-    public Value2FeatureMap4Original getFeatureResult() {
+    private Map<String, Set<AtomicFeature>> getFeatureResult() {
         // FIXME: Going to filter out some messy stuff in NULL stmtTypeFeature
         // We just want one type to dominate here
-//        if (res.map.containsKey("")) {
-//            Set<AtomicFeature> tmp = res.map.get("");
+//        if (res.map.containsKey("@")) {
+//            Set<AtomicFeature> tmp = res.map.get("@");
 //            if (tmp.contains(AtomicFeature.STMT_LOOP_AF)) {
 //                tmp.remove(AtomicFeature.STMT_COND_AF);
 //                tmp.remove(AtomicFeature.STMT_ASSIGN_AF);
@@ -315,7 +313,6 @@ public class OriginalFeatureVisitor {
 //                tmp.remove(AtomicFeature.STMT_CALL_AF);
 //            }
 //        }
-        return res;
+        return resMap;
     }
 }
-

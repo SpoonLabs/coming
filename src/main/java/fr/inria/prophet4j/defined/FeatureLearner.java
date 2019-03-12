@@ -1,4 +1,4 @@
-package fr.inria.prophet4j.utility;
+package fr.inria.prophet4j.defined;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ public class FeatureLearner {
             ParameterVector delta = new ParameterVector(featureOption);
             // training set
             for (Sample sample: trainingSet) {
-                List<FeatureVector> featureVectors = sample.getFeatureVectors();
+                List<FeatureVector> featureVectors = sample.loadFeatureVectors();
                 double[] tmp = new double[featureVectors.size()];
                 for (int i = 0; i < featureVectors.size(); i++) {
                     tmp[i] = Math.exp(theta.dotProduct(featureVectors.get(i)));
@@ -71,7 +71,7 @@ public class FeatureLearner {
             // validation set
             double gamma = 0;
             for (Sample sample: validationSet) {
-                List<FeatureVector> featureVectors = sample.getFeatureVectors();
+                List<FeatureVector> featureVectors = sample.loadFeatureVectors();
                 // here tmp means values of phi dotProduct theta
                 double[] tmp = new double[featureVectors.size()];
                 for (int i = 0; i < featureVectors.size(); i++)
@@ -128,6 +128,6 @@ public class FeatureLearner {
         logger.log(Level.INFO, "Size of Training-Set: " + trainingSet.size());
         logger.log(Level.INFO, "Size of Validation-Set: " + validationSet.size());
 
-        modelMaximumEntropy().write(new File(vectorFilePath));
+        modelMaximumEntropy().save(new File(vectorFilePath));
     }
 }

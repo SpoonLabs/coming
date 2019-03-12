@@ -1,4 +1,4 @@
-package fr.inria.prophet4j.dataset;
+package fr.inria.prophet4j.utility.dataport;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.Level;
@@ -21,11 +21,11 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
-import fr.inria.prophet4j.defined.Structure;
 import fr.inria.prophet4j.defined.Structure.FeatureOption;
-import fr.inria.prophet4j.defined.Structure.FeatureManager;
-import fr.inria.prophet4j.utility.CodeDiffer;
-import fr.inria.prophet4j.utility.FeatureLearner;
+import fr.inria.prophet4j.defined.Structure.FeatureVector;
+import fr.inria.prophet4j.defined.Structure.Sample;
+import fr.inria.prophet4j.defined.CodeDiffer;
+import fr.inria.prophet4j.defined.FeatureLearner;
 import tech.sourced.siva.IndexEntry;
 import tech.sourced.siva.SivaReader;
 
@@ -100,8 +100,7 @@ public class PGA {
         }
     }
 
-    private DiffEntry diffFile(Repository repo, String oldCommit,
-                               String newCommit, String path) throws IOException, GitAPIException {
+    private DiffEntry diffFile(Repository repo, String oldCommit, String newCommit, String path) throws IOException, GitAPIException {
 //        Config config = new Config();
 //        config.setBoolean("diff", null, "renames", true);
 //        DiffConfig diffConfig = config.get(DiffConfig.KEY);
@@ -255,7 +254,7 @@ public class PGA {
             unpack();
         }
         int progressAll, progressNow = 0;
-        // prepare the whole dataset-set
+        // prepare the whole dataport-set
         List<Differ> differs = new ArrayList<>();
         File repoDir = new File(SIVA_UNPACKED_DIR);
         // now open the resulting repository with a FileRepositoryBuilder
@@ -284,7 +283,7 @@ public class PGA {
                     obtainDiff(repository, lastCommit, commitDiffer.getPaths(lastCommit.getName()));
                     obtainDiff(repository, commit, commitDiffer.getPaths(commit.getName()));
                 }
-                // add dataset into the whole dataset-set
+                // add dataport into the whole dataport-set
                 differs.addAll(commitDiffer.differs);
                 countDiffers += commitDiffer.differs.size();
             }
@@ -311,14 +310,13 @@ public class PGA {
                 System.out.println("================");
                 System.out.println(differ.vectorFilePath);
                 if (!vectorFile.exists()) {
-                    List<FeatureManager> featureManagers = codeDiffer.func4Demo(new File(differ.oldFilePath), new File(differ.newFilePath));
-                    if (featureManagers.size() == 0) {
+                    List<FeatureVector> featureVectors = codeDiffer.func4Demo(new File(differ.oldFilePath), new File(differ.newFilePath));
+                    if (featureVectors.size() == 0) {
                         // diff.commonAncestor() returns null value
                         progressNow += 1;
                         continue;
                     }
-                    // todo
-                    Structure.save(vectorFile, featureManagers);
+                    new Sample(vectorFile.getPath()).saveFeatureVectors(featureVectors);
                 }
                 filePaths.add(differ.vectorFilePath);
                 progressNow += 1;
@@ -327,7 +325,7 @@ public class PGA {
                 ex.printStackTrace();
             }
         }
-        new FeatureLearner(doShuffle, featureOption).func4Demo(filePaths, SIVA_PARAMETERS_DIR + "PV");
+        new FeatureLearner(doShuffle, featureOption).func4Demo(filePaths, SIVA_PARAMETERS_DIR + "ParameterVector");
         // clean up here to not keep using more and more disk-space for these samples
 //        FileUtils.deleteDirectory(repoDir.getParentFile());
     }
