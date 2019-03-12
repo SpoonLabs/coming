@@ -3,7 +3,7 @@ package fr.inria.prophet4j.defined;
 import java.util.*;
 
 public interface FeatureCross {
-    Integer getFeatureCrossId();
+    Integer getId();
 
     List<Feature> getFeatures();
 

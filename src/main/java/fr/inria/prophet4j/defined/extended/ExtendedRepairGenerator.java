@@ -1,15 +1,13 @@
-package fr.inria.prophet4j.utility.original;
+package fr.inria.prophet4j.defined.extended;
 
 import java.lang.reflect.Type;
 import java.util.*;
 
-import fr.inria.prophet4j.defined.Structure.RepairActionKind;
-import fr.inria.prophet4j.defined.Structure.RepairCandidateKind;
+import fr.inria.prophet4j.defined.Structure.RepairKind;
 import fr.inria.prophet4j.defined.Structure.Repair;
 import fr.inria.prophet4j.defined.Structure.DiffEntry;
-import fr.inria.prophet4j.defined.Structure.RepairAction;
-import fr.inria.prophet4j.utility.RepairGenerator;
-import fr.inria.prophet4j.utility.original.util.OriginalRepairAnalyzer;
+import fr.inria.prophet4j.defined.RepairGenerator;
+import fr.inria.prophet4j.defined.extended.util.ExtendedRepairAnalyzer;
 import spoon.Launcher;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
@@ -24,15 +22,15 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtScanner;
 
 // based on RepairGenerator.cpp
-public class OriginalRepairGenerator implements RepairGenerator {
+public class ExtendedRepairGenerator implements RepairGenerator {
     private Set<CtElement> area; // loc_map
     private DiffEntry diffEntry;
     private CoreFactory factory;
     private List<Repair> repairs = new ArrayList<>();
     private Map<CtStatementList, Integer> compound_counter = new HashMap<>();
-    private OriginalRepairAnalyzer repairAnalyzer = new OriginalRepairAnalyzer();
+    private ExtendedRepairAnalyzer repairAnalyzer = new ExtendedRepairAnalyzer();
 
-    public OriginalRepairGenerator(DiffEntry diffEntry) {
+    public ExtendedRepairGenerator(DiffEntry diffEntry) {
         this.area = fuzzyLocator(diffEntry.srcNode);
         this.diffEntry = diffEntry;
         this.factory = new Launcher().getFactory().Core();
@@ -72,10 +70,11 @@ public class OriginalRepairGenerator implements RepairGenerator {
 //        S.setParent(n.getParent()); // for FUNC_ARGUMENT_VF
 
         Repair repair = new Repair();
-        repair.actions.clear();
-        repair.actions.add(new RepairAction(RepairActionKind.ReplaceMutationKind, n, S));
-        repair.actions.add(new RepairAction(S, placeholder, repairAnalyzer.getCondCandidateVars(n)));
-        repair.kind = RepairCandidateKind.TightenConditionKind;
+        repair.kind = RepairKind.TightenConditionKind;
+        repair.isReplace = true;
+        repair.srcElem = n;
+        repair.dstElem = S;
+        repair.atoms.addAll(repairAnalyzer.getCondCandidateVars(n));
         repairs.add(repair);
         // we do not consider the case of short-circuit evaluation at all
     }
@@ -95,10 +94,11 @@ public class OriginalRepairGenerator implements RepairGenerator {
 //        S.setParent(n.getParent()); // for FUNC_ARGUMENT_VF
 
         Repair repair = new Repair();
-        repair.actions.clear();
-        repair.actions.add(new RepairAction(RepairActionKind.ReplaceMutationKind, n, S));
-        repair.actions.add(new RepairAction(S, placeholder, repairAnalyzer.getCondCandidateVars(n)));
-        repair.kind = RepairCandidateKind.LoosenConditionKind;
+        repair.kind = RepairKind.LoosenConditionKind;
+        repair.isReplace = true;
+        repair.srcElem = n;
+        repair.dstElem = S;
+        repair.atoms.addAll(repairAnalyzer.getCondCandidateVars(n));
         repairs.add(repair);
         // we do not consider the case of short-circuit evaluation at all
     }
@@ -116,10 +116,11 @@ public class OriginalRepairGenerator implements RepairGenerator {
         guardIf.setParent(n.getParent()); // for FUNC_ARGUMENT_VF
 
         Repair repair = new Repair();
-        repair.actions.clear();
-        repair.actions.add(new RepairAction(RepairActionKind.ReplaceMutationKind, n, guardIf));
-        repair.actions.add(new RepairAction(guardIf, placeholder, repairAnalyzer.getCondCandidateVars(n)));
-        repair.kind = RepairCandidateKind.GuardKind;
+        repair.kind = RepairKind.GuardKind;
+        repair.isReplace = true;
+        repair.srcElem = n;
+        repair.dstElem = guardIf;
+        repair.atoms.addAll(repairAnalyzer.getCondCandidateVars(n));
         repairs.add(repair);
         // we do not consider the case of if statement as special at all
     }
@@ -127,7 +128,6 @@ public class OriginalRepairGenerator implements RepairGenerator {
     private void genAddIfExit(CtStatement n) {
         CtLiteral<Boolean> placeholder = factory.createLiteral();
         placeholder.setValue(true); // consider the placeholder, should this be more concrete?
-        Repair repair = new Repair();
         Type returnType = void.class;
         CtMethod curFD = repairAnalyzer.getCurrentFunction(n);
         if (curFD != null) {
@@ -148,10 +148,12 @@ public class OriginalRepairGenerator implements RepairGenerator {
             IFS.setCondition(placeholder);
             IFS.setThenStatement(RS);
             IFS.setParent(n.getParent()); // for FUNC_ARGUMENT_VF
-            repair.actions.clear();
-            repair.actions.add(new RepairAction(RepairActionKind.InsertMutationKind, n, IFS));
-            repair.actions.add(new RepairAction(IFS, placeholder, repairAnalyzer.getCondCandidateVars(n)));
-            repair.kind = RepairCandidateKind.IfExitKind;
+            Repair repair = new Repair();
+            repair.kind = RepairKind.IfExitKind;
+            repair.isReplace = false;
+            repair.srcElem = n;
+            repair.dstElem = IFS;
+            repair.atoms = repairAnalyzer.getCondCandidateVars(n);
             repairs.add(repair);
         }
         else {
@@ -163,10 +165,12 @@ public class OriginalRepairGenerator implements RepairGenerator {
                 IFS.setCondition(placeholder);
                 IFS.setThenStatement(RS);
                 IFS.setParent(n.getParent()); // for FUNC_ARGUMENT_VF
-                repair.actions.clear();
-                repair.actions.add(new RepairAction(RepairActionKind.InsertMutationKind, n, IFS));
-                repair.actions.add(new RepairAction(IFS, placeholder, repairAnalyzer.getCondCandidateVars(n)));
-                repair.kind = RepairCandidateKind.IfExitKind;
+                Repair repair = new Repair();
+                repair.kind = RepairKind.IfExitKind;
+                repair.isReplace = false;
+                repair.srcElem = n;
+                repair.dstElem = IFS;
+                repair.atoms = repairAnalyzer.getCondCandidateVars(n);
                 repairs.add(repair);
             }
         }
@@ -176,23 +180,27 @@ public class OriginalRepairGenerator implements RepairGenerator {
             IFS.setCondition(placeholder);
             IFS.setThenStatement(BS);
             IFS.setParent(n.getParent()); // for FUNC_ARGUMENT_VF
-            repair.actions.clear();
-            repair.actions.add(new RepairAction(RepairActionKind.InsertMutationKind, n, IFS));
-            repair.actions.add(new RepairAction(IFS, placeholder, repairAnalyzer.getCondCandidateVars(n)));
-            repair.kind = RepairCandidateKind.IfExitKind;
+            Repair repair = new Repair();
+            repair.kind = RepairKind.IfExitKind;
+            repair.isReplace = false;
+            repair.srcElem = n;
+            repair.dstElem = IFS;
+            repair.atoms = repairAnalyzer.getCondCandidateVars(n);
             repairs.add(repair);
         }
     }
 
     private void genReplaceStmt(CtStatement n) {
         if (n instanceof CtExpression) {
-            OriginalRepairAnalyzer.AtomReplaceVisitor V = repairAnalyzer.newAtomReplaceVisitor();
+            ExtendedRepairAnalyzer.AtomReplaceVisitor V = repairAnalyzer.newAtomReplaceVisitor();
             V.TraverseStmt(n);
             for (CtElement it : V.getResult()) {
                 Repair repair = new Repair();
-                repair.actions.clear();
-                repair.actions.add(new RepairAction(RepairActionKind.ReplaceMutationKind, n, it));
-                repair.kind = RepairCandidateKind.ReplaceKind;
+                repair.kind = RepairKind.ReplaceKind;
+                repair.isReplace = true;
+                repair.srcElem = n;
+                repair.dstElem = it;
+                repair.atoms.addAll(new ArrayList<>());
                 repair.oldRExpr = V.getOldRExpr(it);
                 repair.newRExpr = V.getNewRExpr(it);
                 repairs.add(repair);
@@ -205,13 +213,13 @@ public class OriginalRepairGenerator implements RepairGenerator {
                 CtLiteral<String> placeholder = factory.createLiteral();
                 placeholder.setValue("");
                 Repair repair = new Repair();
-                repair.actions.clear();
-                repair.actions.add(new RepairAction(RepairActionKind.ReplaceMutationKind, n, placeholder));
-                // this line seems meaningless
-                repair.actions.add(new RepairAction(n, placeholder, new ArrayList<>()));
+                repair.kind = RepairKind.ReplaceStringKind;
+                repair.isReplace = true;
+                repair.srcElem = n;
+                repair.dstElem = placeholder;
+                repair.atoms.addAll(new ArrayList<>());
                 repair.oldRExpr = n;
                 repair.newRExpr = null;
-                repair.kind = RepairCandidateKind.ReplaceStringKind;
                 repairs.add(repair);
             }
         }
@@ -219,9 +227,11 @@ public class OriginalRepairGenerator implements RepairGenerator {
         if (n instanceof CtInvocation) {
             for (CtInvocation it : repairAnalyzer.getCandidateCalleeFunction((CtInvocation) n)) {
                 Repair repair = new Repair();
-                repair.actions.clear();
-                repair.actions.add(new RepairAction(RepairActionKind.ReplaceMutationKind, n, it));
-                repair.kind = RepairCandidateKind.ReplaceKind;
+                repair.kind = RepairKind.ReplaceKind;
+                repair.isReplace = true;
+                repair.srcElem = n;
+                repair.dstElem = it;
+                repair.atoms.addAll(new ArrayList<>());
                 repair.oldRExpr = ((CtInvocation) n).getExecutable();
                 repair.newRExpr = it;
                 repairs.add(repair);
@@ -234,7 +244,7 @@ public class OriginalRepairGenerator implements RepairGenerator {
     private void genAddStatement(CtStatement n) {
         Set<CtElement> exprs = repairAnalyzer.getGlobalCandidateExprs(n);
         for (CtElement it: exprs) {
-            OriginalRepairAnalyzer.AtomReplaceVisitor V = repairAnalyzer.newAtomReplaceVisitor();
+            ExtendedRepairAnalyzer.AtomReplaceVisitor V = repairAnalyzer.newAtomReplaceVisitor();
             V.TraverseStmt(it);
 //            if (!repairAnalyzer.isValidStmt(it))
 //                continue;
@@ -243,14 +253,20 @@ public class OriginalRepairGenerator implements RepairGenerator {
 //                boolean valid_after_replace = repairAnalyzer.isValidStmt(it2);
 //                if (!valid_after_replace) continue;
                 Repair repair = new Repair();
-                repair.actions.clear();
-                repair.actions.add(new RepairAction(RepairActionKind.InsertMutationKind, n, it2));
-                repair.kind = RepairCandidateKind.AddAndReplaceKind;
+                repair.kind = RepairKind.AddAndReplaceKind;
+                repair.isReplace = false;
+                repair.srcElem = n;
+                repair.dstElem = it2;
+                repair.atoms.addAll(new ArrayList<>());
+                repairs.add(repair);
             }
             Repair repair = new Repair();
-            repair.actions.clear();
-            repair.actions.add(new RepairAction(RepairActionKind.InsertMutationKind, n, it));
-            repair.kind = RepairCandidateKind.AddAndReplaceKind;
+            repair.kind = RepairKind.AddAndReplaceKind;
+            repair.isReplace = false;
+            repair.srcElem = n;
+            repair.dstElem = it;
+            repair.atoms.addAll(new ArrayList<>());
+            repairs.add(repair);
         }
 
         // insert if_stmt without atom replace if possible
@@ -259,39 +275,43 @@ public class OriginalRepairGenerator implements RepairGenerator {
 //            boolean valid = repairAnalyzer.isValidStmt(it);
 //            if (!valid) continue;
             Repair repair = new Repair();
-            repair.actions.clear();
-            repair.actions.add(new RepairAction(RepairActionKind.InsertMutationKind, n, it));
-            repair.kind = RepairCandidateKind.AddAndReplaceKind;
+            repair.kind = RepairKind.AddAndReplaceKind;
+            repair.isReplace = false;
+            repair.srcElem = n;
+            repair.dstElem = it;
+            repair.atoms.addAll(new ArrayList<>());
+            repairs.add(repair);
         }
     }
 
     public Repair obtainHumanRepair() {
         Repair repair = new Repair();
         repair.kind = null; // related to RepairFeature
+        repair.isReplace = false;
+        repair.srcElem = diffEntry.srcNode;
+        repair.dstElem = diffEntry.dstNode;
+        repair.atoms.addAll(new ArrayList<>());
         repair.oldRExpr = null; // related to ValueFeature
         repair.newRExpr = null; // related to ValueFeature
 
         // todo: more checks
         // based on matchCandidateWithHumanFix()
-        CtElement srcNode = diffEntry.srcNode;
-        CtElement dstNode = diffEntry.dstNode;
         switch (diffEntry.type) {
-            case DeleteAction: // kind
+            case DeleteType: // kind
                 // GuardKind: // INSERT_GUARD_RF
-                repair.kind = RepairCandidateKind.GuardKind;
+                repair.kind = RepairKind.GuardKind;
                 break;
-            case InsertAction: // kind
+            case InsertType: // kind
                 // IfExitKind: // INSERT_CONTROL_RF
                 // AddAndReplaceKind: // INSERT_STMT_RF
-                if (dstNode instanceof CtIf) {
-                    repair.kind = RepairCandidateKind.IfExitKind;
+                if (diffEntry.dstNode instanceof CtIf) {
+                    repair.kind = RepairKind.IfExitKind;
                 } else {
-                    repair.kind = RepairCandidateKind.AddAndReplaceKind;
+                    repair.kind = RepairKind.AddAndReplaceKind;
                 }
                 // compare with others in obtainRepairCandidates()
-                repair.actions.add(new RepairAction(RepairActionKind.InsertMutationKind, diffEntry.srcNode, diffEntry.dstNode));
                 break;
-            case ReplaceAction: // kind // oldRExpr // newRExpr
+            case ReplaceType: // kind // oldRExpr // newRExpr
                 // IfExitKind: // INSERT_CONTROL_RF
                 // GuardKind: // INSERT_GUARD_RF
                 // SpecialGuardKind: // INSERT_GUARD_RF
@@ -300,44 +320,44 @@ public class OriginalRepairGenerator implements RepairGenerator {
                 // ReplaceKind: // REPLACE_STMT_RF
                 // ReplaceStringKind: // REPLACE_STMT_RF
                 CtIf IF2;
-                if (dstNode instanceof CtIf) {
-                    IF2 = (CtIf) dstNode;
+                if (diffEntry.dstNode instanceof CtIf) {
+                    IF2 = (CtIf) diffEntry.dstNode;
                 } else {
-                    IF2 = dstNode.getParent(new TypeFilter<>(CtIf.class));
+                    IF2 = diffEntry.dstNode.getParent(new TypeFilter<>(CtIf.class));
                 }
                 if (IF2 != null) {
                     CtIf IF1;
-                    if (srcNode instanceof CtIf) {
-                        IF1 = (CtIf) srcNode;
+                    if (diffEntry.srcNode instanceof CtIf) {
+                        IF1 = (CtIf) diffEntry.srcNode;
                     } else {
-                        IF1 = srcNode.getParent(new TypeFilter<>(CtIf.class));
+                        IF1 = diffEntry.srcNode.getParent(new TypeFilter<>(CtIf.class));
                     }
                     if (IF1 != null) {
                         // make sure repair.kind would be assigned one value
-                        repair.kind = RepairCandidateKind.SpecialGuardKind;
+                        repair.kind = RepairKind.SpecialGuardKind;
                         if (IF1.getThenStatement().equals(IF2.getThenStatement())) {
                             // LoosenConditionKind and TightenConditionKind are almost same as both are REPLACE_COND_RF
                             if (IF1.getElseStatement()!=null && IF2.getElseStatement()!=null) {
                                 if (IF1.getElseStatement().equals(IF2.getElseStatement())) {
-                                    repair.kind = RepairCandidateKind.LoosenConditionKind;
+                                    repair.kind = RepairKind.LoosenConditionKind;
                                 }
                             } else {
-                                repair.kind = RepairCandidateKind.LoosenConditionKind;
+                                repair.kind = RepairKind.LoosenConditionKind;
                             }
                         }
                     } else {
                         CtStatement S = IF2.getThenStatement();
                         if (S instanceof CtCFlowBreak) {
-                            repair.kind = RepairCandidateKind.IfExitKind;
+                            repair.kind = RepairKind.IfExitKind;
                         } else {
-                            repair.kind = RepairCandidateKind.GuardKind;
+                            repair.kind = RepairKind.GuardKind;
                         }
                     }
                 } else {
                     if (diffEntry.srcNode instanceof CtLiteral) {
-                        repair.kind = RepairCandidateKind.ReplaceStringKind;
+                        repair.kind = RepairKind.ReplaceStringKind;
                     } else {
-                        repair.kind = RepairCandidateKind.ReplaceKind;
+                        repair.kind = RepairKind.ReplaceKind;
                     }
                 }
                 repair.oldRExpr = diffEntry.srcNode;
@@ -357,14 +377,13 @@ public class OriginalRepairGenerator implements RepairGenerator {
 //                    }
 //                }
                 // compare with others in obtainRepairCandidates()
-                repair.actions.add(new RepairAction(RepairActionKind.ReplaceMutationKind, diffEntry.srcNode, diffEntry.dstNode));
+                repair.isReplace = true;
                 break;
-            case UnknownAction:
+            case UnknownType:
                 break;
         }
-
         List<CtElement> candidates = diffEntry.dstNode.getElements(new TypeFilter<>(CtElement.class));
-        repair.actions.add(new RepairAction(diffEntry.srcNode, diffEntry.dstNode, candidates));
+        repair.atoms.addAll(candidates);
         return repair;
     }
 

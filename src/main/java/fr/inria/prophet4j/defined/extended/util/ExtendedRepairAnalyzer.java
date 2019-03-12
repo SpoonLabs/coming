@@ -1,4 +1,4 @@
-package fr.inria.prophet4j.utility.extended.util;
+package fr.inria.prophet4j.defined.extended.util;
 
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;

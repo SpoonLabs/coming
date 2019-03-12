@@ -1,10 +1,10 @@
-package fr.inria.prophet4j.dataset;
+package fr.inria.prophet4j.utility.dataport;
 
-import fr.inria.prophet4j.defined.Structure;
 import fr.inria.prophet4j.defined.Structure.FeatureOption;
-import fr.inria.prophet4j.defined.Structure.FeatureManager;
-import fr.inria.prophet4j.utility.CodeDiffer;
-import fr.inria.prophet4j.utility.FeatureLearner;
+import fr.inria.prophet4j.defined.Structure.FeatureVector;
+import fr.inria.prophet4j.defined.Structure.Sample;
+import fr.inria.prophet4j.defined.CodeDiffer;
+import fr.inria.prophet4j.defined.FeatureLearner;
 
 import java.io.File;
 import java.util.*;
@@ -61,10 +61,8 @@ public class SANER {
         return catalogs;
     }
 
-    // almost final result of default case by commenting shuffle
-    // 2019-03-07 11:32:59 INFO  FeatureLearner:88 - 0 Update best gamma 0.4688212054753634
     // human patches: https://github.com/monperrus/bug-fixes-saner16
-    // old files and human patches
+    // buggy files & human patches are given
     public void handleData(boolean doShuffle, FeatureOption featureOption) throws NullPointerException {
         List<String> filePaths = new ArrayList<>();
         CodeDiffer codeDiffer = new CodeDiffer(true, featureOption);
@@ -83,13 +81,12 @@ public class SANER {
                     }
                     File vectorFile = new File(SANER_VECTORS_DIR + vectorFilePath);
                     if (!vectorFile.exists()) {
-                        List<FeatureManager> featureManagers = codeDiffer.func4Demo(oldFile, catalog.get(oldFile));
-                        if (featureManagers.size() == 0) {
+                        List<FeatureVector> featureVectors = codeDiffer.func4Demo(oldFile, catalog.get(oldFile));
+                        if (featureVectors.size() == 0) {
                             // diff.commonAncestor() returns null value
                             continue;
                         }
-                        // todo
-                        Structure.save(vectorFile, featureManagers);
+                        new Sample(vectorFile.getPath()).saveFeatureVectors(featureVectors);
                     }
                     filePaths.add(SANER_VECTORS_DIR + vectorFilePath);
                 } catch (Exception ex) {
@@ -99,6 +96,6 @@ public class SANER {
             progressNow += 1;
             System.out.println(pathName + " : " + progressNow + " / " + progressAll);
         }
-        new FeatureLearner(doShuffle, featureOption).func4Demo(filePaths, SANER_PARAMETERS_DIR + "PV");
+        new FeatureLearner(doShuffle, featureOption).func4Demo(filePaths, SANER_PARAMETERS_DIR + "ParameterVector");
     }
 }

@@ -1,16 +1,15 @@
-package fr.inria.prophet4j.utility;
+package fr.inria.prophet4j.defined;
 
-import fr.inria.prophet4j.defined.Structure.DiffActionType;
+import fr.inria.prophet4j.defined.Structure.DiffType;
 import fr.inria.prophet4j.defined.Structure.FeatureOption;
-import fr.inria.prophet4j.defined.Structure.FeatureManager;
 import fr.inria.prophet4j.defined.Structure.FeatureVector;
 import fr.inria.prophet4j.defined.Structure.ParameterVector;
 import fr.inria.prophet4j.defined.Structure.DiffEntry;
 import fr.inria.prophet4j.defined.Structure.Repair;
-import fr.inria.prophet4j.utility.extended.ExtendedFeatureExtractor;
-import fr.inria.prophet4j.utility.extended.ExtendedRepairGenerator;
-import fr.inria.prophet4j.utility.original.OriginalFeatureExtractor;
-import fr.inria.prophet4j.utility.original.OriginalRepairGenerator;
+import fr.inria.prophet4j.defined.extended.ExtendedFeatureExtractor;
+import fr.inria.prophet4j.defined.extended.ExtendedRepairGenerator;
+import fr.inria.prophet4j.defined.original.OriginalFeatureExtractor;
+import fr.inria.prophet4j.defined.original.OriginalRepairGenerator;
 import gumtree.spoon.AstComparator;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.*;
@@ -98,7 +97,7 @@ public class CodeDiffer {
             if (deleteOperation != null && insertOperation != null) {
                 CtElement srcNode = deleteOperation.getSrcNode();
                 CtElement dstNode = insertOperation.getSrcNode();
-                DiffActionType type = DiffActionType.ReplaceAction;
+                DiffType type = DiffType.ReplaceType;
 //                System.out.println(srcNode);
 //                System.out.println(dstNode);
 //                System.out.println("++++++++");
@@ -112,21 +111,21 @@ public class CodeDiffer {
                 for (Operation operation : operationList) {
                     CtElement srcNode = operation.getSrcNode();
                     CtElement dstNode = operation.getDstNode();
-                    DiffActionType type = DiffActionType.UnknownAction;
+                    DiffType type = DiffType.UnknownType;
                     if (operation instanceof DeleteOperation) {
                         if (srcNode == null) srcNode = dstNode;
                         if (dstNode == null) dstNode = srcNode;
-                        type = DiffActionType.DeleteAction;
+                        type = DiffType.DeleteType;
                     } else if (operation instanceof InsertOperation) {
                         if (srcNode == null) srcNode = dstNode;
                         if (dstNode == null) dstNode = srcNode;
-                        type = DiffActionType.InsertAction;
+                        type = DiffType.InsertType;
                     } else if (operation instanceof UpdateOperation) {
                         // both srcNode and dstNode are not null
-                        type = DiffActionType.ReplaceAction;
+                        type = DiffType.ReplaceType;
                     }
                     // as we ignored all MoveOperations
-                    assert type != DiffActionType.UnknownAction;
+                    assert type != DiffType.UnknownType;
 //                    System.out.println(srcNode);
 //                    System.out.println(dstNode);
 //                    System.out.println("++++++++");
@@ -148,8 +147,8 @@ public class CodeDiffer {
         return diffEntries;
     }
 
-    private List<FeatureManager> genFeatureManagers(Diff diff) {
-        List<FeatureManager> featureManagers = new ArrayList<>();
+    private List<FeatureVector> genFeatureVectors(Diff diff) {
+        List<FeatureVector> featureVectors = new ArrayList<>();
         try {
             FeatureExtractor featureExtractor = newFeatureExtractor();
             for (DiffEntry diffEntry : genDiffEntries(diff)) {
@@ -164,20 +163,20 @@ public class CodeDiffer {
                 }
                 for (Repair repair: repairs) {
                     for (CtElement atom : repair.getCandidateAtoms()) {
-                        featureManagers.add(featureExtractor.extractFeature(repair, atom));
+                        featureVectors.add(featureExtractor.extractFeature(repair, atom));
                     }
                 }
             }
         } catch (IndexOutOfBoundsException ex) {
             logger.log(Level.WARN, "diff.commonAncestor() returns null value");
         }
-        return featureManagers;
+        return featureVectors;
     }
 
-    // in this case we do not need to obtainRepairCandidates as they are given
-    public List<FeatureManager> func4Demo(File oldFile, List<File> newFiles) throws Exception {
+    // for Cardumen, we do not need to obtainRepairCandidates as they are given
+    public List<FeatureVector> func4Cardumen(File oldFile, List<File> newFiles) throws Exception {
+        List<FeatureVector> featureVectors = new ArrayList<>();
         AstComparator comparator = new AstComparator();
-        List<FeatureManager> featureManagers = new ArrayList<>();
         for (File newFile : newFiles) { // the first one in newFiles is human patch
             Diff diff = comparator.compare(oldFile, newFile);
             try {
@@ -188,9 +187,8 @@ public class CodeDiffer {
                     RepairGenerator generator = newRepairGenerator(diffEntry);
                     repairs.add(generator.obtainHumanRepair());
                     for (Repair repair: repairs) {
-                        assert(repair.actions.size() > 0);
                         for (CtElement atom : repair.getCandidateAtoms()) {
-                            featureManagers.add(featureExtractor.extractFeature(repair, atom));
+                            featureVectors.add(featureExtractor.extractFeature(repair, atom));
                         }
                     }
                 }
@@ -198,20 +196,20 @@ public class CodeDiffer {
                 logger.log(Level.WARN, "diff.commonAncestor() returns null value");
             }
         }
-        return featureManagers;
+        return featureVectors;
     }
 
-    public List<FeatureManager> func4Demo(File oldFile, File newFile) throws Exception {
+    public List<FeatureVector> func4Demo(File oldFile, File newFile) throws Exception {
         AstComparator comparator = new AstComparator();
         Diff diff = comparator.compare(oldFile, newFile);
-        return genFeatureManagers(diff);
+        return genFeatureVectors(diff);
     }
 
     // for FeatureExtractorTest.java
-    public List<FeatureManager> func4Test(String oldStr, String newStr) {
+    public List<FeatureVector> func4Test(String oldStr, String newStr) {
         AstComparator comparator = new AstComparator();
         Diff diff = comparator.compare(oldStr, newStr);
-        return genFeatureManagers(diff);
+        return genFeatureVectors(diff);
     }
 
     public Double scorePatch(File oldFile, File newFile, ParameterVector parameterVector) {
@@ -219,14 +217,13 @@ public class CodeDiffer {
         try {
             AstComparator comparator = new AstComparator();
             Diff diff = comparator.compare(oldFile, newFile);
-            List<FeatureManager> featureManagers = genFeatureManagers(diff);
+            List<FeatureVector> featureVectors = genFeatureVectors(diff);
             // sometimes one patch file patches multi-defects
-            for (FeatureManager featureManager : featureManagers) {
-                FeatureVector featureVector = featureManager.getFeatureVector();
+            for (FeatureVector featureVector : featureVectors) {
                 score += featureVector.score(parameterVector);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         return score;
     }
