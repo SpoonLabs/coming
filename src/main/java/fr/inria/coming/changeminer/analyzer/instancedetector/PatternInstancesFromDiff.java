@@ -33,12 +33,22 @@ public class PatternInstancesFromDiff extends AnalysisResult<IRevision> {
 				System.err.println("Diff null");
 				return "--Diff null--";
 			}
+			String diffString = "";
 
-			String r = "\n----For Diff:" + diff.toString() + "\n: number instances found: " + instances.size();
-			for (ChangePatternInstance instance : instances) {
-				r += "\n" + instance.toString();
+			try {
+				diffString = diff.toString();
+
+			} catch (Exception e) {
+				System.err.println("Error when printing diff result: " + e.getMessage());
+
+				e.printStackTrace();
+				diffString = "wrong diff";
 			}
-			return r += "\n----";
+			String resultString = "\n----For Diff:" + diffString + "\n: number instances found: " + instances.size();
+			for (ChangePatternInstance instance : instances) {
+				resultString += "\n" + instance.toString();
+			}
+			return resultString += "\n----";
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

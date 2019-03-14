@@ -47,13 +47,10 @@ public class DiffResult<T, R> extends AnalysisResult<T> {
 
 			R idiff = this.diffOfFiles.get(file);
 
-			// List<Operation> opsFile = idiff.getRootOperations();
-			// for (Operation operation : opsFile) {
-			// r += "\n" + ("--op->" + operation);
-			// }
 			try {
 				r += "\n" + idiff.toString();
 			} catch (Exception e) {
+				System.err.println("Error when printing diff result: " + e.getMessage());
 				e.printStackTrace();
 			}
 
