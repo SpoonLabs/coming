@@ -38,17 +38,11 @@ public interface Structure {
                 File vectorFile = new File(filePath);
                 List<FeatureVector> featureVectors = new ArrayList<>();
                 String string = FileUtils.readFileToString(vectorFile, Charset.defaultCharset());
-                StringTokenizer stringTokenizer = new StringTokenizer(string, "\n");
-                while (stringTokenizer.hasMoreTokens()) {
-                    featureVectors.add(new FeatureVector(stringTokenizer.nextToken(), featureOption));
+                String[] substrings = string.split("\n");
+                for (String substring : substrings) {
+                    featureVectors.add(new FeatureVector(substring, featureOption));
                 }
-                // we deduplicate FeatureVectors as they should have no positive effect
-                // we make sure the first one is for human patch by using LinkedHashSet
-                Set<FeatureVector> linkedHashSet = new LinkedHashSet<>(featureVectors.size());
-                linkedHashSet.addAll(featureVectors);
-                featureVectors.clear();
-                featureVectors.addAll(linkedHashSet);
-                // todo: I need to ensure featureVectors.size() always larger than 1
+                assert featureVectors.size() > 1;
                 return featureVectors;
             } catch (IOException ex) {
                 ex.printStackTrace();
@@ -62,7 +56,8 @@ public interface Structure {
                 StringJoiner stringJoiner = new StringJoiner("\n");
                 for (FeatureVector featureVector : featureVectors) {
                     StringJoiner subStringJoiner = new StringJoiner(" ");
-                    for (int featureCrossId : featureVector.featureArray) {
+                    for (FeatureCross featureCross : featureVector.getFeatureCrosses()) {
+                        int featureCrossId = featureCross.getId();
                         subStringJoiner.add(String.valueOf(featureCrossId));
                     }
                     stringJoiner.add(subStringJoiner.toString());
@@ -72,42 +67,32 @@ public interface Structure {
                 ex.printStackTrace();
             }
         }
+
+        @Override
+        public String toString() {
+            return filePath;
+        }
     }
 
     class FeatureVector {
-        private int arraySize = 0;
-        private int[] featureArray;
         private Set<FeatureCross> featureCrosses;
 
-        public FeatureVector(FeatureOption featureOption) {
-            switch (featureOption) {
-                case EXTENDED:
-                    this.arraySize = ExtendedFeature.FEATURE_SIZE;
-                    break;
-                case ORIGINAL:
-                    this.arraySize = OriginalFeature.FEATURE_SIZE;
-                    break;
-            }
-            this.featureArray = new int[this.arraySize];
+        public FeatureVector() {
             this.featureCrosses = new HashSet<>();
         }
 
         public FeatureVector(String string, FeatureOption featureOption) {
-            this(featureOption);
+            this();
             String[] substrings = string.split(" ");
-            assert substrings.length == this.arraySize;
-            for (int i = 0; i < this.arraySize; i++) {
-                int value = Integer.valueOf(substrings[i]);
-                this.featureArray[i] = value;
-                if (value == 1) {
-                    switch (featureOption) {
-                        case EXTENDED:
-                            this.featureCrosses.add(new ExtendedFeatureCross(i));
-                            break;
-                        case ORIGINAL:
-                            this.featureCrosses.add(new OriginalFeatureCross(i));
-                            break;
-                    }
+            for (String substring : substrings) {
+                int featureCrossId = Integer.valueOf(substring);
+                switch (featureOption) {
+                    case EXTENDED:
+                        this.featureCrosses.add(new ExtendedFeatureCross(featureCrossId));
+                        break;
+                    case ORIGINAL:
+                        this.featureCrosses.add(new OriginalFeatureCross(featureCrossId));
+                        break;
                 }
             }
         }
@@ -122,20 +107,14 @@ public interface Structure {
         }
 
         public void addFeatureCross(FeatureCross featureCross) {
-            featureArray[featureCross.getId()] = 1;
             featureCrosses.add(featureCross);
         }
 
-        public Set<FeatureCross> getFeatureCrosses() {
-            return featureCrosses;
-        }
-
-        public Set<Integer> getFeatureCrossIds() {
-            Set<Integer> featureCrossIds = new HashSet<>();
-            for (FeatureCross featureCross : getFeatureCrosses()) {
-                featureCrossIds.add(featureCross.getId());
-            }
-            return featureCrossIds;
+        // if we return set directly, results would be unpredictable. DO NOT return set directly
+        public List<FeatureCross> getFeatureCrosses() {
+            List<FeatureCross> list = new ArrayList<>(featureCrosses);
+            list.sort(Comparator.comparingInt(FeatureCross::getId));
+            return list;
         }
 
         public double score(ParameterVector parameterVector) {
@@ -149,6 +128,7 @@ public interface Structure {
     }
 
     class ParameterVector {
+        public double gamma = 0.0;
         private int arraySize = 0;
         private double[] parameterArray;
 
@@ -172,8 +152,19 @@ public interface Structure {
             return parameterArray[index];
         }
 
-        public void set(int index, double value) {
-            parameterArray[index] = value;
+        // +=
+        public void inc(int index, double value) {
+            parameterArray[index] += value;
+        }
+
+        // -=
+        public void dec(int index, double value) {
+            parameterArray[index] += value;
+        }
+
+        // /=
+        public void div(int index, double value) {
+            parameterArray[index] /= value;
         }
 
         public void clone(ParameterVector parameterVector) {
@@ -182,33 +173,32 @@ public interface Structure {
         }
 
         public double dotProduct(FeatureVector featureVector) {
-            double res = 0;
+            double res = 0.0;
             for (FeatureCross featureCross : featureVector.getFeatureCrosses()) {
-                res += parameterArray[featureCross.getId()];
+                int featureCrossId = featureCross.getId();
+                res += parameterArray[featureCrossId];
             }
             return res;
         }
 
-        public void load(File vectorFile) {
+        public void load(String filePath) {
             try {
-                List<Double> parameterList = new ArrayList<>();
+                File vectorFile = new File(filePath);
                 String string = FileUtils.readFileToString(vectorFile, Charset.defaultCharset());
-                StringTokenizer stringTokenizer = new StringTokenizer(string, " ");
-                while (stringTokenizer.hasMoreTokens()) {
-                    parameterList.add(Double.valueOf(stringTokenizer.nextToken()));
-                }
-                parameterArray = parameterList.stream().mapToDouble(Double::doubleValue).toArray();
+                String[] substrings = string.split(" ");
+                parameterArray = Arrays.stream(substrings).mapToDouble(Double::valueOf).toArray();
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
 
-        public void save(File vectorFile) {
+        public void save(String filePath) {
             try {
                 StringJoiner stringJoiner = new StringJoiner(" ");
                 for (double parameter : parameterArray) {
                     stringJoiner.add(String.valueOf(parameter));
                 }
+                File vectorFile = new File(filePath);
                 FileUtils.writeStringToFile(vectorFile, stringJoiner.toString(), Charset.defaultCharset(), true);
             } catch (IOException ex) {
                 ex.printStackTrace();

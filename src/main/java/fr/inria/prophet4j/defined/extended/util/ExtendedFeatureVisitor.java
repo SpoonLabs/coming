@@ -25,7 +25,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.CtScanner;
 
-// based on FeatureExtract.cpp todo: what is the difference between CtXXX and CtXXXReference?
+// based on FeatureExtract.cpp
 public class ExtendedFeatureVisitor {
     boolean isReplace = false;
     Map<String, CtElement> valueExprInfo;
@@ -50,7 +50,7 @@ public class ExtendedFeatureVisitor {
 //            if (v instanceof CtAssignment) {
 //                return;
 //            }
-            // todo: CtInvocation or CtExecutable ?
+            // CtInvocation or CtExecutable todo check
 //            if (v.getElements(new TypeFilter<>(CtInvocation.class)).size() > 0 && !isAbstractStub(v)) {
 //                return;
 //            }
@@ -70,7 +70,7 @@ public class ExtendedFeatureVisitor {
             putValueFeature(atom, AtomicFeature.ABST_V_AF);
         }
         isReplace = repair.isReplace;
-        // meaningless todo: check
+        // meaningless todo check
 //        if (repair.kind == RepairKind.TightenConditionKind ||
 //                repair.kind == RepairKind.LoosenConditionKind ||
 //                repair.kind == RepairKind.GuardKind ||
@@ -92,7 +92,6 @@ public class ExtendedFeatureVisitor {
             @Override
             public void scan(CtElement element) { // VisitExpr
                 super.scan(element);
-                // todo: check the difference between putValueFeature(null, xx) and putValueFeature(v, xx)
                 if (element instanceof CtLoop || element instanceof CtExpression && element.getParent() instanceof CtLoop) {
 //                    assert !isReplace;
                     putValueFeature(null, AtomicFeature.STMT_LOOP_AF);
@@ -155,48 +154,84 @@ public class ExtendedFeatureVisitor {
                 CtExpression RHS = operator.getRightHandOperand();
                 switch (operator.getKind()) {
                     case PLUS:
-                        putValueFeature(LHS, AtomicFeature.OP_ADD_AF);
-                        putValueFeature(RHS, AtomicFeature.OP_ADD_AF);
+                        putValueFeature(LHS, AtomicFeature.BOP_PLUS_AF);
+                        putValueFeature(RHS, AtomicFeature.BOP_PLUS_AF);
                         break;
                     case MINUS:
-                        putValueFeature(LHS, AtomicFeature.OP_SUB_AF);
-                        putValueFeature(RHS, AtomicFeature.OP_SUB_AF);
+                        putValueFeature(LHS, AtomicFeature.BOP_MINUS_AF);
+                        putValueFeature(RHS, AtomicFeature.BOP_MINUS_AF);
                         break;
                     case MUL:
-                        putValueFeature(LHS, AtomicFeature.OP_MUL_AF);
-                        putValueFeature(RHS, AtomicFeature.OP_MUL_AF);
+                        putValueFeature(LHS, AtomicFeature.BOP_MUL_AF);
+                        putValueFeature(RHS, AtomicFeature.BOP_MUL_AF);
                         break;
                     case DIV:
-                        putValueFeature(LHS, AtomicFeature.OP_DIV_AF);
-                        putValueFeature(RHS, AtomicFeature.OP_DIV_AF);
+                        putValueFeature(LHS, AtomicFeature.BOP_DIV_AF);
+                        putValueFeature(RHS, AtomicFeature.BOP_DIV_AF);
                         break;
                     case MOD:
-                        putValueFeature(LHS, AtomicFeature.OP_MOD_AF);
-                        putValueFeature(RHS, AtomicFeature.OP_MOD_AF);
+                        putValueFeature(LHS, AtomicFeature.BOP_MOD_AF);
+                        putValueFeature(RHS, AtomicFeature.BOP_MOD_AF);
                         break;
                     case LE:
-                        putValueFeature(LHS, AtomicFeature.OP_LE_AF);
-                        putValueFeature(RHS, AtomicFeature.OP_LE_AF);
+                        putValueFeature(LHS, AtomicFeature.BOP_LE_AF);
+                        putValueFeature(RHS, AtomicFeature.BOP_LE_AF);
                         break;
                     case LT:
-                        putValueFeature(LHS, AtomicFeature.OP_LT_AF);
-                        putValueFeature(RHS, AtomicFeature.OP_LT_AF);
+                        putValueFeature(LHS, AtomicFeature.BOP_LT_AF);
+                        putValueFeature(RHS, AtomicFeature.BOP_LT_AF);
                         break;
                     case GE:
-                        putValueFeature(LHS, AtomicFeature.OP_GE_AF);
-                        putValueFeature(RHS, AtomicFeature.OP_GE_AF);
+                        putValueFeature(LHS, AtomicFeature.BOP_GE_AF);
+                        putValueFeature(RHS, AtomicFeature.BOP_GE_AF);
                         break;
                     case GT:
-                        putValueFeature(LHS, AtomicFeature.OP_GT_AF);
-                        putValueFeature(RHS, AtomicFeature.OP_GT_AF);
+                        putValueFeature(LHS, AtomicFeature.BOP_GT_AF);
+                        putValueFeature(RHS, AtomicFeature.BOP_GT_AF);
                         break;
                     case EQ:
-                        putValueFeature(LHS, AtomicFeature.OP_EQ_AF);
-                        putValueFeature(RHS, AtomicFeature.OP_EQ_AF);
+                        putValueFeature(LHS, AtomicFeature.BOP_EQ_AF);
+                        putValueFeature(RHS, AtomicFeature.BOP_EQ_AF);
                         break;
                     case NE:
-                        putValueFeature(LHS, AtomicFeature.OP_NE_AF);
-                        putValueFeature(RHS, AtomicFeature.OP_NE_AF);
+                        putValueFeature(LHS, AtomicFeature.BOP_NE_AF);
+                        putValueFeature(RHS, AtomicFeature.BOP_NE_AF);
+                        break;
+                    case AND:
+                        putValueFeature(LHS, AtomicFeature.BOP_AND_AF);
+                        putValueFeature(RHS, AtomicFeature.BOP_AND_AF);
+                        break;
+                    case OR:
+                        putValueFeature(LHS, AtomicFeature.BOP_OR_AF);
+                        putValueFeature(RHS, AtomicFeature.BOP_OR_AF);
+                        break;
+                    case BITAND:
+                        putValueFeature(LHS, AtomicFeature.BOP_BITAND_AF);
+                        putValueFeature(RHS, AtomicFeature.BOP_BITAND_AF);
+                        break;
+                    case BITOR:
+                        putValueFeature(LHS, AtomicFeature.BOP_BITOR_AF);
+                        putValueFeature(RHS, AtomicFeature.BOP_BITOR_AF);
+                        break;
+                    case BITXOR:
+                        putValueFeature(LHS, AtomicFeature.BOP_BITXOR_AF);
+                        putValueFeature(RHS, AtomicFeature.BOP_BITXOR_AF);
+                        break;
+                    case SL:
+                        putValueFeature(LHS, AtomicFeature.BOP_SL_AF);
+                        putValueFeature(RHS, AtomicFeature.BOP_SL_AF);
+                        break;
+                    case SR:
+                        putValueFeature(LHS, AtomicFeature.BOP_SR_AF);
+                        putValueFeature(RHS, AtomicFeature.BOP_SR_AF);
+                        break;
+                    case USR:
+                        putValueFeature(LHS, AtomicFeature.BOP_USR_AF);
+                        putValueFeature(RHS, AtomicFeature.BOP_USR_AF);
+                        break;
+                    case INSTANCEOF:
+                        putValueFeature(LHS, AtomicFeature.BOP_INSTANCEOF_AF);
+                        putValueFeature(RHS, AtomicFeature.BOP_INSTANCEOF_AF);
                         break;
                 }
             }
@@ -206,20 +241,32 @@ public class ExtendedFeatureVisitor {
                 super.visitCtUnaryOperator(operator);
                 CtExpression operand = operator.getOperand();
                 switch (operator.getKind()) {
+                    case NOT:
+                        putValueFeature(operand, AtomicFeature.UOP_NOT_AF);
+                        break;
+                    case COMPL:
+                        putValueFeature(operand, AtomicFeature.UOP_COMPL_AF);
+                        break;
                     case POS:
-                        putValueFeature(operand, AtomicFeature.OP_ADD_AF);
+                        putValueFeature(operand, AtomicFeature.UOP_POS_AF);
                         break;
                     case NEG:
-                        putValueFeature(operand, AtomicFeature.OP_SUB_AF);
+                        putValueFeature(operand, AtomicFeature.UOP_NEG_AF);
                         break;
                     case PREINC:
+                        putValueFeature(operand, AtomicFeature.UOP_PREINC_AF);
+                        putValueFeature(operand, AtomicFeature.CHANGED_AF);
+                        break;
                     case POSTINC:
-                        putValueFeature(operand, AtomicFeature.UOP_INC_AF);
+                        putValueFeature(operand, AtomicFeature.UOP_POSTINC_AF);
                         putValueFeature(operand, AtomicFeature.CHANGED_AF);
                         break;
                     case PREDEC:
+                        putValueFeature(operand, AtomicFeature.UOP_PREDEC_AF);
+                        putValueFeature(operand, AtomicFeature.CHANGED_AF);
+                        break;
                     case POSTDEC:
-                        putValueFeature(operand, AtomicFeature.UOP_DEC_AF);
+                        putValueFeature(operand, AtomicFeature.UOP_POSTDEC_AF);
                         putValueFeature(operand, AtomicFeature.CHANGED_AF);
                         break;
                 }
@@ -231,6 +278,8 @@ public class ExtendedFeatureVisitor {
                 CtExpression LHS = assignment.getAssigned();
                 CtExpression RHS = assignment.getAssignment();
                 putValueFeature(LHS, AtomicFeature.ASSIGN_LHS_AF);
+                putValueFeature(LHS, AtomicFeature.AOP_ASSIGN_AF);
+                putValueFeature(RHS, AtomicFeature.AOP_ASSIGN_AF);
                 putValueFeature(LHS, AtomicFeature.CHANGED_AF);
                 if (RHS instanceof CtLiteral) {
                     Object v = ((CtLiteral)RHS).getValue();
@@ -254,24 +303,48 @@ public class ExtendedFeatureVisitor {
                 CtExpression RHS = assignment.getAssignment();
                 switch (assignment.getKind()) {
                     case PLUS:
-                        putValueFeature(LHS, AtomicFeature.OP_ADD_AF);
-                        putValueFeature(RHS, AtomicFeature.OP_ADD_AF);
+                        putValueFeature(LHS, AtomicFeature.AOP_PLUS_AF);
+                        putValueFeature(RHS, AtomicFeature.AOP_PLUS_AF);
                         break;
                     case MINUS:
-                        putValueFeature(LHS, AtomicFeature.OP_SUB_AF);
-                        putValueFeature(RHS, AtomicFeature.OP_SUB_AF);
+                        putValueFeature(LHS, AtomicFeature.AOP_MINUS_AF);
+                        putValueFeature(RHS, AtomicFeature.AOP_MINUS_AF);
                         break;
                     case MUL:
-                        putValueFeature(LHS, AtomicFeature.OP_MUL_AF);
-                        putValueFeature(RHS, AtomicFeature.OP_MUL_AF);
+                        putValueFeature(LHS, AtomicFeature.AOP_MUL_AF);
+                        putValueFeature(RHS, AtomicFeature.AOP_MUL_AF);
                         break;
                     case DIV:
-                        putValueFeature(LHS, AtomicFeature.OP_DIV_AF);
-                        putValueFeature(RHS, AtomicFeature.OP_DIV_AF);
+                        putValueFeature(LHS, AtomicFeature.AOP_DIV_AF);
+                        putValueFeature(RHS, AtomicFeature.AOP_DIV_AF);
                         break;
                     case MOD:
-                        putValueFeature(LHS, AtomicFeature.OP_MOD_AF);
-                        putValueFeature(RHS, AtomicFeature.OP_MOD_AF);
+                        putValueFeature(LHS, AtomicFeature.AOP_MOD_AF);
+                        putValueFeature(RHS, AtomicFeature.AOP_MOD_AF);
+                        break;
+                    case BITAND:
+                        putValueFeature(LHS, AtomicFeature.AOP_BITAND_AF);
+                        putValueFeature(RHS, AtomicFeature.AOP_BITAND_AF);
+                        break;
+                    case BITOR:
+                        putValueFeature(LHS, AtomicFeature.AOP_BITOR_AF);
+                        putValueFeature(RHS, AtomicFeature.AOP_BITOR_AF);
+                        break;
+                    case BITXOR:
+                        putValueFeature(LHS, AtomicFeature.AOP_BITXOR_AF);
+                        putValueFeature(RHS, AtomicFeature.AOP_BITXOR_AF);
+                        break;
+                    case SL:
+                        putValueFeature(LHS, AtomicFeature.AOP_SL_AF);
+                        putValueFeature(RHS, AtomicFeature.AOP_SL_AF);
+                        break;
+                    case SR:
+                        putValueFeature(LHS, AtomicFeature.AOP_SR_AF);
+                        putValueFeature(RHS, AtomicFeature.AOP_SR_AF);
+                        break;
+                    case USR:
+                        putValueFeature(LHS, AtomicFeature.AOP_USR_AF);
+                        putValueFeature(RHS, AtomicFeature.AOP_USR_AF);
                         break;
                 }
                 putValueFeature(LHS, AtomicFeature.CHANGED_AF);
@@ -283,8 +356,7 @@ public class ExtendedFeatureVisitor {
 
     // i really do not know why we need to remove some atomic features
     private Map<String, Set<AtomicFeature>> getFeatureResult() {
-        // FIXME: Going to filter out some messy stuff in NULL stmtTypeFeature
-        // We just want one type to dominate here
+        // todo check
 //        if (res.map.containsKey("@")) {
 //            Set<AtomicFeature> tmp = res.map.get("@");
 //            if (tmp.contains(AtomicFeature.STMT_LOOP_AF)) {

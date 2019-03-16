@@ -25,7 +25,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.CtScanner;
 
-// based on FeatureExtract.cpp todo: what is the difference between CtXXX and CtXXXReference?
+// based on FeatureExtract.cpp
 public class OriginalFeatureVisitor {
     boolean isReplace = false;
     Map<String, CtElement> valueExprInfo;
@@ -50,7 +50,7 @@ public class OriginalFeatureVisitor {
 //            if (v instanceof CtAssignment) {
 //                return;
 //            }
-            // todo: CtInvocation or CtExecutable ?
+            // CtInvocation or CtExecutable todo check
 //            if (v.getElements(new TypeFilter<>(CtInvocation.class)).size() > 0 && !isAbstractStub(v)) {
 //                return;
 //            }
@@ -70,7 +70,7 @@ public class OriginalFeatureVisitor {
             putValueFeature(atom, AtomicFeature.ABST_V_AF);
         }
         isReplace = repair.isReplace;
-        // meaningless todo: check
+        // meaningless todo check
 //        if (repair.kind == RepairKind.TightenConditionKind ||
 //                repair.kind == RepairKind.LoosenConditionKind ||
 //                repair.kind == RepairKind.GuardKind ||
@@ -92,7 +92,6 @@ public class OriginalFeatureVisitor {
             @Override
             public void scan(CtElement element) { // VisitExpr
                 super.scan(element);
-                // todo: check the difference between putValueFeature(null, xx) and putValueFeature(v, xx)
                 if (element instanceof CtLoop || element instanceof CtExpression && element.getParent() instanceof CtLoop) {
 //                    assert !isReplace;
                     putValueFeature(null, AtomicFeature.STMT_LOOP_AF);
@@ -283,8 +282,7 @@ public class OriginalFeatureVisitor {
 
     // i really do not know why we need to remove some atomic features
     private Map<String, Set<AtomicFeature>> getFeatureResult() {
-        // FIXME: Going to filter out some messy stuff in NULL stmtTypeFeature
-        // We just want one type to dominate here
+        // todo check
 //        if (res.map.containsKey("@")) {
 //            Set<AtomicFeature> tmp = res.map.get("@");
 //            if (tmp.contains(AtomicFeature.STMT_LOOP_AF)) {

@@ -38,12 +38,12 @@ public class ExtendedRepairGenerator implements RepairGenerator {
         this.compound_counter.clear();
     }
 
-    // todo: check this function
+    // todo check
     private boolean isTainted(CtStatement S) {
         if (S == null) return false;
         if (area.contains(S))
             return true;
-        // todo: the second condition is added by myself, to find out why Prophet does not need this
+        // why Prophet does not need the second condition todo check
         if (S instanceof CtStatementList && compound_counter.containsKey(S)) {
             CtStatementList CS = (CtStatementList) S;
             return compound_counter.get(CS) >= 2 || (compound_counter.get(CS) == 1 && CS.getStatements().size() == 1);
@@ -65,9 +65,8 @@ public class ExtendedRepairGenerator implements RepairGenerator {
         newCondition.setRightHandOperand(placeholder);
 
         CtIf S = n.clone();
+        S.setParent(n.getParent());
         S.setCondition(newCondition);
-        // S is n.clone() so S is guessed owning same parent as n
-//        S.setParent(n.getParent()); // for FUNC_ARGUMENT_VF
 
         Repair repair = new Repair();
         repair.kind = RepairKind.TightenConditionKind;
@@ -89,9 +88,8 @@ public class ExtendedRepairGenerator implements RepairGenerator {
         newCondition.setRightHandOperand(placeholder);
 
         CtIf S = n.clone();
+        S.setParent(n.getParent());
         S.setCondition(newCondition);
-        // S is n.clone() so S is guessed owning same parent as n
-//        S.setParent(n.getParent()); // for FUNC_ARGUMENT_VF
 
         Repair repair = new Repair();
         repair.kind = RepairKind.LoosenConditionKind;
@@ -111,9 +109,9 @@ public class ExtendedRepairGenerator implements RepairGenerator {
         guardCondition.setOperand(placeholder);
 
         CtIf guardIf = factory.createIf();
+        guardIf.setParent(n.getParent());
         guardIf.setCondition(guardCondition);
-        guardIf.setThenStatement(n.clone()); // i guess guardIf would be n.clone()'s parent automatically
-        guardIf.setParent(n.getParent()); // for FUNC_ARGUMENT_VF
+        guardIf.setThenStatement(n.clone());
 
         Repair repair = new Repair();
         repair.kind = RepairKind.GuardKind;
@@ -145,9 +143,9 @@ public class ExtendedRepairGenerator implements RepairGenerator {
             CtReturn<Object> RS = factory.createReturn();
             RS.setReturnedExpression(returnValue);
             CtIf IFS = factory.createIf();
+            IFS.setParent(n.getParent());
             IFS.setCondition(placeholder);
             IFS.setThenStatement(RS);
-            IFS.setParent(n.getParent()); // for FUNC_ARGUMENT_VF
             Repair repair = new Repair();
             repair.kind = RepairKind.IfExitKind;
             repair.isReplace = false;
@@ -162,9 +160,9 @@ public class ExtendedRepairGenerator implements RepairGenerator {
                 CtReturn<Object> RS = factory.createReturn();
                 RS.setReturnedExpression(placeholder2);
                 CtIf IFS = factory.createIf();
+                IFS.setParent(n.getParent());
                 IFS.setCondition(placeholder);
                 IFS.setThenStatement(RS);
-                IFS.setParent(n.getParent()); // for FUNC_ARGUMENT_VF
                 Repair repair = new Repair();
                 repair.kind = RepairKind.IfExitKind;
                 repair.isReplace = false;
@@ -177,9 +175,9 @@ public class ExtendedRepairGenerator implements RepairGenerator {
         if (repairAnalyzer.isInsideLoop(n)) {
             CtBreak BS = factory.createBreak();
             CtIf IFS = factory.createIf();
+            IFS.setParent(n.getParent());
             IFS.setCondition(placeholder);
             IFS.setThenStatement(BS);
-            IFS.setParent(n.getParent()); // for FUNC_ARGUMENT_VF
             Repair repair = new Repair();
             repair.kind = RepairKind.IfExitKind;
             repair.isReplace = false;
@@ -241,7 +239,7 @@ public class ExtendedRepairGenerator implements RepairGenerator {
 
     // isValidStmt() were commented as thought unnecessary
     // also I just doubt the validity of this kind of repair
-    private void genAddStatement(CtStatement n) {
+    private void genAddStmt(CtStatement n) {
         Set<CtElement> exprs = repairAnalyzer.getGlobalCandidateExprs(n);
         for (CtElement it: exprs) {
             ExtendedRepairAnalyzer.AtomReplaceVisitor V = repairAnalyzer.newAtomReplaceVisitor();
@@ -294,7 +292,7 @@ public class ExtendedRepairGenerator implements RepairGenerator {
         repair.oldRExpr = null; // related to ValueFeature
         repair.newRExpr = null; // related to ValueFeature
 
-        // todo: more checks
+        // todo check
         // based on matchCandidateWithHumanFix()
         switch (diffEntry.type) {
             case DeleteType: // kind
@@ -396,7 +394,7 @@ public class ExtendedRepairGenerator implements RepairGenerator {
                 return false;
             }
 
-            // todo: check all "Decl" in Prophet
+            // todo check
             // https://clang.llvm.org/doxygen/classclang_1_1DeclStmt.html
             private boolean isDeclStmt(CtStatement statement) {
                 return statement instanceof CtIf || statement instanceof CtLoop || statement instanceof CtSwitch || statement instanceof CtAssignment;
@@ -435,10 +433,10 @@ public class ExtendedRepairGenerator implements RepairGenerator {
                         // This is to compute whether Stmt n is the first
                         // non-decl statement in a CompoundStmt
                         genReplaceStmt(n);
-                        // todo: exact condition for DeclStmt and LabelStmt
+                        // todo check
                         if (!isDeclStmt(n) && !isLabelStmt(n))
                             genAddIfGuard(n);
-                        genAddStatement(n);
+                        genAddStmt(n);
                         genAddIfExit(n);
                     }
                     else if (n instanceof CtIf) {
@@ -451,7 +449,7 @@ public class ExtendedRepairGenerator implements RepairGenerator {
                                 firstS = CS.getStatements().get(0);
                         }
                         if (isTainted(thenBlock) || isTainted(firstS)) {
-                            genAddStatement(n);
+                            genAddStmt(n);
                         }
                     }
                 }
@@ -465,7 +463,7 @@ public class ExtendedRepairGenerator implements RepairGenerator {
     // based on LocationFuzzer class
     private Set<CtElement> fuzzyLocator(CtElement statement) {
         Set<CtElement> locations = new HashSet<>();
-        // todo: check all conditions like this
+        // todo check
         if (statement instanceof CtMethod || statement instanceof CtClass || statement instanceof CtIf || statement instanceof CtStatementList) {
             locations.add(statement);
         } else {
