@@ -29,7 +29,7 @@ public class Cardumen {
             for (File numFile : typeFile.listFiles((dir, name) -> !name.startsWith("."))) {
                 String pathName = typeFile.getName() + numFile.getName();
                 if (!catalogs.containsKey(pathName)) {
-                    catalogs.put(pathName, new LinkedHashMap<>());
+                    catalogs.put(pathName, new HashMap<>());
                 }
                 Map<File, List<File>> catalog = catalogs.get(pathName);
                 List<File> buggyFiles = new ArrayList<>();
@@ -83,35 +83,41 @@ public class Cardumen {
     // human patches: program-repair/defects4j-dissection
     // generated patches: kth-tcs/overfitting-analysis(/dataport/Training/patched_cardumen/)
     // buggy files & human patches & generated patches are given
-    public void handleData(boolean doShuffle, FeatureOption featureOption) throws NullPointerException {
+    public void handleData(FeatureOption featureOption) throws NullPointerException {
         List<String> filePaths = new ArrayList<>();
-        CodeDiffer codeDiffer = new CodeDiffer(true, featureOption);
-        Map<String, Map<File, List<File>>> catalogs = loadCardumenData();
-        int progressAll = catalogs.size(), progressNow = 0;
-        for (String pathName : catalogs.keySet()) {
-            Map<File, List<File>> catalog = catalogs.get(pathName);
-            for (File oldFile : catalog.keySet()) {
-                try {
-                    String vectorFilePath = CARDUMEN_VECTORS_DIR + featureOption.toString() + "/" + pathName + "/" + oldFile.getName();
-                    System.out.println(vectorFilePath);
-                    File vectorFile = new File(vectorFilePath);
-                    if (!vectorFile.exists()) {
-                        List<FeatureVector> featureVectors = codeDiffer.func4Cardumen(oldFile, catalog.get(oldFile));
-                        if (featureVectors.size() == 0) {
-                            // diff.commonAncestor() returns null value
-                            continue;
+        String binFileName = CARDUMEN_VECTORS_DIR + featureOption.toString() + "/" + "serial.bin";
+        if (new File(binFileName).exists()) {
+            filePaths = Helper.deserialize(binFileName);
+        } else {
+            CodeDiffer codeDiffer = new CodeDiffer(true, featureOption);
+            Map<String, Map<File, List<File>>> catalogs = loadCardumenData();
+            int progressAll = catalogs.size(), progressNow = 0;
+            for (String pathName : catalogs.keySet()) {
+                Map<File, List<File>> catalog = catalogs.get(pathName);
+                for (File oldFile : catalog.keySet()) {
+                    try {
+                        String vectorFilePath = CARDUMEN_VECTORS_DIR + featureOption.toString() + "/" + pathName + "/" + oldFile.getName();
+                        System.out.println(vectorFilePath);
+                        File vectorFile = new File(vectorFilePath);
+                        if (!vectorFile.exists()) {
+                            List<FeatureVector> featureVectors = codeDiffer.func4Cardumen(oldFile, catalog.get(oldFile));
+                            if (featureVectors.size() == 0) {
+                                // diff.commonAncestor() returns null value
+                                continue;
+                            }
+                            new Sample(vectorFile.getPath()).saveFeatureVectors(featureVectors);
                         }
-                        new Sample(vectorFile.getPath()).saveFeatureVectors(featureVectors);
+                        filePaths.add(vectorFilePath);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
-                    filePaths.add(vectorFilePath);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
                 }
+                progressNow += 1;
+                System.out.println(pathName + " : " + progressNow + " / " + progressAll);
             }
-            progressNow += 1;
-            System.out.println(pathName + " : " + progressNow + " / " + progressAll);
+            Helper.serialize(binFileName, filePaths);
         }
-        new FeatureLearner(doShuffle, featureOption).func4Demo(filePaths, CARDUMEN_PARAMETERS_DIR + "ParameterVector");
+        new FeatureLearner(featureOption).func4Demo(filePaths, CARDUMEN_PARAMETERS_DIR  + featureOption.toString() + "/" + "ParameterVector");
     }
 
     // by the way, feature types are reflected in prophet's way, which seems stricter
@@ -121,7 +127,7 @@ public class Cardumen {
         CodeDiffer codeDiffer = new CodeDiffer(false, featureOption);
         Map<String, Map<File, List<File>>> catalogs = loadCardumenData();
         for (String pathName : catalogs.keySet()) {
-            Map<String, List<FeatureVector>> metadata = new LinkedHashMap<>();
+            Map<String, List<FeatureVector>> metadata = new HashMap<>();
             Map<File, List<File>> catalog = catalogs.get(pathName);
             int progressAll = catalog.size(), progressNow = 0;
             String csvFileName = CARDUMEN_CSV_DIR + featureOption.toString() + "/" + pathName + ".csv";

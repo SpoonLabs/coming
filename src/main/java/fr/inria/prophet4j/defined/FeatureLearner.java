@@ -1,9 +1,7 @@
 package fr.inria.prophet4j.defined;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.logging.log4j.Level;
@@ -15,26 +13,23 @@ import fr.inria.prophet4j.defined.Structure.FeatureVector;
 import fr.inria.prophet4j.defined.Structure.ParameterVector;
 import fr.inria.prophet4j.defined.Structure.Sample;
 
+// consider improve the algorithm performance (time & space)
 // based on learner.cpp (follow the way of ProphetPaper)
 public class FeatureLearner {
-    private boolean doShuffle;
     private FeatureOption featureOption;
-    // create wholeSet to avoid using extra deep copy operation
-    private List<Sample> sampleSet = new ArrayList<>();
-    private List<Sample> trainingSet = new ArrayList<>();
-    private List<Sample> validationSet = new ArrayList<>();
+    private List<Sample> sampleData;
 
     private static final Logger logger = LogManager.getLogger(FeatureLearner.class.getName());
 
-    public FeatureLearner (boolean doShuffle, FeatureOption featureOption) {
-        this.doShuffle = doShuffle;
+    public FeatureLearner(FeatureOption featureOption) {
         this.featureOption = featureOption;
+        this.sampleData = new ArrayList<>();
     }
 
     // Maximum Entropy Model
-    private ParameterVector modelMaximumEntropy() {
-        double alpha = 1;
-        double gammaBest = 1;
+    private ParameterVector modelMaximumEntropy(List<Sample> trainingData, List<Sample> validationData) {
+        double alpha = 1.0;
+        double gammaBest = 1.0;
         final double L1 = 1e-3, L2 = 1e-3;
         ParameterVector theta = new ParameterVector(featureOption);
         ParameterVector thetaBest = new ParameterVector(featureOption);
@@ -42,48 +37,55 @@ public class FeatureLearner {
         int count = 0;
         while (count < 200) {
             ParameterVector delta = new ParameterVector(featureOption);
-            // training set
-            for (Sample sample: trainingSet) {
+            // handle training data
+            for (Sample sample : trainingData) {
                 List<FeatureVector> featureVectors = sample.loadFeatureVectors();
                 double[] tmp = new double[featureVectors.size()];
                 for (int i = 0; i < featureVectors.size(); i++) {
-                    tmp[i] = Math.exp(theta.dotProduct(featureVectors.get(i)));
+                    tmp[i] = Math.exp(featureVectors.get(i).score(theta));
                 }
                 double sumExp = Arrays.stream(tmp).sum();
+                // we need to make sure no infinite or NaN exists
+                // but assert seems ignored by program, why?
+                assert !Double.isInfinite(sumExp);
                 for (int i = 0; i < featureVectors.size(); i++) {
                     tmp[i] /= sumExp;
                 }
                 for (int i = 0; i < featureVectors.size(); i++) {
                     FeatureVector featureVector = featureVectors.get(i);
-                    for (int featureCrossId: featureVector.getFeatureCrossIds()) {
-                        delta.set(featureCrossId, delta.get(featureCrossId) + tmp[i]);
+                    for (FeatureCross featureCross : featureVector.getFeatureCrosses()) {
+                        int featureCrossId = featureCross.getId();
+                        delta.inc(featureCrossId, tmp[i]);
                     }
                 }
             }
             // compute delta
             for (int i = 0; i < delta.size(); i++) {
-                delta.set(i, delta.get(i) / trainingSet.size() - L1 * Math.signum(theta.get(i)) - L2 * 2 * theta.get(i));
+                delta.div(i, trainingData.size());
+                delta.dec(i, L1 * Math.signum(theta.get(i)) + L2 * 2 * theta.get(i));
             }
             // update theta
             for (int i = 0; i < delta.size(); i++) {
-                theta.set(i, theta.get(i) + alpha * delta.get(i));
+                theta.inc(i, alpha * delta.get(i));
             }
-            // validation set
-            double gamma = 0;
-            for (Sample sample: validationSet) {
+            // handle validation data
+            double gamma = 0.0;
+            for (Sample sample : validationData) {
                 List<FeatureVector> featureVectors = sample.loadFeatureVectors();
-                // here tmp means values of phi dotProduct theta
-                double[] tmp = new double[featureVectors.size()];
-                for (int i = 0; i < featureVectors.size(); i++)
-                    tmp[i] = theta.dotProduct(featureVectors.get(i));
+                double[] scores = new double[featureVectors.size()];
+                for (int i = 0; i < featureVectors.size(); i++) {
+                    // scores means values of phi dotProduct theta
+                    scores[i] = featureVectors.get(i).score(theta);
+                }
                 int rank = 0;
                 // the first one corresponds to the human-patch
                 for (int i = 1; i < featureVectors.size(); i++) {
-//                    if (tmp[i] >= tmp[0]) rank++;
-                    if (tmp[i] > tmp[0]) rank++;
+//                    if (scores[i] >= scores[0]) rank++;
+                    if (scores[i] > scores[0]) rank++;
                 }
-                gamma += ((double) rank) / featureVectors.size() / validationSet.size();
+                gamma += ((double) rank) / featureVectors.size();
             }
+            gamma /= validationData.size();
             // update results
             count += 1;
             if (gammaBest > gamma) {
@@ -99,35 +101,43 @@ public class FeatureLearner {
             }
         }
         logger.log(Level.INFO, "BestGamma " + gammaBest);
+        thetaBest.gamma = gammaBest;
         return thetaBest;
     }
 
     public void func4Demo(List<String> filePaths, String vectorFilePath) {
+        // sort all sample data as we want one distinct baseline
+        filePaths.sort(String::compareTo);
         for (String filePath : filePaths) {
             logger.log(Level.INFO, "Processing file " + filePath);
-            sampleSet.add(new Sample(filePath, featureOption));
+            sampleData.add(new Sample(filePath, featureOption));
         }
-        if (doShuffle) {
-            Collections.shuffle(sampleSet);
-        } // else get result of default case
+        logger.log(Level.INFO, "Size of SampleData: " + sampleData.size());
 
-        logger.log(Level.INFO, "Size of Sample-Set: " + sampleSet.size());
-
-        int sizeValidationSet = (int) (sampleSet.size() * 0.15);
-        assert (sizeValidationSet < sampleSet.size());
-
-        trainingSet.clear();
-        validationSet.clear();
-        int k = sampleSet.size() / sizeValidationSet;
-        for (int i = 0; i < sampleSet.size(); i++)
-            if (i % k == 0)
-                validationSet.add(sampleSet.get(i));
-            else
-                trainingSet.add(sampleSet.get(i));
-
-        logger.log(Level.INFO, "Size of Training-Set: " + trainingSet.size());
-        logger.log(Level.INFO, "Size of Validation-Set: " + validationSet.size());
-
-        modelMaximumEntropy().save(new File(vectorFilePath));
+        // k-fold Cross Validation
+        final int k = 5;
+        assert sampleData.size() >= k;
+        List<List<Sample>> folds = new ArrayList<>();
+        for (int i = 0; i < k; i++) {
+            folds.add(new ArrayList<>());
+        }
+        for (int i = 0; i < sampleData.size(); i++) {
+            folds.get(i % 5).add(sampleData.get(i));
+        }
+        double gammaAverage = 0.0;
+        for (int i = 0; i < k; i++) {
+            List<Sample> trainingData = new ArrayList<>();
+            for (int j = 0; j < k; j++) {
+                if (j != i) {
+                    trainingData.addAll(folds.get(j));
+                }
+            }
+            List<Sample> validationData = new ArrayList<>(folds.get(i));
+            ParameterVector parameterVector = modelMaximumEntropy(trainingData, validationData);
+            gammaAverage += parameterVector.gamma;
+//            parameterVector.save(vectorFilePath);
+        }
+        gammaAverage /= k;
+        logger.log(Level.INFO, k + "-fold Cross Validation: " + gammaAverage);
     }
 }

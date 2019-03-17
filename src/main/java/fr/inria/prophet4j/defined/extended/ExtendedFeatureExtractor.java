@@ -13,7 +13,6 @@ import fr.inria.prophet4j.defined.extended.ExtendedFeature.CrossType;
 import fr.inria.prophet4j.defined.extended.ExtendedFeature.AtomicFeature;
 import fr.inria.prophet4j.defined.extended.ExtendedFeature.RepairFeature;
 import fr.inria.prophet4j.defined.extended.ExtendedFeature.ValueFeature;
-import fr.inria.prophet4j.defined.Structure.FeatureOption;
 import fr.inria.prophet4j.defined.Structure.FeatureVector;
 import fr.inria.prophet4j.defined.Structure.Repair;
 import fr.inria.prophet4j.defined.extended.util.ExtendedFeatureVisitor;
@@ -111,14 +110,12 @@ public class ExtendedFeatureExtractor implements FeatureExtractor {
                 valueFeatures.add(ValueFeature.GLOBAL_VARIABLE_VF);
             }
         } else if (E instanceof CtExecutableReference){
-            // fixme: ...
-            // to make CALLEE_AF be meaningful
+            // to make CALLEE_AF be meaningful todo improve
             if (((CtExecutableReference) E).getParameters().size() > 0){
                 valueFeatures.add(ValueFeature.LOCAL_VARIABLE_VF);
             }
         } else if (E instanceof CtIf){
-            // fixme: ...
-            // to make R_STMT_COND_AF be meaningful
+            // to make R_STMT_COND_AF be meaningful todo improve
             valueFeatures.add(ValueFeature.LOCAL_VARIABLE_VF);
         }
 //        if (E instanceof CtVariable) {
@@ -132,7 +129,7 @@ public class ExtendedFeatureExtractor implements FeatureExtractor {
 //            else
 //                valueFeatures.add(ValueFeature.GLOBAL_VARIABLE_VF);
 //        }
-        // fixme: i feel this may be incorrect
+        // i feel this may be incorrect todo check
         if (E.getElements(new TypeFilter<>(CtField.class)).size() > 0)
             valueFeatures.add(ValueFeature.MEMBER_VF);
         if (E instanceof CtLiteral) {
@@ -183,8 +180,8 @@ public class ExtendedFeatureExtractor implements FeatureExtractor {
                 return v1;
             }));
         }
-        FeatureVector featureVector = new FeatureVector(FeatureOption.EXTENDED);
 
+        FeatureVector featureVector = new FeatureVector();
         // RepairFeatureNum     = RepairFeatureNum                      = 5
         EnumSet<RepairFeature> repairFeatures = getRepairFeatures(repair);
         // ModKind should be synonyms of RepairType
