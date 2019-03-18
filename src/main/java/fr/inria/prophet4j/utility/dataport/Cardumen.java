@@ -85,9 +85,9 @@ public class Cardumen {
     // buggy files & human patches & generated patches are given
     public void handleData(FeatureOption featureOption) throws NullPointerException {
         List<String> filePaths = new ArrayList<>();
-        String binFileName = CARDUMEN_VECTORS_DIR + featureOption.toString() + "/" + "serial.bin";
-        if (new File(binFileName).exists()) {
-            filePaths = Helper.deserialize(binFileName);
+        String binFilePath = CARDUMEN_VECTORS_DIR + featureOption.toString() + "/" + "serial.bin";
+        if (new File(binFilePath).exists()) {
+            filePaths = Helper.deserialize(binFilePath);
         } else {
             CodeDiffer codeDiffer = new CodeDiffer(true, featureOption);
             Map<String, Map<File, List<File>>> catalogs = loadCardumenData();
@@ -108,14 +108,14 @@ public class Cardumen {
                             new Sample(vectorFile.getPath()).saveFeatureVectors(featureVectors);
                         }
                         filePaths.add(vectorFilePath);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
                 progressNow += 1;
                 System.out.println(pathName + " : " + progressNow + " / " + progressAll);
             }
-            Helper.serialize(binFileName, filePaths);
+            Helper.serialize(binFilePath, filePaths);
         }
         new FeatureLearner(featureOption).func4Demo(filePaths, CARDUMEN_PARAMETERS_DIR  + featureOption.toString() + "/" + "ParameterVector");
     }
@@ -147,8 +147,8 @@ public class Cardumen {
                             }
                             metadata.put(entryName, featureVectors);
                             System.out.println("\tokay");
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
                     progressNow += 1;

@@ -95,8 +95,8 @@ public class PGA {
                 Path outPath = Paths.get(SIVA_UNPACKED_DIR.concat(indexEntry.getName()));
                 FileUtils.copyInputStreamToFile(entry, new File(outPath.toString()));
             }
-        } catch (Exception ex) {
-            logger.log(Level.ERROR, ex.toString(), ex);
+        } catch (Exception e) {
+            logger.log(Level.ERROR, e.toString(), e);
         }
     }
 
@@ -321,8 +321,8 @@ public class PGA {
                 filePaths.add(differ.vectorFilePath);
                 progressNow += 1;
                 System.out.println(progressNow + " / " + progressAll);
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         new FeatureLearner(featureOption).func4Demo(filePaths, SIVA_PARAMETERS_DIR + featureOption.toString() + "/"  + "ParameterVector");

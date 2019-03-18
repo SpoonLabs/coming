@@ -60,28 +60,15 @@ public class Helper {
                 csvPrinter.printRecord(entry);
             }
             csvPrinter.flush();
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    public static void serialize(String fileName, List<String> strings) {
-        try {
-            FileOutputStream fos = new FileOutputStream(fileName);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(strings);
-            oos.flush();
-            oos.close();
-            fos.close();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public static List<String> deserialize(String fileName) {
+    public static List<String> deserialize(String filePath) {
         List<String> strings = new ArrayList<>();
         try {
-            FileInputStream fis = new FileInputStream(fileName);
+            FileInputStream fis = new FileInputStream(filePath);
             ObjectInputStream ois = new ObjectInputStream(fis);
             strings = (List<String>) ois.readObject();
             ois.close();
@@ -90,5 +77,18 @@ public class Helper {
             e.printStackTrace();
         }
         return strings;
+    }
+
+    public static void serialize(String filePath, List<String> strings) {
+        try {
+            FileOutputStream fos = new FileOutputStream(filePath);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(strings);
+            oos.flush();
+            oos.close();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
