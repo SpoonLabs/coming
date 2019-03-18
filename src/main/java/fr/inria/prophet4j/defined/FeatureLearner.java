@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import fr.inria.prophet4j.defined.extended.ExtendedFeature;
+import fr.inria.prophet4j.defined.original.OriginalFeature;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,7 +15,6 @@ import fr.inria.prophet4j.defined.Structure.FeatureVector;
 import fr.inria.prophet4j.defined.Structure.ParameterVector;
 import fr.inria.prophet4j.defined.Structure.Sample;
 
-// consider improve the algorithm performance (time & space)
 // based on learner.cpp (follow the way of ProphetPaper)
 public class FeatureLearner {
     private FeatureOption featureOption;
@@ -24,6 +25,29 @@ public class FeatureLearner {
     public FeatureLearner(FeatureOption featureOption) {
         this.featureOption = featureOption;
         this.sampleData = new ArrayList<>();
+    }
+
+//    private double getLogSumExp(double[] array) {
+//        assert array.length > 0;
+//        double max = Arrays.stream(array).max().getAsDouble();
+//        double sum = 0.0;
+//        for (double value : array) {
+//            sum += Math.exp(value - max);
+//        }
+//        return max + Math.log(sum);
+//    }
+
+    private double[] newFeatureArray() {
+        int arraySize = 0;
+        switch (featureOption) {
+            case EXTENDED:
+                arraySize = ExtendedFeature.FEATURE_SIZE;
+                break;
+            case ORIGINAL:
+                arraySize = OriginalFeature.FEATURE_SIZE;
+                break;
+        }
+        return new double[arraySize];
     }
 
     // Maximum Entropy Model
@@ -39,24 +63,37 @@ public class FeatureLearner {
             ParameterVector delta = new ParameterVector(featureOption);
             // handle training data
             for (Sample sample : trainingData) {
-                List<FeatureVector> featureVectors = sample.loadFeatureVectors();
-                double[] tmp = new double[featureVectors.size()];
-                for (int i = 0; i < featureVectors.size(); i++) {
-                    tmp[i] = Math.exp(featureVectors.get(i).score(theta));
+                List<FeatureVector> featureVectors = sample.getFeatureVectors();
+                // gradient descent
+                double[] expValues = new double[featureVectors.size()];
+                for (int i = 1; i < featureVectors.size(); i++) {
+                    expValues[i] = featureVectors.get(i).score(theta);
                 }
-                double sumExp = Arrays.stream(tmp).sum();
-                // we need to make sure no infinite or NaN exists
-                // but assert seems ignored by program, why?
-                assert !Double.isInfinite(sumExp);
-                for (int i = 0; i < featureVectors.size(); i++) {
-                    tmp[i] /= sumExp;
+                double maxSuperscript = Arrays.stream(expValues).max().orElse(0);
+                for (int i = 1; i < featureVectors.size(); i++) {
+                    expValues[i] = Math.exp(expValues[i] - maxSuperscript);
                 }
-                for (int i = 0; i < featureVectors.size(); i++) {
+                double sumExpValues = Arrays.stream(expValues).sum();
+                double[] tmpArray = newFeatureArray();
+                for (int i = 1; i < featureVectors.size(); i++) {
                     FeatureVector featureVector = featureVectors.get(i);
-                    for (FeatureCross featureCross : featureVector.getFeatureCrosses()) {
+                    List<FeatureCross> featureCrosses = featureVector.getFeatureCrosses();
+                    for (FeatureCross featureCross : featureCrosses) {
                         int featureCrossId = featureCross.getId();
-                        delta.inc(featureCrossId, tmp[i]);
+                        tmpArray[featureCrossId] += expValues[i] * 1;
                     }
+                }
+                for(int i = 0; i < tmpArray.length; i++) {
+                    tmpArray[i] /= sumExpValues;
+                }
+                // compute delta
+                FeatureVector featureVector = featureVectors.get(0);
+                List<FeatureCross> featureCrosses = featureVector.getFeatureCrosses();
+                for (FeatureCross featureCross : featureCrosses) {
+                    delta.inc(featureCross.getId(), 1);
+                }
+                for (int i = 0; i < tmpArray.length; i++) {
+                    delta.dec(i, tmpArray[i]);
                 }
             }
             // compute delta
@@ -71,7 +108,7 @@ public class FeatureLearner {
             // handle validation data
             double gamma = 0.0;
             for (Sample sample : validationData) {
-                List<FeatureVector> featureVectors = sample.loadFeatureVectors();
+                List<FeatureVector> featureVectors = sample.getFeatureVectors();
                 double[] scores = new double[featureVectors.size()];
                 for (int i = 0; i < featureVectors.size(); i++) {
                     // scores means values of phi dotProduct theta
@@ -95,9 +132,9 @@ public class FeatureLearner {
                 logger.log(Level.INFO, count + " Update best gamma " + gammaBest);
             } else if (alpha > 0.01) {
                 alpha *= 0.9;
-                logger.log(Level.INFO, count + " Drop alpha to " + alpha);
-            } else {
-                logger.log(Level.INFO, count + " Keep alpha as " + alpha);
+//                logger.log(Level.INFO, count + " Drop alpha to " + alpha);
+//            } else {
+//                logger.log(Level.INFO, count + " Keep alpha as " + alpha);
             }
         }
         logger.log(Level.INFO, "BestGamma " + gammaBest);
@@ -109,8 +146,11 @@ public class FeatureLearner {
         // sort all sample data as we want one distinct baseline
         filePaths.sort(String::compareTo);
         for (String filePath : filePaths) {
-            logger.log(Level.INFO, "Processing file " + filePath);
-            sampleData.add(new Sample(filePath, featureOption));
+//            logger.log(Level.INFO, "Processing file " + filePath);
+            Sample sample = new Sample(filePath);
+            // it is possible as FeatureVector only utilize Set<FeatureCross>
+            sample.loadFeatureVectors();
+            sampleData.add(sample);
         }
         logger.log(Level.INFO, "Size of SampleData: " + sampleData.size());
 

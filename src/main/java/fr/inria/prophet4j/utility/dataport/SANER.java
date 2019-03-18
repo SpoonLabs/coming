@@ -66,9 +66,9 @@ public class SANER {
     // buggy files & human patches are given
     public void handleData(FeatureOption featureOption) throws NullPointerException {
         List<String> filePaths = new ArrayList<>();
-        String binFileName = SANER_VECTORS_DIR + featureOption.toString() + "/" + "serial.bin";
-        if (new File(binFileName).exists()) {
-            filePaths = Helper.deserialize(binFileName);
+        String binFilePath = SANER_VECTORS_DIR + featureOption.toString() + "/" + "serial.bin";
+        if (new File(binFilePath).exists()) {
+            filePaths = Helper.deserialize(binFilePath);
         } else {
             CodeDiffer codeDiffer = new CodeDiffer(true, featureOption);
             Map<String, Map<File, File>> catalogs = loadSANERData();
@@ -94,14 +94,14 @@ public class SANER {
                             new Sample(vectorFile.getPath()).saveFeatureVectors(featureVectors);
                         }
                         filePaths.add(SANER_VECTORS_DIR + featureOption.toString() + "/" + vectorFilePath);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
                 progressNow += 1;
                 System.out.println(pathName + " : " + progressNow + " / " + progressAll);
             }
-            Helper.serialize(binFileName, filePaths);
+            Helper.serialize(binFilePath, filePaths);
         }
         new FeatureLearner(featureOption).func4Demo(filePaths, SANER_PARAMETERS_DIR + featureOption.toString() + "/" + "ParameterVector");
     }
