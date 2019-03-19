@@ -1,5 +1,6 @@
 package fr.inria.coming.changeminer.entity;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -12,27 +13,26 @@ import fr.inria.coming.core.entities.RevisionResult;
  * @author Matias Martinez
  *
  */
-public class FinalResult<R extends IRevision> {
+@SuppressWarnings("serial")
+public class FinalResult<R extends IRevision> extends LinkedHashMap<R, RevisionResult> {
 
-	Map<R, RevisionResult> allResults;
 	Logger log = Logger.getLogger(CommitFinalResult.class.getName());
 
-	public FinalResult(Map<R, RevisionResult> allResults) {
+	public FinalResult() {
 		super();
-		this.allResults = allResults;
 	}
 
 	public Map<R, RevisionResult> getAllResults() {
-		return allResults;
+		return this;
 	}
 
 	public String toString() {
 		String r = "";
 
-		for (R revision : allResults.keySet()) {
+		for (R revision : this.keySet()) {
 
 			r += "\n" + ("" + revision.toString());
-			RevisionResult rv = allResults.get(revision);
+			RevisionResult rv = this.get(revision);
 
 			for (String processorName : rv.keySet()) {
 

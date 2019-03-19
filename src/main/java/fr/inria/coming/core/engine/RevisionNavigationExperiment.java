@@ -1,10 +1,8 @@
 package fr.inria.coming.core.engine;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.changeminer.entity.IRevision;
@@ -28,9 +26,10 @@ public abstract class RevisionNavigationExperiment<R extends IRevision> {
 	protected List<IFilter> filters = null;
 	protected List<IOutput> outputProcessors = new ArrayList<>();
 
-	protected Map<R, RevisionResult> allResults = new HashMap<>();
+	protected FinalResult<R> allResults = null;
 
 	public RevisionNavigationExperiment() {
+		allResults = new FinalResult<>();
 	}
 
 	public RevisionNavigationExperiment(RevisionOrder<R> navigationStrategy) {
@@ -73,13 +72,11 @@ public abstract class RevisionNavigationExperiment<R extends IRevision> {
 	protected FinalResult processEnd() {
 		if (ComingProperties.getPropertyBoolean("save_result_revision_analysis")) {
 
-			FinalResult finalResult = new FinalResult(allResults);
-
 			for (IOutput out : this.getOutputProcessors()) {
-				out.generateFinalOutput(finalResult);
+				out.generateFinalOutput(this.allResults);
 			}
 
-			return finalResult;
+			return this.allResults;
 		} else
 			return null;
 	}
