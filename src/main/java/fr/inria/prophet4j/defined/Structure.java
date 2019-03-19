@@ -132,7 +132,7 @@ public interface Structure {
 
         // -=
         public void dec(int index, double value) {
-            parameterArray[index] += value;
+            parameterArray[index] -= value;
         }
 
         // /=
