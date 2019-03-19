@@ -9,29 +9,29 @@ public class Demo {
     public static void main(String[] args) {
         try {
 //            new Cardumen().generateCSV(FeatureOption.ORIGINAL);
-//            new Cardumen().handleData(FeatureOption.ORIGINAL);
+            new Cardumen().handleData(FeatureOption.ORIGINAL);
 //            new PGA().handleCommits(FeatureOption.ORIGINAL);
-//            new SANER().handleData(FeatureOption.ORIGINAL);
+            new SANER().handleData(FeatureOption.ORIGINAL);
 
-            new Cardumen().handleData(FeatureOption.EXTENDED);
-            new SANER().handleData(FeatureOption.EXTENDED);
+//            new Cardumen().handleData(FeatureOption.EXTENDED);
+//            new SANER().handleData(FeatureOption.EXTENDED);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
     /*
     [original] Cardumen
-    19-03-18 18:19:18 INFO FeatureLearner:181 - 5-fold Cross Validation: 0.547542176751451
+    19-03-19 12:09:37 INFO FeatureLearner:181 - 5-fold Cross Validation: 0.17570800656099123
     [original] SANER
-    19-03-18 18:31:12 INFO FeatureLearner:181 - 5-fold Cross Validation: 0.37790482926831814
+    19-03-19 12:39:54 INFO FeatureLearner:181 - 5-fold Cross Validation: 0.011003139162889544
     [extended] Cardumen
-    19-03-18 18:34:33 INFO FeatureLearner:181 - 5-fold Cross Validation: 0.5543498117663634
+    19-03-19 12:45:08 INFO FeatureLearner:181 - 5-fold Cross Validation: 0.16407816084612153
     [extended] SANER
-    19-03-18 18:49:28 INFO FeatureLearner:181 - 5-fold Cross Validation: 0.38709105299340946
+    //
      */
-    // todo 1. improve Feature (extended version) this week?
-    // todo 2. improve FeatureCross (enhanced version) next week?
-    // todo 3. improve learner algorithm (or implement other models?) when?
+    // todo 1. improve Feature (extended version)
+    // todo 2. improve FeatureCross (enhanced version)
+    // todo 3. improve learner algorithm (or implement other models?)
     // todo (try on other candidate-patches generators)
     // todo (draw graphs on 1k commits for Martin)
     // todo (integrate Coming and Prophet4J)
