@@ -98,6 +98,14 @@ public class CommitGit implements Commit {
 										diff.getNewPath(), fileNextVersion, this, previousCommitName);
 								resultFileCommits.add(file);
 							}
+						} else {
+							String previousCommitName = this.revCommit.getParent(0).getName();
+							String filePrevVersion = getFileContent(this.revCommit.getParent(0).getId(),
+									diff.getOldPath());
+							FileCommit file = new FileCommitGit(diff.getOldPath(), filePrevVersion, "", "", this,
+									previousCommitName);
+							resultFileCommits.add(file);
+
 						}
 					}
 				}
