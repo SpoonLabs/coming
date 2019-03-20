@@ -1,5 +1,6 @@
 package fr.inria.prophet4j.defined.extended;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,7 @@ import fr.inria.prophet4j.defined.FeatureCross;
 
 import static fr.inria.prophet4j.defined.extended.ExtendedFeature.*;
 
-public class ExtendedFeatureCross implements FeatureCross {
+public class ExtendedFeatureCross implements FeatureCross, Serializable {
     private Integer id;
     private List<Feature> features;
 

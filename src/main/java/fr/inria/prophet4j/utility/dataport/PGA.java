@@ -95,8 +95,8 @@ public class PGA {
                 Path outPath = Paths.get(SIVA_UNPACKED_DIR.concat(indexEntry.getName()));
                 FileUtils.copyInputStreamToFile(entry, new File(outPath.toString()));
             }
-        } catch (Exception ex) {
-            logger.log(Level.ERROR, ex.toString(), ex);
+        } catch (Exception e) {
+            logger.log(Level.ERROR, e.toString(), e);
         }
     }
 
@@ -173,7 +173,7 @@ public class PGA {
                 String oldPath = diff.getOldPath();
                 String newPath = diff.getNewPath();
                 if (oldPath.endsWith(".java") && newPath.endsWith(".java")) {
-                    // todo: excluded some commits when files are renamed, correct it later
+                    // excluded some commits when files are renamed todo consider
                     if (oldPath.equals(newPath)) {
                         commitDiffer.addDiffer(oldCommitName, newCommitName, oldPath, newPath, featureOption);
                     } else {
@@ -246,7 +246,7 @@ public class PGA {
         }
     }
 
-    public void handleCommits(boolean doShuffle, FeatureOption featureOption) throws IOException, GitAPIException {
+    public void handleCommits(FeatureOption featureOption) throws IOException, GitAPIException {
         // if siva-unpacked files do not exist then uncommented the next line
         boolean existUnpackDir = new File(SIVA_UNPACKED_DIR).exists();
         boolean existCommitsDir = new File(SIVA_COMMITS_DIR).exists();
@@ -274,7 +274,7 @@ public class PGA {
         for (RevCommit commit : commits) {
             System.out.println("LogCommit: " + commit);
             if (lastCommit != null) {
-                // todo: why runDiff() for some commits returns "java.lang.RuntimeException: invalid diff"? (tested on the very first one case)
+                // why runDiff() for some commits returns "java.lang.RuntimeException: invalid diff"? (tested on the very first one case)
 //                runDiff(repository, lastCommit.getName(), commit.getName(), "README.md");
 //                listDiff(repository, git, lastCommit.getName(), commit.getName());
                 CommitDiffer commitDiffer = filterDiff(repository, git, lastCommit.getName(), commit.getName(), featureOption);
@@ -293,7 +293,7 @@ public class PGA {
             if (countCommits >= 10) {
                 break;
             }
-            /* 10036 != 12813 why? I guess because "we store all references (including all pull requests) from different repositories that share the same initial commit – root" not sure ... todo: maybe create one issue someday
+            /* 10036 != 12813 why? I guess because "we store all references (including all pull requests) from different repositories that share the same initial commit – root"
             https://github.com/apache/logging-log4j2
             10036["10fb9656a916d1c0ff57c28d7dcbfcb5bd313278.siva"]
             */
@@ -321,11 +321,11 @@ public class PGA {
                 filePaths.add(differ.vectorFilePath);
                 progressNow += 1;
                 System.out.println(progressNow + " / " + progressAll);
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
-        new FeatureLearner(doShuffle, featureOption).func4Demo(filePaths, SIVA_PARAMETERS_DIR + "ParameterVector");
+        new FeatureLearner(featureOption).func4Demo(filePaths, SIVA_PARAMETERS_DIR + featureOption.toString() + "/"  + "ParameterVector");
         // clean up here to not keep using more and more disk-space for these samples
 //        FileUtils.deleteDirectory(repoDir.getParentFile());
     }

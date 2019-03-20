@@ -167,7 +167,7 @@ public class CodeDiffer {
                     }
                 }
             }
-        } catch (IndexOutOfBoundsException ex) {
+        } catch (IndexOutOfBoundsException e) {
             logger.log(Level.WARN, "diff.commonAncestor() returns null value");
         }
         return featureVectors;
@@ -192,7 +192,7 @@ public class CodeDiffer {
                         }
                     }
                 }
-            } catch (IndexOutOfBoundsException ex) {
+            } catch (IndexOutOfBoundsException e) {
                 logger.log(Level.WARN, "diff.commonAncestor() returns null value");
             }
         }
@@ -222,8 +222,8 @@ public class CodeDiffer {
             for (FeatureVector featureVector : featureVectors) {
                 score += featureVector.score(parameterVector);
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return score;
     }

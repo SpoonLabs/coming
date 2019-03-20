@@ -9,14 +9,18 @@ import fr.inria.prophet4j.defined.original.OriginalFeature.ValueFeature;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
-import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.BufferedWriter;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Helper {
-    // todo: right now it is only needed by Original Features
+    // right now it is only needed by Original Features todo improve
     public static void dumpCSV(String csvFileName, Map<String, List<FeatureVector>> metadata) {
         List<String> header = new ArrayList<>();
         AtomicFeature[] atomicFeatures = AtomicFeature.values();
@@ -29,7 +33,9 @@ public class Helper {
         try {
             BufferedWriter writer = java.nio.file.Files.newBufferedWriter(Paths.get(csvFileName));
             CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])));
-            for (String key : metadata.keySet()) {
+            List<String> keyList = new ArrayList<>(metadata.keySet());
+            keyList.sort(String::compareTo);
+            for (String key : keyList) {
                 List<String> entry = new ArrayList<>();
                 Set<FeatureCross> overallFeatureCrosses = new HashSet<>();
                 for (FeatureVector featureVector : metadata.get(key)) {
@@ -54,8 +60,35 @@ public class Helper {
                 csvPrinter.printRecord(entry);
             }
             csvPrinter.flush();
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static List<String> deserialize(String filePath) {
+        List<String> strings = new ArrayList<>();
+        try {
+            FileInputStream fis = new FileInputStream(filePath);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            strings = (List<String>) ois.readObject();
+            ois.close();
+            fis.close();
+        } catch (ClassNotFoundException | IOException e) {
+            e.printStackTrace();
+        }
+        return strings;
+    }
+
+    public static void serialize(String filePath, List<String> strings) {
+        try {
+            FileOutputStream fos = new FileOutputStream(filePath);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(strings);
+            oos.flush();
+            oos.close();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

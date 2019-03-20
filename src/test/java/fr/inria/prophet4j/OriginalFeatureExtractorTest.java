@@ -132,7 +132,7 @@ public class OriginalFeatureExtractorTest {
                     test(AtomicFeature.ASSIGN_ZERO_AF, checkFeature);
                     test(AtomicFeature.ASSIGN_CONST_AF, checkFeature);
                     break;
-                case DEREF_AF: // these is another uncompleted case of DEREF_AF
+                case DEREF_AF: // these is another uncompleted case of DEREF_TF
                     str0 = "class Foo{public void bar(){\nint[] a={1};\nint b=0;\n}}";
                     str1 = "class Foo{public void bar(){\nint[] a={1};\nint b=0;\nb=a[0];\n}}";
                     assertEquals(Boolean.TRUE, check(helper.func4Test(str0, str1), checkFeature));
