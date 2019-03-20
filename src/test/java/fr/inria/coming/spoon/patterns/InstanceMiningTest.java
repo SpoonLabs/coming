@@ -238,6 +238,28 @@ public class InstanceMiningTest {
 	}
 
 	@Test
+	public void testMainPattern1LiteralRunnerSingleOutput() throws Exception {
+
+		Set<String> possitiveCommits = new HashSet<>();
+		possitiveCommits.add("c8cf81ce1f01d4cb213b389a7b85aa13634b7d95");
+
+		ComingMain main = new ComingMain();
+
+		CommandSummary cs = new CommandSummary();
+		cs.append("-location", "repogit4testv0");
+		cs.append("-mode", "mineinstance");
+		FinalResult finalResult = null;
+
+		cs.command.put("-action", ActionType.INS.toString());
+		cs.command.put("-entitytype", "Literal");
+
+		cs.command.put("-parenttype", "Assignment");
+		cs.command.put("-parameters", "outputperrevision:true");
+
+		finalResult = main.run(cs.flat());
+	}
+
+	@Test
 	public void testMainPattern1ParentAssingRunner() throws Exception {
 
 		Set<String> possitiveCommits = new HashSet<>();

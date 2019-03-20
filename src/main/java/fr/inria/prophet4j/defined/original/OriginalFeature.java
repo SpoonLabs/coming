@@ -14,8 +14,14 @@ public interface OriginalFeature extends Feature {
     // number of all possible features
     int FEATURE_SIZE = FEATURE_BASE_3 + AF_SIZE * VF_SIZE;
 
+    enum CrossType implements OriginalFeature {
+        RF_CT, // RepairFeatureNum     = RepairFeatureNum
+        POS_AF_RF_CT, // GlobalFeatureNum     = 3 * AtomFeatureNum * RepairFeatureNum
+        POS_AF_AF_CT, // VarCrossFeatureNum   = 3 * AtomFeatureNum * AtomFeatureNum
+        AF_VF_CT, // ValueCrossFeatureNum = AtomFeatureNum * ValueFeatureNum
+    }
+
     enum AtomicFeature implements OriginalFeature {
-        // todo: consider OperatorAssignment cases, namely CommutativeOp += -= *= /= %=
         OP_ADD_AF, // +a a+b +=
         OP_SUB_AF, // -a a-b -=
         OP_MUL_AF, // a*b *=
@@ -50,10 +56,10 @@ public interface OriginalFeature extends Feature {
         STMT_CALL_AF, // print()
         STMT_COND_AF, // if ...
         STMT_CONTROL_AF, // break continue return throw
-        R_STMT_ASSIGN_AF, // replace version of STMT_ASSIGN_AF
-        R_STMT_CALL_AF, // replace version of STMT_CALL_AF
-        R_STMT_COND_AF, // replace version of STMT_COND_AF
-        R_STMT_CONTROL_AF, // replace version of STMT_CONTROL_AF
+        R_STMT_ASSIGN_AF, // replace version
+        R_STMT_CALL_AF, // replace version
+        R_STMT_COND_AF, // replace version
+        R_STMT_CONTROL_AF, // replace version
         ADDRESS_OF_AF, // Inapplicable to Java
     }
 

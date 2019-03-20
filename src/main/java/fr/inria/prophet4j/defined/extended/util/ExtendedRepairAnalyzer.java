@@ -1,4 +1,4 @@
-package fr.inria.prophet4j.utility.original.util;
+package fr.inria.prophet4j.defined.extended.util;
 
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
@@ -8,7 +8,7 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 // based on LocalAnalyzer.cpp GlobalAnalyzer.cpp
-public class OriginalRepairAnalyzer {
+public class ExtendedRepairAnalyzer {
     public List<CtElement> getCondCandidateVars(CtElement element) {
         List<CtElement> ret = new ArrayList<>();
         // Global variables
@@ -110,7 +110,7 @@ public class OriginalRepairAnalyzer {
 
         // we implement one equivalent method instead of CtScanner
         public void TraverseStmt(CtElement element) {
-            // todo: pr spoon to support getting belonged CtEnum with one CtEnumValue
+            // pr spoon to support getting belonged CtEnum with one CtEnumValue todo consider
 //            List<CtEnumValue> enumValues = element.getElements(new TypeFilter<>(CtEnumValue.class));
 //            for (CtEnumValue enumValue : enumValues) {
 //                List<CtElement> exprs = L->getCandidateEnumConstant(enumValue);

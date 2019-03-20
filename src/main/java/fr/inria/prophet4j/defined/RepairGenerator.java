@@ -1,4 +1,4 @@
-package fr.inria.prophet4j.utility;
+package fr.inria.prophet4j.defined;
 
 import fr.inria.prophet4j.defined.Structure.Repair;
 

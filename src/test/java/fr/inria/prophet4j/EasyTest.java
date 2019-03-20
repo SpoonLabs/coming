@@ -6,6 +6,10 @@ import static org.junit.Assert.assertEquals;
 //import gumtree.spoon.diff.Diff;
 //import gumtree.spoon.diff.operations.Operation;
 import org.junit.Test;
+import spoon.Launcher;
+import spoon.reflect.code.CtAssignment;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.factory.CoreFactory;
 
 //import java.io.File;
 //import java.util.List;
@@ -15,6 +19,18 @@ public class EasyTest {
     public void testFeatureLearner() {
         assertEquals(Boolean.TRUE, true);
     }
+
+//    @Test
+//    public void testFactory() {
+//        CoreFactory factory = new Launcher().getFactory().Core();
+//        CtIf IFS = factory.createIf();
+//        CtAssignment a = factory.createAssignment();
+//        IFS.setThenStatement(a);
+//        System.out.println(a.getParent());
+//        CtAssignment b = a.clone();
+//        System.out.println(b.getParent()); // ParentNotInitializedException
+//        assertEquals(Boolean.TRUE, true);
+//    }
 
 //    @Test
 //    public void testChainSyntax() throws Exception {

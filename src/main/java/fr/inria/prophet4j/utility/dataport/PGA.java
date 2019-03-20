@@ -1,4 +1,4 @@
-package fr.inria.prophet4j.dataset;
+package fr.inria.prophet4j.utility.dataport;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.Level;
@@ -21,11 +21,11 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
-import fr.inria.prophet4j.defined.Structure;
 import fr.inria.prophet4j.defined.Structure.FeatureOption;
-import fr.inria.prophet4j.defined.Structure.FeatureManager;
-import fr.inria.prophet4j.utility.CodeDiffer;
-import fr.inria.prophet4j.utility.FeatureLearner;
+import fr.inria.prophet4j.defined.Structure.FeatureVector;
+import fr.inria.prophet4j.defined.Structure.Sample;
+import fr.inria.prophet4j.defined.CodeDiffer;
+import fr.inria.prophet4j.defined.FeatureLearner;
 import tech.sourced.siva.IndexEntry;
 import tech.sourced.siva.SivaReader;
 
@@ -95,13 +95,12 @@ public class PGA {
                 Path outPath = Paths.get(SIVA_UNPACKED_DIR.concat(indexEntry.getName()));
                 FileUtils.copyInputStreamToFile(entry, new File(outPath.toString()));
             }
-        } catch (Exception ex) {
-            logger.log(Level.ERROR, ex.toString(), ex);
+        } catch (Exception e) {
+            logger.log(Level.ERROR, e.toString(), e);
         }
     }
 
-    private DiffEntry diffFile(Repository repo, String oldCommit,
-                               String newCommit, String path) throws IOException, GitAPIException {
+    private DiffEntry diffFile(Repository repo, String oldCommit, String newCommit, String path) throws IOException, GitAPIException {
 //        Config config = new Config();
 //        config.setBoolean("diff", null, "renames", true);
 //        DiffConfig diffConfig = config.get(DiffConfig.KEY);
@@ -174,7 +173,7 @@ public class PGA {
                 String oldPath = diff.getOldPath();
                 String newPath = diff.getNewPath();
                 if (oldPath.endsWith(".java") && newPath.endsWith(".java")) {
-                    // todo: excluded some commits when files are renamed, correct it later
+                    // excluded some commits when files are renamed todo consider
                     if (oldPath.equals(newPath)) {
                         commitDiffer.addDiffer(oldCommitName, newCommitName, oldPath, newPath, featureOption);
                     } else {
@@ -247,7 +246,7 @@ public class PGA {
         }
     }
 
-    public void handleCommits(boolean doShuffle, FeatureOption featureOption) throws IOException, GitAPIException {
+    public void handleCommits(FeatureOption featureOption) throws IOException, GitAPIException {
         // if siva-unpacked files do not exist then uncommented the next line
         boolean existUnpackDir = new File(SIVA_UNPACKED_DIR).exists();
         boolean existCommitsDir = new File(SIVA_COMMITS_DIR).exists();
@@ -255,7 +254,7 @@ public class PGA {
             unpack();
         }
         int progressAll, progressNow = 0;
-        // prepare the whole dataset-set
+        // prepare the whole dataport-set
         List<Differ> differs = new ArrayList<>();
         File repoDir = new File(SIVA_UNPACKED_DIR);
         // now open the resulting repository with a FileRepositoryBuilder
@@ -275,7 +274,7 @@ public class PGA {
         for (RevCommit commit : commits) {
             System.out.println("LogCommit: " + commit);
             if (lastCommit != null) {
-                // todo: why runDiff() for some commits returns "java.lang.RuntimeException: invalid diff"? (tested on the very first one case)
+                // why runDiff() for some commits returns "java.lang.RuntimeException: invalid diff"? (tested on the very first one case)
 //                runDiff(repository, lastCommit.getName(), commit.getName(), "README.md");
 //                listDiff(repository, git, lastCommit.getName(), commit.getName());
                 CommitDiffer commitDiffer = filterDiff(repository, git, lastCommit.getName(), commit.getName(), featureOption);
@@ -284,7 +283,7 @@ public class PGA {
                     obtainDiff(repository, lastCommit, commitDiffer.getPaths(lastCommit.getName()));
                     obtainDiff(repository, commit, commitDiffer.getPaths(commit.getName()));
                 }
-                // add dataset into the whole dataset-set
+                // add dataport into the whole dataport-set
                 differs.addAll(commitDiffer.differs);
                 countDiffers += commitDiffer.differs.size();
             }
@@ -294,7 +293,7 @@ public class PGA {
             if (countCommits >= 10) {
                 break;
             }
-            /* 10036 != 12813 why? I guess because "we store all references (including all pull requests) from different repositories that share the same initial commit – root" not sure ... todo: maybe create one issue someday
+            /* 10036 != 12813 why? I guess because "we store all references (including all pull requests) from different repositories that share the same initial commit – root"
             https://github.com/apache/logging-log4j2
             10036["10fb9656a916d1c0ff57c28d7dcbfcb5bd313278.siva"]
             */
@@ -311,23 +310,22 @@ public class PGA {
                 System.out.println("================");
                 System.out.println(differ.vectorFilePath);
                 if (!vectorFile.exists()) {
-                    List<FeatureManager> featureManagers = codeDiffer.func4Demo(new File(differ.oldFilePath), new File(differ.newFilePath));
-                    if (featureManagers.size() == 0) {
+                    List<FeatureVector> featureVectors = codeDiffer.func4Demo(new File(differ.oldFilePath), new File(differ.newFilePath));
+                    if (featureVectors.size() == 0) {
                         // diff.commonAncestor() returns null value
                         progressNow += 1;
                         continue;
                     }
-                    // todo
-                    Structure.save(vectorFile, featureManagers);
+                    new Sample(vectorFile.getPath()).saveFeatureVectors(featureVectors);
                 }
                 filePaths.add(differ.vectorFilePath);
                 progressNow += 1;
                 System.out.println(progressNow + " / " + progressAll);
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
-        new FeatureLearner(doShuffle, featureOption).func4Demo(filePaths, SIVA_PARAMETERS_DIR + "PV");
+        new FeatureLearner(featureOption).func4Demo(filePaths, SIVA_PARAMETERS_DIR + featureOption.toString() + "/"  + "ParameterVector");
         // clean up here to not keep using more and more disk-space for these samples
 //        FileUtils.deleteDirectory(repoDir.getParentFile());
     }
