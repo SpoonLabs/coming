@@ -149,10 +149,11 @@ public class InstanceMiningTest {
 			DiffResult<Commit, Diff> diffs = (DiffResult<Commit, Diff>) commitResult.getAllResults().get(commit)
 					.getResultFromClass(FineGrainDifftAnalyzer.class);
 			assertNotNull(diffs);
-
+			// firsts commits, no changes, file introduction
 			if ("60b54977abe45f662daaa80ebfdf63ab4fe3a9b2".equals(commit.getName())
-					|| "ab71649c481971a9ad54f04797f5fd9cb133789b".equals(commit.getName())) {
-				// firsts commits, no changes, file introduction
+					|| "ab71649c481971a9ad54f04797f5fd9cb133789b".equals(commit.getName())
+					// Commit removement
+					|| "e56c63bd77e289266989ee35a3369c6374275c64".equals(commit.getName())) {
 				assertTrue(diffs.getAll().isEmpty());
 			} else
 				assertTrue("Not changes at: " + commit.getName(), diffs.getAll().size() > 0);
@@ -188,12 +189,15 @@ public class InstanceMiningTest {
 					.get(commit).getResultFromClass(PatternInstanceAnalyzer.class);
 			assertNotNull(patterns);
 
+			// firsts commits, no changes, file introduction
 			if ("60b54977abe45f662daaa80ebfdf63ab4fe3a9b2".equals(commit.getName())
-					|| "ab71649c481971a9ad54f04797f5fd9cb133789b".equals(commit.getName())) {
-				// firsts commits, no changes, file introduction
+					|| "ab71649c481971a9ad54f04797f5fd9cb133789b".equals(commit.getName())
+					// file removement, no changes
+					|| "e56c63bd77e289266989ee35a3369c6374275c64".equals(commit.getName())) {
+
 				assertTrue(patterns.getInfoPerDiff().isEmpty());
 			} else
-				assertTrue("Not changes at: " + commit.getName(), patterns.getInfoPerDiff().size() > 0);
+				assertTrue("Wrong: Not changes at: " + commit.getName(), patterns.getInfoPerDiff().size() > 0);
 
 			for (PatternInstancesFromDiff instancesdiff : patterns.getInfoPerDiff()) {
 				assertTrue(instancesdiff.getInstances().size() > 0);
