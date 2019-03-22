@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -50,6 +51,13 @@ import gumtree.spoon.diff.Diff;
  *
  */
 public class MainComingTest {
+	final String[] commitsId = new String[] { "60b54977abe45f662daaa80ebfdf63ab4fe3a9b2",
+			"ab71649c481971a9ad54f04797f5fd9cb133789b", "8d94514f4d888b7b4e8abd0d77b974a0c8e3baad",
+			"4120ab0c714911a9c9f26b591cb3222eaf57d127", "8c0e7110c9ebc3ba5158e8de0f73c80ec69e1001",
+			"646b3ad20d94d2b63335d1ae4c98980be274d703", "c8cf81ce1f01d4cb213b389a7b85aa13634b7d95",
+			"656aaf4049092218f99d035450ee59c40a0e1fbc", "01dd29c37f6044d9d1126d9db55a961cccaccfb7",
+			"6dac8ae81bd03bcae1e1fade064d3bb03de472c0", "fe76517014e580ddcb40ac04ea824d54ba741c8b",
+			"c6b1cd8204b10c324b92cdc3e44fe3ab6cfb1f5e", };
 
 	@Before
 	public void setUp() throws Exception {
@@ -128,6 +136,30 @@ public class MainComingTest {
 		nrHunks = 1;
 		commitId = "4120ab0c714911a9c9f26b591cb3222eaf57d127";
 		assertCommit(commits, nrHunks, commitId);
+
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testOrderOutput() throws Exception {
+		ComingMain cm = new ComingMain();
+		Object result = cm.run(new String[] { "-location", "repogit4testv0", "-hunkanalysis", "true" });
+		assertNotNull(result);
+		assertTrue(result instanceof CommitFinalResult);
+		CommitFinalResult cfres = (CommitFinalResult) result;
+		Map<Commit, RevisionResult> commits = cfres.getAllResults();
+
+		List<String> commitsInOrder = new ArrayList<>();
+		for (String commit : this.commitsId) {
+			commitsInOrder.add(commit);
+		}
+
+		int currentIndex = 0;
+		for (Commit commit : commits.keySet()) {
+
+			assertEquals(currentIndex, commitsInOrder.indexOf(commit.getName()));
+			currentIndex++;
+		}
 
 	}
 
@@ -444,8 +476,8 @@ public class MainComingTest {
 		ComingMain cm = new ComingMain();
 		Object result = cm.run(new String[] { "-location", "repogit4testv0",
 
-				"-mode", MyTestAnalyzer.class.getName() + ":" + HunkDifftAnalyzer.class.getName(),
-				"-parameters", "maxrevision:0" });
+				"-mode", MyTestAnalyzer.class.getName() + ":" + HunkDifftAnalyzer.class.getName(), "-parameters",
+				"maxrevision:0" });
 
 		assertEquals(2, cm.getExperiment().getAnalyzers().size());
 		MyTestAnalyzer cmanalyzer = (MyTestAnalyzer) cm.getExperiment().getAnalyzers().stream()

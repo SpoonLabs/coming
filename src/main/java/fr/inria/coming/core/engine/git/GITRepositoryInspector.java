@@ -28,12 +28,13 @@ public class GITRepositoryInspector extends RevisionNavigationExperiment<Commit>
 	public GITRepositoryInspector() {
 		// By default, in order.
 		super(new InOrderRevisionNavigation<Commit>());
+		this.allResults = new CommitFinalResult();
 	}
 
 	@Override
 	protected FinalResult processEnd() {
 		super.processEnd();
-		return new CommitFinalResult(allResults);
+		return this.allResults;
 	}
 
 	@Override
