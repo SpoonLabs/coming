@@ -1,7 +1,6 @@
 package fr.inria.prophet4j.defined;
 
 import fr.inria.prophet4j.defined.Structure.DiffType;
-import fr.inria.prophet4j.defined.Structure.FeatureOption;
 import fr.inria.prophet4j.defined.Structure.FeatureVector;
 import fr.inria.prophet4j.defined.Structure.ParameterVector;
 import fr.inria.prophet4j.defined.Structure.DiffEntry;
@@ -10,6 +9,7 @@ import fr.inria.prophet4j.defined.extended.ExtendedFeatureExtractor;
 import fr.inria.prophet4j.defined.extended.ExtendedRepairGenerator;
 import fr.inria.prophet4j.defined.original.OriginalFeatureExtractor;
 import fr.inria.prophet4j.defined.original.OriginalRepairGenerator;
+import fr.inria.prophet4j.utility.Option;
 import gumtree.spoon.AstComparator;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.*;
@@ -30,17 +30,17 @@ import java.util.stream.Collectors;
 public class CodeDiffer {
 
     private boolean forLearner;
-    private FeatureOption featureOption;
+    private Option option;
     private static final Logger logger = LogManager.getLogger(CodeDiffer.class.getName());
 
-    public CodeDiffer(boolean forLearner, FeatureOption featureOption){
+    public CodeDiffer(boolean forLearner, Option option){
         this.forLearner = forLearner;
-        this.featureOption = featureOption;
+        this.option = option;
     }
 
     private FeatureExtractor newFeatureExtractor() {
         FeatureExtractor featureExtractor = null;
-        switch (featureOption) {
+        switch (option.featureOption) {
             case EXTENDED:
                 featureExtractor = new ExtendedFeatureExtractor();
                 break;
@@ -53,7 +53,7 @@ public class CodeDiffer {
 
     private RepairGenerator newRepairGenerator(DiffEntry diffEntry) {
         RepairGenerator repairGenerator = null;
-        switch (featureOption) {
+        switch (option.featureOption) {
             case EXTENDED:
                 repairGenerator = new ExtendedRepairGenerator(diffEntry);
                 break;
@@ -152,18 +152,23 @@ public class CodeDiffer {
         try {
             FeatureExtractor featureExtractor = newFeatureExtractor();
             for (DiffEntry diffEntry : genDiffEntries(diff)) {
-                List<Repair> repairs = new ArrayList<>();
                 // as RepairGenerator receive diffEntry as parameter, we do not need ErrorLocalizer
                 RepairGenerator generator = newRepairGenerator(diffEntry);
-                // human repair (at index 0)
-                repairs.add(generator.obtainHumanRepair());
-                if (forLearner) {
-                    // repair candidates (at indexes after 0)
-                    repairs.addAll(generator.obtainRepairCandidates());
-                }
-                for (Repair repair: repairs) {
+                {
+                    Repair repair = generator.obtainHumanRepair();
+                    FeatureVector featureVector = new FeatureVector(true);
                     for (CtElement atom : repair.getCandidateAtoms()) {
-                        featureVectors.add(featureExtractor.extractFeature(repair, atom));
+                        featureVector.merge(featureExtractor.extractFeature(repair, atom));
+                    }
+                    featureVectors.add(featureVector);
+                }
+                if (forLearner) {
+                    for (Repair repair: generator.obtainRepairCandidates()) {
+                        FeatureVector featureVector = new FeatureVector(false);
+                        for (CtElement atom : repair.getCandidateAtoms()) {
+                            featureVector.merge(featureExtractor.extractFeature(repair, atom));
+                        }
+                        featureVectors.add(featureVector);
                     }
                 }
             }
@@ -173,36 +178,43 @@ public class CodeDiffer {
         return featureVectors;
     }
 
-    // for Cardumen, we do not need to obtainRepairCandidates as they are given
-    public List<FeatureVector> func4Cardumen(File oldFile, List<File> newFiles) throws Exception {
-        List<FeatureVector> featureVectors = new ArrayList<>();
+    // for DataLoader, we do not need to obtainRepairCandidates as they are given
+    public List<FeatureVector> func4Cardumen(File oldFile, List<File> newFiles) {
         AstComparator comparator = new AstComparator();
-        for (File newFile : newFiles) { // the first one in newFiles is human patch
-            Diff diff = comparator.compare(oldFile, newFile);
+        List<FeatureVector> featureVectors = new ArrayList<>();
+        for (int i = 0; i < newFiles.size(); i++) {
             try {
+                Diff diff = comparator.compare(oldFile, newFiles.get(i));
                 FeatureExtractor featureExtractor = newFeatureExtractor();
                 for (DiffEntry diffEntry : genDiffEntries(diff)) {
-                    List<Repair> repairs = new ArrayList<>();
                     // as RepairGenerator receive diffEntry as parameter, we do not need ErrorLocalizer
                     RepairGenerator generator = newRepairGenerator(diffEntry);
-                    repairs.add(generator.obtainHumanRepair());
-                    for (Repair repair: repairs) {
-                        for (CtElement atom : repair.getCandidateAtoms()) {
-                            featureVectors.add(featureExtractor.extractFeature(repair, atom));
-                        }
+                    Repair repair = generator.obtainHumanRepair();
+                    // the first one in newFiles is human patch
+                    FeatureVector featureVector = new FeatureVector(i == 0);
+                    for (CtElement atom : repair.getCandidateAtoms()) {
+                        featureVector.merge(featureExtractor.extractFeature(repair, atom));
                     }
+                    featureVectors.add(featureVector);
                 }
             } catch (IndexOutOfBoundsException e) {
                 logger.log(Level.WARN, "diff.commonAncestor() returns null value");
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return featureVectors;
     }
 
-    public List<FeatureVector> func4Demo(File oldFile, File newFile) throws Exception {
-        AstComparator comparator = new AstComparator();
-        Diff diff = comparator.compare(oldFile, newFile);
-        return genFeatureVectors(diff);
+    public List<FeatureVector> func4Demo(File oldFile, File newFile) {
+        try {
+            AstComparator comparator = new AstComparator();
+            Diff diff = comparator.compare(oldFile, newFile);
+            return genFeatureVectors(diff);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
     }
 
     // for FeatureExtractorTest.java
@@ -217,7 +229,26 @@ public class CodeDiffer {
         try {
             AstComparator comparator = new AstComparator();
             Diff diff = comparator.compare(oldFile, newFile);
-            List<FeatureVector> featureVectors = genFeatureVectors(diff);
+            List<FeatureVector> featureVectors = new ArrayList<>();
+
+            try {
+                FeatureExtractor featureExtractor = newFeatureExtractor();
+                for (DiffEntry diffEntry : genDiffEntries(diff)) {
+                    // as RepairGenerator receive diffEntry as parameter, we do not need ErrorLocalizer
+                    RepairGenerator generator = newRepairGenerator(diffEntry);
+                    {
+                        Repair repair = generator.obtainHumanRepair();
+                        FeatureVector featureVector = new FeatureVector(true);
+                        for (CtElement atom : repair.getCandidateAtoms()) {
+                            featureVector.merge(featureExtractor.extractFeature(repair, atom));
+                        }
+                        featureVectors.add(featureVector);
+                    }
+                }
+            } catch (IndexOutOfBoundsException e) {
+                logger.log(Level.WARN, "diff.commonAncestor() returns null value");
+            }
+
             // sometimes one patch file patches multi-defects
             for (FeatureVector featureVector : featureVectors) {
                 score += featureVector.score(parameterVector);

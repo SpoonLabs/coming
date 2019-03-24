@@ -10,6 +10,7 @@ import fr.inria.prophet4j.defined.FeatureCross;
 import static fr.inria.prophet4j.defined.extended.ExtendedFeature.*;
 
 public class ExtendedFeatureCross implements FeatureCross, Serializable {
+    static final long serialVersionUID = 1L;
     private Integer id;
     private List<Feature> features;
 
