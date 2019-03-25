@@ -76,6 +76,8 @@ public class PatternXMLParser implements PatternFileParser {
 
 					PatternEntity pEntity = new PatternEntity(type, value);
 					idEntities.put(idEntity, pEntity);
+					if (idEntity != null && !idEntity.isEmpty())
+						pEntity.setId(Integer.valueOf(idEntity));
 
 					NodeList nListParent = eElement.getElementsByTagName(PARENT);
 					List<String> parentsOfTheElement = new ArrayList<String>();

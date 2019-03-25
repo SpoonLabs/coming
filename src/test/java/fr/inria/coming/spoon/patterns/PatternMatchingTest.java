@@ -890,6 +890,32 @@ public class PatternMatchingTest {
 		assertPattern(diff, pattern);
 	}
 
+	@Test
+	public void testPatternInstanceToInstanceIssue38() throws Exception {
+
+		File s = getFile("testInsert4/1205753/EmbedPooledConnection/1205753_EmbedPooledConnection_0_s.java");
+		File t = getFile("testInsert4/1205753/EmbedPooledConnection/1205753_EmbedPooledConnection_0_t.java");
+
+		FineGrainDifftAnalyzer r = new FineGrainDifftAnalyzer();
+		Diff diff = r.getDiff(s, t);
+		System.out.println("Output: " + diff);
+		Assert.assertEquals(1, diff.getRootOperations().size());
+
+		File fl = new File(getClass().getResource("/pattern_specification/pattern_INS_2TypeRef.xml").getFile());
+
+		ChangePatternSpecification pattern = PatternXMLParser.parseFile(fl.getAbsolutePath());
+
+		assertNotNull(pattern);
+
+		DetectorChangePatternInstanceEngine detector = new DetectorChangePatternInstanceEngine();
+		ResultMapping mappings = detector.mappingActions(pattern, diff);
+		assertTrue(mappings.getMappings().size() > 0);
+		List<ChangePatternInstance> instances = detector.findPatternInstances(pattern, diff);
+		System.out.println("nr instances: " + instances.size());
+		assertTrue(instances.size() == 0);
+
+	}
+
 	public void assertPattern(Diff diffToAnalyze, ChangePatternSpecification pattern) {
 		DetectorChangePatternInstanceEngine detector = new DetectorChangePatternInstanceEngine();
 		ResultMapping mappings = detector.mappingActions(pattern, diffToAnalyze);
