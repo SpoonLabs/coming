@@ -1,29 +1,28 @@
 package fr.inria.prophet4j.defined;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import fr.inria.prophet4j.defined.extended.ExtendedFeature;
 import fr.inria.prophet4j.defined.original.OriginalFeature;
+import fr.inria.prophet4j.utility.Option;
+import fr.inria.prophet4j.utility.Support;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import fr.inria.prophet4j.defined.Structure.FeatureOption;
 import fr.inria.prophet4j.defined.Structure.FeatureVector;
 import fr.inria.prophet4j.defined.Structure.ParameterVector;
 import fr.inria.prophet4j.defined.Structure.Sample;
 
 // based on learner.cpp (follow the way of ProphetPaper)
 public class FeatureLearner {
-    private FeatureOption featureOption;
+    private Option option;
     private List<Sample> sampleData;
 
     private static final Logger logger = LogManager.getLogger(FeatureLearner.class.getName());
 
-    public FeatureLearner(FeatureOption featureOption) {
-        this.featureOption = featureOption;
+    public FeatureLearner(Option option) {
+        this.option = option;
         this.sampleData = new ArrayList<>();
     }
 
@@ -39,7 +38,7 @@ public class FeatureLearner {
 
     private double[] newFeatureArray() {
         int arraySize = 0;
-        switch (featureOption) {
+        switch (option.featureOption) {
             case EXTENDED:
                 arraySize = ExtendedFeature.FEATURE_SIZE;
                 break;
@@ -50,56 +49,89 @@ public class FeatureLearner {
         return new double[arraySize];
     }
 
-    // Maximum Entropy Model
-    private ParameterVector modelMaximumEntropy(List<Sample> trainingData, List<Sample> validationData) {
+    private ParameterVector learn(List<Sample> trainingData, List<Sample> validationData) {
         double alpha = 1.0;
         double gammaBest = 1.0;
-        final double L1 = 1e-3, L2 = 1e-3;
-        ParameterVector theta = new ParameterVector(featureOption);
-        ParameterVector thetaBest = new ParameterVector(featureOption);
+        final double lambda = 1e-3;
+        ParameterVector theta = new ParameterVector(option.featureOption);
+        ParameterVector thetaBest = new ParameterVector(option.featureOption);
 
         int count = 0;
         while (count < 200) {
-            ParameterVector delta = new ParameterVector(featureOption);
+            ParameterVector delta = new ParameterVector(option.featureOption);
             // handle training data
             for (Sample sample : trainingData) {
                 List<FeatureVector> featureVectors = sample.getFeatureVectors();
-                // gradient descent
-                double[] expValues = new double[featureVectors.size()];
-                for (int i = 1; i < featureVectors.size(); i++) {
-                    expValues[i] = featureVectors.get(i).score(theta);
-                }
-                double maxSuperscript = Arrays.stream(expValues).max().orElse(0);
-                for (int i = 1; i < featureVectors.size(); i++) {
-                    expValues[i] = Math.exp(expValues[i] - maxSuperscript);
-                }
-                double sumExpValues = Arrays.stream(expValues).sum();
-                double[] tmpArray = newFeatureArray();
-                for (int i = 1; i < featureVectors.size(); i++) {
+                // compute scores
+                double[] scores = new double[featureVectors.size()];
+                for (int i = 0; i < featureVectors.size(); i++) {
                     FeatureVector featureVector = featureVectors.get(i);
-                    List<FeatureCross> featureCrosses = featureVector.getFeatureCrosses();
-                    for (FeatureCross featureCross : featureCrosses) {
-                        int featureCrossId = featureCross.getId();
-                        tmpArray[featureCrossId] += expValues[i] * 1;
+                    scores[i] = featureVector.score(theta);
+                }
+                switch (option.getModelOption()) {
+                    case CROSS_ENTROPY: {
+                        // compute expValues
+                        double[] expValues = new double[featureVectors.size()];
+                        double maxSuperscript = Arrays.stream(scores).max().orElse(0);
+                        for (int i = 0; i < featureVectors.size(); i++) {
+                            expValues[i] = Math.exp(scores[i] - maxSuperscript);
+                        }
+                        double sumExpValues = Arrays.stream(expValues).sum();
+                        double[] tmpValues = newFeatureArray();
+                        for (int i = 0; i < featureVectors.size(); i++) {
+                            FeatureVector featureVector = featureVectors.get(i);
+                            List<FeatureCross> featureCrosses = featureVector.getFeatureCrosses();
+                            for (FeatureCross featureCross : featureCrosses) {
+                                int featureCrossId = featureCross.getId();
+                                tmpValues[featureCrossId] += expValues[i] * 1;
+                            }
+                        }
+                        // compute delta
+                        for (int i = 0; i < tmpValues.length; i++) {
+                            delta.dec(i, tmpValues[i] / sumExpValues);
+                        }
+                        long markedSize = featureVectors.stream().filter(FeatureVector::isMarked).count();
+                        for (FeatureVector featureVector : featureVectors) {
+                            if (featureVector.isMarked()) {
+                                List<FeatureCross> featureCrosses = featureVector.getFeatureCrosses();
+                                for (FeatureCross featureCross : featureCrosses) {
+                                    // 1 is derived before but i forget the procedure 03/24 todo check
+                                    // but i believe it is okay as 1 is also used in the original project
+                                    delta.inc(featureCross.getId(), 1.0 / markedSize);
+                                }
+                            }
+                        }
                     }
-                }
-                for(int i = 0; i < tmpArray.length; i++) {
-                    tmpArray[i] /= sumExpValues;
-                }
-                // compute delta
-                FeatureVector featureVector = featureVectors.get(0);
-                List<FeatureCross> featureCrosses = featureVector.getFeatureCrosses();
-                for (FeatureCross featureCross : featureCrosses) {
-                    delta.inc(featureCross.getId(), 1);
-                }
-                for (int i = 0; i < tmpArray.length; i++) {
-                    delta.dec(i, tmpArray[i]);
+                    break;
+                    case SUPPORT_VECTOR_MACHINE: {
+                        // unsuitable as we have multiVectors for each patch todo check
+                        double[] tmpValues = newFeatureArray();
+                        for (int i = 0; i < featureVectors.size(); i++) {
+                            FeatureVector featureVector = featureVectors.get(i);
+                            List<FeatureCross> featureCrosses = featureVector.getFeatureCrosses();
+                            for (FeatureCross featureCross : featureCrosses) {
+                                int featureCrossId = featureCross.getId();
+                                tmpValues[featureCrossId] += Math.max(0.0, scores[i] - scores[0] + 1);
+                            }
+                        }
+                        for (int i = 0; i < tmpValues.length; i++) {
+                            delta.dec(i, tmpValues[i]);
+                        }
+                    }
+                    break;
                 }
             }
             // compute delta
             for (int i = 0; i < delta.size(); i++) {
                 delta.div(i, trainingData.size());
-                delta.dec(i, L1 * Math.signum(theta.get(i)) + L2 * 2 * theta.get(i));
+                switch (option.getModelOption()) {
+                    case CROSS_ENTROPY:
+                        delta.dec(i, lambda * (Math.signum(theta.get(i)) + 2 * theta.get(i)));
+                        break;
+                    case SUPPORT_VECTOR_MACHINE:
+                        delta.dec(i, lambda * (2 * theta.get(i)));
+                        break;
+                }
             }
             // update theta
             for (int i = 0; i < delta.size(); i++) {
@@ -115,10 +147,14 @@ public class FeatureLearner {
                     scores[i] = featureVectors.get(i).score(theta);
                 }
                 int rank = 0;
-                // the first one corresponds to the human-patch
-                for (int i = 1; i < featureVectors.size(); i++) {
-//                    if (scores[i] >= scores[0]) rank++;
-                    if (scores[i] > scores[0]) rank++;
+                for (int i = 0; i < featureVectors.size(); i++) {
+                    if (featureVectors.get(i).isMarked()) {
+                        for (int j = 0; j < featureVectors.size(); j++) {
+                            if (!featureVectors.get(j).isMarked()) {
+                                if (scores[j] >= scores[i]) rank++;
+                            }
+                        }
+                    }
                 }
                 gamma += ((double) rank) / featureVectors.size();
             }
@@ -142,7 +178,8 @@ public class FeatureLearner {
         return thetaBest;
     }
 
-    public void func4Demo(List<String> filePaths, String vectorFilePath) {
+    public void func4Demo(List<String> filePaths) {
+        String parameterFilePath = Support.getFilePath(Support.DirType.PARAMETER_DIR, option) + "ParameterVector";
         // sort all sample data as we want one distinct baseline
         filePaths.sort(String::compareTo);
         for (String filePath : filePaths) {
@@ -164,6 +201,7 @@ public class FeatureLearner {
         for (int i = 0; i < sampleData.size(); i++) {
             folds.get(i % 5).add(sampleData.get(i));
         }
+        double gammaBest = 1.0;
         double gammaAverage = 0.0;
         for (int i = 0; i < k; i++) {
             List<Sample> trainingData = new ArrayList<>();
@@ -173,9 +211,12 @@ public class FeatureLearner {
                 }
             }
             List<Sample> validationData = new ArrayList<>(folds.get(i));
-            ParameterVector parameterVector = modelMaximumEntropy(trainingData, validationData);
+            ParameterVector parameterVector = learn(trainingData, validationData);
             gammaAverage += parameterVector.gamma;
-//            parameterVector.save(vectorFilePath);
+            if (parameterVector.gamma < gammaBest) {
+                gammaBest = parameterVector.gamma;
+                parameterVector.save(parameterFilePath);
+            }
         }
         gammaAverage /= k;
         logger.log(Level.INFO, k + "-fold Cross Validation: " + gammaAverage);

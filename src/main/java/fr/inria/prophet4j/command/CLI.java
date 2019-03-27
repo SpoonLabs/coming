@@ -1,4 +1,4 @@
-package fr.inria.prophet4j.utility;
+package fr.inria.prophet4j.command;
 
 /*
 To be able to select different feature sets, eg

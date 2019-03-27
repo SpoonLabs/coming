@@ -4,10 +4,10 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
+import fr.inria.prophet4j.utility.Option;
 import org.junit.Test;
 
 import fr.inria.prophet4j.defined.Feature;
-import fr.inria.prophet4j.defined.Structure.FeatureOption;
 import fr.inria.prophet4j.defined.Structure.FeatureVector;
 import fr.inria.prophet4j.defined.original.OriginalFeature.AtomicFeature;
 import fr.inria.prophet4j.defined.original.OriginalFeature.RepairFeature;
@@ -18,7 +18,7 @@ import fr.inria.prophet4j.defined.CodeDiffer;
 public class OriginalFeatureExtractorTest {
     private void test(Feature caseFeature, Feature checkFeature) {
         String str0, str1;
-        CodeDiffer helper = new CodeDiffer(false, FeatureOption.ORIGINAL);
+        CodeDiffer helper = new CodeDiffer(false, new Option());
         if (caseFeature instanceof AtomicFeature) {
             AtomicFeature atomicFeature = (AtomicFeature) caseFeature;
             switch (atomicFeature) {

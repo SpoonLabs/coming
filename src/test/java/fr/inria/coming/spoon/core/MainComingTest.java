@@ -29,6 +29,7 @@ import fr.inria.coming.core.entities.DiffResult;
 import fr.inria.coming.core.entities.HunkDiff;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.core.entities.interfaces.Commit;
+import fr.inria.coming.core.entities.interfaces.FileCommit;
 import fr.inria.coming.core.entities.interfaces.IFilter;
 import fr.inria.coming.core.entities.output.JSonChangeFrequencyOutput;
 import fr.inria.coming.core.filter.commitmessage.BugfixKeywordsFilter;
@@ -57,7 +58,7 @@ public class MainComingTest {
 			"646b3ad20d94d2b63335d1ae4c98980be274d703", "c8cf81ce1f01d4cb213b389a7b85aa13634b7d95",
 			"656aaf4049092218f99d035450ee59c40a0e1fbc", "01dd29c37f6044d9d1126d9db55a961cccaccfb7",
 			"6dac8ae81bd03bcae1e1fade064d3bb03de472c0", "fe76517014e580ddcb40ac04ea824d54ba741c8b",
-			"c6b1cd8204b10c324b92cdc3e44fe3ab6cfb1f5e", };
+			"c6b1cd8204b10c324b92cdc3e44fe3ab6cfb1f5e", "e56c63bd77e289266989ee35a3369c6374275c64" };
 
 	@Before
 	public void setUp() throws Exception {
@@ -160,6 +161,35 @@ public class MainComingTest {
 			assertEquals(currentIndex, commitsInOrder.indexOf(commit.getName()));
 			currentIndex++;
 		}
+
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testAssertCommitRemovedFile() throws Exception {
+		ComingMain cm = new ComingMain();
+		Object result = cm.run(new String[] { "-location", "repogit4testv0", "-hunkanalysis", "true" });
+		assertNotNull(result);
+		assertTrue(result instanceof CommitFinalResult);
+		CommitFinalResult cfres = (CommitFinalResult) result;
+		Map<Commit, RevisionResult> commits = cfres.getAllResults();
+
+		Commit c_e56c63bd77e289266989ee35a3369c6374275c64 = commits.keySet().stream()
+				.filter(e -> e.getName().equals("e56c63bd77e289266989ee35a3369c6374275c64")).findFirst().get();
+		assertNotNull(c_e56c63bd77e289266989ee35a3369c6374275c64);
+		assertTrue(c_e56c63bd77e289266989ee35a3369c6374275c64.getFileCommits().size() > 0);
+		FileCommit fc = c_e56c63bd77e289266989ee35a3369c6374275c64.getFileCommits().stream()
+				.filter(e -> e.getPreviousFileName().contains("CharSequenceUtils.java")).findFirst().get();
+
+		assertNotNull(fc.getPreviousVersion());
+		assertFalse(fc.getPreviousVersion().isEmpty());
+		assertNotNull(fc.getPreviousFileName());
+		assertFalse(fc.getPreviousFileName().isEmpty());
+
+		assertNotNull(fc.getNextVersion());
+		assertTrue(fc.getNextVersion().isEmpty());
+		assertNotNull(fc.getNextFileName());
+		assertTrue(fc.getNextFileName().isEmpty());
 
 	}
 

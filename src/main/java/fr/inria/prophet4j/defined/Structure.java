@@ -2,6 +2,7 @@ package fr.inria.prophet4j.defined;
 
 import fr.inria.prophet4j.defined.extended.ExtendedFeature;
 import fr.inria.prophet4j.defined.original.OriginalFeature;
+import fr.inria.prophet4j.utility.Option.FeatureOption;
 import org.apache.commons.io.FileUtils;
 import spoon.reflect.declaration.CtElement;
 
@@ -10,11 +11,6 @@ import java.nio.charset.Charset;
 import java.util.*;
 
 public interface Structure {
-    enum FeatureOption {
-        EXTENDED,
-        ORIGINAL,
-    }
-
     class Sample { // namely TrainingCase
         private String filePath;
         private List<FeatureVector> featureVectors;
@@ -64,9 +60,13 @@ public interface Structure {
     }
 
     class FeatureVector implements Serializable {
+        static final long serialVersionUID = 1L;
+        // if marked then this is for human repair
+        private boolean marked;
         private Set<FeatureCross> featureCrosses;
 
-        public FeatureVector() {
+        public FeatureVector(boolean marked) {
+            this.marked = marked;
             this.featureCrosses = new HashSet<>();
         }
 
@@ -88,6 +88,14 @@ public interface Structure {
             List<FeatureCross> list = new ArrayList<>(featureCrosses);
             list.sort(Comparator.comparingInt(FeatureCross::getId));
             return list;
+        }
+
+        public boolean isMarked() {
+            return this.marked;
+        }
+
+        public void merge(FeatureVector featureVector) {
+            this.featureCrosses.addAll(featureVector.getFeatureCrosses());
         }
 
         public double score(ParameterVector parameterVector) {
@@ -172,7 +180,7 @@ public interface Structure {
                     stringJoiner.add(String.valueOf(parameter));
                 }
                 File vectorFile = new File(filePath);
-                FileUtils.writeStringToFile(vectorFile, stringJoiner.toString(), Charset.defaultCharset(), true);
+                FileUtils.writeStringToFile(vectorFile, stringJoiner.toString(), Charset.defaultCharset(), false);
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -21,6 +21,7 @@ public interface ExtendedFeature extends Feature {
         AF_VF_CT, // ValueCrossFeatureNum = AtomFeatureNum * ValueFeatureNum
     }
 
+    // https://zh.wikibooks.org/zh-hans/Java/关键字
     enum AtomicFeature implements ExtendedFeature {
 //        OP_ADD_AF, // +a a+b +=
 //        OP_SUB_AF, // -a a-b -=
