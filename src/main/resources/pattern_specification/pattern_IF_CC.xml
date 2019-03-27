@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<pattern>
+    <entity id="1" type="If" />
+    <entity id="2" type="*">
+        <parent parentId="1" distance="10000"/>
+    </entity>
+    <entity id="3" type="Block">
+        <parent parentId="1" distance="10"/>
+    </entity>
+    <entity id="4" type="*">
+        <parent parentId="3" distance="10000"/>
+    </entity>
+    <action entityId="4" type="UNCHANGED_HIGH_PRIORITY"/>
+    <action entityId="2" type="*" />
+</pattern>

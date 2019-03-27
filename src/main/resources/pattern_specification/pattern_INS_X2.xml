@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<pattern>
+    <entity id="1" type="TypeReference"/>
+    <entity id="2" type="TypeReference"/>
+    <action entityId="1" type="INS"/>
+    <action entityId="2" type="INS"/>
+</pattern>
