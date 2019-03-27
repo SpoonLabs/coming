@@ -1,7 +1,10 @@
 package fr.inria.coming.changeminer.analyzer.instancedetector;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
@@ -38,6 +41,11 @@ public class DetectorChangePatternInstanceEngine {
 			Diff diffToAnalyze) {
 
 		ResultMapping mapping = mappingActions(changePatternSpecification, diffToAnalyze);
+
+		if (!mapping.getNotMapped().isEmpty()) {
+			log.debug("There are pattern actions not mapped: " + mapping.getNotMapped());
+			return Collections.EMPTY_LIST;
+		}
 		List<ChangePatternInstance> instances = calculateValidInstancesFromMapping(changePatternSpecification,
 				mapping.getMappings());
 
@@ -52,6 +60,9 @@ public class DetectorChangePatternInstanceEngine {
 
 		// All Combinations
 		List<ChangePatternInstance> instancesAllCombinations = allCombinations(changePatternSpecification, matching);
+
+		instancesAllCombinations = instancesAllCombinations.stream().filter(e -> validate(e))
+				.collect(Collectors.toList());
 
 		// Discarding illegal relations
 		// First, get relations between elements of the pattern
@@ -86,7 +97,6 @@ public class DetectorChangePatternInstanceEngine {
 					ChangePatternInstance ins = new ChangePatternInstance(changePatternSpecification);
 					ins.addInstance(matchingAction.getPatternAction(), matchingAction.getOperation());
 					ins.getMapping().put(pa, matchingAction);
-					// ins.getMatching().addAll(matchingAction.matching);
 					temp.add(ins);
 				} else {
 					for (ChangePatternInstance changePatternInstance : instancesAllCombinations) {
@@ -105,6 +115,75 @@ public class DetectorChangePatternInstanceEngine {
 		}
 		return instancesAllCombinations;
 
+	}
+
+	/**
+	 * 
+	 * 
+	 * @param instance
+	 * @return
+	 */
+	public boolean validate(ChangePatternInstance instance) {
+		return checkAbsenceNotMappedAction(instance) && checkEntitiesUsedOne(instance);
+	}
+
+	/**
+	 * This method ckecks if the entities are used correctly: eg,
+	 * 
+	 * @param instance
+	 * @return
+	 */
+	public boolean checkAbsenceNotMappedAction(ChangePatternInstance instance) {
+		for (PatternAction paction : instance.actionOperation.keySet()) {
+
+			if (!instance.getMapping().containsKey(paction)) {
+				log.debug("The action has not mapping: " + paction);
+				return false;
+			}
+
+			MatchingAction matchingAction = instance.getMapping().get(paction);
+
+			if (matchingAction.getMatching().isEmpty()) {
+				log.debug("The mappings for action is empty: " + paction);
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * This method ckecks if the entities are used correctly: eg,
+	 * 
+	 * @param instance
+	 * @return
+	 */
+	private boolean checkEntitiesUsedOne(ChangePatternInstance instance) {
+		List<Integer> ids = new ArrayList<>();
+		Map<CtElement, Integer> entitiesById = new java.util.HashMap<>();
+		for (PatternAction paction : instance.actionOperation.keySet()) {
+
+			MatchingAction matchingAction = instance.getMapping().get(paction);
+
+			// The first one is always pointed by an action.
+			MatchingEntity firstMatchingEntity = matchingAction.getMatching().get(0);
+			int id = firstMatchingEntity.patternEntity.getId();
+			if (id > 0 && ids.contains(id)) {
+				log.debug("Another action affect the same Entity: " + id);
+				return false;
+			} else {
+				ids.add(id);
+
+				CtElement affected = firstMatchingEntity.getAffectedNode();
+
+				if (entitiesById.containsKey(affected) && entitiesById.get(affected) != id) {
+					// The same entity mapped to another entity
+					log.debug("Same entity used twise: " + id);
+					return false;
+				}
+				entitiesById.put(affected, id);
+			}
+		}
+		return true;
 	}
 
 	/**

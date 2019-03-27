@@ -1,5 +1,6 @@
-package fr.inria.prophet4j.utility.dataport;
+package fr.inria.prophet4j.dataset;
 
+import fr.inria.prophet4j.utility.Option;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -21,11 +22,12 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
-import fr.inria.prophet4j.defined.Structure.FeatureOption;
 import fr.inria.prophet4j.defined.Structure.FeatureVector;
 import fr.inria.prophet4j.defined.Structure.Sample;
 import fr.inria.prophet4j.defined.CodeDiffer;
 import fr.inria.prophet4j.defined.FeatureLearner;
+import fr.inria.prophet4j.utility.Option.FeatureOption;
+import fr.inria.prophet4j.utility.Option.ModelOption;
 import tech.sourced.siva.IndexEntry;
 import tech.sourced.siva.SivaReader;
 
@@ -45,7 +47,7 @@ import java.util.Map;
 // https://github.com/src-d/siva-java
 // https://github.com/eclipse/jgit
 // https://github.com/centic9/jgit-cookbook
-// check whether it should be similar to BenchProgram.cpp
+// refactor this class todo check
 public class PGA {
     // pga list -u github.com/src-d/ -f json | jq -r 'select(.fileCount > 100) | .sivaFilenames[]' | pga get -i -o ~
     // pga list -l java -f json | jq -r 'select(.commitsCount > 10000) | select(.commitsCount < 10100) | select(.langsFilesCount[.langs | index("Java")]==(.langsFilesCount | max)) | .sivaFilenames[]' | pga get -i -o ~
@@ -160,7 +162,7 @@ public class PGA {
         }
     }
 
-    private CommitDiffer filterDiff(Repository repository, Git git, String oldCommitName, String newCommitName, FeatureOption featureOption) throws GitAPIException, IOException {
+    private CommitDiffer filterDiff(Repository repository, Git git, String oldCommitName, String newCommitName, Option option) throws GitAPIException, IOException {
         final List<DiffEntry> diffs = git.diff()
                 .setOldTree(prepareTreeParser(repository, oldCommitName))
                 .setNewTree(prepareTreeParser(repository, newCommitName))
@@ -175,7 +177,7 @@ public class PGA {
                 if (oldPath.endsWith(".java") && newPath.endsWith(".java")) {
                     // excluded some commits when files are renamed todo consider
                     if (oldPath.equals(newPath)) {
-                        commitDiffer.addDiffer(oldCommitName, newCommitName, oldPath, newPath, featureOption);
+                        commitDiffer.addDiffer(oldCommitName, newCommitName, oldPath, newPath, option);
                     } else {
                         System.out.println("oldPath is different from newPath");
                     }
@@ -217,11 +219,11 @@ public class PGA {
         String newFilePath;
         String vectorFilePath;
 
-        Differ(String oldCommitName, String newCommitName, String oldPath, String newPath, FeatureOption featureOption) {
+        Differ(String oldCommitName, String newCommitName, String oldPath, String newPath, Option option) {
             super();
             oldFilePath = SIVA_COMMITS_DIR + oldCommitName + "/" + oldPath;
             newFilePath = SIVA_COMMITS_DIR + newCommitName + "/" + newPath;
-            vectorFilePath = SIVA_VECTORS_DIR + featureOption.toString() + "/" + oldCommitName + "~" + newCommitName + "/" + newPath;
+            vectorFilePath = SIVA_VECTORS_DIR + option.featureOption.toString() + "/" + oldCommitName + "~" + newCommitName + "/" + newPath;
         }
     }
 
@@ -229,8 +231,8 @@ public class PGA {
         List<Differ> differs = new ArrayList<>();
         Map<String, ArrayList<String>> paths = new HashMap<>();
 
-        void addDiffer(String oldCommitName, String newCommitName, String oldPath, String newPath, FeatureOption featureOption) {
-            differs.add(new Differ(oldCommitName, newCommitName, oldPath, newPath, featureOption));
+        void addDiffer(String oldCommitName, String newCommitName, String oldPath, String newPath, Option option) {
+            differs.add(new Differ(oldCommitName, newCommitName, oldPath, newPath, option));
             if (!paths.containsKey(oldCommitName)) {
                 paths.put(oldCommitName, new ArrayList<>());
             }
@@ -246,7 +248,7 @@ public class PGA {
         }
     }
 
-    public void handleCommits(FeatureOption featureOption) throws IOException, GitAPIException {
+    public void handleCommits(Option option) throws IOException, GitAPIException {
         // if siva-unpacked files do not exist then uncommented the next line
         boolean existUnpackDir = new File(SIVA_UNPACKED_DIR).exists();
         boolean existCommitsDir = new File(SIVA_COMMITS_DIR).exists();
@@ -277,7 +279,7 @@ public class PGA {
                 // why runDiff() for some commits returns "java.lang.RuntimeException: invalid diff"? (tested on the very first one case)
 //                runDiff(repository, lastCommit.getName(), commit.getName(), "README.md");
 //                listDiff(repository, git, lastCommit.getName(), commit.getName());
-                CommitDiffer commitDiffer = filterDiff(repository, git, lastCommit.getName(), commit.getName(), featureOption);
+                CommitDiffer commitDiffer = filterDiff(repository, git, lastCommit.getName(), commit.getName(), option);
                 // obtain oldFile and newFile (save files to disk)
                 if (!existCommitsDir) {
                     obtainDiff(repository, lastCommit, commitDiffer.getPaths(lastCommit.getName()));
@@ -302,30 +304,26 @@ public class PGA {
         System.out.println(countDiffers + " Differs");
         progressAll = countDiffers;
 //        runDiff(repository, "5fddbeb678bd2c36c5e5c891ab8f2b143ced5baf", "5d7303c49ac984a9fec60523f2d5297682e16646", "README.md");
-        CodeDiffer codeDiffer = new CodeDiffer(true, featureOption);
+        CodeDiffer codeDiffer = new CodeDiffer(true, option);
         List<String> filePaths = new ArrayList<>();
         for (Differ differ : differs) {
-            try {
-                File vectorFile = new File(differ.vectorFilePath);
-                System.out.println("================");
-                System.out.println(differ.vectorFilePath);
-                if (!vectorFile.exists()) {
-                    List<FeatureVector> featureVectors = codeDiffer.func4Demo(new File(differ.oldFilePath), new File(differ.newFilePath));
-                    if (featureVectors.size() == 0) {
-                        // diff.commonAncestor() returns null value
-                        progressNow += 1;
-                        continue;
-                    }
-                    new Sample(vectorFile.getPath()).saveFeatureVectors(featureVectors);
+            File vectorFile = new File(differ.vectorFilePath);
+            System.out.println("================");
+            System.out.println(differ.vectorFilePath);
+            if (!vectorFile.exists()) {
+                List<FeatureVector> featureVectors = codeDiffer.func4Demo(new File(differ.oldFilePath), new File(differ.newFilePath));
+                if (featureVectors.size() == 0) {
+                    // diff.commonAncestor() returns null value
+                    progressNow += 1;
+                    continue;
                 }
-                filePaths.add(differ.vectorFilePath);
-                progressNow += 1;
-                System.out.println(progressNow + " / " + progressAll);
-            } catch (Exception e) {
-                e.printStackTrace();
+                new Sample(vectorFile.getPath()).saveFeatureVectors(featureVectors);
             }
+            filePaths.add(differ.vectorFilePath);
+            progressNow += 1;
+            System.out.println(progressNow + " / " + progressAll);
         }
-        new FeatureLearner(featureOption).func4Demo(filePaths, SIVA_PARAMETERS_DIR + featureOption.toString() + "/"  + "ParameterVector");
+        new FeatureLearner(option).func4Demo(filePaths);
         // clean up here to not keep using more and more disk-space for these samples
 //        FileUtils.deleteDirectory(repoDir.getParentFile());
     }

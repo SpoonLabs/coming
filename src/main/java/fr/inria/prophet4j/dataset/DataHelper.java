@@ -1,4 +1,4 @@
-package fr.inria.prophet4j.utility.dataport.util;
+package fr.inria.prophet4j.dataset;
 
 import fr.inria.prophet4j.defined.Feature;
 import fr.inria.prophet4j.defined.FeatureCross;
@@ -9,19 +9,14 @@ import fr.inria.prophet4j.defined.original.OriginalFeature.ValueFeature;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.BufferedWriter;
+import java.io.*;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Helper {
+class DataHelper {
     // right now it is only needed by Original Features todo improve
-    public static void dumpCSV(String csvFileName, Map<String, List<FeatureVector>> metadata) {
+    static void dumpCSV(String csvFileName, Map<String, List<FeatureVector>> metadata) {
         List<String> header = new ArrayList<>();
         AtomicFeature[] atomicFeatures = AtomicFeature.values();
         RepairFeature[] repairFeatures = RepairFeature.values();
@@ -65,7 +60,7 @@ public class Helper {
         }
     }
 
-    public static List<String> deserialize(String filePath) {
+    static List<String> deserialize(String filePath) {
         List<String> strings = new ArrayList<>();
         try {
             FileInputStream fis = new FileInputStream(filePath);
@@ -79,8 +74,12 @@ public class Helper {
         return strings;
     }
 
-    public static void serialize(String filePath, List<String> strings) {
+    static void serialize(String filePath, List<String> strings) {
         try {
+            File file = new File(filePath);
+            if (!file.exists()) {
+                file.getParentFile().mkdirs();
+            }
             FileOutputStream fos = new FileOutputStream(filePath);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(strings);
