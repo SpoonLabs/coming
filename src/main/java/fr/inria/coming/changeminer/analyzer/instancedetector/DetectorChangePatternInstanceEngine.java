@@ -40,6 +40,7 @@ public class DetectorChangePatternInstanceEngine {
 		ResultMapping mapping = mappingActions(changePatternSpecification, diffToAnalyze);
 		List<ChangePatternInstance> instances = calculateValidInstancesFromMapping(changePatternSpecification,
 				mapping.getMappings());
+
 		return instances;
 
 	}
@@ -126,14 +127,20 @@ public class DetectorChangePatternInstanceEngine {
 				// It has relation:
 				List<EntityRelation> relationsOfPatternAction = entitiesByAction.get(paction);
 				for (EntityRelation entityRelation : relationsOfPatternAction) {
-
 					// Get the two actions related by the Relation (one of them is paction)
 					PatternAction actionA = entityRelation.getAction1();
 					PatternAction actionB = entityRelation.getAction2();
+					boolean actionAIsNotPer = !ActionType.UNCHANGED.equals(actionA.getAction());
+					boolean actionBIsNotPer = !ActionType.UNCHANGED.equals(actionB.getAction());
 
 					//
-					if (!instance.getMapping().containsKey(actionA) || !instance.getMapping().containsKey(actionB)) {
+					if ((actionAIsNotPer ^ instance.getMapping().containsKey(actionA)) ||
+							(actionBIsNotPer ^ instance.getMapping().containsKey(actionB))){
 						return false;
+					}
+
+					if (!actionAIsNotPer || !actionBIsNotPer){
+						continue;
 					}
 
 					// get the matching of each action
@@ -184,7 +191,8 @@ public class DetectorChangePatternInstanceEngine {
 
 				Action action = operation.getAction();
 				// First, match the type of the action
-				if (matchActionTypes(action, getOperationType(patternAction))) {
+				ActionType patternOperationType = getOperationType(patternAction);
+				if (matchActionTypes(action, patternOperationType) || ActionType.UNCHANGED.equals(patternOperationType)) {
 					// when, match the elements affected by the action.
 					List<MatchingEntity> matching = matchElements(operation, patternAction.getAffectedEntity());
 
