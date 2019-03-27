@@ -15,11 +15,3 @@ nb-actions.xml
 .classpath
 .externalToolBuilders/
 maven-eclipse.xml
-out/
-repogit4testv0/
-apollo/
-netty/
-mozilla/
-focus-android/
-.idea/
-*.xml

@@ -1,5 +1,19 @@
 package fr.inria.coming.main;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.commons.cli.BasicParser;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.UnrecognizedOptionException;
+import org.apache.log4j.Logger;
+
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.HunkDifftAnalyzer;
 import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstanceAnalyzer;
@@ -25,18 +39,9 @@ import fr.inria.coming.core.extensionpoints.PlugInLoader;
 import fr.inria.coming.core.extensionpoints.changepattern.PatternFileParser;
 import fr.inria.coming.core.filter.commitmessage.BugfixKeywordsFilter;
 import fr.inria.coming.core.filter.commitmessage.KeyWordsMessageFilter;
-import fr.inria.coming.core.filter.customcommit.IssueRelateFilter;
 import fr.inria.coming.core.filter.diff.NbHunkFilter;
 import fr.inria.coming.core.filter.files.CommitSizeFilter;
 import fr.inria.coming.core.filter.files.ContainTestFilterFilter;
-import org.apache.commons.cli.*;
-import org.apache.log4j.Logger;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * 
@@ -177,7 +182,7 @@ public class ComingMain {
 		return result;
 	}
 
-	private void loadFilters() throws IOException {
+	private void loadFilters() {
 		experiment.setFilters(createFilters());
 	}
 
@@ -287,7 +292,7 @@ public class ComingMain {
 		return null;
 	}
 
-	private List<IFilter> createFilters() throws IOException {
+	private List<IFilter> createFilters() {
 		List<IFilter> filters = new ArrayList<IFilter>();
 		String filterProperty = ComingProperties.getProperty("filter");
 		if (filterProperty == null || filterProperty.isEmpty())
@@ -307,8 +312,6 @@ public class ComingMain {
 				filters.add(new CommitSizeFilter());
 			else if ("withtest".equals(singlefilter))
 				filters.add(new ContainTestFilterFilter());
-			else if ("issuerelat".equals(singlefilter))
-				filters.add(new IssueRelateFilter());//extend filter for Tangbao's work
 			else {
 				IFilter filterLoaded = loadFilter(singlefilter);
 				if (filterLoaded != null) {
