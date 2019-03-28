@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<pattern>
+    <entity id="1" type="If" >
+    </entity>
+
+    <entity id="2" type="*">
+    </entity>
+
+    <entity id="4" type="*">
+    </entity>
+
+    <entity id="5" type="*">
+        <parent parentId="1" distance="100"/>
+    </entity>
+
+
+    <action entityId="4" type="MOV"/>
+    <action entityId="1" type="INS" />
+    <action entityId="5" type="*"/>
+    <action entityId="2" type="UNCHANGED"/>
+</pattern>
