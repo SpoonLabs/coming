@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<pattern>
+    <entity id="1" type="Invoke" />
+    <entity id="2" type="*">
+        <parent parentId="1" distance="1"/>
+    </entity>
+    <action entityId="2" type="UPDATE"/>
+</pattern>

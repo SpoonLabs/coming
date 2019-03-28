@@ -123,16 +123,16 @@ public class UnchangedActionTest {
                 "patterns_examples/case8/INS_X2_false_t.java");
     }
 
-    @Ignore
     @Test
+    @Ignore
     public void testIfApc() throws Exception {
         testExist("/pattern_specification/pattern_IF_APC.xml",
                 "patterns_examples/case9/Ifapc_s.java",
                 "patterns_examples/case9/Ifapc_t.java");
     }
 
-    @Ignore
     @Test
+    @Ignore
     public void testNoIfApc() throws Exception {
         testNoExist("/pattern_specification/pattern_IF_APC.xml",
                 "patterns_examples/case9/Ifapc_s.java",
