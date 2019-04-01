@@ -43,11 +43,29 @@ public class ExtendedFeatureCross implements FeatureCross, Serializable {
             int ordinal0 = id - FEATURE_BASE_0;
             this.features.add(RepairFeature.values()[ordinal0]);
         }
+//        if (id >= FEATURE_BASE_2) {
+//            int tmp = id - FEATURE_BASE_2;
+//            int ordinal0 = tmp / SF_SIZE;
+//            int ordinal1 = tmp % SF_SIZE;
+//            this.features.add(RepairFeature.values()[ordinal0]);
+//            this.features.add(ValueFeature.values()[ordinal1]);
+//        } else if (id >= FEATURE_BASE_1) {
+//            int tmp = id - FEATURE_BASE_1;
+//            int ordinal0 = tmp / AF_SIZE;
+//            int ordinal1 = tmp % AF_SIZE;
+//            this.features.add(Position.values()[ordinal0]);
+//            this.features.add(AtomicFeature.values()[ordinal1]);
+//        } else if (id >= FEATURE_BASE_0) {
+//            int tmp = id - FEATURE_BASE_0;
+//            int ordinal0 = tmp / AF_SIZE;
+//            int ordinal1 = tmp % AF_SIZE;
+//            this.features.add(Position.values()[ordinal0]);
+//            this.features.add(AtomicFeature.values()[ordinal1]);
+//        }
     }
 
     public ExtendedFeatureCross(CrossType crossType, List<Feature> features) {
         int ordinal0, ordinal1, ordinal2;
-
         switch (crossType) {
             case RF_CT:
                 assert features.size() == 1;
@@ -83,6 +101,30 @@ public class ExtendedFeatureCross implements FeatureCross, Serializable {
                 ordinal1 = ((ValueFeature) features.get(1)).ordinal();
                 this.id = FEATURE_BASE_3 + ordinal0 * VF_SIZE + ordinal1;
                 break;
+//            case POS_AF_CT4SRC:
+//                assert features.size() == 2;
+//                assert features.get(0) instanceof Position;
+//                assert features.get(1) instanceof AtomicFeature;
+//                ordinal0 = ((Position) features.get(0)).ordinal();
+//                ordinal1 = ((AtomicFeature) features.get(1)).ordinal();
+//                this.id = FEATURE_BASE_0 + ordinal0 * AF_SIZE + ordinal1;
+//                break;
+//            case POS_AF_CT4DST:
+//                assert features.size() == 2;
+//                assert features.get(0) instanceof Position;
+//                assert features.get(1) instanceof AtomicFeature;
+//                ordinal0 = ((Position) features.get(0)).ordinal();
+//                ordinal1 = ((AtomicFeature) features.get(1)).ordinal();
+//                this.id = FEATURE_BASE_1 + ordinal0 * AF_SIZE + ordinal1;
+//                break;
+//            case RF_SF_CT:
+//                assert features.size() == 2;
+//                assert features.get(0) instanceof RepairFeature;
+//                assert features.get(1) instanceof ValueFeature;
+//                ordinal0 = ((RepairFeature) features.get(0)).ordinal();
+//                ordinal1 = ((ValueFeature) features.get(1)).ordinal();
+//                this.id = FEATURE_BASE_2 + ordinal0 * SF_SIZE + ordinal1;
+//                break;
         }
         this.features = features;
     }

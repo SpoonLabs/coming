@@ -109,7 +109,7 @@ public interface Structure {
     }
 
     class ParameterVector {
-        public double gamma = 0.0;
+        public double gamma = 0;
         private int arraySize = 0;
         private double[] parameterArray;
 
@@ -154,7 +154,7 @@ public interface Structure {
         }
 
         public double dotProduct(FeatureVector featureVector) {
-            double res = 0.0;
+            double res = 0;
             for (FeatureCross featureCross : featureVector.getFeatureCrosses()) {
                 int featureCrossId = featureCross.getId();
                 res += parameterArray[featureCrossId];

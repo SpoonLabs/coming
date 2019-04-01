@@ -289,8 +289,8 @@ public class OriginalRepairGenerator implements RepairGenerator {
         repair.srcElem = diffEntry.srcNode;
         repair.dstElem = diffEntry.dstNode;
         repair.atoms.addAll(new ArrayList<>());
-        repair.oldRExpr = null; // related to ValueFeature
-        repair.newRExpr = null; // related to ValueFeature
+        repair.oldRExpr = null; // related to SchemaFeature
+        repair.newRExpr = null; // related to SchemaFeature
 
         // todo check
         // based on matchCandidateWithHumanFix()

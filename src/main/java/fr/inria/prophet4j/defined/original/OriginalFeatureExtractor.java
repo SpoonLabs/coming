@@ -99,8 +99,6 @@ public class OriginalFeatureExtractor implements FeatureExtractor {
                 }
             }
         }
-        if (valueStr.contains("length") || valueStr.contains("size"))
-            valueFeatures.add(ValueFeature.SIZE_LITERAL_VF);
         assert(valueExprInfo.containsKey(valueStr));
         CtElement E = valueExprInfo.get(valueStr);
         if (E instanceof CtVariableAccess || E instanceof CtArrayAccess || E instanceof CtLocalVariable) {
@@ -120,15 +118,17 @@ public class OriginalFeatureExtractor implements FeatureExtractor {
         }
 //        if (E instanceof CtVariable) {
 //            if (E instanceof CtLocalVariable)
-//                valueFeatures.add(ValueFeature.LOCAL_VARIABLE_VF);
+//                valueFeatures.add(SchemaFeature.LOCAL_VARIABLE_VF);
 //            else
-//                valueFeatures.add(ValueFeature.GLOBAL_VARIABLE_VF);
+//                valueFeatures.add(SchemaFeature.GLOBAL_VARIABLE_VF);
 //        } else if (E instanceof CtVariableReference) {
 //            if (E instanceof CtLocalVariableReference)
-//                valueFeatures.add(ValueFeature.LOCAL_VARIABLE_VF);
+//                valueFeatures.add(SchemaFeature.LOCAL_VARIABLE_VF);
 //            else
-//                valueFeatures.add(ValueFeature.GLOBAL_VARIABLE_VF);
+//                valueFeatures.add(SchemaFeature.GLOBAL_VARIABLE_VF);
 //        }
+        if (valueStr.contains("length") || valueStr.contains("size"))
+            valueFeatures.add(ValueFeature.SIZE_LITERAL_VF);
         // i feel this may be incorrect todo check
         if (E.getElements(new TypeFilter<>(CtField.class)).size() > 0)
             valueFeatures.add(ValueFeature.MEMBER_VF);
@@ -292,7 +292,7 @@ public class OriginalFeatureExtractor implements FeatureExtractor {
             Set<ValueFeature> valueFeatures = getValueFeature(key, repair, valueExprInfo);
             for (Feature atomicFeature : atomicFeatures) {
                 for (Feature valueFeature : valueFeatures) {
-                    // AF_VF_CT
+                    // RF_SF_CT
                     List<Feature> valueCrossFeature = new ArrayList<>();
                     valueCrossFeature.add(atomicFeature);
                     valueCrossFeature.add(valueFeature);

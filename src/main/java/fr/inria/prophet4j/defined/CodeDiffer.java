@@ -163,6 +163,7 @@ public class CodeDiffer {
                     featureVectors.add(featureVector);
                 }
                 if (forLearner) {
+                    // we could also try on other patches-generators
                     for (Repair repair: generator.obtainRepairCandidates()) {
                         FeatureVector featureVector = new FeatureVector(false);
                         for (CtElement atom : repair.getCandidateAtoms()) {

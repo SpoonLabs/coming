@@ -230,8 +230,8 @@ public class OriginalFeatureExtractorTest {
                     str1 = "class Foo{public void bar(){\nboolean a=true;\nreturn 1;\n}}";
                     assertEquals(Boolean.TRUE, check(helper.func4Test(str0, str1), checkFeature));
                     break;
-                case ADDRESS_OF_AF: // Inapplicable to Java
-                    break;
+//                case ADDRESS_OF_AF: // Inapplicable to Java
+//                    break;
             }
         }
         if (caseFeature instanceof RepairFeature) {
@@ -315,10 +315,10 @@ public class OriginalFeatureExtractorTest {
                     str1 = "class Foo{public void bar(){\nString a=\"a\";\nint b=a.length()\n}}";
                     assertEquals(Boolean.TRUE, check(helper.func4Test(str0, str1), checkFeature));
                     break;
-                case POINTER_VF: // Inapplicable to Java
-                    break;
-                case STRUCT_POINTER_VF: // Inapplicable to Java
-                    break;
+//                case POINTER_VF: // Inapplicable to Java
+//                    break;
+//                case STRUCT_POINTER_VF: // Inapplicable to Java
+//                    break;
             }
         }
     }
