@@ -34,6 +34,7 @@ public class Option {
         CROSS_ENTROPY,
         // faster but not so good as cross-entropy
         SUPPORT_VECTOR_MACHINE,
+        // maybe add Hinge loss later (as mentioned in Paper)
     }
 
     public DataOption dataOption;
@@ -52,5 +53,11 @@ public class Option {
 
     public ModelOption getModelOption() {
         return modelOption;
+    }
+
+    public enum RankingOption {
+        D_HUMAN,
+        D_CORRECT,
+        D_INCORRECT,
     }
 }

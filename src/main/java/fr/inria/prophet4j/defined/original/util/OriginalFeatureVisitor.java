@@ -148,6 +148,58 @@ public class OriginalFeatureVisitor {
             }
 
             @Override
+            public <T, A extends T> void visitCtAssignment(CtAssignment<T, A> assignment) {
+                super.visitCtAssignment(assignment);
+                CtExpression LHS = assignment.getAssigned();
+                CtExpression RHS = assignment.getAssignment();
+                putValueFeature(LHS, AtomicFeature.ASSIGN_LHS_AF);
+                putValueFeature(LHS, AtomicFeature.CHANGED_AF);
+                if (RHS instanceof CtLiteral) {
+                    Object v = ((CtLiteral)RHS).getValue();
+                    if (v instanceof Integer) {
+                        if ((Integer) v == 0) {
+                            putValueFeature(LHS, AtomicFeature.ASSIGN_ZERO_AF);
+                        }
+                        putValueFeature(LHS, AtomicFeature.ASSIGN_CONST_AF);
+                    }
+                }
+                if (RHS instanceof CtArrayAccess) {
+                    putValueFeature(LHS, AtomicFeature.DEREF_AF);
+                    putValueFeature(RHS, AtomicFeature.INDEX_AF);
+                }
+            }
+
+            @Override
+            public <T, A extends T> void visitCtOperatorAssignment(CtOperatorAssignment<T, A> assignment) {
+                super.visitCtOperatorAssignment(assignment);
+                CtExpression LHS = assignment.getAssigned();
+                CtExpression RHS = assignment.getAssignment();
+                switch (assignment.getKind()) {
+                    case PLUS:
+                        putValueFeature(LHS, AtomicFeature.OP_ADD_AF);
+                        putValueFeature(RHS, AtomicFeature.OP_ADD_AF);
+                        break;
+                    case MINUS:
+                        putValueFeature(LHS, AtomicFeature.OP_SUB_AF);
+                        putValueFeature(RHS, AtomicFeature.OP_SUB_AF);
+                        break;
+                    case MUL:
+                        putValueFeature(LHS, AtomicFeature.OP_MUL_AF);
+                        putValueFeature(RHS, AtomicFeature.OP_MUL_AF);
+                        break;
+                    case DIV:
+                        putValueFeature(LHS, AtomicFeature.OP_DIV_AF);
+                        putValueFeature(RHS, AtomicFeature.OP_DIV_AF);
+                        break;
+                    case MOD:
+                        putValueFeature(LHS, AtomicFeature.OP_MOD_AF);
+                        putValueFeature(RHS, AtomicFeature.OP_MOD_AF);
+                        break;
+                }
+                putValueFeature(LHS, AtomicFeature.CHANGED_AF);
+            }
+
+            @Override
             public <T> void visitCtBinaryOperator(CtBinaryOperator<T> operator) {
                 super.visitCtBinaryOperator(operator);
                 CtExpression LHS = operator.getLeftHandOperand();
@@ -222,58 +274,6 @@ public class OriginalFeatureVisitor {
                         putValueFeature(operand, AtomicFeature.CHANGED_AF);
                         break;
                 }
-            }
-
-            @Override
-            public <T, A extends T> void visitCtAssignment(CtAssignment<T, A> assignment) {
-                super.visitCtAssignment(assignment);
-                CtExpression LHS = assignment.getAssigned();
-                CtExpression RHS = assignment.getAssignment();
-                putValueFeature(LHS, AtomicFeature.ASSIGN_LHS_AF);
-                putValueFeature(LHS, AtomicFeature.CHANGED_AF);
-                if (RHS instanceof CtLiteral) {
-                    Object v = ((CtLiteral)RHS).getValue();
-                    if (v instanceof Integer) {
-                        if ((Integer) v == 0) {
-                            putValueFeature(LHS, AtomicFeature.ASSIGN_ZERO_AF);
-                        }
-                        putValueFeature(LHS, AtomicFeature.ASSIGN_CONST_AF);
-                    }
-                }
-                if (RHS instanceof CtArrayAccess) {
-                    putValueFeature(LHS, AtomicFeature.DEREF_AF);
-                    putValueFeature(RHS, AtomicFeature.INDEX_AF);
-                }
-            }
-
-            @Override
-            public <T, A extends T> void visitCtOperatorAssignment(CtOperatorAssignment<T, A> assignment) {
-                super.visitCtOperatorAssignment(assignment);
-                CtExpression LHS = assignment.getAssigned();
-                CtExpression RHS = assignment.getAssignment();
-                switch (assignment.getKind()) {
-                    case PLUS:
-                        putValueFeature(LHS, AtomicFeature.OP_ADD_AF);
-                        putValueFeature(RHS, AtomicFeature.OP_ADD_AF);
-                        break;
-                    case MINUS:
-                        putValueFeature(LHS, AtomicFeature.OP_SUB_AF);
-                        putValueFeature(RHS, AtomicFeature.OP_SUB_AF);
-                        break;
-                    case MUL:
-                        putValueFeature(LHS, AtomicFeature.OP_MUL_AF);
-                        putValueFeature(RHS, AtomicFeature.OP_MUL_AF);
-                        break;
-                    case DIV:
-                        putValueFeature(LHS, AtomicFeature.OP_DIV_AF);
-                        putValueFeature(RHS, AtomicFeature.OP_DIV_AF);
-                        break;
-                    case MOD:
-                        putValueFeature(LHS, AtomicFeature.OP_MOD_AF);
-                        putValueFeature(RHS, AtomicFeature.OP_MOD_AF);
-                        break;
-                }
-                putValueFeature(LHS, AtomicFeature.CHANGED_AF);
             }
         };
         scanner.scan(S);

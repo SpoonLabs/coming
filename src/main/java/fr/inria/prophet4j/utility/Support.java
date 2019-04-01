@@ -1,5 +1,6 @@
 package fr.inria.prophet4j.utility;
 
+import fr.inria.prophet4j.utility.Option.RankingOption;
 import java.util.StringJoiner;
 
 public class Support {
@@ -41,5 +42,21 @@ public class Support {
                 break;
         }
         return stringJoiner.toString();
+    }
+
+    public static String getFilePath4Ranking(RankingOption rankingOption) {
+        String filePath = PROPHET4J_DIR;
+        switch (rankingOption) {
+            case D_HUMAN:
+                filePath += "cardumen_dissection/";
+                break;
+            case D_CORRECT:
+                filePath += "D_correct/";
+                break;
+            case D_INCORRECT:
+                filePath += "D_incorrect/";
+                break;
+        }
+        return filePath;
     }
 }

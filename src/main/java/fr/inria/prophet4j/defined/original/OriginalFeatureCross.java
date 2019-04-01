@@ -47,7 +47,6 @@ public class OriginalFeatureCross implements FeatureCross, Serializable {
 
     public OriginalFeatureCross(CrossType crossType, List<Feature> features) {
         int ordinal0, ordinal1, ordinal2;
-
         switch (crossType) {
             case RF_CT:
                 assert features.size() == 1;

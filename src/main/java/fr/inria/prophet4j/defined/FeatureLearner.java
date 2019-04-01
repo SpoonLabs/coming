@@ -29,7 +29,7 @@ public class FeatureLearner {
 //    private double getLogSumExp(double[] array) {
 //        assert array.length > 0;
 //        double max = Arrays.stream(array).max().getAsDouble();
-//        double sum = 0.0;
+//        double sum = 0;
 //        for (double value : array) {
 //            sum += Math.exp(value - max);
 //        }
@@ -50,8 +50,8 @@ public class FeatureLearner {
     }
 
     private ParameterVector learn(List<Sample> trainingData, List<Sample> validationData) {
-        double alpha = 1.0;
-        double gammaBest = 1.0;
+        double alpha = 1;
+        double gammaBest = 1;
         final double lambda = 1e-3;
         ParameterVector theta = new ParameterVector(option.featureOption);
         ParameterVector thetaBest = new ParameterVector(option.featureOption);
@@ -95,7 +95,7 @@ public class FeatureLearner {
                             if (featureVector.isMarked()) {
                                 List<FeatureCross> featureCrosses = featureVector.getFeatureCrosses();
                                 for (FeatureCross featureCross : featureCrosses) {
-                                    // 1 is derived before but i forget the procedure 03/24 todo check
+                                    // 1 was derived before but i forget the procedure 03/24 todo check
                                     // but i believe it is okay as 1 is also used in the original project
                                     delta.inc(featureCross.getId(), 1.0 / markedSize);
                                 }
@@ -111,7 +111,7 @@ public class FeatureLearner {
                             List<FeatureCross> featureCrosses = featureVector.getFeatureCrosses();
                             for (FeatureCross featureCross : featureCrosses) {
                                 int featureCrossId = featureCross.getId();
-                                tmpValues[featureCrossId] += Math.max(0.0, scores[i] - scores[0] + 1);
+                                tmpValues[featureCrossId] += Math.max(0, scores[i] - scores[0] + 1);
                             }
                         }
                         for (int i = 0; i < tmpValues.length; i++) {
@@ -138,7 +138,7 @@ public class FeatureLearner {
                 theta.inc(i, alpha * delta.get(i));
             }
             // handle validation data
-            double gamma = 0.0;
+            double gamma = 0;
             for (Sample sample : validationData) {
                 List<FeatureVector> featureVectors = sample.getFeatureVectors();
                 double[] scores = new double[featureVectors.size()];
@@ -201,8 +201,8 @@ public class FeatureLearner {
         for (int i = 0; i < sampleData.size(); i++) {
             folds.get(i % 5).add(sampleData.get(i));
         }
-        double gammaBest = 1.0;
-        double gammaAverage = 0.0;
+        double gammaBest = 1;
+        double gammaAverage = 0;
         for (int i = 0; i < k; i++) {
             List<Sample> trainingData = new ArrayList<>();
             for (int j = 0; j < k; j++) {

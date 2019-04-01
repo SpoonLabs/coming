@@ -385,7 +385,7 @@ public class ExtendedRepairGenerator implements RepairGenerator {
         return repair;
     }
 
-    // https://people.csail.mit.edu/fanl/papers/spr-fse15.pdf <3.2 Transformation Schemas> Figure 4
+    // https://people.csail.mit.edu/fanl/papers/spr-fse15.pdf <3.2 Transformation Values> Figure 4
     public List<Repair> obtainRepairCandidates() {
         CtScanner scanner = new CtScanner() {
 
