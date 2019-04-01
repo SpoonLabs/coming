@@ -25,6 +25,7 @@ import fr.inria.coming.changeminer.analyzer.commitAnalyzer.HunkDifftAnalyzer;
 import fr.inria.coming.changeminer.entity.CommitFinalResult;
 import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.changeminer.entity.IRevision;
+import fr.inria.coming.core.engine.callback.IntermediateResultProcessorCallback;
 import fr.inria.coming.core.entities.DiffResult;
 import fr.inria.coming.core.entities.HunkDiff;
 import fr.inria.coming.core.entities.RevisionResult;
@@ -161,6 +162,33 @@ public class MainComingTest {
 			assertEquals(currentIndex, commitsInOrder.indexOf(commit.getName()));
 			currentIndex++;
 		}
+
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testIntermediateCallback1() throws Exception {
+		ComingMain cm = new ComingMain();
+		Boolean created = cm.createEngine(new String[] { "-location", "repogit4testv0", "-hunkanalysis", "true" });
+		assertTrue(created);
+		List<String> commitsInOrder = new ArrayList<>();
+		for (String commit : this.commitsId) {
+			commitsInOrder.add(commit);
+		}
+		cm.registerIntermediateCallback(new IntermediateResultProcessorCallback() {
+			int currentIndex = 0;
+
+			@Override
+			public void handleResult(RevisionResult result) {
+				assertEquals(currentIndex, commitsInOrder.indexOf(result.getRelatedRevision().getName()));
+				System.out.println("callback " + currentIndex);
+				currentIndex++;
+
+			}
+		});
+		// Start the analysis
+		FinalResult finalresult = cm.start();
+		assertNotNull(finalresult);
 
 	}
 
