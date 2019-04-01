@@ -11,6 +11,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.UnrecognizedOptionException;
 import org.apache.log4j.Logger;
 
@@ -27,6 +28,7 @@ import fr.inria.coming.changeminer.util.PatternXMLParser;
 import fr.inria.coming.codefeatures.FeatureAnalyzer;
 import fr.inria.coming.core.engine.Analyzer;
 import fr.inria.coming.core.engine.RevisionNavigationExperiment;
+import fr.inria.coming.core.engine.callback.IntermediateResultProcessorCallback;
 import fr.inria.coming.core.engine.files.FileNavigationExperiment;
 import fr.inria.coming.core.engine.git.GITRepositoryInspector;
 import fr.inria.coming.core.entities.interfaces.IFilter;
@@ -101,24 +103,41 @@ public class ComingMain {
 		}
 	}
 
-	RevisionNavigationExperiment<?> experiment = null;
+	RevisionNavigationExperiment<?> navigatorEngine = null;
 
 	@SuppressWarnings("rawtypes")
 	public FinalResult run(String[] args) throws Exception {
 
+		boolean created = createEngine(args);
+		if (!created)
+			return null;
+
+		return start();
+	}
+
+	public FinalResult start() {
+		if (navigatorEngine == null)
+			throw new IllegalAccessError("error: initialize the engine first");
+
+		FinalResult result = navigatorEngine.analyze();
+
+		return result;
+	}
+
+	public boolean createEngine(String[] args) throws ParseException {
 		ComingProperties.reset();
 		CommandLine cmd = null;
-		this.experiment = null;
+		this.navigatorEngine = null;
 		try {
 			cmd = parser.parse(options, args);
 		} catch (UnrecognizedOptionException e) {
 			System.out.println("Error: " + e.getMessage());
 			help();
-			return null;
+			return false;
 		}
 		if (cmd.hasOption("help")) {
 			help();
-			return null;
+			return false;
 		}
 
 		if (cmd.hasOption("showactions")) {
@@ -128,7 +147,7 @@ public class ComingMain {
 				System.out.println(a);
 			}
 			System.out.println("---");
-			return null;
+			return false;
 		}
 
 		if (cmd.hasOption("showentities")) {
@@ -139,7 +158,7 @@ public class ComingMain {
 				System.out.println(et);
 			}
 			System.out.println("---");
-			return null;
+			return false;
 		}
 		for (Option option : cmd.getOptions()) {
 
@@ -152,7 +171,7 @@ public class ComingMain {
 
 		if (cmd.hasOption("parameters")) {
 			String[] pars = cmd.getOptionValue("parameters").split(":");
-			if (pars.length % 2 != 0){
+			if (pars.length % 2 != 0) {
 				throw new RuntimeException("The number of input parameters must be even.");
 			}
 
@@ -176,20 +195,17 @@ public class ComingMain {
 
 		loadOutput();
 
-		// EXECUTION:
-		FinalResult result = experiment.analyze();
-
-		return result;
+		return true;
 	}
 
 	private void loadFilters() {
-		experiment.setFilters(createFilters());
+		navigatorEngine.setFilters(createFilters());
 	}
 
 	private void loadOutput() {
 		String outputs = ComingProperties.getProperty("outputprocessor");
 		if (outputs == null) {
-			experiment.getOutputProcessors().add(0, new StdOutput());
+			navigatorEngine.getOutputProcessors().add(0, new StdOutput());
 		} else {
 			loadOutputProcessors(outputs);
 		}
@@ -197,12 +213,12 @@ public class ComingMain {
 
 	private void loadInput(String input) {
 		if (input == null || input.equals("git")) {
-			experiment = new GITRepositoryInspector();
+			navigatorEngine = new GITRepositoryInspector();
 		} else if (input.equals("files")) {
-			experiment = new FileNavigationExperiment();
+			navigatorEngine = new FileNavigationExperiment();
 		} else {
 			// extension point
-			experiment = loadInputEngine(input);
+			navigatorEngine = loadInputEngine(input);
 		}
 	}
 
@@ -213,25 +229,25 @@ public class ComingMain {
 		for (String mode : modesp) {
 
 			if ("diff".equals(mode)) {
-				experiment.getAnalyzers().clear();
-				experiment.getAnalyzers().add(new FineGrainDifftAnalyzer());
-				experiment.getOutputProcessors().add(new JSonChangeFrequencyOutput());
+				navigatorEngine.getAnalyzers().clear();
+				navigatorEngine.getAnalyzers().add(new FineGrainDifftAnalyzer());
+				navigatorEngine.getOutputProcessors().add(new JSonChangeFrequencyOutput());
 			} else if ("mineinstance".equals(mode)) {
-				experiment.getAnalyzers().clear();
-				experiment.getAnalyzers().add(new FineGrainDifftAnalyzer());
+				navigatorEngine.getAnalyzers().clear();
+				navigatorEngine.getAnalyzers().add(new FineGrainDifftAnalyzer());
 
 				ChangePatternSpecification pattern = loadPattern();
-				experiment.getAnalyzers().add(new PatternInstanceAnalyzer(pattern));
+				navigatorEngine.getAnalyzers().add(new PatternInstanceAnalyzer(pattern));
 
 				// By default JSON output of pattern instances
-				experiment.getOutputProcessors().add(new JSonPatternInstanceOutput());
+				navigatorEngine.getOutputProcessors().add(new JSonPatternInstanceOutput());
 
 			} else if ("features".equals(mode)) {
-				experiment.getAnalyzers().clear();
-				experiment.getAnalyzers().add(new FineGrainDifftAnalyzer());
-				experiment.getAnalyzers().add(new FeatureAnalyzer());
+				navigatorEngine.getAnalyzers().clear();
+				navigatorEngine.getAnalyzers().add(new FineGrainDifftAnalyzer());
+				navigatorEngine.getAnalyzers().add(new FeatureAnalyzer());
 
-				experiment.getOutputProcessors().add(new FeaturesOutput());
+				navigatorEngine.getOutputProcessors().add(new FeaturesOutput());
 
 			} else {
 				// LOAD Analyzers from command
@@ -241,7 +257,7 @@ public class ComingMain {
 		}
 
 		if (ComingProperties.getPropertyBoolean("hunkanalysis")) {
-			experiment.getAnalyzers().add(0, new HunkDifftAnalyzer());
+			navigatorEngine.getAnalyzers().add(0, new HunkDifftAnalyzer());
 		}
 	}
 
@@ -249,7 +265,7 @@ public class ComingMain {
 		try {
 			Object analyzerLoaded = PlugInLoader.loadPlugin(mode, Analyzer.class);
 			if (analyzerLoaded != null) {
-				experiment.getAnalyzers().add((Analyzer) analyzerLoaded);
+				navigatorEngine.getAnalyzers().add((Analyzer) analyzerLoaded);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -263,11 +279,11 @@ public class ComingMain {
 		for (String singlefoutput : outputs) {
 			try {
 				if (singlefoutput.equals("changefrequency")) {
-					experiment.getOutputProcessors().add(new JSonChangeFrequencyOutput());
+					navigatorEngine.getOutputProcessors().add(new JSonChangeFrequencyOutput());
 				} else {
 					Object outLoaded = PlugInLoader.loadPlugin(singlefoutput, IOutput.class);
 					if (outLoaded != null) {
-						experiment.getOutputProcessors().add((IOutput) outLoaded);
+						navigatorEngine.getOutputProcessors().add((IOutput) outLoaded);
 					}
 				}
 			} catch (Exception e) {
@@ -408,11 +424,17 @@ public class ComingMain {
 	}
 
 	public RevisionNavigationExperiment<?> getExperiment() {
-		return experiment;
+		return navigatorEngine;
 	}
 
 	public void setExperiment(RevisionNavigationExperiment<?> experiment) {
-		this.experiment = experiment;
+		this.navigatorEngine = experiment;
 	}
 
+	public void registerIntermediateCallback(IntermediateResultProcessorCallback callback) {
+		if (this.navigatorEngine == null)
+			throw new IllegalStateException("Please, initialize the engine first");
+
+		this.navigatorEngine.setIntermediateCallback(callback);
+	}
 }

@@ -6,6 +6,7 @@ import java.util.List;
 
 import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.changeminer.entity.IRevision;
+import fr.inria.coming.core.engine.callback.IntermediateResultProcessorCallback;
 import fr.inria.coming.core.entities.AnalysisResult;
 import fr.inria.coming.core.entities.RevisionDataset;
 import fr.inria.coming.core.entities.RevisionResult;
@@ -25,6 +26,7 @@ public abstract class RevisionNavigationExperiment<R extends IRevision> {
 	protected List<Analyzer> analyzers = new ArrayList<>();
 	protected List<IFilter> filters = null;
 	protected List<IOutput> outputProcessors = new ArrayList<>();
+	protected IntermediateResultProcessorCallback intermediateCallback = null;
 
 	protected FinalResult<R> allResults = null;
 
@@ -57,6 +59,10 @@ public abstract class RevisionNavigationExperiment<R extends IRevision> {
 
 	@SuppressWarnings("unchecked")
 	public void processEndRevision(R element, RevisionResult resultAllAnalyzed) {
+
+		if (this.intermediateCallback != null) {
+			this.intermediateCallback.handleResult(resultAllAnalyzed);
+		}
 
 		if (ComingProperties.getPropertyBoolean("save_result_revision_analysis")) {
 			allResults.put(element, resultAllAnalyzed);
@@ -147,6 +153,14 @@ public abstract class RevisionNavigationExperiment<R extends IRevision> {
 
 	public void setOutputProcessors(List<IOutput> outputProcessors) {
 		this.outputProcessors = outputProcessors;
+	}
+
+	public IntermediateResultProcessorCallback getIntermediateCallback() {
+		return intermediateCallback;
+	}
+
+	public void setIntermediateCallback(IntermediateResultProcessorCallback intermediateCallback) {
+		this.intermediateCallback = intermediateCallback;
 	}
 
 }
