@@ -237,6 +237,8 @@ public class RepairEvaluator {
         String filePath = Support.getFilePath(Support.DirType.PARAMETER_DIR, option) + stringJoiner.toString();
         dumpCSV(filePath, rankings);
         System.out.println("dumped files");
+
+        System.out.println("EvaluationResult is saved to " + filePath);
     }
 
     // consider move to DataHelper and make more general
