@@ -18,18 +18,22 @@ public class Demo {
         this.option = option;
     }
 
-    private void learn() {
+    void learn() {
         DataManager dataManager = new DataManager(option);
         FeatureLearner featureLearner = new FeatureLearner(option);
         List<String> filePaths = dataManager.func4Demo();
         featureLearner.func4Demo(filePaths);
+        System.out.println("1/1 Done");
     }
 
-    private void evaluate() {
+    void evaluate() {
         RepairEvaluator repairEvaluator = new RepairEvaluator(option);
         repairEvaluator.func4Demo(RankingOption.D_CORRECT, RankingOption.D_INCORRECT);
+        System.out.println("1/3 Done");
         repairEvaluator.func4Demo(RankingOption.D_HUMAN, RankingOption.D_CORRECT);
+        System.out.println("2/3 Done");
         repairEvaluator.func4Demo(RankingOption.D_HUMAN, RankingOption.D_INCORRECT);
+        System.out.println("3/3 Done");
     }
 
     public static void main(String[] args) {
@@ -37,14 +41,14 @@ public class Demo {
             Option option = new Option();
 //            option.featureOption = FeatureOption.EXTENDED;
             new Demo(option).learn();
-            new Demo(option).evaluate();
+//            new Demo(option).evaluate();
 
             option.patchOption = PatchOption.SPR;
             new Demo(option).learn();
 
             option.dataOption = DataOption.SANER;
             new Demo(option).learn();
-            new Demo(option).evaluate();
+//            new Demo(option).evaluate();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -63,9 +67,11 @@ public class Demo {
     [extended] SANER + SPR
     19-03-30 22:12:05 INFO FeatureLearner:222 - 5-fold Cross Validation: 0.010966064135150921
      */
+    // todo (run on Thomas's data)
     // todo (improve Feature or FeatureCross)
-    // todo (try other patch-generators)
+    // todo (improve Learner Model)
     // todo (run on PGA commits)
-    // todo (integrate Coming and Prophet4J)
-    // todo (integrate with Repairnator)
+    // todo (try other patch-generators)
+    // todo (integrate with Coming)
+    // todo (integrate with Repairnator?)
 }

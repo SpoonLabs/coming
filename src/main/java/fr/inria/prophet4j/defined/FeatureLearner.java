@@ -126,6 +126,7 @@ public class FeatureLearner {
                 delta.div(i, trainingData.size());
                 switch (option.getModelOption()) {
                     case CROSS_ENTROPY:
+                        // I feel L1 normalization term is not necessary todo consider
                         delta.dec(i, lambda * (Math.signum(theta.get(i)) + 2 * theta.get(i)));
                         break;
                     case SUPPORT_VECTOR_MACHINE:
@@ -220,5 +221,6 @@ public class FeatureLearner {
         }
         gammaAverage /= k;
         logger.log(Level.INFO, k + "-fold Cross Validation: " + gammaAverage);
+        System.out.println("ParameterVector is saved to " + parameterFilePath);
     }
 }
