@@ -37,6 +37,7 @@ import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
 
 /**
  * 
@@ -937,4 +938,186 @@ public class PatternMatchingTest {
 		return file;
 	}
 
+	@Test
+	public void testMatchingRoleIssue36() throws Exception {
+		File fl = new File(getClass().getResource("/pattern_specification/pattern_modif_if.xml").getFile());
+
+		ChangePatternSpecification pattern = PatternXMLParser.parseFile(fl.getAbsolutePath());
+
+		File s = getFile("diffcases/diffroleinparent1/1205753_EmbedPooledConnection_0_s.java");
+		File t = getFile("diffcases/diffroleinparent1/1205753_EmbedPooledConnection_0_t.java");
+
+		FineGrainDifftAnalyzer r = new FineGrainDifftAnalyzer();
+		Diff diff = r.getDiff(s, t);
+
+		System.out.println("Test result " + diff.getRootOperations());
+
+		Assert.assertTrue(diff.getRootOperations().size() > 0);
+
+		assertPattern(diff, pattern);
+
+		DetectorChangePatternInstanceEngine detector = new DetectorChangePatternInstanceEngine();
+		ResultMapping mappings = detector.mappingActions(pattern, diff);
+		assertTrue(mappings.getMappings().size() > 0);
+		List<ChangePatternInstance> instances = detector.findPatternInstances(pattern, diff);
+		System.out.println("nr instances: " + instances.size());
+		assertEquals(2, instances.size());
+
+		System.out.println(instances);
+	}
+
+	@Test
+	public void testMatchingRoleIssue36_1_matching_binop() throws Exception {
+		File fl = new File(getClass().getResource("/pattern_specification/pattern_modif_if.xml").getFile());
+
+		ChangePatternSpecification pattern = PatternXMLParser.parseFile(fl.getAbsolutePath());
+		// add role
+		assertEquals(2, pattern.getAbstractChanges().get(0).getAffectedEntity().getId());
+
+		assertEquals(1,
+				pattern.getAbstractChanges().get(0).getAffectedEntity().getParentPatternEntity().getParent().getId());
+
+		pattern.getAbstractChanges().get(0).getAffectedEntity()// .getParentPatternEntity().getParent()
+				.setRoleInParent(CtRole.CONDITION.name());
+
+		File s = getFile("diffcases/diffroleinparent1/1205753_EmbedPooledConnection_0_s.java");
+		File t = getFile("diffcases/diffroleinparent1/1205753_EmbedPooledConnection_0_t.java");
+
+		FineGrainDifftAnalyzer r = new FineGrainDifftAnalyzer();
+		Diff diff = r.getDiff(s, t);
+
+		System.out.println("Test result " + diff.getRootOperations());
+
+		Assert.assertTrue(diff.getRootOperations().size() > 0);
+
+		assertPattern(diff, pattern);
+
+		DetectorChangePatternInstanceEngine detector = new DetectorChangePatternInstanceEngine();
+		ResultMapping mappings = detector.mappingActions(pattern, diff);
+		assertTrue(mappings.getMappings().size() > 0);
+
+		List<ChangePatternInstance> instances = detector.findPatternInstances(pattern, diff);
+		System.out.println("nr instances: " + instances.size());
+		System.out.println(instances);
+
+		assertEquals(1, instances.size());
+
+		ChangePatternInstance instancefound = instances.get(0);
+
+	}
+
+	@Test
+	public void testMatchingRoleIssue36_1_role_matching_binop() throws Exception {
+		// role specified in file
+		File fl = new File(getClass().getResource("/pattern_specification/pattern_modif_if_role.xml").getFile());
+
+		ChangePatternSpecification pattern = PatternXMLParser.parseFile(fl.getAbsolutePath());
+		// add role
+		assertEquals(2, pattern.getAbstractChanges().get(0).getAffectedEntity().getId());
+
+		assertEquals(1,
+				pattern.getAbstractChanges().get(0).getAffectedEntity().getParentPatternEntity().getParent().getId());
+
+		File s = getFile("diffcases/diffroleinparent1/1205753_EmbedPooledConnection_0_s.java");
+		File t = getFile("diffcases/diffroleinparent1/1205753_EmbedPooledConnection_0_t.java");
+
+		FineGrainDifftAnalyzer r = new FineGrainDifftAnalyzer();
+		Diff diff = r.getDiff(s, t);
+
+		System.out.println("Test result " + diff.getRootOperations());
+
+		Assert.assertTrue(diff.getRootOperations().size() > 0);
+
+		assertPattern(diff, pattern);
+
+		DetectorChangePatternInstanceEngine detector = new DetectorChangePatternInstanceEngine();
+		ResultMapping mappings = detector.mappingActions(pattern, diff);
+		assertTrue(mappings.getMappings().size() > 0);
+
+		List<ChangePatternInstance> instances = detector.findPatternInstances(pattern, diff);
+		System.out.println("nr instances: " + instances.size());
+		System.out.println(instances);
+
+		assertEquals(1, instances.size());
+
+	}
+
+	@Test
+	public void testMatchingRoleIssue36_2_matching_inv() throws Exception {
+		File fl = new File(getClass().getResource("/pattern_specification/pattern_modif_if2.xml").getFile());
+
+		ChangePatternSpecification pattern = PatternXMLParser.parseFile(fl.getAbsolutePath());
+		// add role
+		assertEquals(2, pattern.getAbstractChanges().get(0).getAffectedEntity().getId());
+		PatternEntity parent = pattern.getAbstractChanges().get(0).getAffectedEntity().getParentPatternEntity()
+				.getParent();
+		assertEquals(3, parent.getId());
+
+		assertEquals(1, parent.getParentPatternEntity().getParent().getId());
+
+		//
+		parent.setRoleInParent(CtRole.THEN.name());
+		// parent.setEntityType(PatternEntity.ANY);
+
+		File s = getFile("diffcases/diffroleinparent1/1205753_EmbedPooledConnection_0_s.java");
+		File t = getFile("diffcases/diffroleinparent1/1205753_EmbedPooledConnection_0_t.java");
+
+		FineGrainDifftAnalyzer r = new FineGrainDifftAnalyzer();
+		Diff diff = r.getDiff(s, t);
+
+		System.out.println("Test result " + diff.getRootOperations());
+
+		Assert.assertTrue(diff.getRootOperations().size() > 0);
+
+		assertPattern(diff, pattern);
+
+		DetectorChangePatternInstanceEngine detector = new DetectorChangePatternInstanceEngine();
+		ResultMapping mappings = detector.mappingActions(pattern, diff);
+		assertTrue(mappings.getMappings().size() > 0);
+
+		List<ChangePatternInstance> instances = detector.findPatternInstances(pattern, diff);
+		System.out.println("nr instances: " + instances.size());
+		System.out.println(instances);
+
+		assertEquals(1, instances.size());
+
+	}
+
+	@Test
+	public void testMatchingRoleIssue36_2_role_matching_inv() throws Exception {
+		// role specified in parent
+		File fl = new File(getClass().getResource("/pattern_specification/pattern_modif_if2_role.xml").getFile());
+
+		ChangePatternSpecification pattern = PatternXMLParser.parseFile(fl.getAbsolutePath());
+		// add role
+		assertEquals(2, pattern.getAbstractChanges().get(0).getAffectedEntity().getId());
+		PatternEntity parent = pattern.getAbstractChanges().get(0).getAffectedEntity().getParentPatternEntity()
+				.getParent();
+		assertEquals(3, parent.getId());
+
+		assertEquals(1, parent.getParentPatternEntity().getParent().getId());
+
+		File s = getFile("diffcases/diffroleinparent1/1205753_EmbedPooledConnection_0_s.java");
+		File t = getFile("diffcases/diffroleinparent1/1205753_EmbedPooledConnection_0_t.java");
+
+		FineGrainDifftAnalyzer r = new FineGrainDifftAnalyzer();
+		Diff diff = r.getDiff(s, t);
+
+		System.out.println("Test result " + diff.getRootOperations());
+
+		Assert.assertTrue(diff.getRootOperations().size() > 0);
+
+		assertPattern(diff, pattern);
+
+		DetectorChangePatternInstanceEngine detector = new DetectorChangePatternInstanceEngine();
+		ResultMapping mappings = detector.mappingActions(pattern, diff);
+		assertTrue(mappings.getMappings().size() > 0);
+
+		List<ChangePatternInstance> instances = detector.findPatternInstances(pattern, diff);
+		System.out.println("nr instances: " + instances.size());
+		System.out.println(instances);
+
+		assertEquals(1, instances.size());
+
+	}
 }

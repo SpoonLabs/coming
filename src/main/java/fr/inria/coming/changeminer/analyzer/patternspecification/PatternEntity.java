@@ -12,6 +12,7 @@ public class PatternEntity {
 	protected String entityType = ANY;
 	protected String newValue = null;
 	protected String oldValue = null;
+	protected String roleInParent = ANY;
 
 	protected ParentPatternEntity parent = null;
 
@@ -89,6 +90,14 @@ public class PatternEntity {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public String getRoleInParent() {
+		return roleInParent;
+	}
+
+	public void setRoleInParent(String roleInParent) {
+		this.roleInParent = roleInParent;
 	}
 
 }

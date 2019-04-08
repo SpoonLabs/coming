@@ -1,9 +1,13 @@
 package fr.inria.coming.changeminer.analyzer.instancedetector;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import javafx.scene.control.TextFormatter;
 import org.apache.log4j.Logger;
 
 import com.github.gumtreediff.actions.model.Action;
@@ -69,14 +73,14 @@ public class DetectorChangePatternInstanceEngine {
 		// For each instance
 		for (ChangePatternInstance instance : instancesAllCombinations) {
 
-            if (!checkUnchangedActionAlsoUsedByOther(instance)){
-                if (checkInvalidInstanceExistance(instance, relations)){
-                    instancesFinalSet.clear();
-                    return instancesFinalSet;
-                }
+			if (!checkUnchangedActionAlsoUsedByOther(instance)) {
+				if (checkInvalidInstanceExistance(instance, relations)) {
+					instancesFinalSet.clear();
+					return instancesFinalSet;
+				}
 
-                continue;
-            }
+				continue;
+			}
 
 			log.debug("Analyzing  instance: \n" + instance);
 			if (checkPatternRelationsOnInstance(instance, relations)) {
@@ -131,8 +135,7 @@ public class DetectorChangePatternInstanceEngine {
 	 * @return
 	 */
 	public boolean validate(ChangePatternInstance instance) {
-		return checkAbsenceNotMappedAction(instance)
-				&& checkEntitiesUsedOne(instance);
+		return checkAbsenceNotMappedAction(instance) && checkEntitiesUsedOne(instance);
 	}
 
 	/**
@@ -169,8 +172,8 @@ public class DetectorChangePatternInstanceEngine {
 		List<Integer> ids = new ArrayList<>();
 		Map<CtElement, Integer> entitiesById = new java.util.HashMap<>();
 		for (PatternAction paction : instance.actionOperation.keySet()) {
-		    if (paction.getAction().isUnchanged()){
-		    	continue;
+			if (paction.getAction().isUnchanged()) {
+				continue;
 			}
 
 			MatchingAction matchingAction = instance.getMapping().get(paction);
@@ -198,44 +201,43 @@ public class DetectorChangePatternInstanceEngine {
 	}
 
 	/***
-	 * For a ChangedPatternInstance, if it is matched by an entity with
-     * UNCHANGED action, which is with lower prior, it's valid only if
-     * the entity is also matched by the other entities. Because entity
-     * ids cannot be the same, and we want the UNCHANGED entities to
-     * match nothing.
-     *
+	 * For a ChangedPatternInstance, if it is matched by an entity with UNCHANGED
+	 * action, which is with lower prior, it's valid only if the entity is also
+	 * matched by the other entities. Because entity ids cannot be the same, and we
+	 * want the UNCHANGED entities to match nothing.
+	 *
 	 * @param instance
 	 * @return
 	 */
-	private boolean checkUnchangedActionAlsoUsedByOther(ChangePatternInstance instance){
-	    Set<CtElement> mustMatchedEntities = new HashSet<>();
-        for (PatternAction paction : instance.actionOperation.keySet()) {
-            if (!paction.getAction().isUnchanged()) {
-                continue;
-            }
+	private boolean checkUnchangedActionAlsoUsedByOther(ChangePatternInstance instance) {
+		Set<CtElement> mustMatchedEntities = new HashSet<>();
+		for (PatternAction paction : instance.actionOperation.keySet()) {
+			if (!paction.getAction().isUnchanged()) {
+				continue;
+			}
 
-            MatchingAction matchingAction = instance.getMapping().get(paction);
-            // The first one is always pointed by an action.
-            MatchingEntity firstMatchingEntity = matchingAction.getMatching().get(0);
-            CtElement affected = firstMatchingEntity.getAffectedNode();
-            mustMatchedEntities.add(affected);
-        }
+			MatchingAction matchingAction = instance.getMapping().get(paction);
+			// The first one is always pointed by an action.
+			MatchingEntity firstMatchingEntity = matchingAction.getMatching().get(0);
+			CtElement affected = firstMatchingEntity.getAffectedNode();
+			mustMatchedEntities.add(affected);
+		}
 
-        for (PatternAction paction : instance.actionOperation.keySet()) {
-            if (paction.getAction().isUnchanged()) {
-                continue;
-            }
+		for (PatternAction paction : instance.actionOperation.keySet()) {
+			if (paction.getAction().isUnchanged()) {
+				continue;
+			}
 
-            MatchingAction matchingAction = instance.getMapping().get(paction);
-            // The first one is always pointed by an action.
-            MatchingEntity firstMatchingEntity = matchingAction.getMatching().get(0);
-            CtElement affected = firstMatchingEntity.getAffectedNode();
-            if (mustMatchedEntities.contains(affected)){
-                mustMatchedEntities.remove(affected);
-            }
-        }
+			MatchingAction matchingAction = instance.getMapping().get(paction);
+			// The first one is always pointed by an action.
+			MatchingEntity firstMatchingEntity = matchingAction.getMatching().get(0);
+			CtElement affected = firstMatchingEntity.getAffectedNode();
+			if (mustMatchedEntities.contains(affected)) {
+				mustMatchedEntities.remove(affected);
+			}
+		}
 
-        return mustMatchedEntities.isEmpty();
+		return mustMatchedEntities.isEmpty();
 	}
 
 	/**
@@ -246,23 +248,24 @@ public class DetectorChangePatternInstanceEngine {
 	 * @param relations
 	 * @return
 	 */
-    /**
-     * Returns true if the instance of a pattern respect the relation between the
-     * elements of the pattern.
-     *
-     * @param instance
-     * @param relations
-     * @return
-     */
-    public boolean checkPatternRelationsOnInstance(ChangePatternInstance instance, PatternRelations relations) {
-        return checkPatternRelationsOnInstance(instance, relations, true);
-    }
+	/**
+	 * Returns true if the instance of a pattern respect the relation between the
+	 * elements of the pattern.
+	 *
+	 * @param instance
+	 * @param relations
+	 * @return
+	 */
+	public boolean checkPatternRelationsOnInstance(ChangePatternInstance instance, PatternRelations relations) {
+		return checkPatternRelationsOnInstance(instance, relations, true);
+	}
 
-    public boolean checkInvalidInstanceExistance(ChangePatternInstance invalid, PatternRelations relations) {
-        return checkPatternRelationsOnInstance(invalid, relations, false);
-    }
+	public boolean checkInvalidInstanceExistance(ChangePatternInstance invalid, PatternRelations relations) {
+		return checkPatternRelationsOnInstance(invalid, relations, false);
+	}
 
-	private boolean checkPatternRelationsOnInstance(ChangePatternInstance instance, PatternRelations relations, boolean checkUnchanged) {
+	private boolean checkPatternRelationsOnInstance(ChangePatternInstance instance, PatternRelations relations,
+			boolean checkUnchanged) {
 
 		MapList<PatternAction, EntityRelation> entitiesByAction = relations.getPaEntity();
 
@@ -277,23 +280,23 @@ public class DetectorChangePatternInstanceEngine {
 					// Get the two actions related by the Relation (one of them is paction)
 					PatternAction actionA = entityRelation.getAction1();
 					PatternAction actionB = entityRelation.getAction2();
-                    boolean aInMapping = instance.getMapping().containsKey(actionA);
-                    boolean bInMapping = instance.getMapping().containsKey(actionB);
-					if (checkUnchanged){
-                        boolean isAUnchanged = actionA.getAction().isUnchanged();
-                        boolean isBUnchanged = actionB.getAction().isUnchanged();
-                        if ((!aInMapping && !isAUnchanged) || (!bInMapping && !isBUnchanged)){
-                            return false;
-                        }
+					boolean aInMapping = instance.getMapping().containsKey(actionA);
+					boolean bInMapping = instance.getMapping().containsKey(actionB);
+					if (checkUnchanged) {
+						boolean isAUnchanged = actionA.getAction().isUnchanged();
+						boolean isBUnchanged = actionB.getAction().isUnchanged();
+						if ((!aInMapping && !isAUnchanged) || (!bInMapping && !isBUnchanged)) {
+							return false;
+						}
 
-                        if (!aInMapping || !bInMapping){
-                            continue;
-                        }
-                    } else {
-					    if (!aInMapping || !bInMapping){
-					        return false;
-                        }
-                    }
+						if (!aInMapping || !bInMapping) {
+							continue;
+						}
+					} else {
+						if (!aInMapping || !bInMapping) {
+							return false;
+						}
+					}
 
 					// get the matching of each action
 					MatchingEntity meA = instance.getMapping().get(actionA).getMatching().stream()
@@ -351,21 +354,21 @@ public class DetectorChangePatternInstanceEngine {
 					if (matching != null && !matching.isEmpty()) {
 						mapped = true;
 						MatchingAction maction = new MatchingAction(operation, patternAction, matching);
-						if (patternOperationType.equals(ActionType.UNCHANGED_HIGH_PRIORITY)){
-                            notMapped.add(patternAction);
-                        } else {
-                            mapping.add(patternAction, maction);
-                        }
+						if (patternOperationType.equals(ActionType.UNCHANGED_HIGH_PRIORITY)) {
+							notMapped.add(patternAction);
+						} else {
+							mapping.add(patternAction, maction);
+						}
 					}
 				}
 			}
-			if (!mapped ) {
-			    if (patternOperationType.isUnchanged()){
-			        continue;
+			if (!mapped) {
+				if (patternOperationType.isUnchanged()) {
+					continue;
 				}
 
-                log.debug("Abstract change not mapped: " + patternAction);
-                notMapped.add(patternAction);
+				log.debug("Abstract change not mapped: " + patternAction);
+				notMapped.add(patternAction);
 			}
 		}
 		return new ResultMapping(mapping, notMapped);
@@ -406,15 +409,23 @@ public class DetectorChangePatternInstanceEngine {
 		while (currentNodeFromAction != null && i_levels <= parentLevel) {
 			String typeOfNode = getNodeLabelFromCtElement(currentNodeFromAction);
 			String valueOfNode = currentNodeFromAction.toString();
+			String roleInParent = (currentNodeFromAction.getRoleInParent() != null)
+					? currentNodeFromAction.getRoleInParent().toString().toLowerCase()
+					: "";
 
 			String patternEntityValue = (matchnewvalue) ? parentEntity.getNewValue() : parentEntity.getOldValue();
 			if ( // type of element
 			("*".equals(parentEntity.getEntityType())
-					|| (typeOfNode != null && typeOfNode.equals(parentEntity.getEntityType()))) &&
-			// value of element
-					"*".equals(patternEntityValue) || (valueOfNode != null && valueOfNode.equals(patternEntityValue))
-
-			) {
+					|| (typeOfNode != null && typeOfNode.equals(parentEntity.getEntityType())))
+					///
+					&&
+					// value of element
+					("*".equals(patternEntityValue) || (valueOfNode != null && valueOfNode.equals(patternEntityValue)))
+					//
+					&&
+					// role
+					("*".equals(parentEntity.getRoleInParent()) || (roleInParent != null
+							&& roleInParent.equals(parentEntity.getRoleInParent().toLowerCase())))) {
 				MatchingEntity match = new MatchingEntity(currentNodeFromAction, parentEntity);
 				matching.add(match);
 
@@ -439,10 +450,9 @@ public class DetectorChangePatternInstanceEngine {
 
 	private boolean matchActionTypes(Action action, ActionType type) {
 
-		return ActionType.ANY.equals(type)
-                || ActionType.UNCHANGED.equals(type)
-                || ActionType.UNCHANGED_HIGH_PRIORITY.equals(type)
-                || (type.equals(ActionType.INS) && (action instanceof Insert))
+		return ActionType.ANY.equals(type) || ActionType.UNCHANGED.equals(type)
+				|| ActionType.UNCHANGED_HIGH_PRIORITY.equals(type)
+				|| (type.equals(ActionType.INS) && (action instanceof Insert))
 				|| (type.equals(ActionType.DEL) && (action instanceof Delete))
 				|| (type.equals(ActionType.MOV) && (action instanceof Move))
 				|| (type.equals(ActionType.UPD) && (action instanceof Update));

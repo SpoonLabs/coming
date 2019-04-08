@@ -31,6 +31,7 @@ public class PatternXMLParser implements PatternFileParser {
 	public static final String ENTITY = "entity";
 	public static final String ACTION = "action";
 	public static final String PARENT = "parent";
+	public static final String ROLE = "role";
 
 	public static ChangePatternSpecification parseFile(String patternFile) {
 
@@ -70,11 +71,15 @@ public class PatternXMLParser implements PatternFileParser {
 					String idEntity = eElement.getAttribute("id");
 					String type = eElement.getAttribute("type");
 					String value = eElement.getAttribute("value");
+					String role = eElement.getAttribute("role");
 
 					type = (type != null && !type.trim().isEmpty()) ? type : PatternEntity.ANY;
-					value = (value != null && !"".equals(value.trim())) ? value : PatternEntity.ANY;
+					value = (value != null && !value.trim().isEmpty()) ? value : PatternEntity.ANY;
+					role = (role != null && !role.trim().isEmpty()) ? role : PatternEntity.ANY;
 
 					PatternEntity pEntity = new PatternEntity(type, value);
+					pEntity.setRoleInParent(role);
+
 					idEntities.put(idEntity, pEntity);
 					if (idEntity != null && !idEntity.isEmpty())
 						pEntity.setId(Integer.valueOf(idEntity));
