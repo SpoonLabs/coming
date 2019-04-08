@@ -18,3 +18,11 @@ maven-eclipse.xml
 
 # IDEA
 .idea/
+
+#MacOS
+.DS_Store
+
+#Outs
+outDiffAnalysis/
+out/
+output/
