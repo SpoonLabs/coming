@@ -155,6 +155,76 @@ This pattern is able to match a changes such:
 That change is an *instance*  of the pattern `Add If-Return`.
 
 
+#### Roles of Entities
+
+The pattern specification also allows to specify the *role* of an entity in its parent entity.
+Given the code:
+
+```
+   if (exception == null) {
+-      l.connectionClosed(event);
++      l.connectionErrorOccurred(event);
+
+...
++  if (realConnection != null)
+-  if (realConnection == null)
+
+```
+
+The following pattern, that matches any changes inside an entity which parent is an IF, is able to detect two instances:
+
+```
+<pattern>
+<entity id="1" type = "If"/>
+<entity id="2" type = "*">
+	<parent parentId="1" distance="10" />
+</entity>
+<action entityId ="2" type = "*" />
+</pattern>
+```
+
+One of the instances is over the method invocation (which was an updated parameter), and the second one the operator inside the IF.
+
+The role feature allows to specify a pattern that matches an element according to the role of the element in its parent.
+
+
+For example,  the following pattern matches an element (with ID 2) which role in parent is **condition**: 
+
+```
+<pattern>
+
+<entity id="1" type = "If"/>
+<entity id="2" type = "*" role = "condition">
+	<parent parentId="1" distance="10" />
+</entity>
+
+<action entityId ="2" type = "*" />
+
+</pattern>
+```
+
+Thus, this patches will find one instance: the change inside the IF condition (update of binary operator) and it does not match with the other change (update of parameter).
+
+However, the next pattern will uniquely match the second change: changes on an entity which parent has a role of **Then** block.
+
+```
+<pattern>
+<entity id="1" type = "If"/>
+<entity id="3" type = "Block" role = "Then">
+	<parent parentId="1" distance="10" />
+</entity>
+<entity id="2" type = "*">
+	<parent parentId="3" distance="10" />
+</entity>
+<action entityId ="2" type = "*" />
+</pattern>
+```
+
+This pattern matches with the update of the method invocation's parameter (and not with the binary operator update)
+
+The list of available Roles is presented on this [page](/docs/types.md).
+
+
 # Output
 
 Coming writes the output in the folder indicated by the argument ` -output `.

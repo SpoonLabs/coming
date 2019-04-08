@@ -5,6 +5,8 @@
 
 [List of Action types](#action-types)
 
+[List of Roles in parent](#roles-in-parent)
+
 
 # Entity Types
 
@@ -78,4 +80,95 @@
 | 	MOV	| 
 | 	PER	| 
 | 	ANY	| 
+
+
+# Roles in Parent
+
+|Roles|
+|------------- |
+|	Name	|
+|	Type	|
+|	Multi_type	|
+|	Declaring_type	|
+|	Contained_type	|
+|	Body	|
+|	Is_shadow	|
+|	Bound	|
+|	Bounding_type	|
+|	Is_final	|
+|	Is_static	|
+|	Is_upper 	|
+|	Is_implicit	|
+|	Is_default	|
+|	Is_varargs	|
+|	Default_expression	|
+|	Then	|
+|	Else	|
+|	Package_ref	|
+|	Sub_package	|
+|	Condition	|
+|	Right_operand	|
+|	Left_operand	|
+|	Label	|
+|	Case	|
+|	Operator_kind	|
+|	Parameter	|
+|	Argument_type	|
+|	Expression	|
+|	Target	|
+|	Variable	|
+|	Finalizer	|
+|	Thrown	|
+|	Assignment	|
+|	Assigned	|
+|	Modifier	|
+|	Comment	|
+|	Annotation_type	|
+|	Interface	|
+|	Annotation	|
+|	Statement	|
+|	Argument	|
+|	Super_type	|
+|	Type_member	|
+|	Nested_type	|
+|	Constructor	|
+|	Method	|
+|	Annonymous_executable	|
+|	Field	|
+|	Executable_ref	|
+|	Cast	|
+|	Value	|
+|	For_update	|
+|	For_init	|
+|	Foreach_variable	|
+|	Try_resource	|
+|	Dimension	|
+|	Catch	|
+|	Target_label	|
+|	Type_parameter	|
+|	Type_argument	|
+|	Comment_tag	|
+|	Comment_content	|
+|	Comment_type	|
+|	Documentation_type	|
+|	Javadoc_tag_value	|
+|	Position	|
+|	Snippet	|
+|	Accessed_type	|
+|	Import_reference	|
+|	Module_directive	|
+|	Required_module	|
+|	Module_ref	|
+|	Exported_package	|
+|	Opened_package	|
+|	Service_type	|
+|	Implementation_type	|
+|	Provided_service	|
+|	Is_inferred	|
+
+
+
+
+
+
 
