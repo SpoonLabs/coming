@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<pattern>
+<entity id="1" type = "If"/>
+<entity id="2" type = "*" role = "condition">
+	<parent parentId="1" distance="10" />
+</entity>
+<action entityId ="2" type = "*" />
+</pattern>
