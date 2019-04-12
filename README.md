@@ -227,7 +227,7 @@ The list of available Roles is presented on this [page](/docs/types.md).
 
 # Output
 
-Coming writes the output in the folder indicated by the argument ` -output `.
+Coming writes the output in the folder indicated by the argument ` -output `. The kind of output depends of the analysis executed. We now present the output of two analysis: Mining Instances and Change frequency computation.
 
 ## Mined Instances
 
@@ -337,6 +337,11 @@ Coming has an option to compute the features associated to the code changed by a
 This functionality can be used with the argument `-mode features`.
 Coming writes in the folder specified in the `-output` a JSON file for each commit.
 
+## Specifying new outputs
+
+Coming allows to specify new output. For example, instead of saving the results in Json files as presented before, it's
+ possible to write a plug-in to store the results in a relational database.
+ You can find more detail about extending Coming in our [documentation](https://github.com/SpoonLabs/coming/blob/master/docs/extension_points.md#post-processors-and-outputs).
 
 # Filtering Commits
 
