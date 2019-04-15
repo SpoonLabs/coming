@@ -46,6 +46,74 @@ a) to apply a post-processor of the results from the analysis of each commit (e.
 
 b) to present the results from specific analyzers (e.g., to export instances of change pattern in a given format such as JSON, XML)
 
+### Creating your own post-output processor
+
+The interface `IOutput` defines two methods to implements:
+
+```
+public interface IOutput {
+	/**
+	 * Compute output for the final results
+	 * 
+	 */
+	public void generateFinalOutput(FinalResult finalResult);
+
+	/**
+	 * Compute the outputs for the results of a revision
+	 * 
+	 */
+	public void generateRevisionOutput(RevisionResult resultAllAnalyzed);
+  ```
+  One of them, `generateRevisionOutput(RevisionResult resultAllAnalyzed)` receives the results from a revision (e.g., commit) and is invoked *just after* this revision is analyzed.
+  The other method,  `generateFinalOutput(FinalResult finalResult)` received the results from the analysis of *all* the revision. Thsi method is invoked at the end of the execution, i.e., once all revision were analyzed.
+  
+  ### API for manipulating the results the results
+  
+The method `run` from Coming (which is invoked by the method `main`)  returns the final results.
+For example:
+
+```
+    ComingMain cm = new ComingMain();
+		Object result = cm.run(new String[] { "-location", "repogit4testv0", "-hunkanalysis", "true" });
+		CommitFinalResult cfres = (CommitFinalResult) result;
+		Map<Commit, RevisionResult> commits = cfres.getAllResults();
+```
+
+There, the map `commits` has the results of each commit.
+
+Coming also provides a call back to obtain the results of each revision just after it is analyzed.
+
+```
+  ComingMain cm = new ComingMain();
+  Boolean created = cm.createEngine(new String[] { "-location", "repogit4testv0", "-hunkanalysis", "true" });
+	cm.registerIntermediateCallback(new IntermediateResultProcessorCallback() {
+	int currentIndex = 0;
+			@Override
+			public void handleResult(RevisionResult result) {
+				System.out.println("callback " + currentIndex);
+				currentIndex++;
+			}
+		});
+		// Start the analysis
+		FinalResult finalresult = cm.start();
+```
+
+  ### Analyzing the Result from one revision.
+  
+  Coming allows to apply different analyzers to a particular revision.
+  The entity `RevisionResult` contains the results from each analyzed appyied to a revision.
+  It is a `Map` where the keys are the class names of the analyzed applied over the revision, and the values are the results that each analyzer produces. (Coming also provides a method `getResultFromClass` that receives a class and returns the result from that class).
+  
+  For example:
+  
+  ```
+  AnalysisResult resultFromDiffAnalysis = previousResults.getResultFromClass(FineGrainDifftAnalyzer.class);
+	DiffResult diffResut = (DiffResult) resultFromDiffAnalysis;
+```
+ 
+ All results inherit from class `AnalysisResult`. Then, it's possible to cast the results according to the analyzer.
+
+ 
 
 ## Format of the Pattern Specification
 
