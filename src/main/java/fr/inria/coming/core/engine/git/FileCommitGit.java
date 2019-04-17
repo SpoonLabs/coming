@@ -1,5 +1,7 @@
 package fr.inria.coming.core.engine.git;
 
+import java.io.File;
+
 import fr.inria.coming.core.entities.interfaces.Commit;
 import fr.inria.coming.core.entities.interfaces.FileCommit;
 
@@ -38,7 +40,7 @@ public class FileCommitGit implements FileCommit {
 
 	@Override
 	public String getFileName() {
-		int idx = this.nextFileName.lastIndexOf('/');
+		int idx = this.nextFileName.lastIndexOf(File.separator);
 		return this.nextFileName.substring(idx + 1);
 	}
 
