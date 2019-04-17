@@ -35,4 +35,9 @@ public class FilePair implements IRevisionPair<String> {
 		return name;
 	}
 
+	@Override
+	public String getPreviousName() {
+		return name;
+	}
+
 }

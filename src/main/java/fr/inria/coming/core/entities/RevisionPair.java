@@ -7,6 +7,7 @@ import fr.inria.coming.core.entities.interfaces.IRevisionPair;
  * @author Matias Martinez
  *
  */
+@Deprecated
 public class RevisionPair<T> implements IRevisionPair<T> {
 
 	protected T previousVersion;
@@ -43,6 +44,11 @@ public class RevisionPair<T> implements IRevisionPair<T> {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	@Override
+	public String getPreviousName() {
+		return name;
 	}
 
 }

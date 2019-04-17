@@ -14,4 +14,6 @@ public interface IRevisionPair<T> {
 
 	public String getName();
 
+	public String getPreviousName();
+
 }

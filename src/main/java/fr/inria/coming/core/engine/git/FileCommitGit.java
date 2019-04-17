@@ -79,4 +79,10 @@ public class FileCommitGit implements FileCommit {
 	public String getName() {
 		return this.getFileName();
 	}
+
+	@Override
+	public String getPreviousName() {
+
+		return getPreviousFileName();
+	}
 }
