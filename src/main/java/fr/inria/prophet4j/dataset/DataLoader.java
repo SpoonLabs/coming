@@ -9,65 +9,6 @@ import java.util.*;
 
 class DataLoader {
     // load buggy files and human patches
-    static Map<String, Map<File, File>> loadCardumenDataWithoutPatches(String dataPath, String patchPath) throws NullPointerException {
-        Map<String, Map<File, File>> catalogs = new HashMap<>();
-        for (File typeFile : new File(dataPath).listFiles((dir, name) -> !name.startsWith("."))) {
-            for (File numFile : typeFile.listFiles((dir, name) -> !name.startsWith("."))) {
-                String pathName = typeFile.getName() + "/" + numFile.getName();
-                if (!catalogs.containsKey(pathName)) {
-                    catalogs.put(pathName, new HashMap<>());
-                }
-                Map<File, File> catalog = catalogs.get(pathName);
-                List<File> buggyFiles = new ArrayList<>();
-                List<File> patchedFiles = new ArrayList<>();
-                for (File dataFile : numFile.listFiles((dir, name) -> !name.startsWith("."))) {
-                    if (dataFile.getName().equals("buggy")) {
-                        buggyFiles.addAll(Arrays.asList(dataFile.listFiles((dir, name) -> !name.startsWith("."))));
-                    } else if (dataFile.getName().equals("patched")) {
-                        patchedFiles.addAll(Arrays.asList(dataFile.listFiles((dir, name) -> !name.startsWith("."))));
-                    }
-                }
-                List<File> keys = new ArrayList<>();
-                List<File> values = new ArrayList<>();
-                for (File buggyFile : buggyFiles) {
-                    if (buggyFile.getName().endsWith(".java")) {
-                        keys.add(buggyFile);
-                    }
-                }
-                for (File patchedFile : patchedFiles) {
-                    FilenameFilter filter = (dir, name) -> name.endsWith(".java");
-                    values.addAll(Arrays.asList(patchedFile.listFiles(filter)));
-                }
-                for (File key : keys) {
-                    String keyName = key.getName();
-                    List<File> patches = new ArrayList<>();
-                    // we add human patch at the first place
-                    File scopeFile = new File(patchPath + pathName);
-                    for (File file : Lists.newArrayList(Files.fileTraverser().depthFirstPreOrder(scopeFile))) {
-                        String fileName = file.getName();
-                        if (keyName.equals(fileName)) {
-                            patches.add(file);
-                        }
-                    }
-                    if (patches.size() == 1) {
-                        // the following files are generated patches
-                        for (File value : values) {
-                            String valueName = value.getName();
-                            if (keyName.equals(valueName)) {
-                                patches.add(value);
-                            }
-                        }
-                        if (patches.size() > 1) {
-                            catalog.put(key, patches.get(0));
-                        }
-                    }
-                }
-            }
-        }
-        return catalogs;
-    }
-
-    // load buggy files and human patches
     static Map<String, Map<File, File>> loadSANERData(String dataPath) throws NullPointerException {
         Map<String, Map<File, File>> catalogs = new HashMap<>();
         for (File typeFile : new File(dataPath).listFiles((dir, name) -> !name.startsWith("."))) {
@@ -105,9 +46,69 @@ class DataLoader {
         return catalogs;
     }
 
+    // load buggy files and human patches
+    static Map<String, Map<File, File>> loadCardumenWithoutPatches(String dataPath, String patchPath) throws NullPointerException {
+        Map<String, Map<File, File>> catalogs = new HashMap<>();
+        FilenameFilter javaFilter = (dir, name) -> name.endsWith(".java");
+        for (File typeFile : new File(dataPath).listFiles((dir, name) -> !name.startsWith("."))) {
+            for (File numFile : typeFile.listFiles((dir, name) -> !name.startsWith("."))) {
+                String pathName = typeFile.getName() + "/" + numFile.getName();
+                if (!catalogs.containsKey(pathName)) {
+                    catalogs.put(pathName, new HashMap<>());
+                }
+                Map<File, File> catalog = catalogs.get(pathName);
+                List<File> buggyFiles = new ArrayList<>();
+                List<File> patchedFiles = new ArrayList<>();
+                for (File dataFile : numFile.listFiles((dir, name) -> !name.startsWith("."))) {
+                    if (dataFile.getName().equals("buggy")) {
+                        buggyFiles.addAll(Arrays.asList(dataFile.listFiles((dir, name) -> !name.startsWith("."))));
+                    } else if (dataFile.getName().equals("patched")) {
+                        patchedFiles.addAll(Arrays.asList(dataFile.listFiles((dir, name) -> !name.startsWith("."))));
+                    }
+                }
+                List<File> keys = new ArrayList<>();
+                List<File> values = new ArrayList<>();
+                for (File buggyFile : buggyFiles) {
+                    if (buggyFile.getName().endsWith(".java")) {
+                        keys.add(buggyFile);
+                    }
+                }
+                for (File patchedFile : patchedFiles) {
+                    values.addAll(Arrays.asList(patchedFile.listFiles(javaFilter)));
+                }
+                for (File key : keys) {
+                    String keyName = key.getName();
+                    List<File> patches = new ArrayList<>();
+                    // we add human patch at the first place
+                    File humanFile = new File(patchPath + pathName);
+                    for (File file : Lists.newArrayList(Files.fileTraverser().depthFirstPreOrder(humanFile))) {
+                        String fileName = file.getName();
+                        if (keyName.equals(fileName)) {
+                            patches.add(file);
+                        }
+                    }
+                    if (patches.size() == 1) {
+                        // the following files are generated patches
+                        for (File value : values) {
+                            String valueName = value.getName();
+                            if (keyName.equals(valueName)) {
+                                patches.add(value);
+                            }
+                        }
+                        if (patches.size() > 1) {
+                            catalog.put(key, patches.get(0));
+                        }
+                    }
+                }
+            }
+        }
+        return catalogs;
+    }
+
     // load buggy files and human patches, as well as generated patches
-    static Map<String, Map<File, List<File>>> loadCardumenDataWithPatches(String dataPath, String patchPath) throws NullPointerException {
+    static Map<String, Map<File, List<File>>> loadCardumenWithPatches(String dataPath, String patchPath) throws NullPointerException {
         Map<String, Map<File, List<File>>> catalogs = new HashMap<>();
+        FilenameFilter javaFilter = (dir, name) -> name.endsWith(".java");
         for (File typeFile : new File(dataPath).listFiles((dir, name) -> !name.startsWith("."))) {
             for (File numFile : typeFile.listFiles((dir, name) -> !name.startsWith("."))) {
                 String pathName = typeFile.getName() + "/" + numFile.getName();
@@ -132,15 +133,14 @@ class DataLoader {
                     }
                 }
                 for (File patchedFile : patchedFiles) {
-                    FilenameFilter filter = (dir, name) -> name.endsWith(".java");
-                    values.addAll(Arrays.asList(patchedFile.listFiles(filter)));
+                    values.addAll(Arrays.asList(patchedFile.listFiles(javaFilter)));
                 }
                 for (File key : keys) {
                     String keyName = key.getName();
                     List<File> patches = new ArrayList<>();
                     // we add human patch at the first place
-                    File scopeFile = new File(patchPath + pathName);
-                    for (File file : Lists.newArrayList(Files.fileTraverser().depthFirstPreOrder(scopeFile))) {
+                    File humanFile = new File(patchPath + pathName);
+                    for (File file : Lists.newArrayList(Files.fileTraverser().depthFirstPreOrder(humanFile))) {
                         String fileName = file.getName();
                         if (keyName.equals(fileName)) {
                             patches.add(file);
@@ -160,6 +160,111 @@ class DataLoader {
                     }
                 }
             }
+        }
+        return catalogs;
+    }
+
+    /**
+     for Project ODS(OverfittingDetectionSystem)
+     BEARS BUG_DOT_JAR DEFECTS4J QUIX_BUGS
+     */
+    // load buggy files and human patches
+    static Map<String, Map<File, File>> loadODSWithoutPatches(String dataPath) throws NullPointerException {
+        Map<String, Map<File, File>> catalogs = new HashMap<>();
+        FilenameFilter javaFilter = (dir, name) -> name.endsWith(".java");
+        for (File eachFile : new File(dataPath).listFiles((dir, name) -> !name.startsWith("."))) {
+            File humanFile = null;
+            try {
+                File[] humanFiles = new File(eachFile.getPath() + "/human").listFiles(javaFilter);
+                if (humanFiles.length == 1) {
+                    humanFile = humanFiles[0];
+                } else {
+                    continue;
+                }
+            } catch (NullPointerException e) {
+//                e.printStackTrace();
+                continue;
+            }
+
+            String pathName = eachFile.getName();
+            if (!catalogs.containsKey(pathName)) {
+                catalogs.put(pathName, new HashMap<>());
+            }
+            Map<File, File> catalog = catalogs.get(pathName);
+            File buggyFile = null;
+
+            String humanFileName = humanFile.getName();
+            FilenameFilter nameFilter = (dir, name) -> name.equals(humanFileName);
+            label: for (File typeFile : eachFile.listFiles((dir, name) -> !name.startsWith("."))) {
+                if (typeFile.getName().equals("human")) {
+                    continue;
+                }
+                for (File numFile : typeFile.listFiles((dir, name) -> !name.startsWith("."))) {
+                    if (buggyFile == null) {
+                        File[] keyFiles = new File(numFile.getPath() + "/buggy").listFiles(nameFilter);
+                        if (keyFiles.length == 1) {
+                            buggyFile = keyFiles[0];
+                            break label;
+                        }
+                    }
+                }
+            }
+
+            catalog.put(buggyFile, humanFile);
+        }
+        return catalogs;
+    }
+
+    // load buggy files and human patches, as well as generated patches
+    static Map<String, Map<File, List<File>>> loadODSWithPatches(String dataPath) throws NullPointerException {
+        Map<String, Map<File, List<File>>> catalogs = new HashMap<>();
+        FilenameFilter javaFilter = (dir, name) -> name.endsWith(".java");
+        for (File eachFile : new File(dataPath).listFiles((dir, name) -> !name.startsWith("."))) {
+            File humanFile = null;
+            try {
+                File[] humanFiles = new File(eachFile.getPath() + "/human").listFiles(javaFilter);
+                if (humanFiles.length == 1) {
+                    humanFile = humanFiles[0];
+                } else {
+                    continue;
+                }
+            } catch (NullPointerException e) {
+//                e.printStackTrace();
+                continue;
+            }
+
+            String pathName = eachFile.getName();
+            if (!catalogs.containsKey(pathName)) {
+                catalogs.put(pathName, new HashMap<>());
+            }
+            Map<File, List<File>> catalog = catalogs.get(pathName);
+            File buggyFile = null;
+            List<File> patchedFiles = new ArrayList<>();
+            // we add human patch at the first place
+            patchedFiles.add(0, humanFile);
+
+            String humanFileName = humanFile.getName();
+            FilenameFilter nameFilter = (dir, name) -> name.equals(humanFileName);
+            for (File typeFile : eachFile.listFiles((dir, name) -> !name.startsWith("."))) {
+                if (typeFile.getName().equals("human")) {
+                    continue;
+                }
+                for (File numFile : typeFile.listFiles((dir, name) -> !name.startsWith("."))) {
+                    if (buggyFile == null) {
+                        File[] keyFiles = new File(numFile.getPath() + "/buggy").listFiles(nameFilter);
+                        if (keyFiles.length == 1) {
+                            buggyFile = keyFiles[0];
+                        }
+                    }
+                    File[] valueFiles = new File(numFile.getPath() + "/patch").listFiles(nameFilter);
+                    if (valueFiles.length == 1) {
+                        // the following files are generated patches
+                        patchedFiles.addAll(Arrays.asList(valueFiles));
+                    }
+                }
+            }
+
+            catalog.put(buggyFile, patchedFiles);
         }
         return catalogs;
     }

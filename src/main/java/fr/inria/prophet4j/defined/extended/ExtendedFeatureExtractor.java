@@ -352,7 +352,7 @@ public class ExtendedFeatureExtractor implements FeatureExtractor {
             Set<ValueFeature> valueFeatures = getValueFeature(key, repair, valueExprInfo);
             for (Feature atomicFeature : atomicFeatures) {
                 for (Feature valueFeature : valueFeatures) {
-                    // RF_SF_CT
+                    // AF_VF_CT
                     List<Feature> valueCrossFeature = new ArrayList<>();
                     valueCrossFeature.add(atomicFeature);
                     valueCrossFeature.add(valueFeature);

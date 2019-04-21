@@ -27,7 +27,6 @@ import fr.inria.prophet4j.defined.Structure.Sample;
 import fr.inria.prophet4j.defined.CodeDiffer;
 import fr.inria.prophet4j.defined.FeatureLearner;
 import fr.inria.prophet4j.utility.Option.FeatureOption;
-import fr.inria.prophet4j.utility.Option.ModelOption;
 import tech.sourced.siva.IndexEntry;
 import tech.sourced.siva.SivaReader;
 

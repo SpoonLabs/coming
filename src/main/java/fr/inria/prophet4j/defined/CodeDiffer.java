@@ -5,6 +5,8 @@ import fr.inria.prophet4j.defined.Structure.FeatureVector;
 import fr.inria.prophet4j.defined.Structure.ParameterVector;
 import fr.inria.prophet4j.defined.Structure.DiffEntry;
 import fr.inria.prophet4j.defined.Structure.Repair;
+import fr.inria.prophet4j.defined.enhanced.EnhancedFeatureExtractor;
+import fr.inria.prophet4j.defined.enhanced.EnhancedRepairGenerator;
 import fr.inria.prophet4j.defined.extended.ExtendedFeatureExtractor;
 import fr.inria.prophet4j.defined.extended.ExtendedRepairGenerator;
 import fr.inria.prophet4j.defined.original.OriginalFeatureExtractor;
@@ -41,6 +43,9 @@ public class CodeDiffer {
     private FeatureExtractor newFeatureExtractor() {
         FeatureExtractor featureExtractor = null;
         switch (option.featureOption) {
+            case ENHANCED:
+                featureExtractor = new EnhancedFeatureExtractor();
+                break;
             case EXTENDED:
                 featureExtractor = new ExtendedFeatureExtractor();
                 break;
@@ -54,6 +59,9 @@ public class CodeDiffer {
     private RepairGenerator newRepairGenerator(DiffEntry diffEntry) {
         RepairGenerator repairGenerator = null;
         switch (option.featureOption) {
+            case ENHANCED:
+                repairGenerator = new EnhancedRepairGenerator(diffEntry);
+                break;
             case EXTENDED:
                 repairGenerator = new ExtendedRepairGenerator(diffEntry);
                 break;

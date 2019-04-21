@@ -28,50 +28,110 @@ public class Demo {
 
     void evaluate() {
         RepairEvaluator repairEvaluator = new RepairEvaluator(option);
-        repairEvaluator.func4Demo(RankingOption.D_CORRECT, RankingOption.D_INCORRECT);
-        System.out.println("1/3 Done");
-        repairEvaluator.func4Demo(RankingOption.D_HUMAN, RankingOption.D_CORRECT);
-        System.out.println("2/3 Done");
+//        repairEvaluator.func4Demo(RankingOption.D_CORRECT, RankingOption.D_INCORRECT);
+//        System.out.println("1/3 Done");
+//        repairEvaluator.func4Demo(RankingOption.D_HUMAN, RankingOption.D_CORRECT);
+//        System.out.println("2/3 Done");
+//        repairEvaluator.func4Demo(RankingOption.D_HUMAN, RankingOption.D_INCORRECT);
+//        System.out.println("3/3 Done");
         repairEvaluator.func4Demo(RankingOption.D_HUMAN, RankingOption.D_INCORRECT);
-        System.out.println("3/3 Done");
+        System.out.println("1/1 Done");
     }
 
+    private static void jobs4Demo(Option option) {
+        option.dataOption = DataOption.CARDUMEN;
+        option.patchOption = PatchOption.CARDUMEN;
+        new Demo(option).learn();
+        new Demo(option).evaluate();
+        option.dataOption = DataOption.SANER;
+        option.patchOption = PatchOption.SPR;
+        new Demo(option).learn();
+        new Demo(option).evaluate();
+    }
+
+    private static void jobs4ODS(Option option) {
+//        try {
+//            option.dataOption = DataOption.BEARS;
+//            option.patchOption = PatchOption.BEARS;
+//            new Demo(option).learn();
+//            new Demo(option).evaluate();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+        try {
+            option.dataOption = DataOption.BUG_DOT_JAR;
+            option.patchOption = PatchOption.BUG_DOT_JAR;
+            new Demo(option).learn();
+            new Demo(option).evaluate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            option.dataOption = DataOption.BUG_DOT_JAR;
+            option.patchOption = PatchOption.SPR;
+            new Demo(option).learn();
+            new Demo(option).evaluate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+//        try {
+//            option.dataOption = DataOption.DEFECTS4J;
+//            option.patchOption = PatchOption.DEFECTS4J;
+//            new Demo(option).learn();
+//            new Demo(option).evaluate();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        try {
+//            option.dataOption = DataOption.QUIX_BUGS;
+//            option.patchOption = PatchOption.QUIX_BUGS;
+//            new Demo(option).learn();
+//            new Demo(option).evaluate();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+    }
+
+    // seem meaningless to use FeatureOption.ENHANCED
     public static void main(String[] args) {
         try {
             Option option = new Option();
-//            option.featureOption = FeatureOption.EXTENDED;
-            new Demo(option).learn();
-//            new Demo(option).evaluate();
-
-            option.patchOption = PatchOption.SPR;
-            new Demo(option).learn();
-
-            option.dataOption = DataOption.SANER;
-            new Demo(option).learn();
-//            new Demo(option).evaluate();
+            // for Demo
+            option.featureOption = FeatureOption.ORIGINAL;
+            jobs4Demo(option);
+            option.featureOption = FeatureOption.EXTENDED;
+            jobs4Demo(option);
+//            option.featureOption = FeatureOption.ENHANCED;
+//            jobs4Demo(option);
+            // for ODS
+            option.featureOption = FeatureOption.ORIGINAL;
+            jobs4ODS(option);
+            option.featureOption = FeatureOption.EXTENDED;
+            jobs4ODS(option);
+//            option.featureOption = FeatureOption.ENHANCED;
+//            jobs4ODS(option);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    /*
-    [original] Cardumen + Cardumen
-    19-03-31 09:53:38 INFO FeatureLearner:222 - 5-fold Cross Validation: 0.2657596928390742
-    [original] Cardumen + SPR
-    19-03-31 10:05:02 INFO FeatureLearner:222 - 5-fold Cross Validation: 0.28822503830686835
-    [original] SANER + SPR
-    19-03-31 10:26:04 INFO FeatureLearner:222 - 5-fold Cross Validation: 0.008537303389384415
-    [extended] Cardumen + Cardumen
-    19-03-30 21:13:22 INFO FeatureLearner:222 - 5-fold Cross Validation: 0.2583991587092498
-    [extended] Cardumen + SPR
-    19-03-30 21:20:57 INFO FeatureLearner:222 - 5-fold Cross Validation: 0.29062909492440814
-    [extended] SANER + SPR
-    19-03-30 22:12:05 INFO FeatureLearner:222 - 5-fold Cross Validation: 0.010966064135150921
-     */
-    // todo (run on Thomas's data)
-    // todo (improve Feature or FeatureCross)
-    // todo (improve Learner Model)
-    // todo (run on PGA commits)
-    // todo (try other patch-generators)
+    // Testing(D_HUMAN-D_INCORRECT)
+    // o16 e20 Training(CARDUMEN-CARDUMEN)
+    // o21 e24 Training(SANER-SPR)
+    // o30 e32 Training(BUG_DOT_JAR-REPAIR_THEM_ALL)
+    // o17 e19 Training(BUG_DOT_JAR-SPR)
+    // todo (try Features in sketch4repair or coming)
     // todo (integrate with Coming)
-    // todo (integrate with Repairnator?)
+    // todo (integrate with Repairnator)
+    // todo (run on PGA commits and try other patch-generators) ?
+    /*
+    if we need to improve the performance of FeatureLearner, use CLR(Cyclical Learning Rates)
+    first line corresponds original eta, second line corresponds CLR
+    // o16 e21 original
+    // o19 e23 original
+    // o20 e24 extended
+    // o20 e25 extended
+    // o16 e30 enhanced (appended POS_VF_RF_CT POS_VF_AF_CT AF_RF_CT VF_RF_CT)
+    // o17 e24 enhanced (appended POS_VF_RF_CT POS_VF_AF_CT AF_RF_CT VF_RF_CT)
+     */
+    // config VM: -Xms1024m -Xmx16384m
 }

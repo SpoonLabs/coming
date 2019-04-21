@@ -2,6 +2,7 @@ package fr.inria.prophet4j.defined;
 
 import java.util.*;
 
+import fr.inria.prophet4j.defined.enhanced.EnhancedFeature;
 import fr.inria.prophet4j.defined.extended.ExtendedFeature;
 import fr.inria.prophet4j.defined.original.OriginalFeature;
 import fr.inria.prophet4j.utility.Option;
@@ -17,13 +18,11 @@ import fr.inria.prophet4j.defined.Structure.Sample;
 // based on learner.cpp (follow the way of ProphetPaper)
 public class FeatureLearner {
     private Option option;
-    private List<Sample> sampleData;
 
     private static final Logger logger = LogManager.getLogger(FeatureLearner.class.getName());
 
     public FeatureLearner(Option option) {
         this.option = option;
-        this.sampleData = new ArrayList<>();
     }
 
 //    private double getLogSumExp(double[] array) {
@@ -39,6 +38,9 @@ public class FeatureLearner {
     private double[] newFeatureArray() {
         int arraySize = 0;
         switch (option.featureOption) {
+            case ENHANCED:
+                arraySize = EnhancedFeature.FEATURE_SIZE;
+                break;
             case EXTENDED:
                 arraySize = ExtendedFeature.FEATURE_SIZE;
                 break;
@@ -50,14 +52,13 @@ public class FeatureLearner {
     }
 
     private ParameterVector learn(List<Sample> trainingData, List<Sample> validationData) {
-        double alpha = 1;
-        double gammaBest = 1;
+        double eta = 1;
+        double bestGamma = 1;
         final double lambda = 1e-3;
         ParameterVector theta = new ParameterVector(option.featureOption);
-        ParameterVector thetaBest = new ParameterVector(option.featureOption);
+        ParameterVector bestTheta = new ParameterVector(option.featureOption);
 
-        int count = 0;
-        while (count < 200) {
+        for (int count = 0; count < 100; count++) { // 200 seem unnecessary
             ParameterVector delta = new ParameterVector(option.featureOption);
             // handle training data
             for (Sample sample : trainingData) {
@@ -68,75 +69,47 @@ public class FeatureLearner {
                     FeatureVector featureVector = featureVectors.get(i);
                     scores[i] = featureVector.score(theta);
                 }
-                switch (option.getModelOption()) {
-                    case CROSS_ENTROPY: {
-                        // compute expValues
-                        double[] expValues = new double[featureVectors.size()];
-                        double maxSuperscript = Arrays.stream(scores).max().orElse(0);
-                        for (int i = 0; i < featureVectors.size(); i++) {
-                            expValues[i] = Math.exp(scores[i] - maxSuperscript);
-                        }
-                        double sumExpValues = Arrays.stream(expValues).sum();
-                        double[] tmpValues = newFeatureArray();
-                        for (int i = 0; i < featureVectors.size(); i++) {
-                            FeatureVector featureVector = featureVectors.get(i);
-                            List<FeatureCross> featureCrosses = featureVector.getFeatureCrosses();
-                            for (FeatureCross featureCross : featureCrosses) {
-                                int featureCrossId = featureCross.getId();
-                                tmpValues[featureCrossId] += expValues[i] * 1;
-                            }
-                        }
-                        // compute delta
-                        for (int i = 0; i < tmpValues.length; i++) {
-                            delta.dec(i, tmpValues[i] / sumExpValues);
-                        }
-                        long markedSize = featureVectors.stream().filter(FeatureVector::isMarked).count();
-                        for (FeatureVector featureVector : featureVectors) {
-                            if (featureVector.isMarked()) {
-                                List<FeatureCross> featureCrosses = featureVector.getFeatureCrosses();
-                                for (FeatureCross featureCross : featureCrosses) {
-                                    // 1 was derived before but i forget the procedure 03/24 todo check
-                                    // but i believe it is okay as 1 is also used in the original project
-                                    delta.inc(featureCross.getId(), 1.0 / markedSize);
-                                }
-                            }
+                // compute expValues
+                double[] expValues = new double[featureVectors.size()];
+                double maxSuperscript = Arrays.stream(scores).max().orElse(0);
+                for (int i = 0; i < featureVectors.size(); i++) {
+                    expValues[i] = Math.exp(scores[i] - maxSuperscript);
+                }
+                double sumExpValues = Arrays.stream(expValues).sum();
+                double[] tmpValues = newFeatureArray();
+                for (int i = 0; i < featureVectors.size(); i++) {
+                    FeatureVector featureVector = featureVectors.get(i);
+                    List<FeatureCross> featureCrosses = featureVector.getFeatureCrosses();
+                    for (FeatureCross featureCross : featureCrosses) {
+                        int featureCrossId = featureCross.getId();
+                        tmpValues[featureCrossId] += expValues[i] * 1;
+                    }
+                }
+                // compute delta
+                for (int i = 0; i < tmpValues.length; i++) {
+                    delta.dec(i, tmpValues[i] / sumExpValues);
+                }
+                long markedSize = featureVectors.stream().filter(FeatureVector::isMarked).count();
+                for (FeatureVector featureVector : featureVectors) {
+                    if (featureVector.isMarked()) {
+                        List<FeatureCross> featureCrosses = featureVector.getFeatureCrosses();
+                        for (FeatureCross featureCross : featureCrosses) {
+                            // 1 was derived before but i forget the procedure 03/24 todo check
+                            // but i believe it is okay as 1 is also used in the original project
+                            delta.inc(featureCross.getId(), 1.0 / markedSize);
                         }
                     }
-                    break;
-                    case SUPPORT_VECTOR_MACHINE: {
-                        // unsuitable as we have multiVectors for each patch todo check
-                        double[] tmpValues = newFeatureArray();
-                        for (int i = 0; i < featureVectors.size(); i++) {
-                            FeatureVector featureVector = featureVectors.get(i);
-                            List<FeatureCross> featureCrosses = featureVector.getFeatureCrosses();
-                            for (FeatureCross featureCross : featureCrosses) {
-                                int featureCrossId = featureCross.getId();
-                                tmpValues[featureCrossId] += Math.max(0, scores[i] - scores[0] + 1);
-                            }
-                        }
-                        for (int i = 0; i < tmpValues.length; i++) {
-                            delta.dec(i, tmpValues[i]);
-                        }
-                    }
-                    break;
                 }
             }
             // compute delta
             for (int i = 0; i < delta.size(); i++) {
                 delta.div(i, trainingData.size());
-                switch (option.getModelOption()) {
-                    case CROSS_ENTROPY:
-                        // I feel L1 normalization term is not necessary todo consider
-                        delta.dec(i, lambda * (Math.signum(theta.get(i)) + 2 * theta.get(i)));
-                        break;
-                    case SUPPORT_VECTOR_MACHINE:
-                        delta.dec(i, lambda * (2 * theta.get(i)));
-                        break;
-                }
+                // I feel L1 normalization term is not necessary todo consider
+                delta.dec(i, lambda * (Math.signum(theta.get(i)) + 2 * theta.get(i)));
             }
             // update theta
             for (int i = 0; i < delta.size(); i++) {
-                theta.inc(i, alpha * delta.get(i));
+                theta.inc(i, eta * delta.get(i));
             }
             // handle validation data
             double gamma = 0;
@@ -161,49 +134,45 @@ public class FeatureLearner {
             }
             gamma /= validationData.size();
             // update results
-            count += 1;
-            if (gammaBest > gamma) {
-                thetaBest.clone(theta);
-                gammaBest = gamma;
+            if (bestGamma > gamma) {
                 count = 0;
-                logger.log(Level.INFO, count + " Update best gamma " + gammaBest);
-            } else if (alpha > 0.01) {
-                alpha *= 0.9;
-//                logger.log(Level.INFO, count + " Drop alpha to " + alpha);
+                bestTheta.clone(theta);
+                bestGamma = gamma;
+                logger.log(Level.INFO, count + " Update BestGamma " + bestGamma);
+            } else if (eta > 0.01) {
+                eta *= 0.9;
+//                logger.log(Level.INFO, count + " Drop eta to " + eta);
 //            } else {
-//                logger.log(Level.INFO, count + " Keep alpha as " + alpha);
+//                logger.log(Level.INFO, count + " Keep eta as " + eta);
             }
         }
-        logger.log(Level.INFO, "BestGamma " + gammaBest);
-        thetaBest.gamma = gammaBest;
-        return thetaBest;
+        bestTheta.gamma = bestGamma;
+        logger.log(Level.INFO, "BestGamma " + bestGamma);
+        return bestTheta;
     }
 
     public void func4Demo(List<String> filePaths) {
         String parameterFilePath = Support.getFilePath(Support.DirType.PARAMETER_DIR, option) + "ParameterVector";
         // sort all sample data as we want one distinct baseline
         filePaths.sort(String::compareTo);
-        for (String filePath : filePaths) {
-//            logger.log(Level.INFO, "Processing file " + filePath);
-            Sample sample = new Sample(filePath);
-            // it is possible as FeatureVector only utilize Set<FeatureCross>
-            sample.loadFeatureVectors();
-            sampleData.add(sample);
-        }
-        logger.log(Level.INFO, "Size of SampleData: " + sampleData.size());
+        logger.log(Level.INFO, "Size of SampleData: " + filePaths.size());
 
         // k-fold Cross Validation
         final int k = 5;
-        assert sampleData.size() >= k;
+        assert filePaths.size() >= k;
         List<List<Sample>> folds = new ArrayList<>();
         for (int i = 0; i < k; i++) {
             folds.add(new ArrayList<>());
         }
-        for (int i = 0; i < sampleData.size(); i++) {
-            folds.get(i % 5).add(sampleData.get(i));
+        for (int i = 0; i < filePaths.size(); i++) {
+            String filePath = filePaths.get(i);
+            Sample sample = new Sample(filePath);
+            sample.loadFeatureVectors();
+            folds.get(i % 5).add(sample);
         }
-        double gammaBest = 1;
-        double gammaAverage = 0;
+        double averageGamma = 0;
+        double bestGamma = 1;
+        ParameterVector bestParameterVector = null;
         for (int i = 0; i < k; i++) {
             List<Sample> trainingData = new ArrayList<>();
             for (int j = 0; j < k; j++) {
@@ -213,14 +182,17 @@ public class FeatureLearner {
             }
             List<Sample> validationData = new ArrayList<>(folds.get(i));
             ParameterVector parameterVector = learn(trainingData, validationData);
-            gammaAverage += parameterVector.gamma;
-            if (parameterVector.gamma < gammaBest) {
-                gammaBest = parameterVector.gamma;
-                parameterVector.save(parameterFilePath);
+            averageGamma += parameterVector.gamma;
+            if (bestGamma > parameterVector.gamma) {
+                bestGamma = parameterVector.gamma;
+                bestParameterVector = parameterVector;
             }
         }
-        gammaAverage /= k;
-        logger.log(Level.INFO, k + "-fold Cross Validation: " + gammaAverage);
-        System.out.println("ParameterVector is saved to " + parameterFilePath);
+        averageGamma /= k;
+        logger.log(Level.INFO, k + "-fold Cross Validation: " + averageGamma);
+        if (bestParameterVector != null) {
+            bestParameterVector.save(parameterFilePath);
+            System.out.println("ParameterVector is saved to " + parameterFilePath);
+        }
     }
 }
