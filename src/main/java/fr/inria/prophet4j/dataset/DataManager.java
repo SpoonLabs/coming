@@ -51,11 +51,16 @@ public class DataManager {
     private Map<String, Map<File, File>> loadDataWithoutPatches(String dataPath) {
         switch (option.dataOption) {
             case CARDUMEN:
-                return DataLoader.loadCardumenDataWithoutPatches(dataPath, Support.PROPHET4J_DIR + "cardumen_dissection/");
+                return DataLoader.loadCardumenWithoutPatches(dataPath, Support.PROPHET4J_DIR + "cardumen_dissection/");
             case PGA:
                 break;
             case SANER:
                 return DataLoader.loadSANERData(dataPath);
+            case BEARS:
+            case BUG_DOT_JAR:
+            case DEFECTS4J:
+            case QUIX_BUGS:
+                return DataLoader.loadODSWithoutPatches(dataPath);
         }
         return new HashMap<>();
     }
@@ -63,17 +68,27 @@ public class DataManager {
     private Map<String, Map<File, List<File>>> loadDataWithPatches(String dataPath) {
         switch (option.dataOption) {
             case CARDUMEN:
-                return DataLoader.loadCardumenDataWithPatches(dataPath, Support.PROPHET4J_DIR + "cardumen_dissection/");
+                return DataLoader.loadCardumenWithPatches(dataPath, Support.PROPHET4J_DIR + "cardumen_dissection/");
             case PGA:
                 break;
             case SANER:
                 break;
+            case BEARS:
+            case BUG_DOT_JAR:
+            case DEFECTS4J:
+            case QUIX_BUGS:
+                return DataLoader.loadODSWithPatches(dataPath);
         }
         return new HashMap<>();
     }
 
     public List<String> func4Demo() {
-        if (option.dataOption == DataOption.CARDUMEN && option.patchOption == PatchOption.CARDUMEN) {
+        if (option.dataOption == DataOption.CARDUMEN && option.patchOption == PatchOption.CARDUMEN ||
+                option.dataOption == DataOption.BEARS && option.patchOption == PatchOption.BEARS ||
+                option.dataOption == DataOption.BUG_DOT_JAR && option.patchOption == PatchOption.BUG_DOT_JAR ||
+                option.dataOption == DataOption.DEFECTS4J && option.patchOption == PatchOption.DEFECTS4J ||
+                option.dataOption == DataOption.QUIX_BUGS && option.patchOption == PatchOption.QUIX_BUGS
+        ) {
             return handleDataWithoutGenerator();
         } else {
             return handleDataWithGenerator();
@@ -97,24 +112,28 @@ public class DataManager {
             for (String pathName : catalogs.keySet()) {
                 Map<File, File> catalog = catalogs.get(pathName);
                 for (File oldFile : catalog.keySet()) {
-                    String vectorPath = pathName + "/" + oldFile.getName();
-                    System.out.println(vectorPath);
-                    if (blackList.contains(vectorPath)) {
-                        progressNow += 1;
-                        System.out.println("blacklist");
-                        continue;
-                    }
-                    vectorPath = featurePath + vectorPath;
-                    File vectorFile = new File(vectorPath);
-                    if (!vectorFile.exists()) {
-                        List<FeatureVector> featureVectors = codeDiffer.func4Demo(oldFile, catalog.get(oldFile));
-                        if (featureVectors.size() == 0) {
-                            // diff.commonAncestor() returns null value
+                    try {
+                        String vectorPath = pathName + "/" + oldFile.getName();
+                        System.out.println(vectorPath);
+                        if (blackList.contains(vectorPath)) {
+                            progressNow += 1;
+                            System.out.println("blacklist");
                             continue;
                         }
-                        new Sample(vectorFile.getPath()).saveFeatureVectors(featureVectors);
+                        vectorPath = featurePath + vectorPath;
+                        File vectorFile = new File(vectorPath);
+                        if (!vectorFile.exists()) {
+                            List<FeatureVector> featureVectors = codeDiffer.func4Demo(oldFile, catalog.get(oldFile));
+                            if (featureVectors.size() == 0) {
+                                // diff.commonAncestor() returns null value
+                                continue;
+                            }
+                            new Sample(vectorFile.getPath()).saveFeatureVectors(featureVectors);
+                        }
+                        filePaths.add(vectorPath);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                    filePaths.add(vectorPath);
                 }
                 progressNow += 1;
                 System.out.println(pathName + " : " + progressNow + " / " + progressAll);

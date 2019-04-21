@@ -6,3 +6,4 @@
     GlobalFeatureNum     = 3 * AtomFeatureNum * RepairFeatureNum = 660
     VarCrossFeatureNum   = 3 * AtomFeatureNum * AtomFeatureNum   = 5808
     ValueCrossFeatureNum = AtomFeatureNum * ValueFeatureNum      = 1232
+    SumNum  = 7705

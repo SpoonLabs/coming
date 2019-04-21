@@ -6,6 +6,7 @@
     GlobalFeatureNum     = 3 * AtomFeatureNum * RepairFeatureNum = 450  => 495
     VarCrossFeatureNum   = 3 * AtomFeatureNum * AtomFeatureNum   = 2700 => 3267
     ValueCrossFeatureNum = AtomFeatureNum * ValueFeatureNum      = 360  => 330
+    SumNum  = 4097
 
     There are some features mentioned in ProphetPaper but not implemented in ProphetCode, like VARIABLE_AF, EXCLUDE_ATOM_AF, OPERATE_LHS_AF, OPERATE_RHS_AF, ASSIGN_RHS_AF. As well as some features seem useful but not introduced in ProphetPaper and ProphetCode, such as DELETE_STMT_RF, UNKNOWN_STMT_RF. Prophet4J follows the way of ProphetCode, excluding these features.
     

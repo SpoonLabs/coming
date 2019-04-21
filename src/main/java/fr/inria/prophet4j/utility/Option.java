@@ -15,44 +15,41 @@ public class Option {
         PGA,
         // human patches: https://github.com/monperrus/bug-fixes-saner16
         SANER,
+        // https://github.com/kth-tcs/overfitting-analysis/tree/master/data
+        // following 4 ones are all used for Project ODS(OverfittingDetectionSystem)
+        BEARS,
+        BUG_DOT_JAR,
+        DEFECTS4J,
+        QUIX_BUGS,
     }
 
+    // append other candidate-patches generators todo consider
     public enum PatchOption {
         CARDUMEN, // only valid for the CARDUMEN DataOption
         // temporary patch
         SPR, // SPR implemented in Java
-        // append other candidate-patches generators todo consider
+        // following 4 ones are all used for Project ODS(OverfittingDetectionSystem)
+        BEARS, // only valid for the BEARS DataOption
+        BUG_DOT_JAR, // only valid for the BUG_DOT_JAR DataOption
+        DEFECTS4J, // only valid for the DEFECTS4J DataOption
+        QUIX_BUGS, // only valid for the QUIX_BUGS DataOption
     }
 
     public enum FeatureOption {
-        EXTENDED,
+        ENHANCED, // appended more ways of crossing features, based on EXTENDED
+        EXTENDED, // appended more features and rearranged them, based on ORIGINAL
         ORIGINAL,
-    }
-
-    public enum ModelOption {
-        // right now have best performance
-        CROSS_ENTROPY,
-        // faster but not so good as cross-entropy
-        SUPPORT_VECTOR_MACHINE,
-        // maybe add Hinge loss later (as mentioned in Paper)
     }
 
     public DataOption dataOption;
     public PatchOption patchOption;
     public FeatureOption featureOption;
-    // DO NOT set modelOption until SUPPORT_VECTOR_MACHINE being checked
-    private ModelOption modelOption;
 
     // PatchOption.CARDUMEN can only pair with DataOption.CARDUMEN
     public Option() {
         this.dataOption = DataOption.CARDUMEN;
         this.patchOption = PatchOption.CARDUMEN;
         this.featureOption = FeatureOption.ORIGINAL;
-        this.modelOption = ModelOption.CROSS_ENTROPY;
-    }
-
-    public ModelOption getModelOption() {
-        return modelOption;
     }
 
     public enum RankingOption {

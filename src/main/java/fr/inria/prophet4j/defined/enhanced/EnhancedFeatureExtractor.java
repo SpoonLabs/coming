@@ -1,29 +1,16 @@
-package fr.inria.prophet4j.defined.original;
-
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+package fr.inria.prophet4j.defined.enhanced;
 
 import fr.inria.prophet4j.defined.Feature;
 import fr.inria.prophet4j.defined.Feature.Position;
-import fr.inria.prophet4j.defined.original.OriginalFeature.CrossType;
-import fr.inria.prophet4j.defined.original.OriginalFeature.AtomicFeature;
-import fr.inria.prophet4j.defined.original.OriginalFeature.RepairFeature;
-import fr.inria.prophet4j.defined.original.OriginalFeature.ValueFeature;
+import fr.inria.prophet4j.defined.FeatureExtractor;
 import fr.inria.prophet4j.defined.Structure.FeatureVector;
 import fr.inria.prophet4j.defined.Structure.Repair;
-import fr.inria.prophet4j.defined.original.util.OriginalFeatureVisitor;
-import fr.inria.prophet4j.defined.FeatureExtractor;
-import spoon.reflect.code.CtArrayAccess;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtLiteral;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtStatementList;
-import spoon.reflect.code.CtVariableAccess;
+import fr.inria.prophet4j.defined.enhanced.util.EnhancedFeatureVisitor;
+import fr.inria.prophet4j.defined.enhanced.EnhancedFeature.AtomicFeature;
+import fr.inria.prophet4j.defined.enhanced.EnhancedFeature.CrossType;
+import fr.inria.prophet4j.defined.enhanced.EnhancedFeature.RepairFeature;
+import fr.inria.prophet4j.defined.enhanced.EnhancedFeature.ValueFeature;
+import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -31,8 +18,10 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 
+import java.util.*;
+
 // based on FeatureExtract.cpp, RepairGenerator.cpp
-public class OriginalFeatureExtractor implements FeatureExtractor {
+public class EnhancedFeatureExtractor implements FeatureExtractor {
 
     private Map<String, CtElement> valueExprInfo = new HashMap<>();
 
@@ -127,21 +116,86 @@ public class OriginalFeatureExtractor implements FeatureExtractor {
 //            else
 //                valueFeatures.add(SchemaFeature.GLOBAL_VARIABLE_VF);
 //        }
-        if (valueStr.contains("length") || valueStr.contains("size"))
-            valueFeatures.add(ValueFeature.SIZE_LITERAL_VF);
+        if (valueStr.contains("get"))
+            valueFeatures.add(ValueFeature.LI_GET_VF);
+        if (valueStr.contains("size"))
+            valueFeatures.add(ValueFeature.LI_SIZE_VF);
+        if (valueStr.contains("length"))
+            valueFeatures.add(ValueFeature.LI_LENGTH_VF);
+        if (valueStr.contains("equals"))
+            valueFeatures.add(ValueFeature.LI_EQUALS_VF);
         // i feel this may be incorrect todo check
         if (E.getElements(new TypeFilter<>(CtField.class)).size() > 0)
             valueFeatures.add(ValueFeature.MEMBER_VF);
         if (E instanceof CtLiteral) {
             Object value = ((CtLiteral)E).getValue();
-            if (value instanceof String) {
-                valueFeatures.add(ValueFeature.STRING_LITERAL_VF);
-            } else if (value instanceof Integer) { // ?
-                if ((Integer) value == 0) {
-                    valueFeatures.add(ValueFeature.ZERO_CONST_VF);
-                } else {
-                    valueFeatures.add(ValueFeature.NONZERO_CONST_VF);
+            if (value == null) {
+                valueFeatures.add(ValueFeature.LV_NULL_VF);
+            }
+            if (value instanceof Byte) {
+                if ((Byte) value == 0) {
+                    valueFeatures.add(ValueFeature.LV_ZERO_VF);
                 }
+                valueFeatures.add(ValueFeature.LT_BYTE_VF);
+            } else if (value instanceof Character) {
+                if ((Character) value == 0) {
+                    valueFeatures.add(ValueFeature.LV_ZERO_VF);
+                }
+                valueFeatures.add(ValueFeature.LT_CHAR_VF);
+            } else if (value instanceof Short) {
+                if ((Short) value == 0) {
+                    valueFeatures.add(ValueFeature.LV_ZERO_VF);
+                }
+                valueFeatures.add(ValueFeature.LT_SHORT_VF);
+            } else if (value instanceof Integer) {
+                if ((Integer) value == 0) {
+                    valueFeatures.add(ValueFeature.LV_ZERO_VF);
+                }
+                valueFeatures.add(ValueFeature.LT_INT_VF);
+            } else if (value instanceof Long) {
+                if ((Long) value == 0) {
+                    valueFeatures.add(ValueFeature.LV_ZERO_VF);
+                }
+                valueFeatures.add(ValueFeature.LT_LONG_VF);
+            } else if (value instanceof Float) {
+                if ((Float) value == 0.0) {
+                    valueFeatures.add(ValueFeature.LV_ZERO_VF);
+                }
+                valueFeatures.add(ValueFeature.LT_FLOAT_VF);
+            } else if (value instanceof Double) {
+                if ((Double) value == 0.0) {
+                    valueFeatures.add(ValueFeature.LV_ZERO_VF);
+                }
+                valueFeatures.add(ValueFeature.LT_DOUBLE_VF);
+            } else if (value instanceof Boolean) {
+                valueFeatures.add(ValueFeature.LT_BOOLEAN_VF);
+            } else if (value instanceof Enum) {
+                valueFeatures.add(ValueFeature.LT_ENUM_VF);
+            } else if (value instanceof String) {
+                if (((String) value).equals("")) {
+                    valueFeatures.add(ValueFeature.LV_BLANK_VF);
+                }
+                valueFeatures.add(ValueFeature.LT_STRING_VF);
+            } else if (value instanceof List) {
+                if (((List) value).isEmpty()) {
+                    valueFeatures.add(ValueFeature.LV_EMPTY_VF);
+                }
+                valueFeatures.add(ValueFeature.LT_LIST_VF);
+            } else if (value instanceof Map) {
+                if (((Map) value).isEmpty()) {
+                    valueFeatures.add(ValueFeature.LV_EMPTY_VF);
+                }
+                valueFeatures.add(ValueFeature.LT_MAP_VF);
+            } else if (value instanceof Queue) {
+                if (((Queue) value).isEmpty()) {
+                    valueFeatures.add(ValueFeature.LV_EMPTY_VF);
+                }
+                valueFeatures.add(ValueFeature.LT_QUEUE_VF);
+            } else if (value instanceof Set) {
+                if (((Set) value).isEmpty()) {
+                    valueFeatures.add(ValueFeature.LV_EMPTY_VF);
+                }
+                valueFeatures.add(ValueFeature.LT_SET_VF);
             }
         }
         return valueFeatures;
@@ -157,24 +211,24 @@ public class OriginalFeatureExtractor implements FeatureExtractor {
         Map<String, Set<AtomicFeature>> srcMapC = new HashMap<>();
         Map<String, Set<AtomicFeature>> srcMapF = new HashMap<>();
         Map<String, Set<AtomicFeature>> srcMapL = new HashMap<>();
-        Map<String, Set<AtomicFeature>> dstMap = new OriginalFeatureVisitor(valueExprInfo).traverseRepair(repair, atom);
+        Map<String, Set<AtomicFeature>> dstMap = new EnhancedFeatureVisitor(valueExprInfo).traverseRepair(repair, atom);
 
         for (CtElement stmt : stmtsC) {
-            Map<String, Set<AtomicFeature>> map = new OriginalFeatureVisitor(valueExprInfo).traverseStmt(stmt);
+            Map<String, Set<AtomicFeature>> map = new EnhancedFeatureVisitor(valueExprInfo).traverseStmt(stmt);
             map.forEach((k, v) -> srcMapC.merge(k, v, (v1, v2) -> {
                 v1.addAll(v2);
                 return v1;
             }));
         }
         for (CtElement stmt : stmtsF) {
-            Map<String, Set<AtomicFeature>> map = new OriginalFeatureVisitor(valueExprInfo).traverseStmt(stmt);
+            Map<String, Set<AtomicFeature>> map = new EnhancedFeatureVisitor(valueExprInfo).traverseStmt(stmt);
             map.forEach((k, v) -> srcMapF.merge(k, v, (v1, v2) -> {
                 v1.addAll(v2);
                 return v1;
             }));
         }
         for (CtElement stmt : stmtsL) {
-            Map<String, Set<AtomicFeature>> map = new OriginalFeatureVisitor(valueExprInfo).traverseStmt(stmt);
+            Map<String, Set<AtomicFeature>> map = new EnhancedFeatureVisitor(valueExprInfo).traverseStmt(stmt);
             map.forEach((k, v) -> srcMapL.merge(k, v, (v1, v2) -> {
                 v1.addAll(v2);
                 return v1;
@@ -190,7 +244,7 @@ public class OriginalFeatureExtractor implements FeatureExtractor {
             // RF_CT
             List<Feature> features = new ArrayList<>();
             features.add(repairFeature);
-            featureVector.addFeatureCross(new OriginalFeatureCross(CrossType.RF_CT, features));
+            featureVector.addFeatureCross(new EnhancedFeatureCross(CrossType.RF_CT, features));
         }
 
         // GlobalFeatureNum     = 3 * AtomFeatureNum * RepairFeatureNum = 450
@@ -203,7 +257,7 @@ public class OriginalFeatureExtractor implements FeatureExtractor {
                     globalFeatures.add(Position.POS_C);
                     globalFeatures.add(atomicFeature);
                     globalFeatures.add(repairFeature);
-                    featureVector.addFeatureCross(new OriginalFeatureCross(CrossType.POS_AF_RF_CT, globalFeatures));
+                    featureVector.addFeatureCross(new EnhancedFeatureCross(CrossType.POS_AF_RF_CT, globalFeatures));
                 }
             }
             if (srcMapF.containsKey("@")) {
@@ -214,7 +268,7 @@ public class OriginalFeatureExtractor implements FeatureExtractor {
                     globalFeatures.add(Position.POS_F);
                     globalFeatures.add(atomicFeature);
                     globalFeatures.add(repairFeature);
-                    featureVector.addFeatureCross(new OriginalFeatureCross(CrossType.POS_AF_RF_CT, globalFeatures));
+                    featureVector.addFeatureCross(new EnhancedFeatureCross(CrossType.POS_AF_RF_CT, globalFeatures));
                 }
             }
             if (srcMapL.containsKey("@")) {
@@ -225,17 +279,70 @@ public class OriginalFeatureExtractor implements FeatureExtractor {
                     globalFeatures.add(Position.POS_L);
                     globalFeatures.add(atomicFeature);
                     globalFeatures.add(repairFeature);
-                    featureVector.addFeatureCross(new OriginalFeatureCross(CrossType.POS_AF_RF_CT, globalFeatures));
+                    featureVector.addFeatureCross(new EnhancedFeatureCross(CrossType.POS_AF_RF_CT, globalFeatures));
                 }
             }
         }
+
+        // AtomFeatureNum * RepairFeatureNum todo check
+        for (Feature repairFeature : repairFeatures) {
+            if (dstMap.containsKey("@")) {
+                Set<AtomicFeature> atomicFeatures = dstMap.get("@");
+                for (Feature atomicFeature : atomicFeatures) {
+                    // AF_RF_CT
+                    List<Feature> newlyAddedFeatures = new ArrayList<>();
+                    newlyAddedFeatures.add(atomicFeature);
+                    newlyAddedFeatures.add(repairFeature);
+                    featureVector.addFeatureCross(new EnhancedFeatureCross(CrossType.AF_RF_CT, newlyAddedFeatures));
+                }
+            }
+        }
+
         srcMapC.remove("@");
         srcMapF.remove("@");
         srcMapL.remove("@");
         dstMap.remove("@");
 
+        // 3 * ValueFeatureNum * RepairFeatureNum todo check
+        for (Feature repairFeature : repairFeatures) {
+            for (String key : srcMapC.keySet()) {
+                Set<ValueFeature> valueFeatures = getValueFeature(key, repair, valueExprInfo);
+                for (Feature valueFeature : valueFeatures) {
+                    // POS_VF_RF_CT
+                    List<Feature> newlyAddedFeatures = new ArrayList<>();
+                    newlyAddedFeatures.add(Position.POS_C);
+                    newlyAddedFeatures.add(valueFeature);
+                    newlyAddedFeatures.add(repairFeature);
+                    featureVector.addFeatureCross(new EnhancedFeatureCross(CrossType.POS_VF_RF_CT, newlyAddedFeatures));
+                }
+            }
+            for (String key : srcMapF.keySet()) {
+                Set<ValueFeature> valueFeatures = getValueFeature(key, repair, valueExprInfo);
+                for (Feature valueFeature : valueFeatures) {
+                    // POS_VF_RF_CT
+                    List<Feature> newlyAddedFeatures = new ArrayList<>();
+                    newlyAddedFeatures.add(Position.POS_F);
+                    newlyAddedFeatures.add(valueFeature);
+                    newlyAddedFeatures.add(repairFeature);
+                    featureVector.addFeatureCross(new EnhancedFeatureCross(CrossType.POS_VF_RF_CT, newlyAddedFeatures));
+                }
+            }
+            for (String key : srcMapL.keySet()) {
+                Set<ValueFeature> valueFeatures = getValueFeature(key, repair, valueExprInfo);
+                for (Feature valueFeature : valueFeatures) {
+                    // POS_VF_RF_CT
+                    List<Feature> newlyAddedFeatures = new ArrayList<>();
+                    newlyAddedFeatures.add(Position.POS_L);
+                    newlyAddedFeatures.add(valueFeature);
+                    newlyAddedFeatures.add(repairFeature);
+                    featureVector.addFeatureCross(new EnhancedFeatureCross(CrossType.POS_VF_RF_CT, newlyAddedFeatures));
+                }
+            }
+        }
+
         // VarCrossFeatureNum   = 3 * AtomFeatureNum * AtomFeatureNum   = 2700
         for (String key : dstMap.keySet()) {
+            // what the meaning of this block is todo consider
             if (valueExprInfo.containsKey(key)) {
                 CtElement E = valueExprInfo.get(key);
                 if (E instanceof CtLiteral)
@@ -252,7 +359,7 @@ public class OriginalFeatureExtractor implements FeatureExtractor {
                         varCrossFeatures.add(Position.POS_C);
                         varCrossFeatures.add(srcAtomicFeature);
                         varCrossFeatures.add(dstAtomicFeature);
-                        featureVector.addFeatureCross(new OriginalFeatureCross(CrossType.POS_AF_AF_CT, varCrossFeatures));
+                        featureVector.addFeatureCross(new EnhancedFeatureCross(CrossType.POS_AF_AF_CT, varCrossFeatures));
                     }
                 }
             }
@@ -266,7 +373,7 @@ public class OriginalFeatureExtractor implements FeatureExtractor {
                         varCrossFeatures.add(Position.POS_F);
                         varCrossFeatures.add(srcAtomicFeature);
                         varCrossFeatures.add(dstAtomicFeature);
-                        featureVector.addFeatureCross(new OriginalFeatureCross(CrossType.POS_AF_AF_CT, varCrossFeatures));
+                        featureVector.addFeatureCross(new EnhancedFeatureCross(CrossType.POS_AF_AF_CT, varCrossFeatures));
                     }
                 }
             }
@@ -280,8 +387,66 @@ public class OriginalFeatureExtractor implements FeatureExtractor {
                         varCrossFeatures.add(Position.POS_L);
                         varCrossFeatures.add(srcAtomicFeature);
                         varCrossFeatures.add(dstAtomicFeature);
-                        featureVector.addFeatureCross(new OriginalFeatureCross(CrossType.POS_AF_AF_CT, varCrossFeatures));
+                        featureVector.addFeatureCross(new EnhancedFeatureCross(CrossType.POS_AF_AF_CT, varCrossFeatures));
                     }
+                }
+            }
+        }
+
+        // 3 * ValueFeatureNum * AtomFeatureNum todo check
+        for (String key : srcMapC.keySet()) {
+            Set<AtomicFeature> atomicFeatures = srcMapC.get(key);
+            Set<ValueFeature> valueFeatures = getValueFeature(key, repair, valueExprInfo);
+            for (Feature valueFeature : valueFeatures) {
+                for (Feature atomicFeature : atomicFeatures) {
+                    // POS_VF_AF_CT
+                    List<Feature> newlyAddedFeatures = new ArrayList<>();
+                    newlyAddedFeatures.add(Position.POS_C);
+                    newlyAddedFeatures.add(valueFeature);
+                    newlyAddedFeatures.add(atomicFeature);
+                    featureVector.addFeatureCross(new EnhancedFeatureCross(CrossType.POS_VF_AF_CT, newlyAddedFeatures));
+                }
+            }
+        }
+        for (String key : srcMapF.keySet()) {
+            Set<AtomicFeature> atomicFeatures = srcMapF.get(key);
+            Set<ValueFeature> valueFeatures = getValueFeature(key, repair, valueExprInfo);
+            for (Feature valueFeature : valueFeatures) {
+                for (Feature atomicFeature : atomicFeatures) {
+                    // POS_VF_AF_CT
+                    List<Feature> newlyAddedFeatures = new ArrayList<>();
+                    newlyAddedFeatures.add(Position.POS_F);
+                    newlyAddedFeatures.add(valueFeature);
+                    newlyAddedFeatures.add(atomicFeature);
+                    featureVector.addFeatureCross(new EnhancedFeatureCross(CrossType.POS_VF_AF_CT, newlyAddedFeatures));
+                }
+            }
+        }
+        for (String key : srcMapL.keySet()) {
+            Set<AtomicFeature> atomicFeatures = srcMapL.get(key);
+            Set<ValueFeature> valueFeatures = getValueFeature(key, repair, valueExprInfo);
+            for (Feature valueFeature : valueFeatures) {
+                for (Feature atomicFeature : atomicFeatures) {
+                    // POS_VF_AF_CT
+                    List<Feature> newlyAddedFeatures = new ArrayList<>();
+                    newlyAddedFeatures.add(Position.POS_L);
+                    newlyAddedFeatures.add(valueFeature);
+                    newlyAddedFeatures.add(atomicFeature);
+                    featureVector.addFeatureCross(new EnhancedFeatureCross(CrossType.POS_VF_AF_CT, newlyAddedFeatures));
+                }
+            }
+        }
+
+        // ValueFeatureNum * RepairFeatureNum todo check
+        for (Feature repairFeature : repairFeatures) {
+            for (String key : dstMap.keySet()) {
+                Set<ValueFeature> valueFeatures = getValueFeature(key, repair, valueExprInfo);
+                for (Feature valueFeature : valueFeatures) {
+                    // VF_RF_CT
+                    List<Feature> newlyAddedFeatures = new ArrayList<>();
+                    newlyAddedFeatures.add(valueFeature);
+                    newlyAddedFeatures.add(repairFeature);
+                    featureVector.addFeatureCross(new EnhancedFeatureCross(CrossType.VF_RF_CT, newlyAddedFeatures));
                 }
             }
         }
@@ -296,7 +461,7 @@ public class OriginalFeatureExtractor implements FeatureExtractor {
                     List<Feature> valueCrossFeature = new ArrayList<>();
                     valueCrossFeature.add(atomicFeature);
                     valueCrossFeature.add(valueFeature);
-                    featureVector.addFeatureCross(new OriginalFeatureCross(CrossType.AF_VF_CT, valueCrossFeature));
+                    featureVector.addFeatureCross(new EnhancedFeatureCross(CrossType.AF_VF_CT, valueCrossFeature));
                 }
             }
         }

@@ -1,5 +1,6 @@
 package fr.inria.prophet4j.defined;
 
+import fr.inria.prophet4j.defined.enhanced.EnhancedFeature;
 import fr.inria.prophet4j.defined.extended.ExtendedFeature;
 import fr.inria.prophet4j.defined.original.OriginalFeature;
 import fr.inria.prophet4j.utility.Option.FeatureOption;
@@ -25,6 +26,7 @@ public interface Structure {
         }
 
         public void loadFeatureVectors() {
+            // it is possible as FeatureVector only utilize Set<FeatureCross>
             try {
                 FileInputStream fis = new FileInputStream(filePath);
                 ObjectInputStream ois = new ObjectInputStream(fis);
@@ -115,6 +117,9 @@ public interface Structure {
 
         public ParameterVector(FeatureOption featureOption) {
             switch (featureOption) {
+                case ENHANCED:
+                    this.arraySize = EnhancedFeature.FEATURE_SIZE;
+                    break;
                 case EXTENDED:
                     this.arraySize = ExtendedFeature.FEATURE_SIZE;
                     break;
