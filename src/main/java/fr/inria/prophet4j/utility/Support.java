@@ -13,8 +13,6 @@ public class Support {
         FEATURE_DIR,
         // parameter vectors
         PARAMETER_DIR,
-        // csv files
-        CSV_DIR,
     }
 
     public static String getFilePath(DirType dirType, Option option) {
@@ -25,10 +23,6 @@ public class Support {
                     case CARDUMEN:
                     case SANER:
                         stringJoiner.add(option.dataOption.name().toLowerCase());
-                        break;
-                    case PGA:
-                        // PGA seems not well-prepared todo check
-                        System.exit(9);
                         break;
                     case BEARS:
                         stringJoiner.add("Bears");
@@ -56,12 +50,6 @@ public class Support {
                 stringJoiner.add(option.patchOption.name().toLowerCase());
                 stringJoiner.add(option.featureOption.name().toLowerCase());
                 stringJoiner.add("cross_entropy");
-                break;
-            case CSV_DIR:
-                stringJoiner.add("_csv");
-                stringJoiner.add(option.dataOption.name().toLowerCase());
-                stringJoiner.add(option.patchOption.name().toLowerCase());
-                stringJoiner.add(option.featureOption.name().toLowerCase());
                 break;
         }
         return stringJoiner.toString();

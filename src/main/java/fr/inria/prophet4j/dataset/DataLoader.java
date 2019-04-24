@@ -9,7 +9,7 @@ import java.util.*;
 
 class DataLoader {
     // load buggy files and human patches
-    static Map<String, Map<File, File>> loadSANERData(String dataPath) throws NullPointerException {
+    static Map<String, Map<File, File>> loadSANERWithoutPatches(String dataPath) throws NullPointerException {
         Map<String, Map<File, File>> catalogs = new HashMap<>();
         for (File typeFile : new File(dataPath).listFiles((dir, name) -> !name.startsWith("."))) {
             File[] targetDirs = typeFile.listFiles((dir, name) -> name.equals("modifiedFiles"));

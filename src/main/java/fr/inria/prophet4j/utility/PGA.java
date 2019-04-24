@@ -1,6 +1,5 @@
-package fr.inria.prophet4j.dataset;
+package fr.inria.prophet4j.utility;
 
-import fr.inria.prophet4j.utility.Option;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -26,7 +25,6 @@ import fr.inria.prophet4j.defined.Structure.FeatureVector;
 import fr.inria.prophet4j.defined.Structure.Sample;
 import fr.inria.prophet4j.defined.CodeDiffer;
 import fr.inria.prophet4j.defined.FeatureLearner;
-import fr.inria.prophet4j.utility.Option.FeatureOption;
 import tech.sourced.siva.IndexEntry;
 import tech.sourced.siva.SivaReader;
 
@@ -310,7 +308,7 @@ public class PGA {
             System.out.println("================");
             System.out.println(differ.vectorFilePath);
             if (!vectorFile.exists()) {
-                List<FeatureVector> featureVectors = codeDiffer.func4Demo(new File(differ.oldFilePath), new File(differ.newFilePath));
+                List<FeatureVector> featureVectors = codeDiffer.runByGenerator(new File(differ.oldFilePath), new File(differ.newFilePath));
                 if (featureVectors.size() == 0) {
                     // diff.commonAncestor() returns null value
                     progressNow += 1;
@@ -322,7 +320,7 @@ public class PGA {
             progressNow += 1;
             System.out.println(progressNow + " / " + progressAll);
         }
-        new FeatureLearner(option).func4Demo(filePaths);
+        new FeatureLearner(option).run(filePaths);
         // clean up here to not keep using more and more disk-space for these samples
 //        FileUtils.deleteDirectory(repoDir.getParentFile());
     }

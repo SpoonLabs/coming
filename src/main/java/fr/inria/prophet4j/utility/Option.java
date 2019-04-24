@@ -6,13 +6,6 @@ public class Option {
         // github.com/program-repair/defects4j-dissection/tree/9d5aeea14e2e2e0c440f8b6970f1b278fc5e2271/projects
         // generated patches: kth-tcs/overfitting-analysis(/dataport/Training/patched_cardumen/)
         CARDUMEN,
-        // https://github.com/src-d/datasets/tree/master/PublicGitArchive/pga
-        // https://pga.sourced.tech
-        // https://stedolan.github.io/jq/manual/
-        // https://github.com/src-d/siva-java
-        // https://github.com/eclipse/jgit
-        // https://github.com/centic9/jgit-cookbook
-        PGA,
         // human patches: https://github.com/monperrus/bug-fixes-saner16
         SANER,
         // https://github.com/kth-tcs/overfitting-analysis/tree/master/data
@@ -38,7 +31,8 @@ public class Option {
     public enum FeatureOption {
         ENHANCED, // appended more ways of crossing features, based on EXTENDED
         EXTENDED, // appended more features and rearranged them, based on ORIGINAL
-        ORIGINAL,
+        ORIGINAL, // Prophet4J
+        S4R, // SKETCH4REPAIR (sri-lab@ETH)
     }
 
     public DataOption dataOption;
