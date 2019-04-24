@@ -1,5 +1,6 @@
 package fr.inria.prophet4j.defined;
 
+import fr.inria.prophet4j.defined.S4R.S4RFeature;
 import fr.inria.prophet4j.defined.enhanced.EnhancedFeature;
 import fr.inria.prophet4j.defined.extended.ExtendedFeature;
 import fr.inria.prophet4j.defined.original.OriginalFeature;
@@ -126,6 +127,9 @@ public interface Structure {
                 case ORIGINAL:
                     this.arraySize = OriginalFeature.FEATURE_SIZE;
                     break;
+                case S4R:
+                    this.arraySize = S4RFeature.FEATURE_SIZE;
+                    break;
             }
             this.parameterArray = new double[arraySize];
         }
@@ -167,6 +171,7 @@ public interface Structure {
             return res;
         }
 
+        // maybe change the file format from plain text to csv todo consider
         public void load(String filePath) {
             try {
                 File vectorFile = new File(filePath);
@@ -178,6 +183,7 @@ public interface Structure {
             }
         }
 
+        // maybe change the file format from plain text to csv todo consider
         public void save(String filePath) {
             try {
                 StringJoiner stringJoiner = new StringJoiner(" ");

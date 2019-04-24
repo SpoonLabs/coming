@@ -21,24 +21,24 @@ public class Demo {
     void learn() {
         DataManager dataManager = new DataManager(option);
         FeatureLearner featureLearner = new FeatureLearner(option);
-        List<String> filePaths = dataManager.func4Demo();
-        featureLearner.func4Demo(filePaths);
+        List<String> filePaths = dataManager.run();
+        featureLearner.run(filePaths);
         System.out.println("1/1 Done");
     }
 
     void evaluate() {
         RepairEvaluator repairEvaluator = new RepairEvaluator(option);
-//        repairEvaluator.func4Demo(RankingOption.D_CORRECT, RankingOption.D_INCORRECT);
+//        repairEvaluator.run(RankingOption.D_CORRECT, RankingOption.D_INCORRECT);
 //        System.out.println("1/3 Done");
-//        repairEvaluator.func4Demo(RankingOption.D_HUMAN, RankingOption.D_CORRECT);
+//        repairEvaluator.run(RankingOption.D_HUMAN, RankingOption.D_CORRECT);
 //        System.out.println("2/3 Done");
-//        repairEvaluator.func4Demo(RankingOption.D_HUMAN, RankingOption.D_INCORRECT);
+//        repairEvaluator.run(RankingOption.D_HUMAN, RankingOption.D_INCORRECT);
 //        System.out.println("3/3 Done");
-        repairEvaluator.func4Demo(RankingOption.D_HUMAN, RankingOption.D_INCORRECT);
+        repairEvaluator.run(RankingOption.D_HUMAN, RankingOption.D_INCORRECT);
         System.out.println("1/1 Done");
     }
 
-    private static void jobs4Demo(Option option) {
+    private static void jobsDemo(Option option) {
         option.dataOption = DataOption.CARDUMEN;
         option.patchOption = PatchOption.CARDUMEN;
         new Demo(option).learn();
@@ -49,7 +49,7 @@ public class Demo {
         new Demo(option).evaluate();
     }
 
-    private static void jobs4ODS(Option option) {
+    private static void jobsODS(Option option) {
 //        try {
 //            option.dataOption = DataOption.BEARS;
 //            option.patchOption = PatchOption.BEARS;
@@ -92,37 +92,50 @@ public class Demo {
 //        }
     }
 
+    private static void jobsS4R(Option option) {
+        option.dataOption = DataOption.CARDUMEN;
+        option.patchOption = PatchOption.CARDUMEN;
+        new Demo(option).learn();
+        new Demo(option).evaluate();
+        option.dataOption = DataOption.BUG_DOT_JAR;
+        option.patchOption = PatchOption.BUG_DOT_JAR;
+        new Demo(option).learn();
+        new Demo(option).evaluate();
+    }
+
     // seem meaningless to use FeatureOption.ENHANCED
     public static void main(String[] args) {
         try {
             Option option = new Option();
             // for Demo
-            option.featureOption = FeatureOption.ORIGINAL;
-            jobs4Demo(option);
-            option.featureOption = FeatureOption.EXTENDED;
-            jobs4Demo(option);
+//            option.featureOption = FeatureOption.ORIGINAL;
+//            jobsDemo(option);
+//            option.featureOption = FeatureOption.EXTENDED;
+//            jobsDemo(option);
 //            option.featureOption = FeatureOption.ENHANCED;
-//            jobs4Demo(option);
+//            jobsDemo(option);
             // for ODS
-            option.featureOption = FeatureOption.ORIGINAL;
-            jobs4ODS(option);
-            option.featureOption = FeatureOption.EXTENDED;
-            jobs4ODS(option);
+//            option.featureOption = FeatureOption.ORIGINAL;
+//            jobsODS(option);
+//            option.featureOption = FeatureOption.EXTENDED;
+//            jobsODS(option);
 //            option.featureOption = FeatureOption.ENHANCED;
-//            jobs4ODS(option);
+//            jobsODS(option);
+            // for S4R
+            option.featureOption = FeatureOption.S4R;
+            jobsS4R(option);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
     // Testing(D_HUMAN-D_INCORRECT)
-    // o16 e20 Training(CARDUMEN-CARDUMEN)
-    // o21 e24 Training(SANER-SPR)
+    // o16 e19 Training(CARDUMEN-CARDUMEN)
+    // o21 e22 Training(SANER-SPR)
     // o30 e32 Training(BUG_DOT_JAR-REPAIR_THEM_ALL)
     // o17 e19 Training(BUG_DOT_JAR-SPR)
-    // todo (try Features in sketch4repair or coming)
-    // todo (integrate with Coming)
-    // todo (integrate with Repairnator)
-    // todo (run on PGA commits and try other patch-generators) ?
+    // todo (try on YE's features)
+    // todo (integrate with coming)
+    // todo (integrate with Repairnator) ?
     /*
     if we need to improve the performance of FeatureLearner, use CLR(Cyclical Learning Rates)
     first line corresponds original eta, second line corresponds CLR
@@ -134,4 +147,11 @@ public class Demo {
     // o17 e24 enhanced (appended POS_VF_RF_CT POS_VF_AF_CT AF_RF_CT VF_RF_CT)
      */
     // config VM: -Xms1024m -Xmx16384m
+    // name alias:
+    // original: prophet4j
+    // extended: feature-ext
+    // sketch4repair: feature-s4r
+
+    // SPR is an intermediate/baseline technique for us
+    // The next step is the integration of the Zhongxing's feature in the optimization
 }

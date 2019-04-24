@@ -12,10 +12,16 @@ import static fr.inria.prophet4j.defined.enhanced.EnhancedFeature.*;
 public class EnhancedFeatureCross implements FeatureCross, Serializable {
     static final long serialVersionUID = 1L;
     private Integer id;
+    private Double degree;
     private List<Feature> features;
 
     public EnhancedFeatureCross(Integer id) {
+        this(id, 1.0);
+    }
+
+    public EnhancedFeatureCross(Integer id, Double degree) {
         this.id = id;
+        this.degree = degree;
         this.features = new ArrayList<>();
         if (id >= FEATURE_BASE_7) {
             int tmp = id - FEATURE_BASE_7;
@@ -93,6 +99,10 @@ public class EnhancedFeatureCross implements FeatureCross, Serializable {
     }
 
     public EnhancedFeatureCross(CrossType crossType, List<Feature> features) {
+        this(crossType, features, 1.0);
+    }
+
+    public EnhancedFeatureCross(CrossType crossType, List<Feature> features, Double degree) {
         int ordinal0, ordinal1, ordinal2;
         switch (crossType) {
             case RF_CT:
@@ -190,11 +200,16 @@ public class EnhancedFeatureCross implements FeatureCross, Serializable {
 //                this.id = FEATURE_BASE_2 + ordinal0 * SF_SIZE + ordinal1;
 //                break;
         }
+        this.degree = degree;
         this.features = features;
     }
 
     public Integer getId() {
         return id;
+    }
+
+    public Double getDegree() {
+        return degree;
     }
 
     public List<Feature> getFeatures() {

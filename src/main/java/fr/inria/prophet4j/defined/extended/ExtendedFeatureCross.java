@@ -12,10 +12,16 @@ import static fr.inria.prophet4j.defined.extended.ExtendedFeature.*;
 public class ExtendedFeatureCross implements FeatureCross, Serializable {
     static final long serialVersionUID = 1L;
     private Integer id;
+    private Double degree;
     private List<Feature> features;
 
     public ExtendedFeatureCross(Integer id) {
+        this(id, 1.0);
+    }
+
+    public ExtendedFeatureCross(Integer id, Double degree) {
         this.id = id;
+        this.degree = degree;
         this.features = new ArrayList<>();
         if (id >= FEATURE_BASE_3) {
             int tmp = id - FEATURE_BASE_3;
@@ -65,6 +71,10 @@ public class ExtendedFeatureCross implements FeatureCross, Serializable {
     }
 
     public ExtendedFeatureCross(CrossType crossType, List<Feature> features) {
+        this(crossType, features, 1.0);
+    }
+
+    public ExtendedFeatureCross(CrossType crossType, List<Feature> features, Double degree) {
         int ordinal0, ordinal1, ordinal2;
         switch (crossType) {
             case RF_CT:
@@ -126,11 +136,16 @@ public class ExtendedFeatureCross implements FeatureCross, Serializable {
 //                this.id = FEATURE_BASE_2 + ordinal0 * SF_SIZE + ordinal1;
 //                break;
         }
+        this.degree = degree;
         this.features = features;
     }
 
     public Integer getId() {
         return id;
+    }
+
+    public Double getDegree() {
+        return degree;
     }
 
     public List<Feature> getFeatures() {

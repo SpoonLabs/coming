@@ -35,7 +35,7 @@ public class RepairEvaluator {
     }
 
     // example : Map<"Chart/3", Map<buggy file, patched file>>
-    private Map<String, Map<File, File>> loadFiles(String dataPath) throws NullPointerException {
+    public Map<String, Map<File, File>> loadFiles(String dataPath) throws NullPointerException {
         Map<String, Map<File, File>> catalogs = new HashMap<>();
         for (File file : new File(dataPath).listFiles((dir, name) -> !name.startsWith("."))) {
             if (file.getName().equals("patch7-Closure-93-SequenceR")) {
@@ -128,7 +128,7 @@ public class RepairEvaluator {
             for (File buggyFile : pairs.keySet()) {
                 File patchedFile = pairs.get(buggyFile);
                 double score = 0;
-                List<FeatureVector> featureVectors = codeDiffer.func4Demo(buggyFile, patchedFile);
+                List<FeatureVector> featureVectors = codeDiffer.runByGenerator(buggyFile, patchedFile);
                 // maybe we should compute the average but not the sum todo consider
                 for (FeatureVector featureVector : featureVectors) {
                     score += featureVector.score(parameterVector);
@@ -139,7 +139,7 @@ public class RepairEvaluator {
         return scores4Files;
     }
 
-    public void func4Demo(RankingOption foreOption, RankingOption backOption) {
+    public void run(RankingOption foreOption, RankingOption backOption) {
         // here we handle buggy and patched files but not patch files
         String foreFilePath = Support.getFilePath4Ranking(foreOption);
         String backFilePath = Support.getFilePath4Ranking(backOption);

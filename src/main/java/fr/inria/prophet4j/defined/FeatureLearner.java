@@ -2,6 +2,7 @@ package fr.inria.prophet4j.defined;
 
 import java.util.*;
 
+import fr.inria.prophet4j.defined.S4R.S4RFeature;
 import fr.inria.prophet4j.defined.enhanced.EnhancedFeature;
 import fr.inria.prophet4j.defined.extended.ExtendedFeature;
 import fr.inria.prophet4j.defined.original.OriginalFeature;
@@ -47,6 +48,9 @@ public class FeatureLearner {
             case ORIGINAL:
                 arraySize = OriginalFeature.FEATURE_SIZE;
                 break;
+            case S4R:
+                arraySize = S4RFeature.FEATURE_SIZE;
+                break;
         }
         return new double[arraySize];
     }
@@ -82,7 +86,10 @@ public class FeatureLearner {
                     List<FeatureCross> featureCrosses = featureVector.getFeatureCrosses();
                     for (FeatureCross featureCross : featureCrosses) {
                         int featureCrossId = featureCross.getId();
+                        // maybe we need Rescaling (min-max normalization) todo consider
+                        // https://en.wikipedia.org/wiki/Feature_scaling#Application
                         tmpValues[featureCrossId] += expValues[i] * 1;
+//                        tmpValues[featureCrossId] += expValues[i] * featureCross.getDegree();
                     }
                 }
                 // compute delta
@@ -151,7 +158,7 @@ public class FeatureLearner {
         return bestTheta;
     }
 
-    public void func4Demo(List<String> filePaths) {
+    public void run(List<String> filePaths) {
         String parameterFilePath = Support.getFilePath(Support.DirType.PARAMETER_DIR, option) + "ParameterVector";
         // sort all sample data as we want one distinct baseline
         filePaths.sort(String::compareTo);
