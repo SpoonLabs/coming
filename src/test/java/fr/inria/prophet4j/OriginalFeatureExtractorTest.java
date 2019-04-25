@@ -8,12 +8,12 @@ import fr.inria.prophet4j.utility.Option;
 import fr.inria.prophet4j.utility.Option.FeatureOption;
 import org.junit.Test;
 
-import fr.inria.prophet4j.defined.Feature;
-import fr.inria.prophet4j.defined.Structure.FeatureVector;
-import fr.inria.prophet4j.defined.original.OriginalFeature.AtomicFeature;
-import fr.inria.prophet4j.defined.original.OriginalFeature.RepairFeature;
-import fr.inria.prophet4j.defined.original.OriginalFeature.ValueFeature;
-import fr.inria.prophet4j.defined.CodeDiffer;
+import fr.inria.prophet4j.feature.Feature;
+import fr.inria.prophet4j.utility.Structure.FeatureVector;
+import fr.inria.prophet4j.feature.original.OriginalFeature.AtomicFeature;
+import fr.inria.prophet4j.feature.original.OriginalFeature.RepairFeature;
+import fr.inria.prophet4j.feature.original.OriginalFeature.ValueFeature;
+import fr.inria.prophet4j.utility.CodeDiffer;
 
 // for OriginalFeatureExtractor
 public class OriginalFeatureExtractorTest {

@@ -1,8 +1,8 @@
 package fr.inria.prophet4j;
 
 import fr.inria.prophet4j.dataset.DataManager;
-import fr.inria.prophet4j.defined.FeatureLearner;
-import fr.inria.prophet4j.defined.RepairEvaluator;
+import fr.inria.prophet4j.learner.FeatureLearner;
+import fr.inria.prophet4j.learner.RepairEvaluator;
 import fr.inria.prophet4j.utility.Option;
 import fr.inria.prophet4j.utility.Option.FeatureOption;
 import fr.inria.prophet4j.utility.Option.DataOption;
@@ -93,10 +93,10 @@ public class Demo {
     }
 
     private static void jobsS4R(Option option) {
-        option.dataOption = DataOption.CARDUMEN;
-        option.patchOption = PatchOption.CARDUMEN;
-        new Demo(option).learn();
-        new Demo(option).evaluate();
+//        option.dataOption = DataOption.CARDUMEN;
+//        option.patchOption = PatchOption.CARDUMEN;
+//        new Demo(option).learn();
+//        new Demo(option).evaluate();
         option.dataOption = DataOption.BUG_DOT_JAR;
         option.patchOption = PatchOption.BUG_DOT_JAR;
         new Demo(option).learn();
@@ -133,9 +133,10 @@ public class Demo {
     // o21 e22 Training(SANER-SPR)
     // o30 e32 Training(BUG_DOT_JAR-REPAIR_THEM_ALL)
     // o17 e19 Training(BUG_DOT_JAR-SPR)
+    // todo (document prophet4j)
+    // todo (support numerical-form features)
     // todo (try on YE's features)
     // todo (integrate with coming)
-    // todo (integrate with Repairnator) ?
     /*
     if we need to improve the performance of FeatureLearner, use CLR(Cyclical Learning Rates)
     first line corresponds original eta, second line corresponds CLR
@@ -151,7 +152,4 @@ public class Demo {
     // original: prophet4j
     // extended: feature-ext
     // sketch4repair: feature-s4r
-
-    // SPR is an intermediate/baseline technique for us
-    // The next step is the integration of the Zhongxing's feature in the optimization
 }
