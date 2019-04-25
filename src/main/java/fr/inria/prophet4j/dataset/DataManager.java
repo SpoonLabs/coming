@@ -1,8 +1,8 @@
 package fr.inria.prophet4j.dataset;
 
-import fr.inria.prophet4j.defined.CodeDiffer;
-import fr.inria.prophet4j.defined.Structure.FeatureVector;
-import fr.inria.prophet4j.defined.Structure.Sample;
+import fr.inria.prophet4j.utility.CodeDiffer;
+import fr.inria.prophet4j.utility.Structure.FeatureVector;
+import fr.inria.prophet4j.utility.Structure.Sample;
 import fr.inria.prophet4j.utility.Option;
 import fr.inria.prophet4j.utility.Option.DataOption;
 import fr.inria.prophet4j.utility.Option.PatchOption;

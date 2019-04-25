@@ -1,17 +1,21 @@
 # Prophet4J
 
-This is one tool to evaluate the correctness probability of patch (by learning existing patches).
+This is one tool to evaluate the correctness probability of patch (by learning from patches).
 
 Features
 ======
 
-Right now we have two feature-sets. The original one is basically used in the vanilla prophet4j and the extended one is literally the extended version of the original one. The extended version is still in progress.
+Right now we have four feature-sets.
+- [Original Features](https://github.com/SpoonLabs/coming/blob/master/docs/features/prophet4j/OriginalFeatures.md)
+is basically features used in the vanilla prophet4j.
+- [Extended Features](https://github.com/SpoonLabs/coming/blob/master/docs/features/prophet4j/ExtendedFeatures.md) (WIP)
+is literally the extended version of the original one, by appending more same-type features.
+- Enhanced Features
+is literally the enhanced version of the extended one, by appending more ways of crossing features.
+- S4R Features
+is basically features used in sketch4repair.
 
-[Original Features](https://github.com/SpoonLabs/coming/blob/master/docs/features/prophet4j/OriginalFeatures.md)
-
-[Extended Features](https://github.com/SpoonLabs/coming/blob/master/docs/features/prophet4j/ExtendedFeatures.md) (WIP)
-
-Usage
+Usage (Untested)
 ======
 
 We are able to run Prophet4J via CLI, but right now Prophet4J does not support assigning customized data-sets.
@@ -20,25 +24,56 @@ We are able to run Prophet4J via CLI, but right now Prophet4J does not support a
     ./prophet4j -t task -d dataOption -p patchOption -f featureOption
     ```
 
-    Task : assign which task we want prophet4j to execute
-    * (default value) `Task.LEARN`
-    * (candidate values) `Task.LEARN` `Task.EVALUATE`
+    task : assign which task we want prophet4j to execute
+    * (default value) `LEARN`
+    * (candidate values) `LEARN` `EVALUATE`
 
-    DataOption : assign data-set containing both buggy files and patched files (by human patches)
-    * (default value) `DataOption.CARDUMEN`
-    * (candidate values) `DataOption.CARDUMEN` `~~DataOption.PGA~~` `DataOption.SANER`
+    dataOption : assign data-set containing both buggy files and patched files (by human patches)
+    * (default value) `CARDUMEN`
+    * (candidate values) `CARDUMEN` `SANER` `BUG_DOT_JAR`
 
-    PatchOption : assign data-set containing patched files (by generated patches)
-    * (default value) `PatchOption.CARDUMEN`
-    * (candidate values) `PatchOption.CARDUMEN` `PatchOption.SANER`
+    patchOption : assign data-set containing patched files (by generated patches)
+    * (default value) `CARDUMEN`
+    * (candidate values) `CARDUMEN` `SPR` `BUG_DOT_JAR`
 
-    FeatureOption : assign feature-set containing features
-    * (default value) `FeatureOption.ORIGINAL`
-    * (candidate values) `FeatureOption.ORIGINAL` `FeatureOption.EXTENDED`
+    featureOption : assign feature-set containing features
+    * (default value) `ORIGINAL`
+    * (candidate values) `ORIGINAL` `EXTENDED` `ENHANCED` `S4R`
 
-For Learn Task, Prophet4J runs on predefined data-sets (shown above), among them, PatchOption.CARDUMEN is valid iff DataOption.CARDUMEN.
+For Learn task, Prophet4J runs on predefined data-sets (shown above), among them, dataOption=SANER is valid iff patchOption=SPR.
 
-For Evaluation Task, Prophet4J runs on predefined data-sets (not shown above).
+For Evaluation task, Prophet4J runs on predefined data-sets (not shown above).
+
+Tree
+======
+
+```
+.
+├── CLI.java        // command-line interface
+├── Demo.java       // source-code entry-point
+├── dataset         // pkg handling dataset
+│   ├── DataLoader.java         // cls loading data
+│   ├── DataManager.java        // cls wrapping data
+│   └── PGA.java                // (marginal, used to load commits from PGA)
+├── feature         // pkg defining various feature-sets
+│   ├── Feature.java            // cls defining the Feature entity
+│   ├── FeatureCross.java       // cls defining the FeatureCross entity
+│   ├── FeatureExtractor.java   // cls extracting features
+│   ├── RepairGenerator.java    // cls generating repairs
+│   ├── S4R                     // pkg wrapped the S4R feature-sets
+│   ├── enhanced                // pkg defined the enhanced P4J feature-sets
+│   ├── extended                // pkg defined the extended P4J feature-sets
+│   └── original                // pkg defined the original P4J feature-sets
+├── learner         // pkg learning and evaluating (will be decoupled from `coming`)
+│   ├── FeatureLearner.java     // cls learning feature-weights by cross-entropy
+│   ├── RepairEvaluator.java    // cls evaluating repairs by ranking them
+│   └── Tool.java               // (marginal, used as one temporary script)
+└── utility         // pkg supporting other packages
+    ├── CodeDiffer.java         // cls wrapping workflow
+    ├── Option.java             // cls defining some configuration-options
+    ├── Structure.java          // cls defining some data-classes
+    └── Support.java            // cls defining some static-methods
+```
 
 Demo
 ======
@@ -59,7 +94,7 @@ Prophet
 
 [SPR Technical Report](https://dspace.mit.edu/bitstream/handle/1721.1/95970/MIT-CSAIL-TR-2015-008.pdf)
 
-others
+Others
 ---
 
 [Spoon Document](http://spoon.gforge.inria.fr/index.html)
