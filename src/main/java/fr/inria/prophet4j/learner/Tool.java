@@ -2,7 +2,8 @@ package fr.inria.prophet4j.learner;
 
 import fr.inria.prophet4j.utility.CodeDiffer;
 import fr.inria.prophet4j.feature.FeatureCross;
-import fr.inria.prophet4j.utility.Structure;
+import fr.inria.prophet4j.utility.Structure.FeatureMatrix;
+import fr.inria.prophet4j.utility.Structure.FeatureVector;
 import fr.inria.prophet4j.feature.extended.ExtendedFeatureCross;
 import fr.inria.prophet4j.utility.Option;
 import fr.inria.prophet4j.utility.Option.DataOption;
@@ -120,16 +121,17 @@ public class Tool {
             Map<File, File> pairs = rankingFiles.get(key);
             for (File buggyFile : pairs.keySet()) {
                 File patchedFile = pairs.get(buggyFile);
-                List<Structure.FeatureVector> featureVectors = codeDiffer.runByGenerator(buggyFile, patchedFile);
-                // maybe we should compute the average but not the sum todo consider
-                for (Structure.FeatureVector featureVector : featureVectors) {
-                    List<String> valueList = new ArrayList<>(values);
-                    List<FeatureCross> featureCrosses = featureVector.getFeatureCrosses();
-                    for (FeatureCross featureCross : featureCrosses) {
-                        valueList.set(featureCross.getId(), "1");
+                List<FeatureMatrix> featureMatrices = codeDiffer.runByGenerator(buggyFile, patchedFile);
+                if (featureMatrices.size() == 1) {
+                    for (FeatureVector featureVector : featureMatrices.get(0).getFeatureVectors()) {
+                        List<String> valueList = new ArrayList<>(values);
+                        List<FeatureCross> featureCrosses = featureVector.getFeatureCrosses();
+                        for (FeatureCross featureCross : featureCrosses) {
+                            valueList.set(featureCross.getId(), "1");
+                        }
+                        valueList.add(0, patchedFile.getParentFile().getParentFile().getName());
+                        valueLists.add(valueList);
                     }
-                    valueList.add(0, patchedFile.getParentFile().getParentFile().getName());
-                    valueLists.add(valueList);
                 }
             }
         }

@@ -12,6 +12,7 @@ import fr.inria.prophet4j.feature.RepairGenerator;
 import fr.inria.prophet4j.feature.S4R.S4RFeature;
 import fr.inria.prophet4j.feature.S4R.S4RFeatureCross;
 import fr.inria.prophet4j.utility.Structure.DiffType;
+import fr.inria.prophet4j.utility.Structure.FeatureMatrix;
 import fr.inria.prophet4j.utility.Structure.FeatureVector;
 import fr.inria.prophet4j.utility.Structure.DiffEntry;
 import fr.inria.prophet4j.utility.Structure.Repair;
@@ -42,12 +43,12 @@ import java.util.regex.Pattern;
 // based on pdiffer.cpp, ASTDiffer.cpp
 public class CodeDiffer {
 
-    private boolean forLearner;
+    private boolean byGenerator;
     private Option option;
     private static final Logger logger = LogManager.getLogger(CodeDiffer.class.getName());
 
-    public CodeDiffer(boolean forLearner, Option option){
-        this.forLearner = forLearner;
+    public CodeDiffer(boolean byGenerator, Option option){
+        this.byGenerator = byGenerator;
         this.option = option;
     }
 
@@ -172,8 +173,9 @@ public class CodeDiffer {
         return diffEntries;
     }
 
-    private List<FeatureVector> genFeatureVectors(Diff diff) {
-        List<FeatureVector> featureVectors = new ArrayList<>();
+    // size == 1 if option.featureOption == FeatureOption.S4R or byGenerator = false
+    private List<FeatureMatrix> genFeatureMatrices(Diff diff) {
+        List<FeatureMatrix> featureMatrices = new ArrayList<>();
         // used for the case of SKETCH4REPAIR
         FeatureAnalyzer featureAnalyzer = new FeatureAnalyzer();
         CodeFeatureDetector cresolver = new CodeFeatureDetector();
@@ -205,9 +207,10 @@ public class CodeDiffer {
 //		        	assertTrue(elAST instanceof JsonArray);
                 JsonArray featuresOperationList = (JsonArray) elAST;
 //			        assertTrue(featuresOperationList.size() > 0);
+                List<FeatureVector> featureVectors = new ArrayList<>();
                 for (JsonElement featuresOfOperation : featuresOperationList) {
                     // the first one in newFiles is human patch
-                    FeatureVector featureVector = new FeatureVector(true);
+                    FeatureVector featureVector = new FeatureVector();
                     JsonObject jso = featuresOfOperation.getAsJsonObject();
                     for (S4RFeature.CodeFeature codeFeature : S4RFeature.CodeFeature.values()) {
                         JsonElement property = jso.get(codeFeature.toString());
@@ -247,27 +250,39 @@ public class CodeDiffer {
                     }
                     featureVectors.add(featureVector);
                 }
+                featureMatrices.add(new FeatureMatrix(true, featureVectors));
             } else {
-                FeatureExtractor featureExtractor = newFeatureExtractor();
-                for (DiffEntry diffEntry : genDiffEntries(diff)) {
-                    // as RepairGenerator receive diffEntry as parameter, we do not need ErrorLocalizer
-                    RepairGenerator generator = newRepairGenerator(diffEntry);
-                    {
-                        Repair repair = generator.obtainHumanRepair();
-                        FeatureVector featureVector = new FeatureVector(true);
-                        for (CtElement atom : repair.getCandidateAtoms()) {
-                            featureVector.merge(featureExtractor.extractFeature(repair, atom));
-                        }
-                        featureVectors.add(featureVector);
-                    }
-                    if (forLearner) {
-                        // we could also try on other patches-generators
-                        for (Repair repair: generator.obtainRepairCandidates()) {
-                            FeatureVector featureVector = new FeatureVector(false);
+                // RepairGenerator receive diffEntry as parameter, so we do not need ErrorLocalizer
+                {
+                    FeatureExtractor featureExtractor = newFeatureExtractor();
+                    List<FeatureVector> featureVectors = new ArrayList<>();
+                    for (DiffEntry diffEntry : genDiffEntries(diff)) {
+                        RepairGenerator generator = newRepairGenerator(diffEntry);
+                        {
+                            Repair repair = generator.obtainHumanRepair();
+                            FeatureVector featureVector = new FeatureVector();
                             for (CtElement atom : repair.getCandidateAtoms()) {
                                 featureVector.merge(featureExtractor.extractFeature(repair, atom));
                             }
                             featureVectors.add(featureVector);
+                        }
+                    }
+                    featureMatrices.add(new FeatureMatrix(true, featureVectors));
+                }
+                if (byGenerator) {
+                    // only in this case, featureMatrices.size() > 1
+                    // we only consider this case where each repair owns one diffEntry
+                    FeatureExtractor featureExtractor = newFeatureExtractor();
+                    for (DiffEntry diffEntry : genDiffEntries(diff)) {
+                        RepairGenerator generator = newRepairGenerator(diffEntry);
+                        for (Repair repair: generator.obtainRepairCandidates()) {
+                            List<FeatureVector> featureVectors = new ArrayList<>();
+                            FeatureVector featureVector = new FeatureVector();
+                            for (CtElement atom : repair.getCandidateAtoms()) {
+                                featureVector.merge(featureExtractor.extractFeature(repair, atom));
+                            }
+                            featureVectors.add(featureVector);
+                            featureMatrices.add(new FeatureMatrix(false, featureVectors));
                         }
                     }
                 }
@@ -275,130 +290,42 @@ public class CodeDiffer {
         } catch (IndexOutOfBoundsException e) {
             logger.log(Level.WARN, "diff.commonAncestor() returns null value");
         }
-        return featureVectors;
+        return featureMatrices;
     }
 
     // for DataLoader, we do not need to obtainRepairCandidates as they are given
-    public List<FeatureVector> runByPatches(File oldFile, List<File> newFiles) {
-        AstComparator comparator = new AstComparator();
-        List<FeatureVector> featureVectors = new ArrayList<>();
-        // used for the case of SKETCH4REPAIR
-        FeatureAnalyzer featureAnalyzer = new FeatureAnalyzer();
-        CodeFeatureDetector cresolver = new CodeFeatureDetector();
-        for (int i = 0; i < newFiles.size(); i++) {
-            try {
-                Diff diff = comparator.compare(oldFile, newFiles.get(i));
-                if (option.featureOption == FeatureOption.S4R) {
-                    // based on L152-186 at FeatureAnalyzer.java
-                    JsonObject file = new JsonObject();
-                    try {
-                        JsonArray changesArray = new JsonArray();
-                        file.add("features", changesArray);
-                        if (diff == null) {
-                            continue;
-                        }
-                        List<Operation> ops = diff.getRootOperations();
-                        for (Operation operation : ops) {
-                            try {
-                                CtElement affectedCtElement = featureAnalyzer.getLeftElement(operation);
-                                if (affectedCtElement != null) {
-                                    Cntx iContext = cresolver.analyzeFeatures(affectedCtElement);
-                                    changesArray.add(iContext.toJSON());
-                                }
-                            } catch (Exception e) {
-//                                e.printStackTrace();
-                            }
-                        }
-                    } catch (Throwable e) {
-                        e.printStackTrace();
-                    }
-                    // based on L61-79 at FeaturesOnD4jTest.java
-                    JsonElement elAST = file.get("features");
-//        			assertNotNull(elAST);
-//		        	assertTrue(elAST instanceof JsonArray);
-                    JsonArray featuresOperationList = (JsonArray) elAST;
-//			        assertTrue(featuresOperationList.size() > 0);
-                    for (JsonElement featuresOfOperation : featuresOperationList) {
-                        // the first one in newFiles is human patch
-                        FeatureVector featureVector = new FeatureVector(i == 0);
-                        JsonObject jso = featuresOfOperation.getAsJsonObject();
-                        for (S4RFeature.CodeFeature codeFeature : S4RFeature.CodeFeature.values()) {
-                            JsonElement property = jso.get(codeFeature.toString());
-                            if (property != null) {
-                                try {
-                                    JsonPrimitive value = property.getAsJsonPrimitive();
-                                    String str = value.getAsString();
-
-                                    if (str.equalsIgnoreCase("true")) {
-                                        // handle boolean-form ones
-                                        List<Feature> features = new ArrayList<>();
-                                        features.add(codeFeature);
-                                        FeatureCross featureCross = new S4RFeatureCross(S4RFeature.CrossType.CF_CT, features, 1.0);
-                                        featureVector.addFeatureCross(featureCross);
-//                                    } else if (str.equalsIgnoreCase("false")) {
-//                                        // handle boolean-form ones
-//                                        List<Feature> features = new ArrayList<>();
-//                                        features.add(codeFeature);
-//                                        FeatureCross featureCross = new S4RFeatureCross(S4RFeature.CrossType.CF_CT, features, 0.0);
-//                                        featureVector.addFeatureCross(featureCross);
-//                                    } else {
-//                                        // handle numerical-form ones
-//                                        try {
-//                                            double degree = Double.parseDouble(value.getAsString());
-//                                            List<Feature> features = new ArrayList<>();
-//                                            features.add(codeFeature);
-//                                            FeatureCross featureCross = new S4RFeatureCross(S4RFeature.CrossType.CF_CT, features, degree);
-//                                            featureVector.addFeatureCross(featureCross);
-//                                        } catch (Exception e) {
-////                                        e.printStackTrace();
-//                                        }
-                                    }
-                                } catch (IllegalStateException e) {
-//                                    logger.error("Not a JSON Primitive");
-                                }
-                            }
-                        }
-                        featureVectors.add(featureVector);
-                    }
-                } else {
-                    FeatureExtractor featureExtractor = newFeatureExtractor();
-                    for (DiffEntry diffEntry : genDiffEntries(diff)) {
-                        // as RepairGenerator receive diffEntry as parameter, we do not need ErrorLocalizer
-                        RepairGenerator generator = newRepairGenerator(diffEntry);
-                        Repair repair = generator.obtainHumanRepair();
-                        // the first one in newFiles is human patch
-                        FeatureVector featureVector = new FeatureVector(i == 0);
-                        for (CtElement atom : repair.getCandidateAtoms()) {
-                            featureVector.merge(featureExtractor.extractFeature(repair, atom));
-                        }
-                        featureVectors.add(featureVector);
-                    }
-                }
-            } catch (IndexOutOfBoundsException e) {
-                logger.log(Level.WARN, "diff.commonAncestor() returns null value");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+    // byGenerator = false as long as this func gets called
+    public List<FeatureMatrix> runByPatches(File oldFile, List<File> newFiles) {
+        List<FeatureMatrix> featureMatrices = new ArrayList<>();
+        for (File newFile : newFiles) {
+            featureMatrices.addAll(runByGenerator(oldFile, newFile));
         }
-        return featureVectors;
+        // correct the prop "marked" for all featureMatrices except for the first one
+        for (int idx = 1; idx < featureMatrices.size(); idx++) {
+            featureMatrices.get(idx).correctMarked();
+        }
+        return featureMatrices;
     }
 
-    public List<FeatureVector> runByGenerator(File oldFile, File newFile) {
+    public List<FeatureMatrix> runByGenerator(File oldFile, File newFile) {
+        List<FeatureMatrix> featureMatrices = new ArrayList<>();
         try {
             AstComparator comparator = new AstComparator();
             Diff diff = comparator.compare(oldFile, newFile);
-            return genFeatureVectors(diff);
+            featureMatrices.addAll(genFeatureMatrices(diff));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return new ArrayList<>();
+        return featureMatrices;
     }
 
     // for FeatureExtractorTest.java
-    public List<FeatureVector> runByGenerator(String oldStr, String newStr) {
+    public List<FeatureMatrix> runByGenerator(String oldStr, String newStr) {
         AstComparator comparator = new AstComparator();
         Diff diff = comparator.compare(oldStr, newStr);
-        return genFeatureVectors(diff);
+        List<FeatureMatrix> featureMatrices = genFeatureMatrices(diff);
+        assert featureMatrices.size() == 1;
+        return featureMatrices;
     }
 
 //    public Double scorePatch(File oldFile, File newFile, ParameterVector parameterVector) {

@@ -1,5 +1,6 @@
 package fr.inria.prophet4j.feature;
 
+// entity to express feature or namely sub-characteristic
 public interface Feature {
     int POS_SIZE = Position.values().length;
 

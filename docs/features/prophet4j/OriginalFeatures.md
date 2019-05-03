@@ -47,7 +47,7 @@
 |`AtomFeature`|`RStmtCallAF`|`R_STMT_CALL_AF`|[okay](https://github.com/SpoonLabs/coming/blob/master/src/test/java/fr/inria/prophet4j/OriginalFeatureExtractorTest.java#L218)|
 |`AtomFeature`|`RStmtCondAF`|`R_STMT_COND_AF`|[okay](https://github.com/SpoonLabs/coming/blob/master/src/test/java/fr/inria/prophet4j/OriginalFeatureExtractorTest.java#L223)|
 |`AtomFeature`|`RStmtControlAF`|`R_STMT_CONTROL_AF`|[okay](https://github.com/SpoonLabs/coming/blob/master/src/test/java/fr/inria/prophet4j/OriginalFeatureExtractorTest.java#L228)|
-|`AtomFeature`|`AddrOfAF`|`ADDRESS_OF_AF`|:no_entry_sign:|
+|`AtomFeature`|`AddrOfAF`|`-`|:no_entry_sign:|
 |`RepairFeature`|`InsertControlRF`|`INSERT_CONTROL_RF`|[okay](https://github.com/SpoonLabs/coming/blob/master/src/test/java/fr/inria/prophet4j/OriginalFeatureExtractorTest.java#L240)|
 |`RepairFeature`|`AddGuardCondRF`|`INSERT_GUARD_RF`|[okay](https://github.com/SpoonLabs/coming/blob/master/src/test/java/fr/inria/prophet4j/OriginalFeatureExtractorTest.java#L245)|
 |`RepairFeature`|`InsertStmtRF`|`INSERT_STMT_RF`|[okay](https://github.com/SpoonLabs/coming/blob/master/src/test/java/fr/inria/prophet4j/OriginalFeatureExtractorTest.java#L250)|
@@ -63,5 +63,5 @@
 |`ValueFeature`|`NonZeroConstVF`|`NONZERO_CONST_VF`|[okay](https://github.com/SpoonLabs/coming/blob/master/src/test/java/fr/inria/prophet4j/OriginalFeatureExtractorTest.java#L303)|
 |`ValueFeature`|`StringLiteralVF`|`STRING_LITERAL_VF`|[okay](https://github.com/SpoonLabs/coming/blob/master/src/test/java/fr/inria/prophet4j/OriginalFeatureExtractorTest.java#L308)|
 |`ValueFeature`|`LenLiteralVF`|`SIZE_LITERAL_VF`|[okay](https://github.com/SpoonLabs/coming/blob/master/src/test/java/fr/inria/prophet4j/OriginalFeatureExtractorTest.java#L313)|
-|`ValueFeature`|`PointerVF`|`POINTER_VF`|:no_entry_sign:|
-|`ValueFeature`|`StructPointerVF`|`STRUCT_POINTER_VF`|:no_entry_sign:|
+|`ValueFeature`|`PointerVF`|`-`|:no_entry_sign:|
+|`ValueFeature`|`StructPointerVF`|`-`|:no_entry_sign:|

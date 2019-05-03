@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import fr.inria.prophet4j.utility.Structure.FeatureMatrix;
 import fr.inria.prophet4j.utility.Structure.FeatureVector;
 import fr.inria.prophet4j.utility.Structure.ParameterVector;
 import fr.inria.prophet4j.utility.Structure.Sample;
@@ -67,53 +68,61 @@ public class FeatureLearner {
             ParameterVector delta = new ParameterVector(option.featureOption);
             // handle training data
             for (Sample sample : trainingData) {
-                List<FeatureVector> featureVectors = sample.getFeatureVectors();
+                List<FeatureMatrix> featureMatrices = sample.getFeatureMatrices();
                 // compute scores
-                double[] scores = new double[featureVectors.size()];
-                for (int i = 0; i < featureVectors.size(); i++) {
-                    FeatureVector featureVector = featureVectors.get(i);
-                    scores[i] = featureVector.score(theta);
+                Map<FeatureVector, Double> scores = new HashMap<>();
+                for (FeatureMatrix featureMatrix : featureMatrices) {
+                    for (FeatureVector featureVector : featureMatrix.getFeatureVectors()) {
+                        scores.put(featureVector, featureVector.score(theta));
+                    }
                 }
                 // compute expValues
-                double[] expValues = new double[featureVectors.size()];
-                double maxSuperscript = Arrays.stream(scores).max().orElse(0);
-                for (int i = 0; i < featureVectors.size(); i++) {
-                    expValues[i] = Math.exp(scores[i] - maxSuperscript);
+                Map<FeatureVector, Double> expValues = new HashMap<>();
+                double maxSuperscript = scores.values().stream().max(Double::compareTo).orElse(0.0);
+                for (FeatureMatrix featureMatrix : featureMatrices) {
+                    for (FeatureVector featureVector : featureMatrix.getFeatureVectors()) {
+                        expValues.put(featureVector, Math.exp(scores.get(featureVector) - maxSuperscript));
+                    }
                 }
-                double sumExpValues = Arrays.stream(expValues).sum();
+                double sumExpValues = expValues.values().stream().reduce(0.0, Double::sum);
                 double[] tmpValues = newFeatureArray();
-                for (int i = 0; i < featureVectors.size(); i++) {
-                    FeatureVector featureVector = featureVectors.get(i);
-                    List<FeatureCross> featureCrosses = featureVector.getFeatureCrosses();
-                    for (FeatureCross featureCross : featureCrosses) {
-                        int featureCrossId = featureCross.getId();
-                        // maybe we need Rescaling (min-max normalization) todo consider
-                        // https://en.wikipedia.org/wiki/Feature_scaling#Application
-//                        tmpValues[featureCrossId] += expValues[i] * 1;
-                        tmpValues[featureCrossId] += expValues[i] * featureCross.getDegree();
+                for (FeatureMatrix featureMatrix : featureMatrices) {
+                    for (FeatureVector featureVector : featureMatrix.getFeatureVectors()) {
+                        for (FeatureCross featureCross : featureVector.getFeatureCrosses()) {
+                            int featureCrossId = featureCross.getId();
+                            // maybe we need Rescaling (min-max normalization) todo consider
+                            // https://en.wikipedia.org/wiki/Feature_scaling#Application
+//                            tmpValues[featureCrossId] += expValues[i] * 1;
+                            tmpValues[featureCrossId] += expValues.get(featureVector) * featureCross.getDegree();
+                        }
                     }
                 }
                 // compute delta
                 for (int i = 0; i < tmpValues.length; i++) {
                     delta.dec(i, tmpValues[i] / sumExpValues);
                 }
-                long markedSize = featureVectors.stream().filter(FeatureVector::isMarked).count();
-                for (FeatureVector featureVector : featureVectors) {
-                    if (featureVector.isMarked()) {
-                        List<FeatureCross> featureCrosses = featureVector.getFeatureCrosses();
-                        for (FeatureCross featureCross : featureCrosses) {
-                            // 1 was derived before but i forget the procedure 03/24 todo check
-                            // but i believe it is okay as 1 is also used in the original project
-//                            delta.inc(featureCross.getId(), 1.0 / markedSize);
-                            delta.inc(featureCross.getId(), featureCross.getDegree() / markedSize);
+                int numberOfMarkedFeatureVector = 0;
+                for (FeatureMatrix featureMatrix : featureMatrices) {
+                    if (featureMatrix.isMarked()) {
+                        numberOfMarkedFeatureVector += featureMatrix.getFeatureVectors().size();
+                        break; // we only have one marked FeatureMatrix
+                    }
+                }
+                for (FeatureMatrix featureMatrix : featureMatrices) {
+                    if (featureMatrix.isMarked()) {
+                        for (FeatureVector featureVector : featureMatrix.getFeatureVectors()) {
+                            for (FeatureCross featureCross : featureVector.getFeatureCrosses()) {
+//                                delta.inc(featureCross.getId(), 1.0 / markedSize);
+                                delta.inc(featureCross.getId(), featureCross.getDegree() / numberOfMarkedFeatureVector);
+                            }
                         }
+                        break; // we only have one marked FeatureMatrix
                     }
                 }
             }
             // compute delta
             for (int i = 0; i < delta.size(); i++) {
                 delta.div(i, trainingData.size());
-                // I feel L1 normalization term is not necessary todo consider
                 delta.dec(i, lambda * (Math.signum(theta.get(i)) + 2 * theta.get(i)));
             }
             // update theta
@@ -123,24 +132,39 @@ public class FeatureLearner {
             // handle validation data
             double gamma = 0;
             for (Sample sample : validationData) {
-                List<FeatureVector> featureVectors = sample.getFeatureVectors();
-                double[] scores = new double[featureVectors.size()];
-                for (int i = 0; i < featureVectors.size(); i++) {
-                    // scores means values of phi dotProduct theta
-                    scores[i] = featureVectors.get(i).score(theta);
-                }
-                int rank = 0;
-                for (int i = 0; i < featureVectors.size(); i++) {
-                    if (featureVectors.get(i).isMarked()) {
-                        for (int j = 0; j < featureVectors.size(); j++) {
-                            if (!featureVectors.get(j).isMarked()) {
-                                if (scores[j] >= scores[i]) rank++;
-                            }
-                        }
+                List<FeatureMatrix> featureMatrices = sample.getFeatureMatrices();
+                Map<FeatureVector, Double> scores = new HashMap<>();
+                for (FeatureMatrix featureMatrix : featureMatrices) {
+                    for (FeatureVector featureVector : featureMatrix.getFeatureVectors()) {
+                        scores.put(featureVector, featureVector.score(theta));
                     }
                 }
-                gamma += ((double) rank) / featureVectors.size();
+                int ranking = 0;
+                for (FeatureMatrix featureMatrixI : featureMatrices) {
+                    if (featureMatrixI.isMarked()) {
+                        for (FeatureMatrix featureMatrixJ : featureMatrices) {
+                            if (!featureMatrixJ.isMarked()) {
+                                for (FeatureVector markedFeatureVector : featureMatrixI.getFeatureVectors()) {
+                                    Double scoreOfMarkedFeatureVector = scores.get(markedFeatureVector);
+                                    for (FeatureVector unmarkedFeatureVector : featureMatrixJ.getFeatureVectors()) {
+                                        Double scoreOfUnmarkedFeatureVector = scores.get(unmarkedFeatureVector);
+                                        if (scoreOfUnmarkedFeatureVector >= scoreOfMarkedFeatureVector){
+                                            ranking++;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        break; // we only have one marked FeatureMatrix
+                    }
+                }
+                int numberOfAllFeatureVector = 0;
+                for (FeatureMatrix featureMatrix : featureMatrices) {
+                    numberOfAllFeatureVector += featureMatrix.getFeatureVectors().size();
+                }
+                gamma += ((double) ranking) / numberOfAllFeatureVector;
             }
+            // try another loss function todo consider
             gamma /= validationData.size();
             // update results
             if (bestGamma > gamma) {
@@ -176,8 +200,8 @@ public class FeatureLearner {
         for (int i = 0; i < filePaths.size(); i++) {
             String filePath = filePaths.get(i);
             Sample sample = new Sample(filePath);
-            sample.loadFeatureVectors();
-            folds.get(i % 5).add(sample);
+            sample.loadFeatureMatrices();
+            folds.get(i % k).add(sample);
         }
         double averageGamma = 0;
         double bestGamma = 1;
