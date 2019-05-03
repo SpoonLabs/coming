@@ -1,7 +1,7 @@
 package fr.inria.prophet4j.dataset;
 
 import fr.inria.prophet4j.utility.CodeDiffer;
-import fr.inria.prophet4j.utility.Structure.FeatureVector;
+import fr.inria.prophet4j.utility.Structure.FeatureMatrix;
 import fr.inria.prophet4j.utility.Structure.Sample;
 import fr.inria.prophet4j.utility.Option;
 import fr.inria.prophet4j.utility.Option.DataOption;
@@ -99,7 +99,7 @@ public class DataManager {
         if (new File(binFilePath).exists()) {
             filePaths = deserialize(binFilePath);
         } else {
-            CodeDiffer codeDiffer = new CodeDiffer(true, option);
+            CodeDiffer codeDiffer = new CodeDiffer(false, option);
             Map<String, Map<File, List<File>>> catalogs = loadDataWithPatches(dataPath);
             int progressAll = catalogs.size(), progressNow = 0;
             for (String pathName : catalogs.keySet()) {
@@ -116,14 +116,14 @@ public class DataManager {
                         vectorPath = featurePath + vectorPath;
                         File vectorFile = new File(vectorPath);
                         if (!vectorFile.exists()) {
-                            List<FeatureVector> featureVectors = codeDiffer.runByPatches(oldFile, catalog.get(oldFile));
-                            if (featureVectors.size() == 0) {
+                            List<FeatureMatrix> featureMatrices = codeDiffer.runByPatches(oldFile, catalog.get(oldFile));
+                            if (featureMatrices.size() == 0) {
                                 // diff.commonAncestor() returns null value
                                 continue;
                             }
-                            new Sample(vectorFile.getPath()).saveFeatureVectors(featureVectors);
+                            new Sample(vectorFile.getPath()).saveFeatureMatrices(featureMatrices);
+                            filePaths.add(vectorPath);
                         }
-                        filePaths.add(vectorPath);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -164,14 +164,17 @@ public class DataManager {
                         vectorPath = featurePath + vectorPath;
                         File vectorFile = new File(vectorPath);
                         if (!vectorFile.exists()) {
-                            List<FeatureVector> featureVectors = codeDiffer.runByGenerator(oldFile, catalog.get(oldFile));
-                            if (featureVectors.size() == 0) {
-                                // diff.commonAncestor() returns null value
-                                continue;
+                            List<FeatureMatrix> featureMatrices = codeDiffer.runByGenerator(oldFile, catalog.get(oldFile));
+                            // we should have more than one FeatureMatrix when CodeDiffer's "byGenerator" is true
+                            if (featureMatrices.size() >= 1) {
+                                if (featureMatrices.get(0).getFeatureVectors().size() == 0) {
+                                    // diff.commonAncestor() returns null value
+                                    continue;
+                                }
+                                new Sample(vectorFile.getPath()).saveFeatureMatrices(featureMatrices);
+                                filePaths.add(vectorPath);
                             }
-                            new Sample(vectorFile.getPath()).saveFeatureVectors(featureVectors);
                         }
-                        filePaths.add(vectorPath);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

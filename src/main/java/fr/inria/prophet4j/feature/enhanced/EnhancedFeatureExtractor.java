@@ -236,7 +236,7 @@ public class EnhancedFeatureExtractor implements FeatureExtractor {
         }
 
         // this will be merged so we do not care about this value named marked
-        FeatureVector featureVector = new FeatureVector(false);
+        FeatureVector featureVector = new FeatureVector();
         // RepairFeatureNum     = RepairFeatureNum                      = 5
         EnumSet<RepairFeature> repairFeatures = getRepairFeatures(repair);
         // ModKind should be synonyms of RepairType

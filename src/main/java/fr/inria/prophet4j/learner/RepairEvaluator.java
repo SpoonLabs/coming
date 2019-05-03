@@ -3,7 +3,7 @@ package fr.inria.prophet4j.learner;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import fr.inria.prophet4j.utility.CodeDiffer;
-import fr.inria.prophet4j.utility.Structure.FeatureVector;
+import fr.inria.prophet4j.utility.Structure.FeatureMatrix;
 import fr.inria.prophet4j.utility.Structure.ParameterVector;
 import fr.inria.prophet4j.utility.Option;
 import fr.inria.prophet4j.utility.Option.RankingOption;
@@ -128,16 +128,20 @@ public class RepairEvaluator {
             Map<File, File> pairs = files.get(key);
             for (File buggyFile : pairs.keySet()) {
                 File patchedFile = pairs.get(buggyFile);
-                double score = 0;
-                List<FeatureVector> featureVectors = codeDiffer.runByGenerator(buggyFile, patchedFile);
-                // maybe we should compute the average but not the sum todo consider
-                for (FeatureVector featureVector : featureVectors) {
-                    score += featureVector.score(parameterVector);
+                List<FeatureMatrix> featureMatrices = codeDiffer.runByGenerator(buggyFile, patchedFile);
+                if (featureMatrices.size() == 1) {
+                    value.put(patchedFile, featureMatrices.get(0).score(parameterVector));
                 }
-                value.put(patchedFile, score);
+            }
+            if (value.size() == 0) {
+                scores4Files.remove(key);
             }
         }
         return scores4Files;
+    }
+
+    public void run() {
+        run(RankingOption.D_HUMAN, RankingOption.D_INCORRECT);
     }
 
     public void run(RankingOption foreOption, RankingOption backOption) {
@@ -156,24 +160,29 @@ public class RepairEvaluator {
         System.out.println("loaded files");
 
         // we want the interaction-set of both keySets
-        Set<String> interactionKeySet = new HashSet<>(foreFiles.keySet());
-        interactionKeySet.retainAll(backFiles.keySet());
-        Map<String, Map<File, File>> interactedForeFiles = new HashMap<>();
-        Map<String, Map<File, File>> interactedBackFiles = new HashMap<>();
-        for (String key : interactionKeySet) {
-            interactedForeFiles.put(key, foreFiles.get(key));
-        }
-        for (String key : interactionKeySet) {
-            interactedBackFiles.put(key, backFiles.get(key));
-        }
-
-        Map<String, Map<File, Double>> scores4ForeFiles = scoreFiles(interactedForeFiles);
-        Map<String, Map<File, Double>> scores4BackFiles = scoreFiles(interactedBackFiles);
+        Set<String> foreKeys = foreFiles.keySet();
+        Set<String> backKeys = backFiles.keySet();
+        Set<String> uniqueForeKeys = new HashSet<>(foreKeys);
+        Set<String> uniqueBackKeys = new HashSet<>(backKeys);
+        uniqueForeKeys.removeAll(backKeys);
+        uniqueBackKeys.removeAll(foreKeys);
+        for (String key : uniqueForeKeys) foreFiles.remove(key);
+        for (String key : uniqueBackKeys) backFiles.remove(key);
+        Map<String, Map<File, Double>> scores4ForeFiles = scoreFiles(foreFiles);
+        Map<String, Map<File, Double>> scores4BackFiles = scoreFiles(backFiles);
+        foreKeys = scores4ForeFiles.keySet();
+        backKeys = scores4BackFiles.keySet();
+        uniqueForeKeys = new HashSet<>(foreKeys);
+        uniqueBackKeys = new HashSet<>(backKeys);
+        uniqueForeKeys.removeAll(backKeys);
+        uniqueBackKeys.removeAll(foreKeys);
+        for (String key : uniqueForeKeys) scores4ForeFiles.remove(key);
+        for (String key : uniqueBackKeys) scores4BackFiles.remove(key);
         System.out.println("scored files");
 
         // we only care ranks info for ForeFiles
         Map<String, Map<File, Fraction>> ranks4ForeFiles = new HashMap<>();
-        for (String key : interactionKeySet) {
+        for (String key : scores4ForeFiles.keySet()) {
             ranks4ForeFiles.put(key, new HashMap<>());
             Map<File, Fraction> rankPairs4ForeFiles = ranks4ForeFiles.get(key);
 

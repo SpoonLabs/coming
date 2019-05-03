@@ -9,13 +9,13 @@ import fr.inria.prophet4j.utility.Option.FeatureOption;
 import org.junit.Test;
 
 import fr.inria.prophet4j.feature.Feature;
-import fr.inria.prophet4j.utility.Structure.FeatureVector;
+import fr.inria.prophet4j.utility.Structure.FeatureMatrix;
 import fr.inria.prophet4j.feature.original.OriginalFeature.AtomicFeature;
 import fr.inria.prophet4j.feature.original.OriginalFeature.RepairFeature;
 import fr.inria.prophet4j.feature.original.OriginalFeature.ValueFeature;
 import fr.inria.prophet4j.utility.CodeDiffer;
 
-// for OriginalFeatureExtractor
+// for OriginalFeatures
 public class OriginalFeatureExtractorTest {
     private void test(Feature caseFeature, Feature checkFeature) {
         String str0, str1;
@@ -327,9 +327,9 @@ public class OriginalFeatureExtractorTest {
         Option option = new Option();
         option.featureOption = FeatureOption.ORIGINAL;
         CodeDiffer codeDiffer = new CodeDiffer(false, option);
-        List<FeatureVector> featureVectors = codeDiffer.runByGenerator(str0, str1);
-        for (FeatureVector featureVector : featureVectors) {
-            if (featureVector.containFeature(feature)) {
+        List<FeatureMatrix> featureMatrices = codeDiffer.runByGenerator(str0, str1);
+        for (FeatureMatrix featureMatrix : featureMatrices) {
+            if (featureMatrix.containFeature(feature)) {
                 return true;
             }
         }

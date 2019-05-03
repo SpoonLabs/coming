@@ -42,20 +42,6 @@ public interface ExtendedFeature extends Feature {
         MEMBER_ACCESS_AF,
 
         /**
-         * STMT 10
-         */
-        STMT_LABEL_SF, // label
-        STMT_LOOP_SF, // for foreach do while
-        STMT_ASSIGN_SF, // =
-        STMT_CALL_SF, // print()
-        STMT_COND_SF, // if ...
-        STMT_CONTROL_SF, // break continue return throw
-        R_STMT_ASSIGN_SF, // replace version
-        R_STMT_CALL_SF, // replace version
-        R_STMT_COND_SF, // replace version
-        R_STMT_CONTROL_SF, // replace version
-
-        /**
          * Assignment Operators 6
          */
         AOP_ASSIGN_AF, // =
@@ -100,9 +86,9 @@ public interface ExtendedFeature extends Feature {
         /**
          * Unary Operators 5
          */
-        UOP_NOT_AF, // !a
         UOP_POS_AF, // +a
         UOP_NEG_AF, // -a
+        UOP_NOT_AF, // !a
         UOP_INC_AF, // ++a a++
         UOP_DEC_AF, // --a a--
         // bitOP should be rare
@@ -113,6 +99,20 @@ public interface ExtendedFeature extends Feature {
          */
         REF_SUPER_AF,
         REF_THIS_AF,
+
+        /**
+         * STMT 10
+         */
+        STMT_LABEL_SF, // label
+        STMT_LOOP_SF, // for foreach do while
+        STMT_ASSIGN_SF, // =
+        STMT_CALL_SF, // print()
+        STMT_COND_SF, // if ...
+        STMT_CONTROL_SF, // break continue return throw
+        R_STMT_ASSIGN_SF, // replace version
+        R_STMT_CALL_SF, // replace version
+        R_STMT_COND_SF, // replace version
+        R_STMT_CONTROL_SF, // replace version
 
 //        /**
 //         * Flow 16

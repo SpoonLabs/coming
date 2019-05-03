@@ -8,7 +8,7 @@ Features
 Right now we have four feature-sets.
 - [Original Features](https://github.com/SpoonLabs/coming/blob/master/docs/features/prophet4j/OriginalFeatures.md)
 is basically features used in the vanilla prophet4j.
-- [Extended Features](https://github.com/SpoonLabs/coming/blob/master/docs/features/prophet4j/ExtendedFeatures.md) (WIP)
+- [Extended Features](https://github.com/SpoonLabs/coming/blob/master/docs/features/prophet4j/ExtendedFeatures.md)
 is literally the extended version of the original one, by appending more same-type features.
 - Enhanced Features
 is literally the enhanced version of the extended one, by appending more ways of crossing features.
@@ -74,6 +74,23 @@ Tree
     ├── Structure.java          // cls defining some data-classes
     └── Support.java            // cls defining some static-methods
 ```
+
+_Special Note_
+
+`Feature` is entity to express feature or namely sub-characteristic
+
+`FeatureCross` is entity to express characteristic by crossing corresponding features
+
+`FeatureVector` is entity which contains feature-crosses to express characteristics of each diff-operation
+
+`FeatureMatrix` is entity which contains feature-vectors to express multi-diff-operations of each patch
+
+`ParameterVector` is entity which contains weights for all feature-crosses
+
+Data
+======
+
+[prophet4j-data](https://github.com/kth-tcs/overfitting-analysis/tree/master/prophet4j-data)
 
 Demo
 ======

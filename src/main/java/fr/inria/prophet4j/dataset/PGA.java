@@ -22,7 +22,7 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
-import fr.inria.prophet4j.utility.Structure.FeatureVector;
+import fr.inria.prophet4j.utility.Structure.FeatureMatrix;
 import fr.inria.prophet4j.utility.Structure.Sample;
 import fr.inria.prophet4j.utility.CodeDiffer;
 import fr.inria.prophet4j.learner.FeatureLearner;
@@ -309,13 +309,18 @@ public class PGA {
             System.out.println("================");
             System.out.println(differ.vectorFilePath);
             if (!vectorFile.exists()) {
-                List<FeatureVector> featureVectors = codeDiffer.runByGenerator(new File(differ.oldFilePath), new File(differ.newFilePath));
-                if (featureVectors.size() == 0) {
-                    // diff.commonAncestor() returns null value
-                    progressNow += 1;
-                    continue;
+                File oldFile = new File(differ.oldFilePath);
+                File newFile = new File(differ.newFilePath);
+                List<FeatureMatrix> featureMatrices = codeDiffer.runByGenerator(oldFile, newFile);
+                // we should have more than one FeatureMatrix when CodeDiffer's "byGenerator" is true
+                if (featureMatrices.size() >= 1) {
+                    if (featureMatrices.get(0).getFeatureVectors().size() == 0) {
+                        // diff.commonAncestor() returns null value
+                        progressNow += 1;
+                        continue;
+                    }
+                    new Sample(vectorFile.getPath()).saveFeatureMatrices(featureMatrices);
                 }
-                new Sample(vectorFile.getPath()).saveFeatureVectors(featureVectors);
             }
             filePaths.add(differ.vectorFilePath);
             progressNow += 1;

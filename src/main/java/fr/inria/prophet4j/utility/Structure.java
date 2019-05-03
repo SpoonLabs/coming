@@ -17,23 +17,22 @@ import java.util.*;
 public interface Structure {
     class Sample { // namely TrainingCase
         private String filePath;
-        private List<FeatureVector> featureVectors;
+        private List<FeatureMatrix> featureMatrices;
 
         public Sample(String filePath) {
             this.filePath = filePath;
-            this.featureVectors = new ArrayList<>();
+            this.featureMatrices = new ArrayList<>();
         }
 
-        public List<FeatureVector> getFeatureVectors() {
-            return featureVectors;
+        public List<FeatureMatrix> getFeatureMatrices() {
+            return featureMatrices;
         }
 
-        public void loadFeatureVectors() {
-            // it is possible as FeatureVector only utilize Set<FeatureCross>
+        public void loadFeatureMatrices() {
             try {
                 FileInputStream fis = new FileInputStream(filePath);
                 ObjectInputStream ois = new ObjectInputStream(fis);
-                featureVectors = (List<FeatureVector>) ois.readObject();
+                featureMatrices = (List<FeatureMatrix>) ois.readObject();
                 ois.close();
                 fis.close();
             } catch (ClassNotFoundException | IOException e) {
@@ -41,7 +40,7 @@ public interface Structure {
             }
         }
 
-        public void saveFeatureVectors(List<FeatureVector> featureVectors) {
+        public void saveFeatureMatrices(List<FeatureMatrix> featureMatrices) {
             try {
                 File file = new File(filePath);
                 if (!file.exists()) {
@@ -49,7 +48,7 @@ public interface Structure {
                 }
                 FileOutputStream fos = new FileOutputStream(filePath);
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
-                oos.writeObject(featureVectors);
+                oos.writeObject(featureMatrices);
                 oos.flush();
                 oos.close();
                 fos.close();
@@ -64,14 +63,12 @@ public interface Structure {
         }
     }
 
+    // entity which contains feature-crosses to express characteristics of each diff-operation
     class FeatureVector implements Serializable {
         static final long serialVersionUID = 1L;
-        // if marked then this is for human repair
-        private boolean marked;
         private Set<FeatureCross> featureCrosses;
 
-        public FeatureVector(boolean marked) {
-            this.marked = marked;
+        public FeatureVector() {
             this.featureCrosses = new HashSet<>();
         }
 
@@ -95,15 +92,12 @@ public interface Structure {
             return list;
         }
 
-        public boolean isMarked() {
-            return this.marked;
-        }
-
         public void merge(FeatureVector featureVector) {
             this.featureCrosses.addAll(featureVector.getFeatureCrosses());
         }
 
         public double score(ParameterVector parameterVector) {
+            // scores means values of phi dotProduct theta
             return parameterVector.dotProduct(this);
         }
 
@@ -113,6 +107,56 @@ public interface Structure {
         }
     }
 
+    // entity which contains feature-vectors to express multi-diff-operations of each patch
+    class FeatureMatrix implements Serializable {
+        static final long serialVersionUID = 1L;
+        private boolean marked; // for human patch or not
+        private List<FeatureVector> featureVectors;
+
+        public FeatureMatrix(boolean marked, List<FeatureVector> featureVectors) {
+            this.marked = marked;
+            this.featureVectors = featureVectors;
+        }
+
+        public boolean containFeature(Feature feature) {
+            for (FeatureVector featureVector : featureVectors) {
+                if (featureVector.containFeature(feature)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public List<FeatureVector> getFeatureVectors() {
+            return featureVectors;
+        }
+
+        public boolean isMarked() {
+            return this.marked;
+        }
+
+        // to mark generated patches false
+        public void correctMarked() {
+            this.marked = false;
+        }
+
+        public double score(ParameterVector parameterVector) {
+            double score = 0;
+            // we compute the sum as the whole score
+            for (FeatureVector featureVector : featureVectors) {
+                score += featureVector.score(parameterVector);
+            }
+            return score;
+        }
+
+        @Override
+        public String toString() {
+            return "FeatureVectors: " + featureVectors;
+        }
+
+    }
+
+    // entity which contains weights for all feature-crosses
     class ParameterVector {
         public double gamma = 0;
         private int arraySize = 0;
