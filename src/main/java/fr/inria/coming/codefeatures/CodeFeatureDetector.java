@@ -295,20 +295,26 @@ public class CodeFeatureDetector {
 			}
 			context.put(CodeFeatures.C1_SAME_TYPE_CONSTANT, hasSimilarLiterals);
 		} catch (Throwable e) {
+			log.error("Error comparing types" + e);
 			e.printStackTrace();
 		}
 	}
 
 	public static boolean isConstantVariableAccess(CtVariableAccess ctVariableAccess) {
 		if (ctVariableAccess.getVariable() != null) {
-			Set<ModifierKind> modifiers = ctVariableAccess.getVariable().getModifiers();
-			if (modifiers.contains(ModifierKind.FINAL)) {
-				return true;
-			} else {
-				String simpleName = ctVariableAccess.getVariable().getSimpleName();
-				if (simpleName.toUpperCase().equals(simpleName)) {
+			try {
+				Set<ModifierKind> modifiers = ctVariableAccess.getVariable().getModifiers();
+				if (modifiers.contains(ModifierKind.FINAL)) {
 					return true;
+				} else {
+					String simpleName = ctVariableAccess.getVariable().getSimpleName();
+					if (simpleName.toUpperCase().equals(simpleName)) {
+						return true;
+					}
 				}
+			} catch (Exception e) {
+				log.error("Exception when accessing modifiers for var access: " + ctVariableAccess);
+				log.error(e);
 			}
 		}
 		return false;

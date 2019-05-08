@@ -225,9 +225,13 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 			affectedCtElement = oldLocation;
 		}
 		// Let's find the parent statement
-		CtStatement parentLine = affectedCtElement.getParent(FILTER);
-		if (parentLine != null)
-			return parentLine;
+		try {
+			CtStatement parentLine = affectedCtElement.getParent(FILTER);
+			if (parentLine != null)
+				return parentLine;
+		} catch (Exception e) {
+			log.error("Problems getting parents of line: " + affectedCtElement);
+		}
 		// by default, we return the affected element
 		return affectedCtElement;
 
