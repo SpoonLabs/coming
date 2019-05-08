@@ -54,7 +54,7 @@ The value of those argument are the following format `<name_property_1>:<value_p
 In the following command we change the value of two properties: `max_nb_hunks` and `max_files_per_commit` 
 
 ``` 
-   -parameters max_nb_hunks2::max_files_per_commit:1
+   -parameters max_nb_hunks:2:max_files_per_commit:1
 ```
 
 
