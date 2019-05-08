@@ -1,7 +1,9 @@
 package fr.inria.coming.spoon.features;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.util.List;
 
 import org.junit.Test;
@@ -27,7 +29,7 @@ import fr.inria.coming.utils.CommandSummary;
 public class FeaturesOnComingMainTest {
 
 	@Test
-	public void testFeaturesOnComing1() throws Exception {
+	public void testFeaturesOnComingEvolutionFromGit1() throws Exception {
 		ComingMain main = new ComingMain();
 
 		CommandSummary cs = new CommandSummary();
@@ -49,13 +51,13 @@ public class FeaturesOnComingMainTest {
 
 			assertTrue(featureResult instanceof FeaturesResult);
 			FeaturesResult fresults = (FeaturesResult) featureResult;
-
+			assertNotNull(fresults);
 		}
 
 	}
 
 	@Test
-	public void testFeaturesOnComing2() throws Exception {
+	public void testFeaturesWithHunkOnComingEvolutionFromGit2() throws Exception {
 		ComingMain main = new ComingMain();
 
 		CommandSummary cs = new CommandSummary();
@@ -80,10 +82,50 @@ public class FeaturesOnComingMainTest {
 			assert (hunkResult instanceof DiffResult);
 			DiffResult<Commit, HunkDiff> hunkresults = (DiffResult<Commit, HunkDiff>) hunkResult;
 
+			assertNotNull(hunkresults);
+
 			List<HunkDiff> hunks = hunkresults.getAll();
 			System.out.println(hunks);
 
 			System.out.println(featureResult);
+
+			assertNotNull(hunks.size());
+
+			assertTrue(featureResult instanceof FeaturesResult);
+			FeaturesResult fresults = (FeaturesResult) featureResult;
+			assertNotNull(fresults);
+		}
+
+	}
+
+	@Test
+	public void testFeaturesOnComingEvolutionFromFolder1() throws Exception {
+		ComingMain main = new ComingMain();
+
+		CommandSummary cs = new CommandSummary();
+		cs.append("-input", "files");
+		cs.append("-location", (new File("src/main/resources/Defects4J_all_pairs")).getAbsolutePath());
+		cs.append("-mode", "features");
+		cs.append("-output", "./out_features_d4j");
+		cs.append("-parameters", "outputperrevision:true");
+		FinalResult finalResult = null;
+
+		finalResult = main.run(cs.flat());
+
+		CommitFinalResult commitResult = (CommitFinalResult) finalResult;
+
+		assertTrue(commitResult.getAllResults().values().size() > 0);
+
+		for (Commit iCommit : commitResult.getAllResults().keySet()) {
+
+			RevisionResult resultofCommit = commitResult.getAllResults().get(iCommit);
+			// Get the results of this analyzer
+			AnalysisResult featureResult = resultofCommit.get(FeatureAnalyzer.class.getSimpleName());
+
+			assertTrue(featureResult instanceof FeaturesResult);
+			FeaturesResult fresults = (FeaturesResult) featureResult;
+			assertNotNull(fresults);
+			assertNotNull(fresults.getFeatures());
 
 		}
 
