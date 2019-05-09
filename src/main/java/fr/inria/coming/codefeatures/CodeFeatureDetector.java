@@ -2,6 +2,7 @@ package fr.inria.coming.codefeatures;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -89,8 +90,7 @@ public class CodeFeatureDetector {
 		log.debug("------Total vars  of " + ": " + cr.stopAndGetSeconds());
 
 		List allMethods = getAllMethodsFromClass(parentClass);
-		List<CtInvocation> invocationsFromClass = parentClass.getElements(e -> (e instanceof CtInvocation)).stream()
-				.map(CtInvocation.class::cast).collect(Collectors.toList());
+		List<CtInvocation> invocationsFromClass = invocationsFromClass(parentClass);
 
 		log.debug("------Total methods of " + ": " + cr.stopAndGetSeconds());
 
@@ -99,14 +99,12 @@ public class CodeFeatureDetector {
 		log.debug("------Total context of " + ": " + cr.stopAndGetSeconds());
 
 		CtElement elementToStudy = retrieveElementToStudy(element);
-		List<CtVariableAccess> varsAffected = VariableResolver.collectVariableRead(elementToStudy);
+		List<CtVariableAccess> varsAffected = getVariables(elementToStudy);
 
 		// Get all invocations inside the faulty element
-		List<CtInvocation> invocations = elementToStudy.getElements(e -> (e instanceof CtInvocation)).stream()
-				.map(CtInvocation.class::cast).collect(Collectors.toList());
+		List<CtInvocation> invocations = getInvocations(elementToStudy);
 
-		List<CtLiteral> literalsFromFaultyLine = elementToStudy.getElements(e -> (e instanceof CtLiteral)).stream()
-				.map(CtLiteral.class::cast).collect(Collectors.toList());
+		List<CtLiteral> literalsFromFaultyLine = getLiterals(elementToStudy);
 
 		log.debug("------Total vars of " + ": " + cr.stopAndGetSeconds());
 
@@ -175,6 +173,52 @@ public class CodeFeatureDetector {
 		log.debug("------Total enum of " + ": " + cr.stopAndGetSeconds());
 
 		return context;
+	}
+
+	public List<CtVariableAccess> getVariables(CtElement elementToStudy) {
+		try {
+			List<CtVariableAccess> varsAffected = VariableResolver.collectVariableRead(elementToStudy);
+
+			return varsAffected;
+		} catch (
+
+		Exception e) {
+			log.error("Error retrieving invocations from class: " + elementToStudy.toString());
+			return Collections.EMPTY_LIST;
+		}
+	}
+
+	public List<CtInvocation> invocationsFromClass(CtClass parentClass) {
+		try {
+			List<CtInvocation> invocationsFromClass = parentClass.getElements(e -> (e instanceof CtInvocation)).stream()
+					.map(CtInvocation.class::cast).collect(Collectors.toList());
+			return invocationsFromClass;
+		} catch (Exception e) {
+			log.error("Error retrieving invocations from class: " + parentClass.getQualifiedName());
+			return Collections.EMPTY_LIST;
+		}
+	}
+
+	public List<CtLiteral> getLiterals(CtElement elementToStudy) {
+		try {
+			List<CtLiteral> literalsFromFaultyLine = elementToStudy.getElements(e -> (e instanceof CtLiteral)).stream()
+					.map(CtLiteral.class::cast).collect(Collectors.toList());
+			return literalsFromFaultyLine;
+		} catch (Exception e) {
+			log.error("Error retrieving literals: " + elementToStudy);
+			return Collections.EMPTY_LIST;
+		}
+	}
+
+	public List<CtInvocation> getInvocations(CtElement elementToStudy) {
+		try {
+			List<CtInvocation> invocations = elementToStudy.getElements(e -> (e instanceof CtInvocation)).stream()
+					.map(CtInvocation.class::cast).collect(Collectors.toList());
+			return invocations;
+		} catch (Exception e) {
+			log.error("Error retrieving invocations: " + elementToStudy);
+			return Collections.EMPTY_LIST;
+		}
 	}
 
 	private void analyzeM5(CtElement element, Cntx<Object> context, List<CtInvocation> invocations,
