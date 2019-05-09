@@ -29,8 +29,8 @@ public class ChangePatternSpecification {
 	}
 
 	public ChangePatternSpecification(String name) {
+		this();
 		this.name = name;
-		changes = new ArrayList<PatternAction>();
 	}
 
 	public ChangePatternSpecification(List<PatternAction> changes) {
