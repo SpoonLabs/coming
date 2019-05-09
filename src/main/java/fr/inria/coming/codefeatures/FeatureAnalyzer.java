@@ -79,17 +79,17 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 
 				if (affectedCtElement != null) {
 					Cntx iContext = cresolver.analyzeFeatures(affectedCtElement);
+					if (iContext != null) {
+						JsonObject jsonFeature = iContext.toJSON();
 
-					JsonObject jsonFeature = iContext.toJSON();
+						if (ComingProperties.getPropertyBoolean("addchangeinfoonfeatures")) {
+							JsonObject opjson = JSonPatternInstanceOutput.getJSONFromOperator(operation);
+							jsonFeature.add("ast_info", opjson);
+						}
 
-					if (ComingProperties.getPropertyBoolean("addchangeinfoonfeatures")) {
-						JsonObject opjson = JSonPatternInstanceOutput.getJSONFromOperator(operation);
-						jsonFeature.add("ast_info", opjson);
+						changesArray.add(jsonFeature);
 					}
-
-					changesArray.add(jsonFeature);
 				}
-
 			}
 
 		}
