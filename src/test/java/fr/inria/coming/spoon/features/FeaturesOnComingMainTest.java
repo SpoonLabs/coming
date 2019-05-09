@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.HunkDifftAnalyzer;
@@ -98,7 +99,14 @@ public class FeaturesOnComingMainTest {
 
 	}
 
+	/**
+	 * We ignore the execution of this test case: it takes hours, it does only
+	 * compute the features but it does not assert the behaviour
+	 * 
+	 * @throws Exception
+	 */
 	@Test
+	@Ignore
 	public void testFeaturesOnComingEvolutionFromFolder1() throws Exception {
 		ComingMain main = new ComingMain();
 
