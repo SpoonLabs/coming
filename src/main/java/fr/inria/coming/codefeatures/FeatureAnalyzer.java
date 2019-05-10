@@ -79,17 +79,17 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 
 				if (affectedCtElement != null) {
 					Cntx iContext = cresolver.analyzeFeatures(affectedCtElement);
+					if (iContext != null) {
+						JsonObject jsonFeature = iContext.toJSON();
 
-					JsonObject jsonFeature = iContext.toJSON();
+						if (ComingProperties.getPropertyBoolean("addchangeinfoonfeatures")) {
+							JsonObject opjson = JSonPatternInstanceOutput.getJSONFromOperator(operation);
+							jsonFeature.add("ast_info", opjson);
+						}
 
-					if (ComingProperties.getPropertyBoolean("addchangeinfoonfeatures")) {
-						JsonObject opjson = JSonPatternInstanceOutput.getJSONFromOperator(operation);
-						jsonFeature.add("ast_info", opjson);
+						changesArray.add(jsonFeature);
 					}
-
-					changesArray.add(jsonFeature);
 				}
-
 			}
 
 		}
@@ -225,9 +225,13 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 			affectedCtElement = oldLocation;
 		}
 		// Let's find the parent statement
-		CtStatement parentLine = affectedCtElement.getParent(FILTER);
-		if (parentLine != null)
-			return parentLine;
+		try {
+			CtStatement parentLine = affectedCtElement.getParent(FILTER);
+			if (parentLine != null)
+				return parentLine;
+		} catch (Exception e) {
+			log.error("Problems getting parents of line: " + affectedCtElement);
+		}
 		// by default, we return the affected element
 		return affectedCtElement;
 

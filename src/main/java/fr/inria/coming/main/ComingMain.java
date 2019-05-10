@@ -61,7 +61,6 @@ public class ComingMain {
 	static {
 		//
 		options.addOption("location", true, "location of the project");
-		options.addOption("resultoutput", true, "location of the output");
 		options.addOption("mode", true, "execution Mode. ");
 		options.addOption("input", true, "Input (git(default)| files). ");
 		options.addOption("outputprocessor", true, "result outout processors");

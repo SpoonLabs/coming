@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<pattern name="Modif_If_Child">
+<!-- This pattern must not have a name, used for testing -->
+<pattern>
 <entity id="1" type = "If"/>
 <entity id="2" type = "*">
 	<parent parentId="1" distance="10" />

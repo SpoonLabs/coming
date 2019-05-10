@@ -61,10 +61,8 @@ public class FeaturesOutput implements IOutput {
 			JsonParser jp = new JsonParser();
 			JsonElement je = jp.parse(file.toString());
 			String prettyJsonString = gson.toJson(je);
-			log.debug("\nJSON Code Change Frequency: (file stored at " + fileName + ")\n");
-			log.debug(prettyJsonString);
+			log.debug("\nJSON Code Change feature: (file stored at " + fileName + ")\n");
 			fw.write(prettyJsonString);
-
 			fw.flush();
 			fw.close();
 		} catch (Exception e) {
@@ -77,7 +75,6 @@ public class FeaturesOutput implements IOutput {
 	@Override
 	public void generateRevisionOutput(RevisionResult resultAllAnalyzed) {
 		FeaturesResult result = (FeaturesResult) resultAllAnalyzed.getResultFromClass(FeatureAnalyzer.class);
-
 		save(result);
 	}
 

@@ -51,13 +51,23 @@ public class PatternXMLParser implements PatternFileParser {
 			Document doc = dBuilder.parse(fXmlFile);
 			doc.getDocumentElement().normalize();
 
+			Element docElement = doc.getDocumentElement();
+
+			String nameFromSpecification = docElement.getAttribute("name");
+
+			String namePattern = null;
+			if (nameFromSpecification != null && !nameFromSpecification.isEmpty())
+				namePattern = nameFromSpecification;
+			else
+				namePattern = fXmlFile.getName().replace(".xml", "");
+
 			// Get all entities tags
 			NodeList nList = doc.getElementsByTagName(ENTITY);
 
 			// Temporal structure to store parent of a node id.
 			Map<String, List> elementParents = new HashMap<String, List>();
 			Map<String, PatternEntity> idEntities = new HashMap<String, PatternEntity>();
-			ChangePatternSpecification pattern = new ChangePatternSpecification();
+			ChangePatternSpecification pattern = new ChangePatternSpecification(namePattern);
 
 			// Collecting ENTITIES
 			// For each entity tag
