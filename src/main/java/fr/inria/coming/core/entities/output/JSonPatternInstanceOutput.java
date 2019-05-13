@@ -15,6 +15,7 @@ import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstanceAnal
 import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstancesFromDiff;
 import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstancesFromRevision;
 import fr.inria.coming.changeminer.analyzer.patternspecification.PatternAction;
+import fr.inria.coming.changeminer.analyzer.patternspecification.PatternEntity;
 import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.core.entities.interfaces.IOutput;
@@ -89,15 +90,18 @@ public class JSonPatternInstanceOutput implements IOutput {
 					for (PatternAction pa : instancePattern.getActionOperation().keySet()) {
 						Operation op = instancePattern.getActionOperation().get(pa);
 						JsonObject opjson = new JsonObject();
-						opjson.addProperty("action", pa.getAction().toString());
-						opjson.addProperty("entity", pa.getAffectedEntity().toString());
-						opjson.add("op", getJSONFromOperator(op));
-						opjson.addProperty("code", op.getNode().toString());
-						opjson.addProperty("location", op.getNode().getPath().toString());
+						opjson.addProperty("pattern_action", pa.getAction().toString());
+						opjson.add("pattern_entity", getJSONFromEntity(pa.getAffectedEntity()));
+						opjson.add("concrete_change", getJSONFromOperator(op));
+
+						if (op.getNode().getPosition() != null) {
+							opjson.addProperty("file", op.getNode().getPosition().getFile().getAbsolutePath());
+							opjson.addProperty("line", op.getNode().getPosition().getLine());
+						}
 						ops.add(opjson);
 					}
 
-					instance.add("ops", ops);
+					instance.add("instance_detail", ops);
 					instances.add(instance);
 				}
 
@@ -105,22 +109,53 @@ public class JSonPatternInstanceOutput implements IOutput {
 		}
 	}
 
+	protected JsonElement getJSONFromEntity(PatternEntity affectedEntity) {
+
+		if (affectedEntity == null)
+			return null;
+		JsonObject jsonEntity = new JsonObject();
+		jsonEntity.addProperty("entity_type", affectedEntity.getEntityType());
+		jsonEntity.addProperty("entity_new value", affectedEntity.getNewValue());
+		jsonEntity.addProperty("entity_old value", affectedEntity.getOldValue());
+		jsonEntity.addProperty("entity_role", affectedEntity.getRoleInParent());
+		if (affectedEntity.getParentPatternEntity() != null)
+			jsonEntity.add("entity_parent", getJSONFromEntity(affectedEntity.getParentPatternEntity().getParent()));
+		else
+			jsonEntity.addProperty("entity_parent", "null");
+
+		return jsonEntity;
+	}
+
 	@SuppressWarnings("unchecked")
 	public static JsonObject getJSONFromOperator(Operation operation) {
 		JsonObject op = new JsonObject();
 		op.addProperty("operator", operation.getAction().getName());
-		op.addProperty("src",
-				(operation.getSrcNode() != null) ? operation.getSrcNode().getClass().getSimpleName() : "null");
-		op.addProperty("dst",
-				(operation.getDstNode() != null) ? operation.getDstNode().getClass().getSimpleName() : "null");
+		op.addProperty("src_type",
+				(operation.getSrcNode() != null) ? clean(operation.getSrcNode().getClass().getSimpleName()) : "null");
+		op.addProperty("dst_type",
+				(operation.getDstNode() != null) ? clean(operation.getDstNode().getClass().getSimpleName()) : "null");
 
-		op.addProperty("srcparent",
-				(operation.getSrcNode() != null) ? operation.getSrcNode().getParent().getClass().getSimpleName()
+		op.addProperty("src", (operation.getSrcNode() != null) ? operation.getSrcNode().toString() : "null");
+		op.addProperty("dst", (operation.getDstNode() != null) ? operation.getDstNode().toString() : "null");
+
+		op.addProperty("src_parent_type",
+				(operation.getSrcNode() != null) ? clean(operation.getSrcNode().getParent().getClass().getSimpleName())
 						: "null");
-		op.addProperty("dstparent",
-				(operation.getDstNode() != null) ? operation.getDstNode().getParent().getClass().getSimpleName()
+		op.addProperty("dst_parent_type",
+				(operation.getDstNode() != null) ? clean(operation.getDstNode().getParent().getClass().getSimpleName())
 						: "null");
+
+		op.addProperty("src_parent",
+				(operation.getSrcNode() != null) ? operation.getSrcNode().getParent().toString() : "null");
+		op.addProperty("dst_parent",
+				(operation.getDstNode() != null) ? operation.getDstNode().getParent().toString() : "null");
+
 		return op;
+	}
+
+	private static String clean(String simpleName) {
+
+		return simpleName.substring(2, simpleName.length() - 4);
 	}
 
 	@Override
