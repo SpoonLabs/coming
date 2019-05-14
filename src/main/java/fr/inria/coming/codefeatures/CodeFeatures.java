@@ -69,7 +69,6 @@ public enum CodeFeatures {
 	NUMBER_PRIMITIVE_VARS_IN_STMT,
 	// Involves object reference,
 	NUMBER_OBJECT_REFERENCE_VARS_IN_STMT,
-
 //
 
 	NUMBER_TOTAL_VARS_IN_STMT,
@@ -124,7 +123,12 @@ public enum CodeFeatures {
 	// since its introduction (declaration)(chart-4)
 	S1_LOCAL_VAR_NOT_ASSIGNED, //
 	S1_LOCAL_VAR_NOT_USED,
-
+	S7_OBJECT_USED_IN_ASSIGNMENT,
+	S8_PRIMITIVE_USED_IN_ASSIGNMENT,
+	S9_METHOD_CALL_WITH_NORMAL_GUARD,
+	S10_METHOD_CALL_WITH_NULL_GUARD,
+	S11_FAULTY_CLASS_EXCEPTION_TYPE,
+	S12_METHOD_CALL_WITH_TRY_CATCH,
 	// If the faulty statement involves using object type variables (either local or
 	// global), whether exist other statements in the faulty class that use some
 	// same type object variables (with same of the object type variables used in
@@ -133,21 +137,35 @@ public enum CodeFeatures {
 	// variable topType, whose type is JSType, and there are many other statements
 	// in the faulty class which uses JSType variables, but have gurand checks, like
 	// statement in 61, in 72. also see for example closure 60.)
-	S2_SIMILAR_OBJECT_TYPE_WITH_GUARD, //
+	S2_SIMILAR_OBJECT_TYPE_WITH_NORMAL_GUARD, //
+	S2_SIMILAR_OBJECT_TYPE_WITH_NULL_GUARD,
 	// Spoon class of the fault statement.
 	S3_TYPE_OF_FAULTY_STATEMENT,
-
+	S14_TYPE_OF_FAULTY_STATEMENT_PARENT,
+	
+	S15_HAS_OBJECTIVE_METHOD_CALL,
+	
+	S13_TYPE_OF_FAULTY_STATEMENT_BEFORE_1,
+	S13_TYPE_OF_FAULTY_STATEMENT_BEFORE_2,
+	S13_TYPE_OF_FAULTY_STATEMENT_BEFORE_3,
+	S13_TYPE_OF_FAULTY_STATEMENT_AFTER_1,
+	S13_TYPE_OF_FAULTY_STATEMENT_AFTER_2,
+	S13_TYPE_OF_FAULTY_STATEMENT_AFTER_3,
+	
 	// If the faulty statement involves object reference to field (i.e., use object
 	// type class field), do there exist certain field(s) that have never been
 	// referenced in other methods of the faulty class.
-	S4_USED_FIELD,
-
+	// S4_USED_FIELD,
+	S4_Field_NOT_USED,
+	S4_Field_NOT_ASSIGNED,
 	// If the faulty statement involves using primitive type variables (either local
 	// or global),
 	// whether exist other statements in the faulty class that use some same
 	// primitive type variables (with some of the primitive type variables used in
 	// the faulty statement), but add guard check (for global variables
-	S5_SIMILAR_PRIMITIVE_TYPE_WITH_GUARD,
+	S5_SIMILAR_PRIMITIVE_TYPE_WITH_NORMAL_GUARD,
+	
+	S5_SIMILAR_PRIMITIVE_TYPE_WITH_NULL_GUARD,
 
 	// For any variable involved in a logical expression,
 	// whether exist other boolean expressions in the faulty class
@@ -180,17 +198,41 @@ public enum CodeFeatures {
 	LE4_EXISTS_LOCAL_UNUSED_VARIABLES,
 	// Whether the number of boolean expressions in the logical expression is larger
 	// than 1
-	LE5_BOOLEAN_EXPRESSIONS_IN_FAULTY,
+	LE5_COMPLEX_REFERENCE,
 	// For the logical expression, whether there exists a boolean expression that
 	// starts with the "not" operator! (an exclamation mark) (
 	LE6_HAS_NEGATION,
 	// For the logical expression, whether there exists a boolean expression which
 	// is simply a boolean variable
-	LE7_SIMPLE_VAR_IN_LOGIC,
+	LE7_SIMPLE_VAR_OR_METHOD_IN_LOGIC,
 	// If the logical expression only uses local variables,whether all of the local
 	// variables have been used in other statements (exclude statements inside
 	// control flow structure) since the introduction
-	LE_8_LOGICAL_WITH_USED_LOCAL_VARS,
+	//LE8_LOGICAL_WITH_USED_LOCAL_VARS,
+	LE8_SCOPE_VAR_USED_OTHER_BOOLEXPER,
+	
+	LE9_NORMAL_CHECK,
+	
+	LE9_NULL_CHECK,
+	
+	LE9_MIX_CHECK,
+	
+	LE9_EQUAL_NOTEQUAL_NULL_CHECK,
+	
+	LE10_ATOMIC_EXPRESSION_SAME_INVOCATION_TARGET,
+	
+	LE10_ATOMIC_EXPRESSION_COMPARISION_SAME_LEFT,
+	
+	LE10_ATOMIC_EXPRESSION_COMPARISION_SAME_RIGHT,
+	
+	LE10_ATOMIC_EXPRESSION_MULTIPLE_VAR_AS_BOOLEAN, 
+	
+	LE10_ATOMIC_EXPRESSION_USED_IN_INVOCATION_COMPARISION_VARIABLE, 
+	
+	LE10_CONTAINS_ALL_INVOCATION_COMPARISION_VARIABLE,
+	
+	LE11_COMPLEX_REFERENCE,
+	
 	// For each involved variable, whether has method definitions or method calls
 	// (in the fault class) that take the type of the involved variable as one of
 	// its parameters and the return type of the method is type compatible with the
@@ -199,6 +241,7 @@ public enum CodeFeatures {
 	// has any other variables in scope that are similar in identifier name and type
 	// compatible.
 	V2_HAS_VAR_SIM_NAME_COMP_TYPE,
+	V2_HAS_VAR_SIM_NAME,
 	// For each involved variable, is it constant? –can assume variables whose
 	// identifier names are majorly capital letters are constant variables
 	V3_HAS_CONSTANT,
@@ -215,9 +258,25 @@ public enum CodeFeatures {
 
 //For each involved variable, whether has methods in scope(method definitions or method calls in the faulty class) thatreturn a type which is the same or compatible with the typeof the involved variable. 
 	V6_IS_METHOD_RETURN_TYPE_VAR,
+	
+	V16_IS_METHOD_PARAMETER_TYPE_VAR,
 	// For each variable, is it primitive type?
 	V8_VAR_PRIMITIVE,
 	// For each method invocation, whether the method has overloaded method
+	V9_VAR_TYPE_Similar_Literal,
+	
+	V10_VAR_TYPE_Similar_VAR,
+	
+	V11_VAR_COMPATIBLE_TYPE_IN_CONDITION,
+	
+	V12_VAR_Invocation_VAR_REPLACE_BY_VAR,
+	
+	V13_VAR_Invocation_VAR_REPLACE_BY_INVOCATION,
+	
+	V14_VAR_INSTANCE_OF_CLASS, 
+	
+	V15_VAR_LAST_THREE_SAME_TYPE_LOC, 
+	
 	M1_OVERLOADED_METHOD,
 	// For each method invocation, whether there exist methods that return the same
 	// type (or type compatible) and are similar in identifier name with the called
@@ -237,14 +296,34 @@ public enum CodeFeatures {
 	M4_PARAMETER_RETURN_COMPABILITY,
 //	 For each method invocation, whether has variables in scope whose types are the same or compatible with the return types of the method invocation. I am not sure whether it is easy to add this feature
 	M5_MI_WITH_COMPATIBLE_VAR_TYPE,
+	
+	M6_INV_Invocation_INV_REPLACE_BY_VAR,
+	M7_INV_Invocation_INV_REPLACE_BY_INV,
 	// For each method invocation, whether the return value of it is primitive
-	M6_RETURN_PRIMITIVE,
+	M8_RETURN_PRIMITIVE,
+	
+	M9_RETURN_OBJECTIVE,
 	// C1: For each constantc, whether exist other constants used inthe faulty class
 	// whose types are the same (or type compatible)withcbut values are different
 	C1_SAME_TYPE_CONSTANT,
+	C2_SAME_TYPE_CONSTANT_VAR,
+	C2_SAME_TYPE_VAR,
+	C3_TYPEACCESS_ACTUAL_VAR,
+	C4_SIMILAR_TYPEACCESS_ACTUAL_VAR,
 	// For each constant, is it an enum vlaue (But may be it ishard to detect it use
 	// partial program analysis).
-	C2_USES_ENUMERATION,
+	C5_USES_ENUMERATION,
+	
+	CON1_OVERLOADED_CONSTRUCTOR,
+	
+	CON2_SIMILAR_CONSTRUCTOR,
+	
+	E1_RETURN_PRIMITIVE, 
+
+	E2_COMPATIBLE_INVOCATION_PAREMETER_RETURN,
+	
+	E3_COMPATIBLE_INVOCATION_PAREMETER,
+	
 	// For each arithmetic expression, whether has method definitions or method
 	// calls (in the fault class) that take the return type of the arithmetic
 	// expression as one of its parameters and the return type of the method is

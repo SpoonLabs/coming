@@ -377,8 +377,12 @@ public class EnhancedRepairGenerator implements RepairGenerator {
             case UnknownType:
                 break;
         }
-        List<CtElement> candidates = diffEntry.dstNode.getElements(new TypeFilter<>(CtElement.class));
-        repair.atoms.addAll(candidates);
+        try {
+            List<CtElement> candidates = diffEntry.dstNode.getElements(new TypeFilter<>(CtElement.class));
+            repair.atoms.addAll(candidates);
+        } catch (Exception e) {
+            // such as public, final, static
+        }
         return repair;
     }
 
@@ -471,13 +475,14 @@ public class EnhancedRepairGenerator implements RepairGenerator {
                 if (parent instanceof CtStatement) {
                     statements = statements.subList(1, statements.size());
                 }
-                assert statements.contains(statement);
                 int idx = statements.indexOf(statement);
-                if (idx > 0)
-                    locations.add(statements.get(idx - 1));
-                locations.add(statements.get(idx));
-                if (idx < statements.size() - 1)
-                    locations.add(statements.get(idx + 1));
+                if (idx >= 0) {
+                    if (idx > 0)
+                        locations.add(statements.get(idx - 1));
+                    locations.add(statements.get(idx));
+                    if (idx < statements.size() - 1)
+                        locations.add(statements.get(idx + 1));
+                }
             }
         }
         return locations;

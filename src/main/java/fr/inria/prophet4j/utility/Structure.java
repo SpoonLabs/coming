@@ -1,5 +1,6 @@
 package fr.inria.prophet4j.utility;
 
+import com.google.gson.Gson;
 import fr.inria.prophet4j.feature.Feature;
 import fr.inria.prophet4j.feature.FeatureCross;
 import fr.inria.prophet4j.feature.S4R.S4RFeature;
@@ -12,6 +13,8 @@ import spoon.reflect.declaration.CtElement;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 public interface Structure {
@@ -52,6 +55,52 @@ public interface Structure {
                 oos.flush();
                 oos.close();
                 fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // as we do not utilize json-format data, we have no loadJson method
+        // the root reason is that prophet4j owns sub-features
+        public void saveAsJson(FeatureOption featureOption) {
+            int arraySize = 0;
+            switch (featureOption) {
+                case ENHANCED:
+                    arraySize = EnhancedFeature.FEATURE_SIZE;
+                    break;
+                case EXTENDED:
+                    arraySize = ExtendedFeature.FEATURE_SIZE;
+                    break;
+                case ORIGINAL:
+                    arraySize = OriginalFeature.FEATURE_SIZE;
+                    break;
+                case S4R:
+                    arraySize = S4RFeature.FEATURE_SIZE;
+                    break;
+            }
+
+            List<List<double[]>> featureMatrixList = new ArrayList<>();
+            for (FeatureMatrix featureMatrix : featureMatrices) {
+                List<double[]> featureVectorList = new ArrayList<>();
+                // always skip this loop when we meet invalid patches
+                for (FeatureVector featureVector : featureMatrix.getFeatureVectors()) {
+                    double[] featureCrossArray = new double[arraySize];
+                    for (FeatureCross featureCross : featureVector.getFeatureCrosses()) {
+                        featureCrossArray[featureCross.getId()] = featureCross.getDegree();
+                    }
+                    featureVectorList.add(featureCrossArray);
+                }
+                featureMatrixList.add(featureVectorList);
+            }
+            String json = new Gson().toJson(featureMatrixList);
+            String jsonPath = filePath.replace("prophet4j/", "prophet4j/_JSON/");
+            jsonPath = jsonPath.replace(".bin", ".json");
+            try {
+                File file = new File(jsonPath);
+                if (!file.exists()) {
+                    file.getParentFile().mkdirs();
+                }
+                Files.write(Paths.get(jsonPath), json.getBytes());
             } catch (IOException e) {
                 e.printStackTrace();
             }

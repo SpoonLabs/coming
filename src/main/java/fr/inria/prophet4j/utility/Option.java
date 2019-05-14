@@ -11,7 +11,7 @@ public class Option {
         // following 4 ones are all used for Project ODS(OverfittingDetectionSystem)
         BEARS,
         BUG_DOT_JAR,
-        DEFECTS4J,
+        BUG_DOT_JAR_MINUS_MATH, // BUG_DOT_JAR without Math (-16)
         QUIX_BUGS,
     }
 
@@ -23,13 +23,15 @@ public class Option {
         // following 4 ones are all used for Project ODS(OverfittingDetectionSystem)
         BEARS, // only valid for the BEARS DataOption
         BUG_DOT_JAR, // only valid for the BUG_DOT_JAR DataOption
-        DEFECTS4J, // only valid for the DEFECTS4J DataOption
+        BUG_DOT_JAR_MINUS_MATH, // only valid for the BUG_DOT_JAR_MINUS_MATH DataOption
         QUIX_BUGS, // only valid for the QUIX_BUGS DataOption
     }
 
     public enum FeatureOption {
-        ENHANCED, // appended more ways of crossing features, based on EXTENDED
-        EXTENDED, // appended more features and rearranged them, based on ORIGINAL
+        // based on EXTENDED
+        ENHANCED, // appended more ways of crossing features (POS_VF_RF_CT POS_VF_AF_CT AF_RF_CT VF_RF_CT)
+        // based on ORIGINAL
+        EXTENDED, // appended more features and reorganized them
         ORIGINAL, // Prophet4J
         S4R, // SKETCH4REPAIR (sri-lab@ETH)
     }
