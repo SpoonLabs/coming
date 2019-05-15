@@ -7,6 +7,7 @@ import fr.inria.prophet4j.utility.Option;
 import fr.inria.prophet4j.utility.Option.FeatureOption;
 import fr.inria.prophet4j.utility.Option.DataOption;
 import fr.inria.prophet4j.utility.Option.PatchOption;
+import fr.inria.prophet4j.utility.Structure.Sample;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class Demo {
         FeatureLearner featureLearner = new FeatureLearner(option);
         List<String> filePaths = dataManager.run();
         featureLearner.run(filePaths);
-        System.out.println("1/1 Done");
+        System.out.println("1/1 LEARNED");
     }
 
     void evaluate() {
@@ -34,23 +35,37 @@ public class Demo {
 //        repairEvaluator.run(RankingOption.D_HUMAN, RankingOption.D_INCORRECT);
 //        System.out.println("3/3 Done");
         repairEvaluator.run();
-        System.out.println("1/1 Done");
+        System.out.println("1/1 EVALUATED");
+    }
+
+    // todo split learn to be extract and learn
+    void distillJson() {
+        DataManager dataManager = new DataManager(option);
+        List<String> filePaths = dataManager.run();
+        for (String filePath : filePaths) {
+            Sample sample = new Sample(filePath);
+            sample.loadFeatureMatrices();
+            sample.saveAsJson(option.featureOption);
+        }
+        System.out.println("1/1 DISTILLED");
     }
 
     private static void jobsDemo(Option option) {
-//        try {
-//            option.dataOption = DataOption.CARDUMEN;
-//            option.patchOption = PatchOption.CARDUMEN;
-//            new Demo(option).learn();
-//            new Demo(option).evaluate();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        try {
+            option.dataOption = DataOption.CARDUMEN;
+            option.patchOption = PatchOption.CARDUMEN;
+            new Demo(option).learn();
+            new Demo(option).evaluate();
+            new Demo(option).distillJson();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         try {
             option.dataOption = DataOption.SANER;
             option.patchOption = PatchOption.SPR;
             new Demo(option).learn();
             new Demo(option).evaluate();
+            new Demo(option).distillJson();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -62,6 +77,7 @@ public class Demo {
 //            option.patchOption = PatchOption.BEARS;
 //            new Demo(option).learn();
 //            new Demo(option).evaluate();
+//            new Demo(option).distillJson();
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
@@ -70,45 +86,73 @@ public class Demo {
             option.patchOption = PatchOption.BUG_DOT_JAR;
             new Demo(option).learn();
             new Demo(option).evaluate();
+            new Demo(option).distillJson();
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        try {
-//            option.dataOption = DataOption.BUG_DOT_JAR;
-//            option.patchOption = PatchOption.SPR;
-//            new Demo(option).learn();
-//            new Demo(option).evaluate();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        try {
-//            option.dataOption = DataOption.DEFECTS4J;
-//            option.patchOption = PatchOption.DEFECTS4J;
-//            new Demo(option).learn();
-//            new Demo(option).evaluate();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        try {
+            option.dataOption = DataOption.BUG_DOT_JAR;
+            option.patchOption = PatchOption.SPR;
+            new Demo(option).learn();
+            new Demo(option).evaluate();
+            new Demo(option).distillJson();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            option.dataOption = DataOption.BUG_DOT_JAR_MINUS_MATH;
+            option.patchOption = PatchOption.BUG_DOT_JAR_MINUS_MATH;
+            new Demo(option).learn();
+            new Demo(option).evaluate();
+            new Demo(option).distillJson();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            option.dataOption = DataOption.BUG_DOT_JAR_MINUS_MATH;
+            option.patchOption = PatchOption.SPR;
+            new Demo(option).learn();
+            new Demo(option).evaluate();
+            new Demo(option).distillJson();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 //        try {
 //            option.dataOption = DataOption.QUIX_BUGS;
 //            option.patchOption = PatchOption.QUIX_BUGS;
 //            new Demo(option).learn();
 //            new Demo(option).evaluate();
+//            new Demo(option).distillJson();
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
     }
 
     private static void jobsS4R(Option option) {
-//        option.dataOption = DataOption.CARDUMEN;
-//        option.patchOption = PatchOption.CARDUMEN;
-//        new Demo(option).learn();
-//        new Demo(option).evaluate();
+        try {
+            option.dataOption = DataOption.CARDUMEN;
+            option.patchOption = PatchOption.CARDUMEN;
+            new Demo(option).learn();
+            new Demo(option).evaluate();
+            new Demo(option).distillJson();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         try {
             option.dataOption = DataOption.BUG_DOT_JAR;
             option.patchOption = PatchOption.BUG_DOT_JAR;
             new Demo(option).learn();
             new Demo(option).evaluate();
+            new Demo(option).distillJson();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            option.dataOption = DataOption.BUG_DOT_JAR_MINUS_MATH;
+            option.patchOption = PatchOption.BUG_DOT_JAR_MINUS_MATH;
+            new Demo(option).learn();
+            new Demo(option).evaluate();
+            new Demo(option).distillJson();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -118,51 +162,36 @@ public class Demo {
     public static void main(String[] args) {
         try {
             Option option = new Option();
-            // for ODS
-//            option.featureOption = FeatureOption.ORIGINAL;
-//            jobsODS(option);
-//            option.featureOption = FeatureOption.EXTENDED;
-//            jobsODS(option);
-            // for S4R
-//            option.featureOption = FeatureOption.S4R;
-//            jobsS4R(option);
-//            option.featureOption = FeatureOption.ENHANCED;
-//            jobsODS(option);
             // for Demo
             option.featureOption = FeatureOption.ORIGINAL;
             jobsDemo(option);
-//            option.featureOption = FeatureOption.EXTENDED;
-//            jobsDemo(option);
-//            option.featureOption = FeatureOption.ENHANCED;
-//            jobsDemo(option);
+            option.featureOption = FeatureOption.EXTENDED;
+            jobsDemo(option);
+            // for ODS
+            option.featureOption = FeatureOption.ORIGINAL;
+            jobsODS(option);
+            option.featureOption = FeatureOption.EXTENDED;
+            jobsODS(option);
+            // for S4R
+            option.featureOption = FeatureOption.S4R;
+            jobsS4R(option);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    // Testing(D_HUMAN-D_INCORRECT)
-    // o16 e19 Training(CARDUMEN-CARDUMEN)
-    // o21 e22 Training(SANER-SPR)
-    // o30 e32 Training(BUG_DOT_JAR-REPAIR_THEM_ALL)
-    // o17 e19 Training(BUG_DOT_JAR-SPR)
+    // TODO What is the result with the S4R features + Learning-to-rank?
+    // todo (sync S4R every week until one stable version, also comment test files)
     // todo (support numerical-form features)
-    // todo (try on YE's features) 20190506
+    // todo (try on YE's features) 20190513
     // todo (integrate with s4r to support feature-ext+s4r)
-    // todo (try another loss funcs?)
     // todo (document prophet4j)
     // todo (integrate with coming)
     /*
-    if we need to improve the performance of FeatureLearner, use CLR(Cyclical Learning Rates)
-    first line corresponds original eta, second line corresponds CLR
-    // o16 e21 original
-    // o19 e23 original
-    // o20 e24 extended
-    // o20 e25 extended
-    // o16 e30 enhanced (appended POS_VF_RF_CT POS_VF_AF_CT AF_RF_CT VF_RF_CT)
-    // o17 e24 enhanced (appended POS_VF_RF_CT POS_VF_AF_CT AF_RF_CT VF_RF_CT)
+    to improve the performance of FeatureLearner, use CLR(Cyclical Learning Rates) or autoML
      */
     // config VM: -Xms1024m -Xmx16384m
     // name alias:
-    // original <===> prophet4j
-    // extended <===> feature-ext
-    // sketch4repair <===> feature-s4r
+    // original <==> prophet4j
+    // extended <==> feature-ext
+    // sketch4repair <==> feature-s4r
 }

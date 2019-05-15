@@ -1,7 +1,5 @@
 package fr.inria.prophet4j.learner;
 
-import com.google.common.collect.Lists;
-import com.google.common.io.Files;
 import fr.inria.prophet4j.utility.CodeDiffer;
 import fr.inria.prophet4j.utility.Structure.FeatureMatrix;
 import fr.inria.prophet4j.utility.Structure.ParameterVector;
@@ -35,14 +33,10 @@ public class RepairEvaluator {
         this.parameterVector.load(parameterFilePath);
     }
 
-    // example : Map<"Chart/3", Map<buggy file, patched file>>
+    // example : Map<"Chart3", Map<buggy file, patched file>>
     public Map<String, Map<File, File>> loadFiles(String dataPath) throws NullPointerException {
         Map<String, Map<File, File>> catalogs = new HashMap<>();
         for (File file : new File(dataPath).listFiles((dir, name) -> !name.startsWith("."))) {
-            if (file.getName().equals("patch7-Closure-93-SequenceR")) {
-                // report this case to He YE someday
-                continue;
-            }
             String[] info = file.getName().split("-");
             // typeInfo + numInfo
             String pathName = info[1] + info[2];
@@ -74,14 +68,10 @@ public class RepairEvaluator {
     }
 
     // for D_HUMAN
-    // example : Map<"Chart/3", Map<buggy file, patched file>>
+    // example : Map<"Chart3", Map<buggy file, patched file>>
     private Map<String, Map<File, File>> loadFiles(String dataPath, String auxPath) throws NullPointerException {
         Map<String, Map<File, File>> catalogs = new HashMap<>();
         for (File file : new File(auxPath).listFiles((dir, name) -> !name.startsWith("."))) {
-            if (file.getName().equals("patch7-Closure-93-SequenceR")) {
-                // report this case to He YE someday
-                continue;
-            }
             String[] info = file.getName().split("-");
             // typeInfo + numInfo
             String pathName = info[1] + info[2];
@@ -95,14 +85,18 @@ public class RepairEvaluator {
                 }
             }
             if (buggyFile != null) {
-                String buggyFileName = buggyFile.getName();
-                File scopeFile = new File(dataPath + info[1] + "/" + info[2] + "/");
-                for (File tmpFile : Lists.newArrayList(Files.fileTraverser().depthFirstPreOrder(scopeFile))) {
-                    if (tmpFile.getName().equals(buggyFileName)) {
-                        patchedFile = tmpFile;
-                        break;
-                    }
-                }
+//                String buggyFileName = buggyFile.getName();
+                File scopeFile = new File(dataPath + info[1] + "-" + info[2] + "/");
+                List<File> childFiles = Arrays.asList(scopeFile.listFiles((dir, name) -> name.endsWith(".java")));
+                assert childFiles.size() == 1;
+                patchedFile = childFiles.get(0);
+                // sometimes filename might get changed
+//                for (File tmpFile : Lists.newArrayList(Files.fileTraverser().depthFirstPreOrder(scopeFile))) {
+//                    if (tmpFile.getName().equals(buggyFileName)) {
+//                        patchedFile = tmpFile;
+//                        break;
+//                    }
+//                }
                 if (patchedFile != null) {
                     Map<File, File> catalog = new HashMap<>();
                     catalog.put(buggyFile, patchedFile);
@@ -118,22 +112,20 @@ public class RepairEvaluator {
         return catalogs;
     }
 
-    private Map<String, Map<File, Double>> scoreFiles(Map<String, Map<File, File>> files) {
-        Map<String, Map<File, Double>> scores4Files = new HashMap<>();
+    private Map<String, List<Double>> scoreFiles(Map<String, Map<File, File>> files) {
+        Map<String, List<Double>> scores4Files = new HashMap<>();
         for (String key : files.keySet()) {
             if (!scores4Files.containsKey(key)) {
-                scores4Files.put(key, new HashMap<>());
+                scores4Files.put(key, new ArrayList<>());
             }
-            Map<File, Double> value = scores4Files.get(key);
-            Map<File, File> pairs = files.get(key);
-            for (File buggyFile : pairs.keySet()) {
-                File patchedFile = pairs.get(buggyFile);
+            for (File buggyFile : files.get(key).keySet()) {
+                File patchedFile = files.get(key).get(buggyFile);
                 List<FeatureMatrix> featureMatrices = codeDiffer.runByGenerator(buggyFile, patchedFile);
                 if (featureMatrices.size() == 1) {
-                    value.put(patchedFile, featureMatrices.get(0).score(parameterVector));
+                    scores4Files.get(key).add(featureMatrices.get(0).score(parameterVector));
                 }
             }
-            if (value.size() == 0) {
+            if (scores4Files.get(key).size() == 0) {
                 scores4Files.remove(key);
             }
         }
@@ -157,8 +149,6 @@ public class RepairEvaluator {
         }
         assert backOption != RankingOption.D_HUMAN;
         Map<String, Map<File, File>> backFiles = loadFiles(backFilePath);
-        System.out.println("loaded files");
-
         // we want the interaction-set of both keySets
         Set<String> foreKeys = foreFiles.keySet();
         Set<String> backKeys = backFiles.keySet();
@@ -168,8 +158,11 @@ public class RepairEvaluator {
         uniqueBackKeys.removeAll(foreKeys);
         for (String key : uniqueForeKeys) foreFiles.remove(key);
         for (String key : uniqueBackKeys) backFiles.remove(key);
-        Map<String, Map<File, Double>> scores4ForeFiles = scoreFiles(foreFiles);
-        Map<String, Map<File, Double>> scores4BackFiles = scoreFiles(backFiles);
+        System.out.println("loaded files");
+
+        Map<String, List<Double>> scores4ForeFiles = scoreFiles(foreFiles);
+        Map<String, List<Double>> scores4BackFiles = scoreFiles(backFiles);
+        // we want the interaction-set of both keySets
         foreKeys = scores4ForeFiles.keySet();
         backKeys = scores4BackFiles.keySet();
         uniqueForeKeys = new HashSet<>(foreKeys);
@@ -180,23 +173,18 @@ public class RepairEvaluator {
         for (String key : uniqueBackKeys) scores4BackFiles.remove(key);
         System.out.println("scored files");
 
-        // we only care ranks info for ForeFiles
-        Map<String, Map<File, Fraction>> ranks4ForeFiles = new HashMap<>();
+        // we only care rankings for ForeFiles
+        Map<String, List<Fraction>> ranks4ForeFiles = new HashMap<>();
         for (String key : scores4ForeFiles.keySet()) {
-            ranks4ForeFiles.put(key, new HashMap<>());
-            Map<File, Fraction> rankPairs4ForeFiles = ranks4ForeFiles.get(key);
+            ranks4ForeFiles.put(key, new ArrayList<>());
 
-            Map<File, Double> scorePairs4ForeFiles = scores4ForeFiles.get(key);
-            Map<File, Double> scorePairs4BackFiles = scores4BackFiles.get(key);
-
-            List<Double> scoresBoard = new ArrayList<>(scorePairs4BackFiles.values());
-            for (File foreFile : scorePairs4ForeFiles.keySet()) {
-                Double score4ForeFile = scorePairs4ForeFiles.get(foreFile);
+            List<Double> scoresBoard = scores4BackFiles.get(key);
+            for (Double score4ForeFile : scores4ForeFiles.get(key)) {
                 scoresBoard.add(score4ForeFile);
                 scoresBoard.sort(Double::compareTo);
                 int numerator = scoresBoard.indexOf(score4ForeFile) + 1;
                 int denominator = scoresBoard.size();
-                rankPairs4ForeFiles.put(foreFile, new Fraction(numerator, denominator));
+                ranks4ForeFiles.get(key).add(new Fraction<>(numerator, denominator));
                 scoresBoard.remove(score4ForeFile);
             }
         }
@@ -207,23 +195,23 @@ public class RepairEvaluator {
             // mean
             double meanNumerator = 0;
             double meanDenominator = 0;
-            for (Fraction fraction : ranks4ForeFiles.get(key).values()) {
+            for (Fraction fraction : ranks4ForeFiles.get(key)) {
                 meanNumerator += (int) fraction.numerator;
                 // here we add denominators because we know they are all the same value
                 meanDenominator += (int) fraction.denominator;
             }
-            int size = ranks4ForeFiles.get(key).values().size();
+            int size = ranks4ForeFiles.get(key).size();
             meanNumerator /= size;
             meanDenominator /= size;
             // SD
             double sumSquaredNumerator = 0;
-            for (Fraction fraction : ranks4ForeFiles.get(key).values()) {
+            for (Fraction fraction : ranks4ForeFiles.get(key)) {
                 sumSquaredNumerator += Math.pow((int) fraction.numerator, 2);
             }
             double sdNumerator = Math.sqrt(sumSquaredNumerator / size - Math.pow(meanNumerator, 2));
             // median
             List<Double> numerators = new ArrayList<>();
-            for (Fraction fraction : ranks4ForeFiles.get(key).values()) {
+            for (Fraction fraction : ranks4ForeFiles.get(key)) {
                 numerators.add((double) (int) fraction.numerator);
             }
             double medianNumerator = 0;

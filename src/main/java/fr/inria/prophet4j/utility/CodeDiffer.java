@@ -127,7 +127,7 @@ public class CodeDiffer {
 //                System.out.println(srcNode);
 //                System.out.println(dstNode);
 //                System.out.println("++++++++");
-                // human rule to distinguish functionality changes from revision changes
+                // distinguish functionality changes from revision changes todo check
                 if (srcNode instanceof CtClass || srcNode instanceof CtMethod ||
                         dstNode instanceof CtClass || dstNode instanceof CtMethod) {
                     continue;
@@ -155,7 +155,7 @@ public class CodeDiffer {
 //                    System.out.println(srcNode);
 //                    System.out.println(dstNode);
 //                    System.out.println("++++++++");
-                    // human rule to distinguish functionality changes from revision changes
+                    // distinguish functionality changes from revision changes todo check
                     if (srcNode instanceof CtClass || srcNode instanceof CtMethod ||
                             dstNode instanceof CtClass || dstNode instanceof CtMethod) {
                         continue;
@@ -288,6 +288,7 @@ public class CodeDiffer {
                 }
             }
         } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
             logger.log(Level.WARN, "diff.commonAncestor() returns null value");
         }
         return featureMatrices;
@@ -327,48 +328,4 @@ public class CodeDiffer {
         assert featureMatrices.size() == 1;
         return featureMatrices;
     }
-
-//    public Double scorePatch(File oldFile, File newFile, ParameterVector parameterVector) {
-//        double score = 0;
-//        try {
-//            AstComparator comparator = new AstComparator();
-//            Diff diff = comparator.compare(oldFile, newFile);
-//            List<FeatureVector> featureVectors = new ArrayList<>();
-//
-//            try {
-//                FeatureExtractor featureExtractor = newFeatureExtractor();
-//                for (DiffEntry diffEntry : genDiffEntries(diff)) {
-//                    // as RepairGenerator receive diffEntry as parameter, we do not need ErrorLocalizer
-//                    RepairGenerator generator = newRepairGenerator(diffEntry);
-//                    {
-//                        Repair repair = generator.obtainHumanRepair();
-//                        FeatureVector featureVector = new FeatureVector(true);
-//                        for (CtElement atom : repair.getCandidateAtoms()) {
-//                            featureVector.merge(featureExtractor.extractFeature(repair, atom));
-//                        }
-//                        featureVectors.add(featureVector);
-//                    }
-//                }
-//            } catch (IndexOutOfBoundsException e) {
-//                logger.log(Level.WARN, "diff.commonAncestor() returns null value");
-//            }
-//
-//            // sometimes one patch file patches multi-defects
-//            for (FeatureVector featureVector : featureVectors) {
-//                score += featureVector.score(parameterVector);
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return score;
-//    }
-//
-//    public List<File> rankPatches(File oldFile, List<File> newFiles, ParameterVector parameterVector) {
-//        List<Map.Entry<File, Double>> entryList = new ArrayList<>();
-//        for (File newFile : newFiles) {
-//            entryList.add(new HashMap.SimpleEntry<>(newFile, scorePatch(oldFile, newFile, parameterVector)));
-//        }
-//        entryList.sort(Comparator.comparingDouble(Map.Entry::getValue));
-//        return entryList.stream().map(Map.Entry::getKey).collect(Collectors.toList());
-//    }
 }

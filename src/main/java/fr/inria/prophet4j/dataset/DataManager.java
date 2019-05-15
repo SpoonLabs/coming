@@ -34,10 +34,10 @@ public class DataManager {
                     case CARDUMEN:
                         break;
                     case SANER:
-                        blacklist.add("ignatov_intellij-erlang10/ErlangFormattingModelBuilder.java");
-                        blacklist.add("ignatov_intellij-erlang14/ErlangFormattingModelBuilder.java");
-                        blacklist.add("JetBrains_kotlin28/JetFormattingModelBuilder.java");
-                        blacklist.add("JetBrains_kotlin14/JetFormattingModelBuilder.java");
+                        blacklist.add("ignatov_intellij-erlang10/ErlangFormattingModelBuilder.bin");
+                        blacklist.add("ignatov_intellij-erlang14/ErlangFormattingModelBuilder.bin");
+                        blacklist.add("JetBrains_kotlin28/JetFormattingModelBuilder.bin");
+                        blacklist.add("JetBrains_kotlin14/JetFormattingModelBuilder.bin");
                         break;
                 }
                 break;
@@ -53,7 +53,7 @@ public class DataManager {
                 break;
             case BEARS:
             case BUG_DOT_JAR:
-            case DEFECTS4J:
+            case BUG_DOT_JAR_MINUS_MATH:
             case QUIX_BUGS:
                 return DataLoader.loadODSWithPatches(dataPath);
         }
@@ -68,7 +68,7 @@ public class DataManager {
                 return DataLoader.loadSANERWithoutPatches(dataPath);
             case BEARS:
             case BUG_DOT_JAR:
-            case DEFECTS4J:
+            case BUG_DOT_JAR_MINUS_MATH:
             case QUIX_BUGS:
                 return DataLoader.loadODSWithoutPatches(dataPath);
         }
@@ -79,7 +79,7 @@ public class DataManager {
         if (option.dataOption == DataOption.CARDUMEN && option.patchOption == PatchOption.CARDUMEN ||
                 option.dataOption == DataOption.BEARS && option.patchOption == PatchOption.BEARS ||
                 option.dataOption == DataOption.BUG_DOT_JAR && option.patchOption == PatchOption.BUG_DOT_JAR ||
-                option.dataOption == DataOption.DEFECTS4J && option.patchOption == PatchOption.DEFECTS4J ||
+                option.dataOption == DataOption.BUG_DOT_JAR_MINUS_MATH && option.patchOption == PatchOption.BUG_DOT_JAR_MINUS_MATH ||
                 option.dataOption == DataOption.QUIX_BUGS && option.patchOption == PatchOption.QUIX_BUGS
         ) {
             return handleByPatches();
@@ -95,7 +95,7 @@ public class DataManager {
         List<String> blackList = getBlacklist();
 
         List<String> filePaths = new ArrayList<>();
-        String binFilePath = featurePath + "serial.bin";
+        String binFilePath = featurePath + "catalog.bin";
         if (new File(binFilePath).exists()) {
             filePaths = deserialize(binFilePath);
         } else {
@@ -106,7 +106,8 @@ public class DataManager {
                 Map<File, List<File>> catalog = catalogs.get(pathName);
                 for (File oldFile : catalog.keySet()) {
                     try {
-                        String vectorPath = pathName + "/" + oldFile.getName();
+                        String tmpFileName = oldFile.getName().replace(".java", ".bin");
+                        String vectorPath = pathName + "/" + tmpFileName;
                         System.out.println(vectorPath);
                         if (blackList.contains(vectorPath)) {
                             progressNow += 1;
@@ -143,7 +144,7 @@ public class DataManager {
         List<String> blackList = getBlacklist();
 
         List<String> filePaths = new ArrayList<>();
-        String binFilePath = featurePath + "serial.bin";
+        String binFilePath = featurePath + "catalog.bin";
         if (new File(binFilePath).exists()) {
             filePaths = deserialize(binFilePath);
         } else {
@@ -154,7 +155,8 @@ public class DataManager {
                 Map<File, File> catalog = catalogs.get(pathName);
                 for (File oldFile : catalog.keySet()) {
                     try {
-                        String vectorPath = pathName + "/" + oldFile.getName();
+                        String tmpFileName = oldFile.getName().replace(".java", ".bin");
+                        String vectorPath = pathName + "/" + tmpFileName;
                         System.out.println(vectorPath);
                         if (blackList.contains(vectorPath)) {
                             progressNow += 1;
