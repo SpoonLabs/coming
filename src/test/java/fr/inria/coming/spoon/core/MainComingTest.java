@@ -189,6 +189,40 @@ public class MainComingTest {
 		// Start the analysis
 		FinalResult finalresult = cm.start();
 		assertNotNull(finalresult);
+		assertFalse(finalresult.getAllResults().isEmpty());
+
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testIntermediateCallback2() throws Exception {
+		ComingMain cm = new ComingMain();
+		Boolean created = cm
+				.createEngine(new String[] { "-location", "repogit4testv0", "-hunkanalysis", "true", "-parameters",
+						// As we have a callback that manipulate the result of each commit, we dont want
+						// to store the results of each analysis
+						"save_result_revision_analysis:false" });
+		assertTrue(created);
+		List<String> commitsInOrder = new ArrayList<>();
+		for (String commit : this.commitsId) {
+			commitsInOrder.add(commit);
+		}
+		cm.registerIntermediateCallback(new IntermediateResultProcessorCallback() {
+			int currentIndex = 0;
+
+			@Override
+			public void handleResult(RevisionResult result) {
+				assertEquals(currentIndex, commitsInOrder.indexOf(result.getRelatedRevision().getName()));
+				System.out.println("callback " + currentIndex);
+				currentIndex++;
+
+			}
+		});
+		// Start the analysis
+		FinalResult finalresult = cm.start();
+		assertNotNull(finalresult);
+		// Now it's empty the final result (because we did not store the results)
+		assertTrue(finalresult.getAllResults().isEmpty());
 
 	}
 

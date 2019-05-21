@@ -236,27 +236,44 @@ When running Coming in mode `-mode mineinstance` the output is a file name `inst
 An example of the content of such file is:
 
 ```
-"instances": [
+{
+  "instances": [
     {
-      "revision": "3849e21f3b749ce5f428d42e88ef3f6441546968 PR: http://nagoya.apache.org/bugzilla/show_bug.cgi?id\u003d20633\nSubmitted by:\tbrent@worden.org\n\n\ngit-svn-id: https://svn.apache.org/repos/asf/jakarta/commons/proper/math/trunk@140903 13f79535-47bb-0310-9956-ffa450edef68\n",
-      "ops": [
+      "revision": "c8cf81ce1f01d4cb213b389a7b85aa13634b7d95",
+      "pattern_name": "Insert_a_literal_in_assignment"
+      "instance_detail": [
         {
-          "action": "INS",
-          "entity": "PatternEntity [entityName\u003dMethod, parent\u003dnull]",
-          "op": {
-            "operator": "INS",
-            "src": "CtMethodImpl",
-            "dst": "null",
-            "srcparent": "CtMethodImpl",
-            "dstparent": "null"
+          "pattern_action": "INS",
+          "pattern_entity": {
+            "entity_type": "Literal",
+            "entity_new value": "*",
+            "entity_role": "*",
+            "entity_parent": {
+              "entity_type": "Assignment",
+              "entity_new value": "*",
+              "entity_old value": "*",
+              "entity_role": "*",
+              "entity_parent": "null"
+            }
           },
-          "code": "public org.apache.commons.math.stat.distribution.ExponentialDistribution createExponentialDistribution(double mean) {\n    return new org.apache.commons.math.stat.distribution.ExponentialDistributionImpl(mean);\n}",
-          "location": "#subPackage[name\u003dorg]#subPackage[name\u003dapache]#subPackage[name\u003dcommons]#subPackage[name\u003dmath]#subPackage[name\u003dstat]#subPackage[name\u003ddistribution]#containedType[name\u003dDistributionFactoryImpl]#typeMember[index\u003d5]"
+          "concrete_change": {
+            "operator": "INS",
+            "src_type": "Literal",
+            "dst_type": "null",
+            "src": "1",
+            "dst": "null",
+            "src_parent_type": "BinaryOperator",
+            "dst_parent_type": "null",
+            "src_parent": "(i + 1)",
+            "dst_parent": "null"
+          },
+          "file": "/test",
+          "line": 171
         }
       ]
-    },
-    {
-    ...
+    }
+  ]
+}
 ```
 
 The JSon element for one instance shows: the revision information, the operators that match with the pattern, the pattern information, and the code matched with the pattern.

@@ -30,8 +30,8 @@ public class Support {
                     case BUG_DOT_JAR:
                         stringJoiner.add("Bug-dot-jar");
                         break;
-                    case DEFECTS4J:
-                        stringJoiner.add("Defects4J");
+                    case BUG_DOT_JAR_MINUS_MATH:
+                        stringJoiner.add("Bug-dot-jar-minus-MATH");
                         break;
                     case QUIX_BUGS:
                         stringJoiner.add("QuixBugs");
@@ -59,7 +59,7 @@ public class Support {
         String filePath = PROPHET4J_DIR;
         switch (rankingOption) {
             case D_HUMAN:
-                filePath += "cardumen_dissection/";
+                filePath += "human-patch/";
                 break;
             case D_CORRECT:
                 filePath += "D_correct/";
