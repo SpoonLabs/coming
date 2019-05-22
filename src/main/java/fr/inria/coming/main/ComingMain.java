@@ -59,35 +59,69 @@ public class ComingMain {
 	CommandLineParser parser = new BasicParser();
 
 	static {
-		//
-		options.addOption("location", true, "location of the project");
-		options.addOption("mode", true, "execution Mode. ");
-		options.addOption("input", true, "Input (git(default)| files). ");
-		options.addOption("outputprocessor", true, "result outout processors");
-		options.addOption("output", true, "output folder");
-		// Pattern mining
-		options.addOption("pattern", true, "Location the file pattern ");
-		options.addOption("patternparser", true, "Class name of the pattern parser (By default XML)");
-		options.addOption("entitytype", true, "entity type to mine");
-		options.addOption("entityvalue", true, "entity value to mine");
-		options.addOption("action", true, "action");
-		options.addOption("parenttype", true, "parent type");
-		options.addOption("parentlevel", true,
-				"parent level: numbers of AST node where the parent is located. 1 means inmediate parent");
+        options.addOption(Option.builder("location")
+                .argName("path").hasArg()
+                .desc("analyse the content in \'path\'")
+                .build());
 
-		options.addOption("hunkanalysis", true, "include analysis of hunks");
+        options.addOption(Option.builder("mode")
+                .argName("mineinstance | diff | features").hasArg()
+                .desc("the mode of execution of the analysis")
+                .build());
 
-		options.addOption("showactions", false, "show all actions");
-		options.addOption("showentities", false, "show all entities");
+        options.addOption(Option.builder("input")
+                .argName("git(default) | files").hasArg()
+                .desc("format of the content present in the given -path. git implies that the path is a git repository. files implies the path contains .patch files ")
+                .build());
 
-		// Revision filter
-		options.addOption("filter", true, "Names of filter");
-		options.addOption("filtervalue", true, "Values");
+        options.addOption(Option.builder("output")
+                .argName("path").hasArg()
+                .desc("dump the output of the analysis in the given path")
+                .build());
 
-		// In case of git
-		options.addOption("branch", true, "branch");
-		options.addOption("message", true, "comming message");
-		options.addOption("parameters", true, "Parameters, divided by " + File.pathSeparator);
+        options.addOption(Option.builder("outputprocessor")
+                .argName("classname").hasArg()
+                .desc("output processors for result")
+                .build()); // TODO: What's the default and what is changefrequency. And oh btw it's a list.
+
+        // Pattern mining
+        options.addOption(Option.builder("pattern")
+                .argName("path").hasArg()
+                .desc("path of the pattern file to be used when the -mode is \'mineinstance\'")
+                .build());
+
+        options.addOption(Option.builder("patternparser")
+                .argName("classname").hasArg()
+                .desc("parser to be used for parsing the file specified -pattern. Default is XML")
+                .build());
+
+        options.addOption("entitytype", true, "entity type to be mine");
+        options.addOption("entityvalue", true, "the value of the entity  mentioned in -entitytype");
+
+        options.addOption(Option.builder("action")
+                .argName("INS | DEL | UPD | MOV | PER | ANY").hasArg()
+                .desc("tye of action to be mined")
+                .build());
+
+        options.addOption("parenttype", true, "parent type of the nodes to be considered");
+        options.addOption("parentlevel", true, "numbers of AST node where the parent is located. 1 implies immediate parent");
+
+        options.addOption("hunkanalysis", true, "include analysis of hunks");
+
+        options.addOption("showactions", false, "show all actions");
+        options.addOption("showentities", false, "show all entities");
+
+        // Revision filter
+        options.addOption("filter", true, "name of the filter");
+        options.addOption("filtervalue", true, "values of the filter  mentioned in -filter");
+
+        // In case of git
+        options.addOption(Option.builder("branch")
+                .argName("branch name").hasArg()
+                .desc("In case of -input=\'git\', use this branch name. Default is master.")
+                .build());
+        options.addOption("message", true, "comming message"); // TODO: What's this?
+        options.addOption("parameters", true, "Parameters, divided by " + File.pathSeparator);
 	}
 
 	public static void main(String[] args) {
