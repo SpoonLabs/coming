@@ -313,14 +313,15 @@ public class PGA {
                 File newFile = new File(differ.newFilePath);
                 List<FeatureMatrix> featureMatrices = codeDiffer.runByGenerator(oldFile, newFile);
                 // we should have more than one FeatureMatrix when CodeDiffer's "byGenerator" is true
-                if (featureMatrices.size() >= 1) {
-                    if (featureMatrices.get(0).getFeatureVectors().size() == 0) {
-                        // diff.commonAncestor() returns null value
-                        progressNow += 1;
-                        continue;
-                    }
-                    new Sample(vectorFile.getPath()).saveFeatureMatrices(featureMatrices);
+                if (featureMatrices.size() == 0) {
+                    continue;
                 }
+                if (featureMatrices.get(0).getFeatureVectors().size() == 0) {
+                    // diff.commonAncestor() returns null value
+                    progressNow += 1;
+                    continue;
+                }
+                new Sample(vectorFile.getPath()).saveFeatureMatrices(featureMatrices);
             }
             filePaths.add(differ.vectorFilePath);
             progressNow += 1;

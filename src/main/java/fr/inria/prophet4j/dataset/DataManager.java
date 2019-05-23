@@ -97,7 +97,7 @@ public class DataManager {
         List<String> filePaths = new ArrayList<>();
         String binFilePath = featurePath + "catalog.bin";
         if (new File(binFilePath).exists()) {
-            filePaths = deserialize(binFilePath);
+            filePaths = Support.deserialize(binFilePath);
         } else {
             CodeDiffer codeDiffer = new CodeDiffer(false, option);
             Map<String, Map<File, List<File>>> catalogs = loadDataWithPatches(dataPath);
@@ -123,6 +123,8 @@ public class DataManager {
                                 continue;
                             }
                             new Sample(vectorFile.getPath()).saveFeatureMatrices(featureMatrices);
+                        }
+                        if (!filePaths.contains(vectorPath)) {
                             filePaths.add(vectorPath);
                         }
                     } catch (Exception e) {
@@ -132,7 +134,7 @@ public class DataManager {
                 progressNow += 1;
                 System.out.println(pathName + " : " + progressNow + " / " + progressAll);
             }
-            serialize(binFilePath, filePaths);
+            Support.serialize(binFilePath, filePaths);
         }
         return filePaths;
     }
@@ -146,7 +148,7 @@ public class DataManager {
         List<String> filePaths = new ArrayList<>();
         String binFilePath = featurePath + "catalog.bin";
         if (new File(binFilePath).exists()) {
-            filePaths = deserialize(binFilePath);
+            filePaths = Support.deserialize(binFilePath);
         } else {
             CodeDiffer codeDiffer = new CodeDiffer(true, option);
             Map<String, Map<File, File>> catalogs = loadDataWithoutPatches(dataPath);
@@ -168,14 +170,17 @@ public class DataManager {
                         if (!vectorFile.exists()) {
                             List<FeatureMatrix> featureMatrices = codeDiffer.runByGenerator(oldFile, catalog.get(oldFile));
                             // we should have more than one FeatureMatrix when CodeDiffer's "byGenerator" is true
-                            if (featureMatrices.size() >= 1) {
-                                if (featureMatrices.get(0).getFeatureVectors().size() == 0) {
-                                    // diff.commonAncestor() returns null value
-                                    continue;
-                                }
-                                new Sample(vectorFile.getPath()).saveFeatureMatrices(featureMatrices);
-                                filePaths.add(vectorPath);
+                            if (featureMatrices.size() == 0) {
+                                continue;
                             }
+                            if (featureMatrices.get(0).getFeatureVectors().size() == 0) {
+                                // diff.commonAncestor() returns null value
+                                continue;
+                            }
+                            new Sample(vectorFile.getPath()).saveFeatureMatrices(featureMatrices);
+                        }
+                        if (!filePaths.contains(vectorPath)) {
+                            filePaths.add(vectorPath);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -184,39 +189,8 @@ public class DataManager {
                 progressNow += 1;
                 System.out.println(pathName + " : " + progressNow + " / " + progressAll);
             }
-            serialize(binFilePath, filePaths);
+            Support.serialize(binFilePath, filePaths);
         }
         return filePaths;
-    }
-
-    private static List<String> deserialize(String filePath) {
-        List<String> strings = new ArrayList<>();
-        try {
-            FileInputStream fis = new FileInputStream(filePath);
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            strings = (List<String>) ois.readObject();
-            ois.close();
-            fis.close();
-        } catch (ClassNotFoundException | IOException e) {
-            e.printStackTrace();
-        }
-        return strings;
-    }
-
-    private static void serialize(String filePath, List<String> strings) {
-        try {
-            File file = new File(filePath);
-            if (!file.exists()) {
-                file.getParentFile().mkdirs();
-            }
-            FileOutputStream fos = new FileOutputStream(filePath);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(strings);
-            oos.flush();
-            oos.close();
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

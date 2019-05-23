@@ -106,7 +106,7 @@ public class Tool {
             values.add("0");
         }
 
-        String rankingFilePath = Support.getFilePath4Ranking(rankingOption);
+        String rankingFilePath = Support.getFilePath4Ranking(this.option, rankingOption, false);
 
         RepairEvaluator repairEvaluator = new RepairEvaluator(option);
         Map<String, Map<File, File>> rankingFiles = repairEvaluator.loadFiles(rankingFilePath);
