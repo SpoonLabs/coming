@@ -1,6 +1,7 @@
 package fr.inria.prophet4j.learner;
 
 import fr.inria.prophet4j.utility.CodeDiffer;
+import fr.inria.prophet4j.utility.Structure.Sample;
 import fr.inria.prophet4j.utility.Structure.FeatureMatrix;
 import fr.inria.prophet4j.utility.Structure.ParameterVector;
 import fr.inria.prophet4j.utility.Option;
@@ -112,7 +113,16 @@ public class RepairEvaluator {
         return catalogs;
     }
 
-    private Map<String, List<Double>> scoreFiles(Map<String, Map<File, File>> files) {
+    private Map<String, List<Double>> scoreFiles(RankingOption rankingOption, Map<String, Map<File, File>> files) {
+        String tmpPath = Support.getFilePath4Ranking(this.option, rankingOption, false);
+        String rankingPath = Support.getFilePath4Ranking(this.option, rankingOption, true);
+        boolean catalogAltered = false;
+        List<String> filePaths = new ArrayList<>();
+        String binFilePath = rankingPath + "catalog.bin";
+        if (new File(binFilePath).exists()) {
+            filePaths = Support.deserialize(binFilePath);
+        }
+
         Map<String, List<Double>> scores4Files = new HashMap<>();
         for (String key : files.keySet()) {
             if (!scores4Files.containsKey(key)) {
@@ -120,15 +130,39 @@ public class RepairEvaluator {
             }
             for (File buggyFile : files.get(key).keySet()) {
                 File patchedFile = files.get(key).get(buggyFile);
-                List<FeatureMatrix> featureMatrices = codeDiffer.runByGenerator(buggyFile, patchedFile);
-                if (featureMatrices.size() == 1) {
-                    scores4Files.get(key).add(featureMatrices.get(0).score(parameterVector));
+                String binPath = rankingPath + patchedFile.getPath().substring(tmpPath.length());
+                binPath = binPath.replace(".java", ".bin");
+                Sample sample = new Sample(binPath);
+                if (filePaths.contains(binPath)) {
+                    sample.loadFeatureMatrices();
+                    List<FeatureMatrix> featureMatrices = sample.getFeatureMatrices();
+                    if (featureMatrices.size() == 1) {
+                        scores4Files.get(key).add(featureMatrices.get(0).score(parameterVector));
+                    }
+                } else {
+                    List<FeatureMatrix> featureMatrices = codeDiffer.runByGenerator(buggyFile, patchedFile);
+                    if (featureMatrices.size() == 1) {
+                        scores4Files.get(key).add(featureMatrices.get(0).score(parameterVector));
+                    }
+                    sample.saveFeatureMatrices(featureMatrices);
+                    filePaths.add(binPath);
+                    catalogAltered = true;
                 }
             }
             if (scores4Files.get(key).size() == 0) {
                 scores4Files.remove(key);
             }
         }
+        if (catalogAltered) {
+            Support.serialize(binFilePath, filePaths);
+        }
+        System.out.println("Distilling Json");
+        for (String filePath : filePaths) {
+            Sample sample = new Sample(filePath);
+            sample.loadFeatureMatrices();
+            sample.saveAsJson(option.featureOption);
+        }
+        System.out.println("Distilled Json");
         return scores4Files;
     }
 
@@ -138,8 +172,8 @@ public class RepairEvaluator {
 
     public void run(RankingOption foreOption, RankingOption backOption) {
         // here we handle buggy and patched files but not patch files
-        String foreFilePath = Support.getFilePath4Ranking(foreOption);
-        String backFilePath = Support.getFilePath4Ranking(backOption);
+        String foreFilePath = Support.getFilePath4Ranking(this.option, foreOption, false);
+        String backFilePath = Support.getFilePath4Ranking(this.option, backOption, false);
 
         Map<String, Map<File, File>> foreFiles = null;
         if (foreOption == RankingOption.D_HUMAN) {
@@ -160,8 +194,8 @@ public class RepairEvaluator {
         for (String key : uniqueBackKeys) backFiles.remove(key);
         System.out.println("loaded files");
 
-        Map<String, List<Double>> scores4ForeFiles = scoreFiles(foreFiles);
-        Map<String, List<Double>> scores4BackFiles = scoreFiles(backFiles);
+        Map<String, List<Double>> scores4ForeFiles = scoreFiles(foreOption, foreFiles);
+        Map<String, List<Double>> scores4BackFiles = scoreFiles(backOption, backFiles);
         // we want the interaction-set of both keySets
         foreKeys = scores4ForeFiles.keySet();
         backKeys = scores4BackFiles.keySet();

@@ -56,7 +56,7 @@ public class Demo {
             option.patchOption = PatchOption.CARDUMEN;
             new Demo(option).learn();
             new Demo(option).evaluate();
-            new Demo(option).distillJson();
+//            new Demo(option).distillJson();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -65,28 +65,19 @@ public class Demo {
             option.patchOption = PatchOption.SPR;
             new Demo(option).learn();
             new Demo(option).evaluate();
-            new Demo(option).distillJson();
+//            new Demo(option).distillJson();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private static void jobsODS(Option option) {
-//        try {
-//            option.dataOption = DataOption.BEARS;
-//            option.patchOption = PatchOption.BEARS;
-//            new Demo(option).learn();
-//            new Demo(option).evaluate();
-//            new Demo(option).distillJson();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
         try {
             option.dataOption = DataOption.BUG_DOT_JAR;
             option.patchOption = PatchOption.BUG_DOT_JAR;
             new Demo(option).learn();
             new Demo(option).evaluate();
-            new Demo(option).distillJson();
+//            new Demo(option).distillJson();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -95,7 +86,7 @@ public class Demo {
             option.patchOption = PatchOption.SPR;
             new Demo(option).learn();
             new Demo(option).evaluate();
-            new Demo(option).distillJson();
+//            new Demo(option).distillJson();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -104,7 +95,7 @@ public class Demo {
             option.patchOption = PatchOption.BUG_DOT_JAR_MINUS_MATH;
             new Demo(option).learn();
             new Demo(option).evaluate();
-            new Demo(option).distillJson();
+//            new Demo(option).distillJson();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -113,40 +104,31 @@ public class Demo {
             option.patchOption = PatchOption.SPR;
             new Demo(option).learn();
             new Demo(option).evaluate();
-            new Demo(option).distillJson();
+//            new Demo(option).distillJson();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static void jobsS4R(Option option) {
 //        try {
-//            option.dataOption = DataOption.QUIX_BUGS;
-//            option.patchOption = PatchOption.QUIX_BUGS;
+//            option.dataOption = DataOption.CARDUMEN;
+//            option.patchOption = PatchOption.CARDUMEN;
 //            new Demo(option).learn();
 //            new Demo(option).evaluate();
 //            new Demo(option).distillJson();
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
-    }
-
-    private static void jobsS4R(Option option) {
-        try {
-            option.dataOption = DataOption.CARDUMEN;
-            option.patchOption = PatchOption.CARDUMEN;
-            new Demo(option).learn();
-            new Demo(option).evaluate();
-            new Demo(option).distillJson();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            option.dataOption = DataOption.BUG_DOT_JAR;
-            option.patchOption = PatchOption.BUG_DOT_JAR;
-            new Demo(option).learn();
-            new Demo(option).evaluate();
-            new Demo(option).distillJson();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            option.dataOption = DataOption.BUG_DOT_JAR;
+//            option.patchOption = PatchOption.BUG_DOT_JAR;
+//            new Demo(option).learn();
+//            new Demo(option).evaluate();
+//            new Demo(option).distillJson();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
         try {
             option.dataOption = DataOption.BUG_DOT_JAR_MINUS_MATH;
             option.patchOption = PatchOption.BUG_DOT_JAR_MINUS_MATH;
@@ -163,29 +145,31 @@ public class Demo {
         try {
             Option option = new Option();
             // for Demo
-            option.featureOption = FeatureOption.ORIGINAL;
-            jobsDemo(option);
-            option.featureOption = FeatureOption.EXTENDED;
-            jobsDemo(option);
-            // for ODS
-            option.featureOption = FeatureOption.ORIGINAL;
-            jobsODS(option);
-            option.featureOption = FeatureOption.EXTENDED;
-            jobsODS(option);
-            // for S4R
-            option.featureOption = FeatureOption.S4R;
-            jobsS4R(option);
+//            option.featureOption = FeatureOption.ORIGINAL;
+//            jobsDemo(option);
+//            option.featureOption = FeatureOption.EXTENDED;
+//            jobsDemo(option);
+//            // for ODS
+//             option.featureOption = FeatureOption.ORIGINAL;
+//             jobsODS(option);
+//             option.featureOption = FeatureOption.EXTENDED;
+//             jobsODS(option);
+//            // for S4R
+//            option.featureOption = FeatureOption.S4R;
+//            jobsS4R(option);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    // TODO What is the result with the S4R features + Learning-to-rank?
-    // todo (sync S4R every week until one stable version, also comment test files)
-    // todo (support numerical-form features)
-    // todo (try on YE's features) 20190513
-    // todo (integrate with s4r to support feature-ext+s4r)
-    // todo (document prophet4j)
-    // todo (integrate with coming)
+    // todo try YE's features
+    // todo try feature-ext+s4r
+    // todo integrate with coming
+    // todo document prophet4j
+    /* todo sync S4R every week until one stable version
+     * 1 check commits since 05/22
+     * 2 note conflicting commits
+     * 3 comment testing files
+     */
     /*
     to improve the performance of FeatureLearner, use CLR(Cyclical Learning Rates) or autoML
      */

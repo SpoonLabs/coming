@@ -18,6 +18,23 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public interface Structure {
+    class Pair {
+        private FeatureMatrix humanPatch;
+        private FeatureMatrix machinePatch;
+
+        public Pair(FeatureMatrix humanPatch, FeatureMatrix machinePatch) {
+            this.humanPatch = humanPatch;
+            this.machinePatch = machinePatch;
+        }
+
+        public List<FeatureMatrix> getFeatureMatrices() {
+            List<FeatureMatrix> featureMatrices = new ArrayList<>();
+            featureMatrices.add(humanPatch);
+            featureMatrices.add(machinePatch);
+            return featureMatrices;
+        }
+    }
+
     class Sample { // namely TrainingCase
         private String filePath;
         private List<FeatureMatrix> featureMatrices;
@@ -36,6 +53,21 @@ public interface Structure {
                 FileInputStream fis = new FileInputStream(filePath);
                 ObjectInputStream ois = new ObjectInputStream(fis);
                 featureMatrices = (List<FeatureMatrix>) ois.readObject();
+                /*
+                // if we need to try on merged feature-vector
+                // however it usually not performances better
+                List<FeatureMatrix> tmpFeatureMatrices = new ArrayList<>();
+                for (FeatureMatrix featureMatrix: featureMatrices) {
+                    FeatureVector tmpFeatureVector = new FeatureVector();
+                    for (FeatureVector featureVector: featureMatrix.featureVectors) {
+                        tmpFeatureVector.merge(featureVector);
+                    }
+                    List<FeatureVector> tmpFeatureVectors = new ArrayList<>();
+                    tmpFeatureVectors.add(tmpFeatureVector);
+                    tmpFeatureMatrices.add(new FeatureMatrix(featureMatrix.marked, tmpFeatureVectors));
+                }
+                featureMatrices = tmpFeatureMatrices;
+                 */
                 ois.close();
                 fis.close();
             } catch (ClassNotFoundException | IOException e) {
@@ -93,7 +125,7 @@ public interface Structure {
                 featureMatrixList.add(featureVectorList);
             }
             String json = new Gson().toJson(featureMatrixList);
-            String jsonPath = filePath.replace("prophet4j/", "prophet4j/_JSON/");
+            String jsonPath = filePath.replace("prophet4j/_BIN/", "prophet4j/_JSON/");
             jsonPath = jsonPath.replace(".bin", ".json");
             try {
                 File file = new File(jsonPath);
@@ -296,8 +328,7 @@ public interface Structure {
     enum DiffType {
         DeleteType,
         InsertType,
-        ReplaceType,
-        UnknownType,
+        UpdateType,
     }
 
     enum RepairKind { // implementation is at RepairGenerator.java
@@ -334,7 +365,7 @@ public interface Structure {
         public boolean isReplace;
         public CtElement srcElem, dstElem; // from RepairAction
         public List<CtElement> atoms; // from RepairAction
-        public CtElement oldRExpr, newRExpr; // only for ReplaceType
+        public CtElement oldRExpr, newRExpr; // only for UpdateType
 
         public Repair() {
             this.kind = null;

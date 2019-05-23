@@ -93,82 +93,71 @@ public class CodeDiffer {
     private List<DiffEntry> genDiffEntries(Diff diff) throws IndexOutOfBoundsException {
         List<DiffEntry> diffEntries = new ArrayList<>();
         List<Operation> operations = diff.getRootOperations();
-        Map<Integer, List<Operation>> locatedOperations = new LinkedHashMap<>();
+        Map<Integer, Operation> deleteOperations = new HashMap<>();
+        Map<Integer, Operation> insertOperations = new HashMap<>();
         // tmp wrapper for gumtree-spoon-ast-diff
         // may be affected by future versions of gumtree-spoon-ast-diff
         for (Operation operation : operations) {
-            // we ignore all MoveOperations
-            if (operation instanceof MoveOperation) continue;
             Pattern pattern = Pattern.compile(":(\\d+)");
             Matcher matcher = pattern.matcher(operation.toString());
-            Integer lineNum = null;
-            if(matcher.find()) {
-                lineNum = Integer.valueOf(matcher.group(1));
+            if (operation instanceof DeleteOperation) {
+                if(matcher.find()) {
+                    deleteOperations.put(Integer.valueOf(matcher.group(1)), operation);
+                }
+            } else if (operation instanceof InsertOperation) {
+                if(matcher.find()) {
+                    insertOperations.put(Integer.valueOf(matcher.group(1)), operation);
+                }
+            } else if (operation instanceof MoveOperation) {
+                if(matcher.find()) {
+                    deleteOperations.put(Integer.valueOf(matcher.group(1)), operation);
+                }
+                if(matcher.find()) {
+                    insertOperations.put(Integer.valueOf(matcher.group(1)), operation);
+                }
+            } else if (operation instanceof UpdateOperation) {
+                if(matcher.find()) {
+                    deleteOperations.put(Integer.valueOf(matcher.group(1)), operation);
+                    insertOperations.put(Integer.valueOf(matcher.group(1)), operation);
+                }
             }
-            if (!locatedOperations.containsKey(lineNum)) {
-                locatedOperations.put(lineNum, new ArrayList<>());
-            }
-            locatedOperations.get(lineNum).add(operation);
         }
-        for (List<Operation> operationList : locatedOperations.values()) {
-            Operation deleteOperation = null;
-            Operation insertOperation = null;
-            for (Operation operation : operationList) {
-                if (operation instanceof DeleteOperation) {
-                    deleteOperation = operation;
-                } else if (operation instanceof InsertOperation) {
-                    insertOperation = operation;
-                }
-            }
+        Set<Integer> lineNums = new HashSet<>();
+        lineNums.addAll(deleteOperations.keySet());
+        lineNums.addAll(insertOperations.keySet());
+        for (Integer lineNum : lineNums) {
+            Operation deleteOperation = deleteOperations.get(lineNum);
+            Operation insertOperation = insertOperations.get(lineNum);
+
+            DiffType type = null;
+            CtElement srcNode = null;
+            CtElement dstNode = null;
             if (deleteOperation != null && insertOperation != null) {
-                CtElement srcNode = deleteOperation.getSrcNode();
-                CtElement dstNode = insertOperation.getSrcNode();
-                DiffType type = DiffType.ReplaceType;
-//                System.out.println(srcNode);
-//                System.out.println(dstNode);
-//                System.out.println("++++++++");
-                // distinguish functionality changes from revision changes todo check
-                if (srcNode instanceof CtClass || srcNode instanceof CtMethod ||
-                        dstNode instanceof CtClass || dstNode instanceof CtMethod) {
-                    continue;
+                type = DiffType.UpdateType;
+                srcNode = deleteOperation.getSrcNode(); // ...
+                dstNode = insertOperation.getDstNode(); // ...
+                if (insertOperation instanceof InsertOperation) {
+                    dstNode = insertOperation.getSrcNode(); // ...
                 }
-                diffEntries.add(new DiffEntry(type, srcNode, dstNode));
-            } else {
-                for (Operation operation : operationList) {
-                    CtElement srcNode = operation.getSrcNode();
-                    CtElement dstNode = operation.getDstNode();
-                    DiffType type = DiffType.UnknownType;
-                    if (operation instanceof DeleteOperation) {
-                        if (srcNode == null) srcNode = dstNode;
-                        if (dstNode == null) dstNode = srcNode;
-                        type = DiffType.DeleteType;
-                    } else if (operation instanceof InsertOperation) {
-                        if (srcNode == null) srcNode = dstNode;
-                        if (dstNode == null) dstNode = srcNode;
-                        type = DiffType.InsertType;
-                    } else if (operation instanceof UpdateOperation) {
-                        // both srcNode and dstNode are not null
-                        type = DiffType.ReplaceType;
-                    }
-                    // as we ignored all MoveOperations
-                    assert type != DiffType.UnknownType;
-//                    System.out.println(srcNode);
-//                    System.out.println(dstNode);
-//                    System.out.println("++++++++");
-                    // distinguish functionality changes from revision changes todo check
-                    if (srcNode instanceof CtClass || srcNode instanceof CtMethod ||
-                            dstNode instanceof CtClass || dstNode instanceof CtMethod) {
-                        continue;
-                    }
-                    diffEntries.add(new DiffEntry(type, srcNode, dstNode));
-                }
+            } else if (deleteOperation != null) {
+                type = DiffType.DeleteType;
+                srcNode = deleteOperation.getSrcNode(); // ...
+                dstNode = deleteOperation.getDstNode(); // null
+                if (srcNode == null) srcNode = dstNode;
+                if (dstNode == null) dstNode = srcNode;
+            } else if (insertOperation != null) {
+                type = DiffType.InsertType;
+                srcNode = insertOperation.getSrcNode(); // ...
+                dstNode = insertOperation.getDstNode(); // null
+                if (srcNode == null) srcNode = dstNode;
+                if (dstNode == null) dstNode = srcNode;
             }
-            /* https://github.com/SpoonLabs/gumtree-spoon-ast-diff/issues/55
-            In Gumtree, an "Update" operation means that:
-            - either the it's a string based element and the string has changed
-            - or that only a small fraction of children has changed (to be verified).
-            Assume that we have one literal replaced by a method call. This is represented by one deletion and one addition. We can have a higher-level operation "Replace" instead.
-            */
+            // distinguish functionality changes from revision changes todo check
+            if (srcNode instanceof CtClass || srcNode instanceof CtMethod ||
+                    dstNode instanceof CtClass || dstNode instanceof CtMethod) {
+                continue;
+            }
+            diffEntries.add(new DiffEntry(type, srcNode, dstNode));
         }
         return diffEntries;
     }
@@ -220,28 +209,28 @@ public class CodeDiffer {
                                 String str = value.getAsString();
 
                                 if (str.equalsIgnoreCase("true")) {
-                                    // handle boolean-form ones
+                                    // handle boolean-form features
                                     List<Feature> features = new ArrayList<>();
                                     features.add(codeFeature);
                                     FeatureCross featureCross = new S4RFeatureCross(S4RFeature.CrossType.CF_CT, features, 1.0);
                                     featureVector.addFeatureCross(featureCross);
-//                                } else if (str.equalsIgnoreCase("false")) {
-//                                    // handle boolean-form ones
-//                                    List<Feature> features = new ArrayList<>();
-//                                    features.add(codeFeature);
-//                                    FeatureCross featureCross = new S4RFeatureCross(S4RFeature.CrossType.CF_CT, features, 0.0);
-//                                    featureVector.addFeatureCross(featureCross);
-//                                } else {
-//                                    // handle numerical-form ones
-//                                    try {
-//                                        double degree = Double.parseDouble(value.getAsString());
-//                                        List<Feature> features = new ArrayList<>();
-//                                        features.add(codeFeature);
-//                                        FeatureCross featureCross = new S4RFeatureCross(S4RFeature.CrossType.CF_CT, features, degree);
-//                                        featureVector.addFeatureCross(featureCross);
-//                                    } catch (Exception e) {
-////                                        e.printStackTrace();
-//                                    }
+                                } else if (str.equalsIgnoreCase("false")) {
+                                    // handle boolean-form features
+                                    List<Feature> features = new ArrayList<>();
+                                    features.add(codeFeature);
+                                    FeatureCross featureCross = new S4RFeatureCross(S4RFeature.CrossType.CF_CT, features, 0.0);
+                                    featureVector.addFeatureCross(featureCross);
+                                } else {
+                                    // handle numerical-form features
+                                    try {
+                                        double degree = Double.parseDouble(value.getAsString());
+                                        List<Feature> features = new ArrayList<>();
+                                        features.add(codeFeature);
+                                        FeatureCross featureCross = new S4RFeatureCross(S4RFeature.CrossType.CF_CT, features, degree);
+                                        featureVector.addFeatureCross(featureCross);
+                                    } catch (Exception e) {
+//                                        e.printStackTrace();
+                                    }
                                 }
                             } catch (IllegalStateException e) {
 //                                logger.error("Not a JSON Primitive");
@@ -271,18 +260,18 @@ public class CodeDiffer {
                 }
                 if (byGenerator) {
                     // only in this case, featureMatrices.size() > 1
-                    // we only consider this case where each repair owns one diffEntry
+                    // we only consider this case where each SPR repair owns one diffEntry
+                    // as we learn by comparing feature-vectors and evaluate by feature-matrix scores
+                    // also we do not need to consider the potential issue of combinatorial explosion
                     FeatureExtractor featureExtractor = newFeatureExtractor();
                     for (DiffEntry diffEntry : genDiffEntries(diff)) {
                         RepairGenerator generator = newRepairGenerator(diffEntry);
                         for (Repair repair: generator.obtainRepairCandidates()) {
-                            List<FeatureVector> featureVectors = new ArrayList<>();
-                            FeatureVector featureVector = new FeatureVector();
                             for (CtElement atom : repair.getCandidateAtoms()) {
-                                featureVector.merge(featureExtractor.extractFeature(repair, atom));
+                                List<FeatureVector> featureVectors = new ArrayList<>();
+                                featureVectors.add(featureExtractor.extractFeature(repair, atom));
+                                featureMatrices.add(new FeatureMatrix(false, featureVectors));
                             }
-                            featureVectors.add(featureVector);
-                            featureMatrices.add(new FeatureMatrix(false, featureVectors));
                         }
                     }
                 }

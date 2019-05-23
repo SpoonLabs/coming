@@ -1,6 +1,10 @@
 package fr.inria.prophet4j.utility;
 
 import fr.inria.prophet4j.utility.Option.RankingOption;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringJoiner;
 
 public class Support {
@@ -39,13 +43,13 @@ public class Support {
                 }
                 break;
             case FEATURE_DIR:
-                stringJoiner = new StringJoiner("][", PROPHET4J_DIR + "[", "]/");
+                stringJoiner = new StringJoiner("][", PROPHET4J_DIR + "_BIN/[", "]/");
                 stringJoiner.add(option.dataOption.name().toLowerCase());
                 stringJoiner.add(option.patchOption.name().toLowerCase());
                 stringJoiner.add(option.featureOption.name().toLowerCase());
                 break;
             case PARAMETER_DIR:
-                stringJoiner = new StringJoiner("][", PROPHET4J_DIR + "[", "]/");
+                stringJoiner = new StringJoiner("][", PROPHET4J_DIR + "_BIN/[", "]/");
                 stringJoiner.add(option.dataOption.name().toLowerCase());
                 stringJoiner.add(option.patchOption.name().toLowerCase());
                 stringJoiner.add(option.featureOption.name().toLowerCase());
@@ -55,8 +59,11 @@ public class Support {
         return stringJoiner.toString();
     }
 
-    public static String getFilePath4Ranking(RankingOption rankingOption) {
+    public static String getFilePath4Ranking(Option option, RankingOption rankingOption, boolean bin) {
         String filePath = PROPHET4J_DIR;
+        if (bin) {
+            filePath += "_BIN/" + option.featureOption.name().toLowerCase() + "/";
+        }
         switch (rankingOption) {
             case D_HUMAN:
                 filePath += "human-patch/";
@@ -69,5 +76,36 @@ public class Support {
                 break;
         }
         return filePath;
+    }
+
+    public static List<String> deserialize(String filePath) {
+        List<String> strings = new ArrayList<>();
+        try {
+            FileInputStream fis = new FileInputStream(filePath);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            strings = (List<String>) ois.readObject();
+            ois.close();
+            fis.close();
+        } catch (ClassNotFoundException | IOException e) {
+            e.printStackTrace();
+        }
+        return strings;
+    }
+
+    public static void serialize(String filePath, List<String> strings) {
+        try {
+            File file = new File(filePath);
+            if (!file.exists()) {
+                file.getParentFile().mkdirs();
+            }
+            FileOutputStream fos = new FileOutputStream(filePath);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(strings);
+            oos.flush();
+            oos.close();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
