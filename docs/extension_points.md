@@ -2,6 +2,7 @@
 
 
 Mining provides a set of Extension points which allow to override the default behavior of Coming or to add new functionality.
+A code walk-through of Coming is presented [here](code_walkthrough.md).
 
 
 ##  Input Reader
