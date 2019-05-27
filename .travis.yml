@@ -8,3 +8,4 @@ before_install:
   - mvn install:install-file -Dfile=lib/gumtree-spoon-ast-diff-0.0.3-SNAPSHOT-jar-with-dependencies.jar -DgeneratePom=true -DgroupId=fr.inria.spirals -DartifactId=gumtree-spoon-ast-diff -Dversion=0.0.3-SNAPSHOT -Dpackaging=jar
   - unzip ./src/main/resources/repogit4testv0.zip
   
+dist: trusty

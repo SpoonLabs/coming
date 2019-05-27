@@ -36,14 +36,25 @@ public class Option {
         S4R, // SKETCH4REPAIR (sri-lab@ETH)
     }
 
+    public enum LearnerOption {
+        // add one choice just for experiments
+        // for example, on BUG_DOT_JAR-REPAIR_THEM_ALL
+        // BY_PAIR costs about 8X time than BY_SAMPLE
+        // but still performance worse than BY_SAMPLE
+        BY_PAIR, // NEVER CHOOSE THIS
+        BY_SAMPLE, // ALWAYS CHOOSE THIS
+    }
+
     public DataOption dataOption;
     public PatchOption patchOption;
     public FeatureOption featureOption;
+    public LearnerOption learnerOption;
 
     public Option() {
         this.dataOption = DataOption.CARDUMEN;
         this.patchOption = PatchOption.CARDUMEN;
         this.featureOption = FeatureOption.ORIGINAL;
+        this.learnerOption = LearnerOption.BY_SAMPLE;
     }
 
     public enum RankingOption {

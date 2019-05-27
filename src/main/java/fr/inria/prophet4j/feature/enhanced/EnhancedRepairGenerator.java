@@ -306,7 +306,7 @@ public class EnhancedRepairGenerator implements RepairGenerator {
                 }
                 // compare with others in obtainRepairCandidates()
                 break;
-            case ReplaceType: // kind // oldRExpr // newRExpr
+            case UpdateType: // kind // oldRExpr // newRExpr
                 // IfExitKind: // INSERT_CONTROL_RF
                 // GuardKind: // INSERT_GUARD_RF
                 // SpecialGuardKind: // INSERT_GUARD_RF
@@ -373,8 +373,6 @@ public class EnhancedRepairGenerator implements RepairGenerator {
 //                }
                 // compare with others in obtainRepairCandidates()
                 repair.isReplace = true;
-                break;
-            case UnknownType:
                 break;
         }
         try {

@@ -1,7 +1,7 @@
 package fr.inria.coming.codefeatures;
 
 /**
- * 
+ *
  * @author Matias Martinez
  *
  */
@@ -142,16 +142,16 @@ public enum CodeFeatures {
 	// Spoon class of the fault statement.
 	S3_TYPE_OF_FAULTY_STATEMENT,
 	S14_TYPE_OF_FAULTY_STATEMENT_PARENT,
-	
+
 	S15_HAS_OBJECTIVE_METHOD_CALL,
-	
+
 	S13_TYPE_OF_FAULTY_STATEMENT_BEFORE_1,
 	S13_TYPE_OF_FAULTY_STATEMENT_BEFORE_2,
 	S13_TYPE_OF_FAULTY_STATEMENT_BEFORE_3,
 	S13_TYPE_OF_FAULTY_STATEMENT_AFTER_1,
 	S13_TYPE_OF_FAULTY_STATEMENT_AFTER_2,
 	S13_TYPE_OF_FAULTY_STATEMENT_AFTER_3,
-	
+
 	// If the faulty statement involves object reference to field (i.e., use object
 	// type class field), do there exist certain field(s) that have never been
 	// referenced in other methods of the faulty class.
@@ -164,7 +164,7 @@ public enum CodeFeatures {
 	// primitive type variables (with some of the primitive type variables used in
 	// the faulty statement), but add guard check (for global variables
 	S5_SIMILAR_PRIMITIVE_TYPE_WITH_NORMAL_GUARD,
-	
+
 	S5_SIMILAR_PRIMITIVE_TYPE_WITH_NULL_GUARD,
 
 	// For any variable involved in a logical expression,
@@ -210,29 +210,29 @@ public enum CodeFeatures {
 	// control flow structure) since the introduction
 	//LE8_LOGICAL_WITH_USED_LOCAL_VARS,
 	LE8_SCOPE_VAR_USED_OTHER_BOOLEXPER,
-	
+
 	LE9_NORMAL_CHECK,
-	
+
 	LE9_NULL_CHECK,
-	
+
 	LE9_MIX_CHECK,
-	
+
 	LE9_EQUAL_NOTEQUAL_NULL_CHECK,
-	
+
 	LE10_ATOMIC_EXPRESSION_SAME_INVOCATION_TARGET,
-	
+
 	LE10_ATOMIC_EXPRESSION_COMPARISION_SAME_LEFT,
-	
+
 	LE10_ATOMIC_EXPRESSION_COMPARISION_SAME_RIGHT,
-	
-	LE10_ATOMIC_EXPRESSION_MULTIPLE_VAR_AS_BOOLEAN, 
-	
-	LE10_ATOMIC_EXPRESSION_USED_IN_INVOCATION_COMPARISION_VARIABLE, 
-	
+
+	LE10_ATOMIC_EXPRESSION_MULTIPLE_VAR_AS_BOOLEAN,
+
+	LE10_ATOMIC_EXPRESSION_USED_IN_INVOCATION_COMPARISION_VARIABLE,
+
 	LE10_CONTAINS_ALL_INVOCATION_COMPARISION_VARIABLE,
-	
+
 	LE11_COMPLEX_REFERENCE,
-	
+
 	// For each involved variable, whether has method definitions or method calls
 	// (in the fault class) that take the type of the involved variable as one of
 	// its parameters and the return type of the method is type compatible with the
@@ -256,27 +256,29 @@ public enum CodeFeatures {
 	// assigned to a certain function transformation of the involved variable
 	V5_HAS_VAR_IN_TRANSFORMATION,
 
-//For each involved variable, whether has methods in scope(method definitions or method calls in the faulty class) thatreturn a type which is the same or compatible with the typeof the involved variable. 
+	//For each involved variable, whether has methods in scope(method definitions or method calls in the faulty class) thatreturn a type which is the same or compatible with the typeof the involved variable.
 	V6_IS_METHOD_RETURN_TYPE_VAR,
-	
+
 	V16_IS_METHOD_PARAMETER_TYPE_VAR,
 	// For each variable, is it primitive type?
 	V8_VAR_PRIMITIVE,
 	// For each method invocation, whether the method has overloaded method
 	V9_VAR_TYPE_Similar_Literal,
-	
+
 	V10_VAR_TYPE_Similar_VAR,
-	
+
 	V11_VAR_COMPATIBLE_TYPE_IN_CONDITION,
-	
+
 	V12_VAR_Invocation_VAR_REPLACE_BY_VAR,
-	
+
 	V13_VAR_Invocation_VAR_REPLACE_BY_INVOCATION,
-	
-	V14_VAR_INSTANCE_OF_CLASS, 
-	
-	V15_VAR_LAST_THREE_SAME_TYPE_LOC, 
-	
+
+	V14_VAR_INSTANCE_OF_CLASS,
+
+	V15_VAR_LAST_THREE_SAME_TYPE_LOC,
+
+	V17_VAR_IS_ENUMERATION,
+
 	M1_OVERLOADED_METHOD,
 	// For each method invocation, whether there exist methods that return the same
 	// type (or type compatible) and are similar in identifier name with the called
@@ -294,14 +296,14 @@ public enum CodeFeatures {
 	// For each method invocation, whether the types of some of its parameters are
 	// same or compatible with the return type of the method.
 	M4_PARAMETER_RETURN_COMPABILITY,
-//	 For each method invocation, whether has variables in scope whose types are the same or compatible with the return types of the method invocation. I am not sure whether it is easy to add this feature
+	//	 For each method invocation, whether has variables in scope whose types are the same or compatible with the return types of the method invocation. I am not sure whether it is easy to add this feature
 	M5_MI_WITH_COMPATIBLE_VAR_TYPE,
-	
+
 	M6_INV_Invocation_INV_REPLACE_BY_VAR,
 	M7_INV_Invocation_INV_REPLACE_BY_INV,
 	// For each method invocation, whether the return value of it is primitive
 	M8_RETURN_PRIMITIVE,
-	
+
 	M9_RETURN_OBJECTIVE,
 	// C1: For each constantc, whether exist other constants used inthe faulty class
 	// whose types are the same (or type compatible)withcbut values are different
@@ -313,17 +315,17 @@ public enum CodeFeatures {
 	// For each constant, is it an enum vlaue (But may be it ishard to detect it use
 	// partial program analysis).
 	C5_USES_ENUMERATION,
-	
+
 	CON1_OVERLOADED_CONSTRUCTOR,
-	
+
 	CON2_SIMILAR_CONSTRUCTOR,
-	
-	E1_RETURN_PRIMITIVE, 
+
+	E1_RETURN_PRIMITIVE,
 
 	E2_COMPATIBLE_INVOCATION_PAREMETER_RETURN,
-	
+
 	E3_COMPATIBLE_INVOCATION_PAREMETER,
-	
+
 	// For each arithmetic expression, whether has method definitions or method
 	// calls (in the fault class) that take the return type of the arithmetic
 	// expression as one of its parameters and the return type of the method is
