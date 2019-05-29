@@ -74,8 +74,7 @@ The argument `-mode` indicates the analyzer that Coming will use.
 The value `-mode mineinstance` means to detect instances of a change pattern (in the previous example, insert a binary operator AST node).
 
 The argument `-location` indicates the location of the project to analyze. 
-By default, Coming analyzes Git projects, so the `-location`  should be the path to the cloned project. Moreover, the argument `branch` allows to specify the Git branch to analyze (by default, it analyzes  the `master` branch).
-
+By default, Coming analyzes Git projects(as per `-input`), so the `-location`  should be the path to the cloned project. Moreover, the argument `branch` allows to specify the Git branch to analyze (by default, it analyzes  the `master` branch).
 
 
 The argument  `-output` is used to indicate the folder where Coming will write the results.
@@ -224,6 +223,42 @@ This pattern matches with the update of the method invocation's parameter (and n
 
 The list of available Roles is presented on this [page](/docs/types.md).
 
+# Input 
+
+Coming read the input from the folder indicated by the argument `-location`. The kind of input depends on the argument `-input`. 
+
+#### git  
+If `-input` is not specified, it is `git` by default. In the previous case or in the case of `-input git`, the path represented by `-location` should be a git repo.
+
+#### files 
+If `-input files`, the location path should follow the following hierarchy. Note here `-location <location_arg>`.
+```
+<location_arg>
+├── <diff_folder>
+│   └── <modif_file>
+│       ├── <diff_folder>_<modif_file>_s.java
+│       └── <diff_folder>_<modif_file>_t.java
+```
+In the above case, the analysis are performed on the revision form `<diff_folder>_<modif_file>_s.java` to `<diff_folder>_<modif_file>_t.java`, where `s` stands for source and `t` stands for target.
+
+**Example Input Specification**
+```
+java ... -location ./pairsD4j -input files ...
+
+$ tree ./pairsD4j/
+pairsD4j
+├── Math_70
+│   └── BisectionSolver
+│       ├── Math_70_BisectionSolver_s.java
+│       └── Math_70_BisectionSolver_t.java
+└── Math_73
+    └── BrentSolver
+        ├── Math_73_BrentSolver_s.java
+        └── Math_73_BrentSolver_t.java
+
+4 directories, 4 files
+
+```
 
 # Output
 
@@ -437,5 +472,5 @@ The argument `-filter withtest` indicates that only commits with at least one mo
 # Extending Coming
 
 To extend Coming, please read the document [Extension points of Coming](./docs/extension_points.md)
-Moreover, you can also read [./docs/the code walk-through](code_walkthrough.md).
+Moreover, you can also read [code_walkthrough.md](./docs/the code walk-through).
 
