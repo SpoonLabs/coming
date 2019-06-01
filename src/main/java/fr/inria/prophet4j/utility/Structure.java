@@ -111,7 +111,7 @@ public interface Structure {
                     break;
             }
 
-            List<List<double[]>> featureMatrixList = new ArrayList<>();
+            Map<String, List<double[]>> featureMatrixList = new HashMap<>();
             for (FeatureMatrix featureMatrix : featureMatrices) {
                 List<double[]> featureVectorList = new ArrayList<>();
                 // always skip this loop when we meet invalid patches
@@ -122,7 +122,7 @@ public interface Structure {
                     }
                     featureVectorList.add(featureCrossArray);
                 }
-                featureMatrixList.add(featureVectorList);
+                featureMatrixList.put(featureMatrix.fileKey, featureVectorList);
             }
             String json = new Gson().toJson(featureMatrixList);
             String jsonPath = filePath.replace("prophet4j/_BIN/", "prophet4j/_JSON/");
@@ -192,10 +192,12 @@ public interface Structure {
     class FeatureMatrix implements Serializable {
         static final long serialVersionUID = 1L;
         private boolean marked; // for human patch or not
+        private String fileKey;
         private List<FeatureVector> featureVectors;
 
-        public FeatureMatrix(boolean marked, List<FeatureVector> featureVectors) {
+        public FeatureMatrix(boolean marked, String fileKey, List<FeatureVector> featureVectors) {
             this.marked = marked;
+            this.fileKey = fileKey;
             this.featureVectors = featureVectors;
         }
 
@@ -298,7 +300,6 @@ public interface Structure {
             return res;
         }
 
-        // maybe change the file format from plain text to csv todo consider
         public void load(String filePath) {
             try {
                 File vectorFile = new File(filePath);
@@ -310,7 +311,6 @@ public interface Structure {
             }
         }
 
-        // maybe change the file format from plain text to csv todo consider
         public void save(String filePath) {
             try {
                 StringJoiner stringJoiner = new StringJoiner(" ");

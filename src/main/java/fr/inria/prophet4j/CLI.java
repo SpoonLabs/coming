@@ -7,28 +7,23 @@ import fr.inria.prophet4j.utility.Option.PatchOption;
 import fr.inria.prophet4j.utility.Option.FeatureOption;
 
 /*
-To be able to select different feature sets, eg
-./coming -f prophet4j:sketch4repair foo.git
-./coming -f prophet4j foo.git
-
-To be able to output the learned probability model:
-./coming --output-prob-model prob.json -f prophet4j foo.git
-
-And then one would be able to predict the likelihood of a new patch
-./prophet-predictor --prob-model prob.json --patch bar.patch
- */
-/*
-./prophet4j -t task -d dataOption -p patchOption -f featureOption
+how to build coming.jar
+mvn install:install-file -Dfile=lib/gumtree-spoon-ast-diff-0.0.3-SNAPSHOT-jar-with-dependencies.jar -DgeneratePom=true -DgroupId=fr.inria.spirals -DartifactId=gumtree-spoon-ast-diff -Dversion=0.0.3-SNAPSHOT -Dpackaging=jar
+mvn -Dskiptest package
+how to run Prophet4J
+java -classpath coming-0.1-SNAPSHOT-jar-with-dependencies.jar fr.inria.prophet4j.CLI
  */
 @CommandLine.Command(
-        version = "1.0",
+        version = "0.1",
         name = "Prophet4J",
         footer = "https://github.com/SpoonLabs/coming",
         description = "Evaluate the correctness probability of patch (by learning existing patches)"
 )
+
 public class CLI {
 
     private enum Task {
+        EXTRACT,
         LEARN,
         EVALUATE,
     }
@@ -53,19 +48,19 @@ public class CLI {
             names = {"-t", "--task"},
             description = "Task" + commonInfo
     )
-    private Task task = Task.LEARN;
+    private Task task = Task.EXTRACT;
 
     @CommandLine.Option(
             names = {"-d", "--data-option"},
             description = "Data Option" + commonInfo
     )
-    private DataOption dataOption = DataOption.CARDUMEN;
+    private DataOption dataOption = DataOption.BUG_DOT_JAR_MINUS_MATH;
 
     @CommandLine.Option(
             names = {"-p", "--patch-option"},
             description = "Patch Option" + commonInfo
     )
-    private PatchOption patchOption = PatchOption.CARDUMEN;
+    private PatchOption patchOption = PatchOption.BUG_DOT_JAR_MINUS_MATH;
 
     @CommandLine.Option(
             names = {"-f", "--feature-option"},
@@ -90,7 +85,14 @@ public class CLI {
         option.dataOption = cli.dataOption;
         option.patchOption = cli.patchOption;
         option.featureOption = cli.featureOption;
+
+        System.out.println(option);
+        System.out.println("TASK: " + cli.task.name());
+
         switch (cli.task) {
+            case EXTRACT:
+                new Demo(option).extract();
+                break;
             case LEARN:
                 new Demo(option).learn();
                 break;

@@ -45,7 +45,7 @@ import java.util.Map;
 // https://github.com/src-d/siva-java
 // https://github.com/eclipse/jgit
 // https://github.com/centic9/jgit-cookbook
-// refactor this class todo check
+// refactor this class if necessary
 public class PGA {
     // pga list -u github.com/src-d/ -f json | jq -r 'select(.fileCount > 100) | .sivaFilenames[]' | pga get -i -o ~
     // pga list -l java -f json | jq -r 'select(.commitsCount > 10000) | select(.commitsCount < 10100) | select(.langsFilesCount[.langs | index("Java")]==(.langsFilesCount | max)) | .sivaFilenames[]' | pga get -i -o ~
@@ -173,7 +173,7 @@ public class PGA {
                 String oldPath = diff.getOldPath();
                 String newPath = diff.getNewPath();
                 if (oldPath.endsWith(".java") && newPath.endsWith(".java")) {
-                    // excluded some commits when files are renamed todo consider
+                    // exclude some commits for renamed files todo improve
                     if (oldPath.equals(newPath)) {
                         commitDiffer.addDiffer(oldCommitName, newCommitName, oldPath, newPath, option);
                     } else {

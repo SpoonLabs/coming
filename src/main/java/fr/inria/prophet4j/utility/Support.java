@@ -31,9 +31,6 @@ public class Support {
                     case BEARS:
                         stringJoiner.add("Bears");
                         break;
-                    case BUG_DOT_JAR:
-                        stringJoiner.add("Bug-dot-jar");
-                        break;
                     case BUG_DOT_JAR_MINUS_MATH:
                         stringJoiner.add("Bug-dot-jar-minus-MATH");
                         break;

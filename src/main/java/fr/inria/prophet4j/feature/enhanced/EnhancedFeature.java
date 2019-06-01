@@ -37,7 +37,6 @@ public interface EnhancedFeature extends Feature {
         AF_RF_CT, // newly added
         VF_RF_CT, // newly added
         AF_VF_CT, // ValueCrossFeatureNum = AtomFeatureNum * ValueFeatureNum
-        // we should try other ways of crossing features todo consider
 //        POS_AF_CT4SRC, // AtomicCrossFeatureNum = 3 * AtomFeatureNum
 //        POS_AF_CT4DST, // AtomicCrossFeatureNum = 3 * AtomFeatureNum
 //        RF_SF_CT, // ValueCrossFeatureNum  = RepairFeatureNum * ValueFeatureNum
@@ -156,7 +155,7 @@ public interface EnhancedFeature extends Feature {
         /*
         // whether should we consider <> and : or not ?
         // other Operators 1
-//        OOP_CONDITIONAL_AF, // ?: I guess it belongs to CtConditional todo check
+//        OOP_CONDITIONAL_AF, // ?: I guess it belongs to CtConditional
         // Separator 6 http://www.cafeaulait.org/course/week2/10.html
 //        SEP_PARENTHESES_AF, // ()
 //        SEP_BRACKETS_AF, // []
@@ -212,8 +211,8 @@ public interface EnhancedFeature extends Feature {
         GLOBAL_VARIABLE_VF,
         FUNC_ARGUMENT_VF,
         MEMBER_VF, // it should be similar to
-        MODIFIED_VF, // this is not so important todo consider
-        MODIFIED_SIMILAR_VF, // this is not so important todo consider
+        MODIFIED_VF, // I guess it is not so important
+        MODIFIED_SIMILAR_VF, // I guess it is not so important
 
         /**
          * Literal 8

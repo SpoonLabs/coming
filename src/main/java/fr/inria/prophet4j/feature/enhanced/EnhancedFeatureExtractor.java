@@ -97,12 +97,12 @@ public class EnhancedFeatureExtractor implements FeatureExtractor {
                 valueFeatures.add(ValueFeature.GLOBAL_VARIABLE_VF);
             }
         } else if (E instanceof CtExecutableReference){
-            // to make CALLEE_AF be meaningful todo improve
+            // just make CALLEE_AF be meaningful
             if (((CtExecutableReference) E).getParameters().size() > 0){
                 valueFeatures.add(ValueFeature.LOCAL_VARIABLE_VF);
             }
         } else if (E instanceof CtIf){
-            // to make R_STMT_COND_AF be meaningful todo improve
+            // just make R_STMT_COND_AF be meaningful
             valueFeatures.add(ValueFeature.LOCAL_VARIABLE_VF);
         }
 //        if (E instanceof CtVariable) {
@@ -124,7 +124,6 @@ public class EnhancedFeatureExtractor implements FeatureExtractor {
             valueFeatures.add(ValueFeature.LI_LENGTH_VF);
         if (valueStr.contains("equals"))
             valueFeatures.add(ValueFeature.LI_EQUALS_VF);
-        // i feel this may be incorrect todo check
         if (E.getElements(new TypeFilter<>(CtField.class)).size() > 0)
             valueFeatures.add(ValueFeature.MEMBER_VF);
         if (E instanceof CtLiteral) {
@@ -284,7 +283,7 @@ public class EnhancedFeatureExtractor implements FeatureExtractor {
             }
         }
 
-        // AtomFeatureNum * RepairFeatureNum todo check
+        // AtomFeatureNum * RepairFeatureNum
         for (Feature repairFeature : repairFeatures) {
             if (dstMap.containsKey("@")) {
                 Set<AtomicFeature> atomicFeatures = dstMap.get("@");
@@ -303,7 +302,7 @@ public class EnhancedFeatureExtractor implements FeatureExtractor {
         srcMapL.remove("@");
         dstMap.remove("@");
 
-        // 3 * ValueFeatureNum * RepairFeatureNum todo check
+        // 3 * ValueFeatureNum * RepairFeatureNum
         for (Feature repairFeature : repairFeatures) {
             for (String key : srcMapC.keySet()) {
                 Set<ValueFeature> valueFeatures = getValueFeature(key, repair, valueExprInfo);
@@ -342,7 +341,7 @@ public class EnhancedFeatureExtractor implements FeatureExtractor {
 
         // VarCrossFeatureNum   = 3 * AtomFeatureNum * AtomFeatureNum   = 2700
         for (String key : dstMap.keySet()) {
-            // what the meaning of this block is todo consider
+            // what is the meaning of this block ?
             if (valueExprInfo.containsKey(key)) {
                 CtElement E = valueExprInfo.get(key);
                 if (E instanceof CtLiteral)
@@ -393,7 +392,7 @@ public class EnhancedFeatureExtractor implements FeatureExtractor {
             }
         }
 
-        // 3 * ValueFeatureNum * AtomFeatureNum todo check
+        // 3 * ValueFeatureNum * AtomFeatureNum
         for (String key : srcMapC.keySet()) {
             Set<AtomicFeature> atomicFeatures = srcMapC.get(key);
             Set<ValueFeature> valueFeatures = getValueFeature(key, repair, valueExprInfo);
@@ -437,7 +436,7 @@ public class EnhancedFeatureExtractor implements FeatureExtractor {
             }
         }
 
-        // ValueFeatureNum * RepairFeatureNum todo check
+        // ValueFeatureNum * RepairFeatureNum
         for (Feature repairFeature : repairFeatures) {
             for (String key : dstMap.keySet()) {
                 Set<ValueFeature> valueFeatures = getValueFeature(key, repair, valueExprInfo);

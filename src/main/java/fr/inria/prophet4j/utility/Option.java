@@ -1,5 +1,7 @@
 package fr.inria.prophet4j.utility;
 
+import java.util.StringJoiner;
+
 public class Option {
     public enum DataOption {
         // human patches: program-repair/defects4j-dissection/tree/9d5aeea14e2e2e0c440f8b6970f1b278fc5e2271/projects
@@ -8,21 +10,18 @@ public class Option {
         // human patches: https://github.com/monperrus/bug-fixes-saner16
         SANER,
         // https://github.com/kth-tcs/overfitting-analysis/tree/master/data
-        // following 4 ones are all used for Project ODS(OverfittingDetectionSystem)
+        // following ones are for Project ODS(OverfittingDetectionSystem)
         BEARS,
-        BUG_DOT_JAR,
         BUG_DOT_JAR_MINUS_MATH, // BUG_DOT_JAR without Math (-16)
         QUIX_BUGS,
     }
 
-    // append other candidate-patches generators todo consider
     public enum PatchOption {
         CARDUMEN, // only valid for the CARDUMEN DataOption
         // temporary patch
         SPR, // SPR implemented in Java
-        // following 4 ones are all used for Project ODS(OverfittingDetectionSystem)
+        // following ones are for Project ODS(OverfittingDetectionSystem)
         BEARS, // only valid for the BEARS DataOption
-        BUG_DOT_JAR, // only valid for the BUG_DOT_JAR DataOption
         BUG_DOT_JAR_MINUS_MATH, // only valid for the BUG_DOT_JAR_MINUS_MATH DataOption
         QUIX_BUGS, // only valid for the QUIX_BUGS DataOption
     }
@@ -37,7 +36,7 @@ public class Option {
     }
 
     public enum LearnerOption {
-        // add one choice just for experiments
+        // extra choices are just for experiments
         // for example, on BUG_DOT_JAR-REPAIR_THEM_ALL
         // BY_PAIR costs about 8X time than BY_SAMPLE
         // but still performance worse than BY_SAMPLE
@@ -62,5 +61,14 @@ public class Option {
         D_HUMAN,
         D_CORRECT,
         D_INCORRECT,
+    }
+
+    @Override
+    public String toString() {
+        StringJoiner stringJoiner = new StringJoiner("\n");
+        stringJoiner.add("DataOption: " + this.dataOption.name());
+        stringJoiner.add("PatchOption: " + this.patchOption.name());
+        stringJoiner.add("FeatureOption: " + this.featureOption.name());
+        return stringJoiner.toString();
     }
 }

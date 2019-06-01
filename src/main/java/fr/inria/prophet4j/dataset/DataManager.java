@@ -52,7 +52,6 @@ public class DataManager {
             case SANER:
                 break;
             case BEARS:
-            case BUG_DOT_JAR:
             case BUG_DOT_JAR_MINUS_MATH:
             case QUIX_BUGS:
                 return DataLoader.loadODSWithPatches(dataPath);
@@ -67,7 +66,6 @@ public class DataManager {
             case SANER:
                 return DataLoader.loadSANERWithoutPatches(dataPath);
             case BEARS:
-            case BUG_DOT_JAR:
             case BUG_DOT_JAR_MINUS_MATH:
             case QUIX_BUGS:
                 return DataLoader.loadODSWithoutPatches(dataPath);
@@ -78,7 +76,6 @@ public class DataManager {
     public List<String> run() {
         if (option.dataOption == DataOption.CARDUMEN && option.patchOption == PatchOption.CARDUMEN ||
                 option.dataOption == DataOption.BEARS && option.patchOption == PatchOption.BEARS ||
-                option.dataOption == DataOption.BUG_DOT_JAR && option.patchOption == PatchOption.BUG_DOT_JAR ||
                 option.dataOption == DataOption.BUG_DOT_JAR_MINUS_MATH && option.patchOption == PatchOption.BUG_DOT_JAR_MINUS_MATH ||
                 option.dataOption == DataOption.QUIX_BUGS && option.patchOption == PatchOption.QUIX_BUGS
         ) {
@@ -103,6 +100,7 @@ public class DataManager {
             Map<String, Map<File, List<File>>> catalogs = loadDataWithPatches(dataPath);
             int progressAll = catalogs.size(), progressNow = 0;
             for (String pathName : catalogs.keySet()) {
+                codeDiffer.setPathName(pathName);
                 Map<File, List<File>> catalog = catalogs.get(pathName);
                 for (File oldFile : catalog.keySet()) {
                     try {
