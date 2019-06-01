@@ -112,7 +112,7 @@ public class EnhancedRepairAnalyzer {
 
         // we implement one equivalent method instead of CtScanner
         public void TraverseStmt(CtElement element) {
-            // pr spoon to support getting belonged CtEnum with one CtEnumValue todo consider
+            // PR spoon to support getting belonged CtEnum with one CtEnumValue
 //            List<CtEnumValue> enumValues = element.getElements(new TypeFilter<>(CtEnumValue.class));
 //            for (CtEnumValue enumValue : enumValues) {
 //                List<CtElement> exprs = L->getCandidateEnumConstant(enumValue);

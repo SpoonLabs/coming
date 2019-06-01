@@ -166,7 +166,7 @@ class DataLoader {
 
     /**
      for Project ODS(OverfittingDetectionSystem)
-     BEARS BUG_DOT_JAR BUG_DOT_JAR_MINUS_MATH QUIX_BUGS
+     BEARS BUG_DOT_JAR_MINUS_MATH QUIX_BUGS
      */
     // load buggy files and human patches
     static Map<String, Map<File, File>> loadODSWithoutPatches(String dataPath) throws NullPointerException {

@@ -2,8 +2,94 @@
 
 This is one tool to evaluate the correctness probability of patch (by learning from patches).
 
-Features
+Usage
 ======
+
+It is pretty convenient to run Prophet4J via CLI.
+
+How to Build coming.jar?
+----
+
+```bash
+mvn install:install-file -Dfile=lib/gumtree-spoon-ast-diff-0.0.3-SNAPSHOT-jar-with-dependencies.jar -DgeneratePom=true -DgroupId=fr.inria.spirals -DartifactId=gumtree-spoon-ast-diff -Dversion=0.0.3-SNAPSHOT -Dpackaging=jar
+mvn -Dskiptest package
+```
+
+It is recommended to read the README file of Coming, in case command options getting changed.
+
+How to Run Prophet4J?
+----
+
+```bash
+java -classpath coming-0.1-SNAPSHOT-jar-with-dependencies.jar fr.inria.prophet4j.CLI
+```
+
+You could find help information by appending `--help`. Here is one snapshot.
+
+```
+$ java -classpath coming-0.1-SNAPSHOT-jar-with-dependencies.jar fr.inria.prophet4j.CLI --help
+Usage: Prophet4J [--help] [--version] [-d=<dataOption>] [-f=<featureOption>]
+                 [-p=<patchOption>] [-t=<task>]
+Evaluate the correctness probability of patch (by learning existing patches)
+      --help          display usage info
+      --version       display version info
+  -d, --data-option=<dataOption>
+                      Data Option
+                      default value: BUG_DOT_JAR_MINUS_MATH
+                      valid values: CARDUMEN, SANER, BEARS, BUG_DOT_JAR_MINUS_MATH,
+                        QUIX_BUGS
+  -f, --feature-option=<featureOption>
+                      Feature Option
+                      default value: ORIGINAL
+                      valid values: ENHANCED, EXTENDED, ORIGINAL, S4R
+  -p, --patch-option=<patchOption>
+                      Patch Option
+                      default value: BUG_DOT_JAR_MINUS_MATH
+                      valid values: CARDUMEN, SPR, BEARS, BUG_DOT_JAR_MINUS_MATH,
+                        QUIX_BUGS
+  -t, --task=<task>   Task
+                      default value: EXTRACT
+                      valid values: EXTRACT, LEARN, EVALUATE
+https://github.com/SpoonLabs/coming
+```
+
+All tasks run on predefined data-sets (shown above), among them, dataOption=SANER is valid iff patchOption=SPR.
+
+NOTICE: If you want to run the Evaluation task, you have to run the Learn task beforehand.
+
+Development
+======
+
+In case you need to hack Prophet4J or continue the development.
+
+Just follow instructions at [prophet4j-data](https://github.com/kth-tcs/overfitting-analysis/tree/master/prophet4j-data).
+
+If you want existing feature-vectors, they are at [prophet4j-features](https://github.com/kth-tcs/overfitting-analysis/tree/master/prophet4j-features). If you want latest feature-vectors, they will be available at the `_JSON` folder.
+
+If you want plot latest evaluation results, check generated ranking data at the `_BIN` folder and utilize `drawer.py` at [prophet4j-ranking](https://github.com/kth-tcs/overfitting-analysis/tree/master/prophet4j-ranking).
+
+Project in Brief
+======
+
+Flow Chart
+----
+
+```
+         +-------+               +-------------+
+         |dataset+------+------->+human patches+----+
+         +-------+      |        +-------------+    |
+                        |                           |
+                        |                           |       +-----------------+        +---------------+       +----------------+
+                        +--------------+            +------>+feature|extractor+------->+feature|learner+------>+repair|evaluator|
+                                       |            |       +-----------------+        +---------------+       +----------------+
+                                       v            |
++----------------+         +-----------+-------+    |
+|repair|generator+-------->+implausible patches+----+
++----------------+         +-------------------+
+```
+
+Features
+----
 
 Right now we have four feature-sets.
 - [Original Features](https://github.com/SpoonLabs/coming/blob/master/docs/features/prophet4j/OriginalFeatures.md)
@@ -13,39 +99,10 @@ is literally the extended version of the original one, by appending more same-ty
 - Enhanced Features
 is literally the enhanced version of the extended one, by appending more ways of crossing features.
 - S4R Features
-is basically features used in sketch4repair.
-
-Usage (Untested)
-======
-
-We are able to run Prophet4J via CLI, but right now Prophet4J does not support assigning customized data-sets.
-
-    ```bash
-    ./prophet4j -t task -d dataOption -p patchOption -f featureOption
-    ```
-
-    task : assign which task we want prophet4j to execute
-    * (default value) `LEARN`
-    * (candidate values) `LEARN` `EVALUATE`
-
-    dataOption : assign data-set containing both buggy files and patched files (by human patches)
-    * (default value) `CARDUMEN`
-    * (candidate values) `CARDUMEN` `SANER` `BUG_DOT_JAR`
-
-    patchOption : assign data-set containing patched files (by generated patches)
-    * (default value) `CARDUMEN`
-    * (candidate values) `CARDUMEN` `SPR` `BUG_DOT_JAR`
-
-    featureOption : assign feature-set containing features
-    * (default value) `ORIGINAL`
-    * (candidate values) `ORIGINAL` `EXTENDED` `ENHANCED` `S4R`
-
-For Learn task, Prophet4J runs on predefined data-sets (shown above), among them, dataOption=SANER is valid iff patchOption=SPR.
-
-For Evaluation task, Prophet4J runs on predefined data-sets (not shown above).
+is basically features generated by sketch4repair.
 
 Tree
-======
+----
 
 ```
 .
@@ -87,13 +144,12 @@ _Special Note_
 
 `ParameterVector` is entity which contains weights for all feature-crosses
 
-Data
+Materials
 ======
 
 [prophet4j-data](https://github.com/kth-tcs/overfitting-analysis/tree/master/prophet4j-data)
 
-Demo
-======
+[prophet4j-features](https://github.com/kth-tcs/overfitting-analysis/tree/master/prophet4j-features)
 
 [prophet4j-ranking](https://github.com/kth-tcs/overfitting-analysis/tree/master/prophet4j-ranking)
 

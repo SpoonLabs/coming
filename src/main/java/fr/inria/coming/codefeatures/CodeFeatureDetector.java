@@ -300,11 +300,11 @@ public class CodeFeatureDetector {
 			List<CtConstructorCall> constructorcall = specificexpression.getElements(e -> (e instanceof CtConstructorCall)).stream()
 					.map(CtConstructorCall.class::cast).collect(Collectors.toList());
 
-			writeGroupedByVar(context, "expression_"+Integer.toString(expressionindex), CodeFeatures.S1_LOCAL_VAR_NOT_USED,
+			writeGroupedByVar(context, "expression_"+Integer.toString(expressionindex), CodeFeatures.E1_LOCAL_VAR_NOT_USED,
 					analyzeS1_AffectedVariablesUsed (varsAffected, originalElement, context, allstatementsinclass, false),
 					"FEATURES_EXPRESSION");
 
-			writeGroupedByVar(context, "expression_"+Integer.toString(expressionindex), CodeFeatures.S1_LOCAL_VAR_NOT_ASSIGNED,
+			writeGroupedByVar(context, "expression_"+Integer.toString(expressionindex), CodeFeatures.E1_LOCAL_VAR_NOT_ASSIGNED,
 					analyzeS1_AffectedAssigned (varsAffected, originalElement, context, false),
 					"FEATURES_EXPRESSION");
 
@@ -312,24 +312,24 @@ public class CodeFeatureDetector {
 
 			if(expressionfeatures != null) {
 
-				writeGroupedByVar(context, "expression_"+Integer.toString(expressionindex), CodeFeatures.S2_SIMILAR_OBJECT_TYPE_WITH_NORMAL_GUARD,
+				writeGroupedByVar(context, "expression_"+Integer.toString(expressionindex), CodeFeatures.E2_SIMILAR_OBJECT_TYPE_WITH_NORMAL_GUARD,
 						expressionfeatures[0], "FEATURES_EXPRESSION");
 
-				writeGroupedByVar(context, "expression_"+Integer.toString(expressionindex), CodeFeatures.S5_SIMILAR_PRIMITIVE_TYPE_WITH_NORMAL_GUARD,
+				writeGroupedByVar(context, "expression_"+Integer.toString(expressionindex), CodeFeatures.E5_SIMILAR_PRIMITIVE_TYPE_WITH_NORMAL_GUARD,
 						expressionfeatures[1], "FEATURES_EXPRESSION");
 
-				writeGroupedByVar(context, "expression_"+Integer.toString(expressionindex), CodeFeatures.S2_SIMILAR_OBJECT_TYPE_WITH_NULL_GUARD,
+				writeGroupedByVar(context, "expression_"+Integer.toString(expressionindex), CodeFeatures.E2_SIMILAR_OBJECT_TYPE_WITH_NULL_GUARD,
 						expressionfeatures[2], "FEATURES_EXPRESSION");
 
-				writeGroupedByVar(context, "expression_"+Integer.toString(expressionindex), CodeFeatures.S5_SIMILAR_PRIMITIVE_TYPE_WITH_NULL_GUARD,
+				writeGroupedByVar(context, "expression_"+Integer.toString(expressionindex), CodeFeatures.E5_SIMILAR_PRIMITIVE_TYPE_WITH_NULL_GUARD,
 						expressionfeatures[3], "FEATURES_EXPRESSION");
 			}
 
-			writeGroupedByVar(context, "expression_"+Integer.toString(expressionindex), CodeFeatures.S4_Field_NOT_USED,
+			writeGroupedByVar(context, "expression_"+Integer.toString(expressionindex), CodeFeatures.E4_Field_NOT_USED,
 					analyzeS4_AffectedFielfs(varsAffected, originalElement, context, parentClass, false),
 					"FEATURES_EXPRESSION");
 
-			writeGroupedByVar(context, "expression_"+Integer.toString(expressionindex), CodeFeatures.S4_Field_NOT_ASSIGNED,
+			writeGroupedByVar(context, "expression_"+Integer.toString(expressionindex), CodeFeatures.E4_Field_NOT_ASSIGNED,
 					analyzeS4_AffectedFieldAssigned(varsAffected, originalElement, context, parentClass, false),
 					"FEATURES_EXPRESSION");
 
@@ -337,10 +337,10 @@ public class CodeFeatureDetector {
 
 			if(expressionvalueS7S8 != null) {
 
-				writeGroupedByVar(context, "expression_"+Integer.toString(expressionindex), CodeFeatures.S7_OBJECT_USED_IN_ASSIGNMENT,
+				writeGroupedByVar(context, "expression_"+Integer.toString(expressionindex), CodeFeatures.E7_OBJECT_USED_IN_ASSIGNMENT,
 						expressionvalueS7S8[0], "FEATURES_EXPRESSION");
 
-				writeGroupedByVar(context, "expression_"+Integer.toString(expressionindex), CodeFeatures.S8_PRIMITIVE_USED_IN_ASSIGNMENT,
+				writeGroupedByVar(context, "expression_"+Integer.toString(expressionindex), CodeFeatures.E8_PRIMITIVE_USED_IN_ASSIGNMENT,
 						expressionvalueS7S8[1], "FEATURES_EXPRESSION");
 			}
 
@@ -349,10 +349,10 @@ public class CodeFeatureDetector {
 
 			if(expressionvalueS9S10 != null) {
 
-				writeGroupedByVar(context, "expression_"+Integer.toString(expressionindex), CodeFeatures.S9_METHOD_CALL_WITH_NORMAL_GUARD,
+				writeGroupedByVar(context, "expression_"+Integer.toString(expressionindex), CodeFeatures.E9_METHOD_CALL_WITH_NORMAL_GUARD,
 						expressionvalueS9S10[0], "FEATURES_EXPRESSION");
 
-				writeGroupedByVar(context, "expression_"+Integer.toString(expressionindex), CodeFeatures.S10_METHOD_CALL_WITH_NULL_GUARD,
+				writeGroupedByVar(context, "expression_"+Integer.toString(expressionindex), CodeFeatures.E10_METHOD_CALL_WITH_NULL_GUARD,
 						expressionvalueS9S10[1], "FEATURES_EXPRESSION");
 			}
 

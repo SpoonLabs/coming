@@ -91,8 +91,6 @@ public class FeatureLearner {
                     for (FeatureVector featureVector : featureMatrix.getFeatureVectors()) {
                         for (FeatureCross featureCross : featureVector.getFeatureCrosses()) {
                             int featureCrossId = featureCross.getId();
-                            // maybe we need Rescaling (min-max normalization) todo consider
-                            // https://en.wikipedia.org/wiki/Feature_scaling#Application
 //                            tmpValues[featureCrossId] += expValues[i] * 1;
                             tmpValues[featureCrossId] += expValues.get(featureVector) * featureCross.getDegree();
                         }
@@ -297,8 +295,6 @@ public class FeatureLearner {
                     for (FeatureVector featureVector : featureMatrix.getFeatureVectors()) {
                         for (FeatureCross featureCross : featureVector.getFeatureCrosses()) {
                             int featureCrossId = featureCross.getId();
-                            // maybe we need Rescaling (min-max normalization) todo consider
-                            // https://en.wikipedia.org/wiki/Feature_scaling#Application
 //                            tmpValues[featureCrossId] += expValues[i] * 1;
                             tmpValues[featureCrossId] += expValues.get(featureVector) * featureCross.getDegree();
                         }
@@ -461,6 +457,7 @@ public class FeatureLearner {
         }
     }
 
+    // consider CLR(Cyclical Learning Rates) or autoML
     public void run(List<String> filePaths) {
         switch (option.learnerOption) {
             case BY_PAIR:

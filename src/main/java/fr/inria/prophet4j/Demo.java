@@ -18,10 +18,21 @@ public class Demo {
         this.option = option;
     }
 
+    void extract() {
+        DataManager dataManager = new DataManager(option);
+        List<String> filePaths = dataManager.run();
+        for (String filePath : filePaths) {
+            Sample sample = new Sample(filePath);
+            sample.loadFeatureMatrices();
+            sample.saveAsJson(option.featureOption);
+        }
+        System.out.println("1/1 EXTRACTED");
+    }
+
     void learn() {
         DataManager dataManager = new DataManager(option);
-        FeatureLearner featureLearner = new FeatureLearner(option);
         List<String> filePaths = dataManager.run();
+        FeatureLearner featureLearner = new FeatureLearner(option);
         featureLearner.run(filePaths);
         System.out.println("1/1 LEARNED");
     }
@@ -38,34 +49,13 @@ public class Demo {
         System.out.println("1/1 EVALUATED");
     }
 
-    // todo split learn to be extract and learn
-    void distillJson() {
-        DataManager dataManager = new DataManager(option);
-        List<String> filePaths = dataManager.run();
-        for (String filePath : filePaths) {
-            Sample sample = new Sample(filePath);
-            sample.loadFeatureMatrices();
-            sample.saveAsJson(option.featureOption);
-        }
-        System.out.println("1/1 DISTILLED");
-    }
-
     private static void jobsDemo(Option option) {
-        try {
-            option.dataOption = DataOption.CARDUMEN;
-            option.patchOption = PatchOption.CARDUMEN;
-            new Demo(option).learn();
-            new Demo(option).evaluate();
-//            new Demo(option).distillJson();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         try {
             option.dataOption = DataOption.SANER;
             option.patchOption = PatchOption.SPR;
+            new Demo(option).extract();
             new Demo(option).learn();
             new Demo(option).evaluate();
-//            new Demo(option).distillJson();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -73,71 +63,44 @@ public class Demo {
 
     private static void jobsODS(Option option) {
         try {
-            option.dataOption = DataOption.BUG_DOT_JAR;
-            option.patchOption = PatchOption.BUG_DOT_JAR;
-            new Demo(option).learn();
-            new Demo(option).evaluate();
-//            new Demo(option).distillJson();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            option.dataOption = DataOption.BUG_DOT_JAR;
-            option.patchOption = PatchOption.SPR;
-            new Demo(option).learn();
-            new Demo(option).evaluate();
-//            new Demo(option).distillJson();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
             option.dataOption = DataOption.BUG_DOT_JAR_MINUS_MATH;
             option.patchOption = PatchOption.BUG_DOT_JAR_MINUS_MATH;
+            new Demo(option).extract();
             new Demo(option).learn();
             new Demo(option).evaluate();
-//            new Demo(option).distillJson();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        try {
-            option.dataOption = DataOption.BUG_DOT_JAR_MINUS_MATH;
-            option.patchOption = PatchOption.SPR;
-            new Demo(option).learn();
-            new Demo(option).evaluate();
-//            new Demo(option).distillJson();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            option.dataOption = DataOption.BUG_DOT_JAR_MINUS_MATH;
+//            option.patchOption = PatchOption.SPR;
+//            new Demo(option).extract();
+//            new Demo(option).learn();
+//            new Demo(option).evaluate();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     private static void jobsS4R(Option option) {
-//        try {
-//            option.dataOption = DataOption.CARDUMEN;
-//            option.patchOption = PatchOption.CARDUMEN;
-//            new Demo(option).learn();
-//            new Demo(option).evaluate();
-//            new Demo(option).distillJson();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        try {
-//            option.dataOption = DataOption.BUG_DOT_JAR;
-//            option.patchOption = PatchOption.BUG_DOT_JAR;
-//            new Demo(option).learn();
-//            new Demo(option).evaluate();
-//            new Demo(option).distillJson();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
         try {
             option.dataOption = DataOption.BUG_DOT_JAR_MINUS_MATH;
             option.patchOption = PatchOption.BUG_DOT_JAR_MINUS_MATH;
+            new Demo(option).extract();
             new Demo(option).learn();
             new Demo(option).evaluate();
-            new Demo(option).distillJson();
         } catch (Exception e) {
             e.printStackTrace();
         }
+//        try {
+//            option.dataOption = DataOption.BUG_DOT_JAR_MINUS_MATH;
+//            option.patchOption = PatchOption.SPR;
+//            new Demo(option).extract();
+//            new Demo(option).learn();
+//            new Demo(option).evaluate();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     // seem meaningless to use FeatureOption.ENHANCED
@@ -149,33 +112,22 @@ public class Demo {
 //            jobsDemo(option);
 //            option.featureOption = FeatureOption.EXTENDED;
 //            jobsDemo(option);
-//            // for ODS
-//             option.featureOption = FeatureOption.ORIGINAL;
-//             jobsODS(option);
+            // for ODS
+             option.featureOption = FeatureOption.ORIGINAL;
+             jobsODS(option);
 //             option.featureOption = FeatureOption.EXTENDED;
 //             jobsODS(option);
-//            // for S4R
+            // for S4R
 //            option.featureOption = FeatureOption.S4R;
 //            jobsS4R(option);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    // todo try YE's features
-    // todo try feature-ext+s4r
-    // todo integrate with coming
-    // todo document prophet4j
-    /* todo sync S4R every week until one stable version
-     * 1 check commits since 05/22
-     * 2 note conflicting commits
-     * 3 comment testing files
+    /* todo sync S4R regularly until one stable version
+     * 1 check commits from zhongxingyu/coming since June
+     * 2 note conflicting commits from SpoonLabs/coming
+     * 3 comment corresponding testing files
      */
-    /*
-    to improve the performance of FeatureLearner, use CLR(Cyclical Learning Rates) or autoML
-     */
-    // config VM: -Xms1024m -Xmx16384m
-    // name alias:
-    // original <==> prophet4j
-    // extended <==> feature-ext
-    // sketch4repair <==> feature-s4r
+    // if necessary, config Java VM: -Xms1024m -Xmx16384m
 }

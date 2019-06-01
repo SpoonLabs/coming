@@ -142,7 +142,7 @@ public class ExtendedFeatureExtractorTest {
 //                    str1 = "class Foo{public void bar(){\nint[] a={1};\nint b=0;\nb=a[0];\n}}";
 //                    assertEquals(Boolean.TRUE, check(str0, str1, checkFeature));
 //                    break;
-//                case MEMBER_ACCESS_AF: // fixme: if global variable a exists in str0 then fail, why?
+//                case MEMBER_ACCESS_AF:
 //                    str0 = "class Foo{public void bar(){\nFoo x=new Foo();\nint a=1;\n}}";
 //                    str1 = "class Foo{public void bar(){\nFoo x=new Foo();\nint a=x.a;\n}\nint a;}";
 //                    assertEquals(Boolean.TRUE, check(str0, str1, checkFeature));

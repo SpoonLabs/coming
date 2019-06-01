@@ -38,12 +38,11 @@ public class OriginalRepairGenerator implements RepairGenerator {
         this.compound_counter.clear();
     }
 
-    // todo check
     private boolean isTainted(CtStatement S) {
         if (S == null) return false;
         if (area.contains(S))
             return true;
-        // why Prophet does not need the second condition todo check
+        // why Prophet does not need the second condition ?
         if (S instanceof CtStatementList && compound_counter.containsKey(S)) {
             CtStatementList CS = (CtStatementList) S;
             return compound_counter.get(CS) >= 2 || (compound_counter.get(CS) == 1 && CS.getStatements().size() == 1);
@@ -292,7 +291,7 @@ public class OriginalRepairGenerator implements RepairGenerator {
         repair.oldRExpr = null; // related to SchemaFeature
         repair.newRExpr = null; // related to SchemaFeature
 
-        // todo check
+        // todo improve
         // based on matchCandidateWithHumanFix()
         switch (diffEntry.type) {
             case DeleteType: // kind
@@ -465,7 +464,6 @@ public class OriginalRepairGenerator implements RepairGenerator {
     // based on LocationFuzzer class
     private Set<CtElement> fuzzyLocator(CtElement statement) {
         Set<CtElement> locations = new HashSet<>();
-        // todo check
         if (statement instanceof CtMethod || statement instanceof CtClass || statement instanceof CtIf || statement instanceof CtStatementList) {
             locations.add(statement);
         } else {

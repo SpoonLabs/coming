@@ -103,12 +103,12 @@ public class ExtendedFeatureExtractor implements FeatureExtractor {
                 valueFeatures.add(ValueFeature.GLOBAL_VARIABLE_VF);
             }
         } else if (E instanceof CtExecutableReference){
-            // to make CALLEE_AF be meaningful todo improve
+            // just make CALLEE_AF be meaningful
             if (((CtExecutableReference) E).getParameters().size() > 0){
                 valueFeatures.add(ValueFeature.LOCAL_VARIABLE_VF);
             }
         } else if (E instanceof CtIf){
-            // to make R_STMT_COND_AF be meaningful todo improve
+            // just make R_STMT_COND_AF be meaningful
             valueFeatures.add(ValueFeature.LOCAL_VARIABLE_VF);
         }
 //        if (E instanceof CtVariable) {
@@ -130,7 +130,6 @@ public class ExtendedFeatureExtractor implements FeatureExtractor {
             valueFeatures.add(ValueFeature.LI_LENGTH_VF);
         if (valueStr.contains("equals"))
             valueFeatures.add(ValueFeature.LI_EQUALS_VF);
-        // i feel this may be incorrect todo check
         if (E.getElements(new TypeFilter<>(CtField.class)).size() > 0)
             valueFeatures.add(ValueFeature.MEMBER_VF);
         if (E instanceof CtLiteral) {

@@ -45,11 +45,17 @@ public class CodeDiffer {
 
     private boolean byGenerator;
     private Option option;
+    private String pathName;
     private static final Logger logger = LogManager.getLogger(CodeDiffer.class.getName());
 
     public CodeDiffer(boolean byGenerator, Option option){
         this.byGenerator = byGenerator;
         this.option = option;
+        this.pathName = "";
+    }
+
+    public void setPathName(String pathName) {
+        this.pathName = pathName;
     }
 
     private FeatureExtractor newFeatureExtractor() {
@@ -152,7 +158,7 @@ public class CodeDiffer {
                 if (srcNode == null) srcNode = dstNode;
                 if (dstNode == null) dstNode = srcNode;
             }
-            // distinguish functionality changes from revision changes todo check
+            // distinguish functionality changes from revision changes
             if (srcNode instanceof CtClass || srcNode instanceof CtMethod ||
                     dstNode instanceof CtClass || dstNode instanceof CtMethod) {
                 continue;
@@ -163,7 +169,7 @@ public class CodeDiffer {
     }
 
     // size == 1 if option.featureOption == FeatureOption.S4R or byGenerator = false
-    private List<FeatureMatrix> genFeatureMatrices(Diff diff) {
+    private List<FeatureMatrix> genFeatureMatrices(Diff diff, String fileKey) {
         List<FeatureMatrix> featureMatrices = new ArrayList<>();
         // used for the case of SKETCH4REPAIR
         FeatureAnalyzer featureAnalyzer = new FeatureAnalyzer();
@@ -239,7 +245,7 @@ public class CodeDiffer {
                     }
                     featureVectors.add(featureVector);
                 }
-                featureMatrices.add(new FeatureMatrix(true, featureVectors));
+                featureMatrices.add(new FeatureMatrix(true, fileKey, featureVectors));
             } else {
                 // RepairGenerator receive diffEntry as parameter, so we do not need ErrorLocalizer
                 {
@@ -256,7 +262,7 @@ public class CodeDiffer {
                             featureVectors.add(featureVector);
                         }
                     }
-                    featureMatrices.add(new FeatureMatrix(true, featureVectors));
+                    featureMatrices.add(new FeatureMatrix(true, fileKey, featureVectors));
                 }
                 if (byGenerator) {
                     // only in this case, featureMatrices.size() > 1
@@ -270,7 +276,7 @@ public class CodeDiffer {
                             for (CtElement atom : repair.getCandidateAtoms()) {
                                 List<FeatureVector> featureVectors = new ArrayList<>();
                                 featureVectors.add(featureExtractor.extractFeature(repair, atom));
-                                featureMatrices.add(new FeatureMatrix(false, featureVectors));
+                                featureMatrices.add(new FeatureMatrix(false, fileKey, featureVectors));
                             }
                         }
                     }
@@ -302,7 +308,12 @@ public class CodeDiffer {
         try {
             AstComparator comparator = new AstComparator();
             Diff diff = comparator.compare(oldFile, newFile);
-            featureMatrices.addAll(genFeatureMatrices(diff));
+            String filePath = newFile.getPath();
+            int leftIndex = filePath.indexOf(pathName) + pathName.length();
+            int rightIndex = filePath.lastIndexOf("/");
+            String fileKey = filePath.substring(leftIndex + 1, rightIndex);
+            fileKey = fileKey.replace("/", "-");
+            featureMatrices.addAll(genFeatureMatrices(diff, fileKey));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -313,7 +324,7 @@ public class CodeDiffer {
     public List<FeatureMatrix> runByGenerator(String oldStr, String newStr) {
         AstComparator comparator = new AstComparator();
         Diff diff = comparator.compare(oldStr, newStr);
-        List<FeatureMatrix> featureMatrices = genFeatureMatrices(diff);
+        List<FeatureMatrix> featureMatrices = genFeatureMatrices(diff, "");
         assert featureMatrices.size() == 1;
         return featureMatrices;
     }

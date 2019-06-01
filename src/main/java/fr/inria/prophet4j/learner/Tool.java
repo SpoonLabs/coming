@@ -152,8 +152,10 @@ public class Tool {
     public static void main(String[] args) {
         Option option = new Option();
         Tool tool = new Tool(option);
-        option.dataOption = DataOption.BUG_DOT_JAR;
-        option.patchOption = PatchOption.BUG_DOT_JAR;
+//        option.dataOption = DataOption.BUG_DOT_JAR;
+//        option.patchOption = PatchOption.BUG_DOT_JAR;
+        option.dataOption = DataOption.BUG_DOT_JAR_MINUS_MATH;
+        option.patchOption = PatchOption.BUG_DOT_JAR_MINUS_MATH;
 
         option.featureOption = FeatureOption.ORIGINAL;
         tool.genWeightsCSV();

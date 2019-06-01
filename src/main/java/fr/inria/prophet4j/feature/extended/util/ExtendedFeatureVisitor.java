@@ -290,7 +290,7 @@ public class ExtendedFeatureVisitor {
 
     // i really do not know why we need to remove some atomic features
     private Map<String, Set<AtomicFeature>> getFeatureResult() {
-        // todo check
+        // meaningless todo check
 //        if (res.map.containsKey("@")) {
 //            Set<AtomicFeature> tmp = res.map.get("@");
 //            if (tmp.contains(AtomicFeature.STMT_LOOP_AF)) {
