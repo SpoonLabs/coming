@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import fr.inria.coming.core.engine.filespair.FilesPairNavigation;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -70,7 +71,7 @@ public class ComingMain {
                 .build());
 
         options.addOption(Option.builder("input")
-                .argName("git(default) | files").hasArg()
+                .argName("git(default) | files | filespair").hasArg()
                 .desc("format of the content present in the given -path. git implies that the path is a git repository. files implies the path contains .patch files ")
                 .build());
 
@@ -82,7 +83,7 @@ public class ComingMain {
         options.addOption(Option.builder("outputprocessor")
                 .argName("classname").hasArg()
                 .desc("output processors for result")
-                .build()); // TODO: What's the default and what is changefrequency. And oh btw it's a list.
+                .build());
 
         // Pattern mining
         options.addOption(Option.builder("pattern")
@@ -249,7 +250,9 @@ public class ComingMain {
 			navigatorEngine = new GITRepositoryInspector();
 		} else if (input.equals("files")) {
 			navigatorEngine = new FileNavigationExperiment();
-		} else {
+		} else if(input.equals("filespair")) {
+            navigatorEngine = new FilesPairNavigation();
+        } else {
 			// extension point
 			navigatorEngine = loadInputEngine(input);
 		}

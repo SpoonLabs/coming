@@ -230,6 +230,10 @@ Coming read the input from the folder indicated by the argument `-location`. The
 #### git  
 If `-input` is not specified, it is `git` by default. In the previous case or in the case of `-input git`, the path represented by `-location` should be a git repo.
 
+#### filespair
+This input format is used to do analysis on one revision mentioned by the diff between specified the source and tha target file.
+If `-input filespair`, the location argument is supposed to specified in the following format: `-location <source_file_path>:<target_file_path>`
+
 #### files 
 If `-input files`, the location path should follow the following hierarchy. Note here `-location <location_arg>`.
 ```

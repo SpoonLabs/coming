@@ -94,6 +94,23 @@ public class MainComingTest {
 				new String[] { "-location", "repogit4testv0", "-entitytype", "BinaryOperator", "-action", "INS" });
 	}
 
+    @Test
+    public void testFilePairsMain() throws Exception {
+
+        File left = getFile("diffcases/differror1/1205753_EmbedPooledConnection_0_s.java");
+        File right = getFile("diffcases/differror1/1205753_EmbedPooledConnection_0_t.java");
+
+        ComingMain cm = new ComingMain();
+
+        Object result = cm.run(
+                new String[]{"-location", left.getAbsolutePath() + File.pathSeparator + right.getAbsolutePath(),
+                        "-input", "filespair",
+                        "-entitytype", "BinaryOperator",
+                        "-action", "INS"});
+
+        assertNotNull(result);
+    }
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testDiffAnalysis() throws Exception {
