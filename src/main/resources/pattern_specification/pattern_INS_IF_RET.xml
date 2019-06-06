@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<pattern>
+<pattern name="INS_IF_RET">
 	<entity id="1" type="Return">
 		<parent parentId="2" distance="10" />
 	</entity>
