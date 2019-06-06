@@ -8,12 +8,14 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
+import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
 import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstanceAnalyzer;
 import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstancesFromDiff;
 import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstancesFromRevision;
@@ -25,6 +27,7 @@ import fr.inria.coming.changeminer.entity.CommitFinalResult;
 import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
 import fr.inria.coming.core.entities.DiffResult;
+import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.core.entities.interfaces.Commit;
 import fr.inria.coming.main.ComingMain;
 import fr.inria.coming.utils.CommandSummary;
@@ -163,6 +166,60 @@ public class InstanceMiningTest {
 			}
 		}
 
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testMainPattern2() throws Exception {
+
+		ComingMain main = new ComingMain();
+
+		CommandSummary cs = new CommandSummary();
+		cs.append("-location", "repogit4testv0");
+		cs.append("-mode", "mineinstance");
+		FinalResult finalResult = null;
+
+		File fl1 = new File(getClass().getResource("/pattern_specification/pattern_test_1_INS_INV.xml").getFile());
+
+		File fl2 = new File(getClass().getResource("/pattern_specification/pattern_INS_IF_RET.xml").getFile());
+
+		cs.command.put("-pattern", fl1.getAbsolutePath() + File.pathSeparator + fl2.getAbsolutePath());
+
+		finalResult = main.run(cs.flat());
+
+		CommitFinalResult commitResult = (CommitFinalResult) finalResult;
+		System.out.println("FinalResults: \n" + finalResult);
+
+		// First pattern
+		String c1 = "c6b1cd8204b10c324b92cdc3e44fe3ab6cfb1f5e";
+
+		Commit c = commitResult.getAllResults().keySet().stream().filter(e -> e.getName().equals(c1)).findFirst().get();
+		RevisionResult rv1 = commitResult.getAllResults().get(c);
+		assertNotNull(rv1);
+
+		PatternInstancesFromRevision a1 = (PatternInstancesFromRevision) rv1
+				.getResultFromClass(PatternInstanceAnalyzer.class);
+		assertTrue(a1.getInfoPerDiff().size() > 0);
+
+		ChangePatternInstance cp1 = a1.getInfoPerDiff().get(0).getInstances().stream()
+				.filter(e -> e.getPattern().getName().equals("INS_IF_RET")).findFirst().get();
+		assertNotNull(cp1);
+
+		// Second pattern
+		String c2 = "01dd29c37f6044d9d1126d9db55a961cccaccfb7";
+
+		Commit cc2 = commitResult.getAllResults().keySet().stream().filter(e -> e.getName().equals(c2)).findFirst()
+				.get();
+		RevisionResult rv2 = commitResult.getAllResults().get(cc2);
+		assertNotNull(rv2);
+
+		PatternInstancesFromRevision a2 = (PatternInstancesFromRevision) rv2
+				.getResultFromClass(PatternInstanceAnalyzer.class);
+		assertTrue(a2.getInfoPerDiff().size() > 0);
+
+		ChangePatternInstance cp2 = a2.getInfoPerDiff().get(0).getInstances().stream()
+				.filter(e -> e.getPattern().getName().equals("INS_INV")).findFirst().get();
+		assertNotNull(cp2);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -420,9 +477,10 @@ public class InstanceMiningTest {
 				.filter(e -> e instanceof PatternInstanceAnalyzer).findFirst().get();
 
 		assertNotNull(patternAnalyzer);
-		ChangePatternSpecification patternFromAnalyzer = patternAnalyzer.getPatternToMine();
+		List<ChangePatternSpecification> patternFromAnalyzer = patternAnalyzer.getPatternsToMine();
 
-		PatternAction patternAction = patternFromAnalyzer.getAbstractChanges().get(0);
+		assertEquals(1, patternFromAnalyzer.size());
+		PatternAction patternAction = patternFromAnalyzer.get(0).getAbstractChanges().get(0);
 		assertEquals(patternAction.getAction(), patternParsed.getAbstractChanges().get(0).getAction());
 		assertEquals(patternAction.getAffectedEntity().getEntityType(), "Invocation");
 		assertEquals("*", patternAction.getAffectedEntity().getNewValue());

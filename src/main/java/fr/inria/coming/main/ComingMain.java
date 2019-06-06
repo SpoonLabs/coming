@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import fr.inria.coming.core.engine.filespair.FilesPairNavigation;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -31,6 +30,7 @@ import fr.inria.coming.core.engine.Analyzer;
 import fr.inria.coming.core.engine.RevisionNavigationExperiment;
 import fr.inria.coming.core.engine.callback.IntermediateResultProcessorCallback;
 import fr.inria.coming.core.engine.files.FileNavigationExperiment;
+import fr.inria.coming.core.engine.filespair.FilesPairNavigation;
 import fr.inria.coming.core.engine.git.GITRepositoryInspector;
 import fr.inria.coming.core.entities.interfaces.IFilter;
 import fr.inria.coming.core.entities.interfaces.IOutput;
@@ -60,69 +60,53 @@ public class ComingMain {
 	CommandLineParser parser = new BasicParser();
 
 	static {
-        options.addOption(Option.builder("location")
-                .argName("path").hasArg()
-                .desc("analyse the content in \'path\'")
-                .build());
+		options.addOption(
+				Option.builder("location").argName("path").hasArg().desc("analyse the content in \'path\'").build());
 
-        options.addOption(Option.builder("mode")
-                .argName("mineinstance | diff | features").hasArg()
-                .desc("the mode of execution of the analysis")
-                .build());
+		options.addOption(Option.builder("mode").argName("mineinstance | diff | features").hasArg()
+				.desc("the mode of execution of the analysis").build());
 
-        options.addOption(Option.builder("input")
-                .argName("git(default) | files | filespair").hasArg()
-                .desc("format of the content present in the given -path. git implies that the path is a git repository. files implies the path contains .patch files ")
-                .build());
+		options.addOption(Option.builder("input").argName("git(default) | files | filespair").hasArg().desc(
+				"format of the content present in the given -path. git implies that the path is a git repository. files implies the path contains .patch files ")
+				.build());
 
-        options.addOption(Option.builder("output")
-                .argName("path").hasArg()
-                .desc("dump the output of the analysis in the given path")
-                .build());
+		options.addOption(Option.builder("output").argName("path").hasArg()
+				.desc("dump the output of the analysis in the given path").build());
 
-        options.addOption(Option.builder("outputprocessor")
-                .argName("classname").hasArg()
-                .desc("output processors for result")
-                .build());
+		options.addOption(Option.builder("outputprocessor").argName("classname").hasArg()
+				.desc("output processors for result").build());
 
-        // Pattern mining
-        options.addOption(Option.builder("pattern")
-                .argName("path").hasArg()
-                .desc("path of the pattern file to be used when the -mode is \'mineinstance\'")
-                .build());
+		// Pattern mining
+		options.addOption(Option.builder("pattern").argName("path").hasArg()
+				.desc("path of the pattern file to be used when the -mode is \'mineinstance\'").build());
 
-        options.addOption(Option.builder("patternparser")
-                .argName("classname").hasArg()
-                .desc("parser to be used for parsing the file specified -pattern. Default is XML")
-                .build());
+		options.addOption(Option.builder("patternparser").argName("classname").hasArg()
+				.desc("parser to be used for parsing the file specified -pattern. Default is XML").build());
 
-        options.addOption("entitytype", true, "entity type to be mine");
-        options.addOption("entityvalue", true, "the value of the entity  mentioned in -entitytype");
+		options.addOption("entitytype", true, "entity type to be mine");
+		options.addOption("entityvalue", true, "the value of the entity  mentioned in -entitytype");
 
-        options.addOption(Option.builder("action")
-                .argName("INS | DEL | UPD | MOV | PER | ANY").hasArg()
-                .desc("tye of action to be mined")
-                .build());
+		options.addOption(Option.builder("action").argName("INS | DEL | UPD | MOV | PER | ANY").hasArg()
+				.desc("tye of action to be mined").build());
 
-        options.addOption("parenttype", true, "parent type of the nodes to be considered");
-        options.addOption("parentlevel", true, "numbers of AST node where the parent is located. 1 implies immediate parent");
+		options.addOption("parenttype", true, "parent type of the nodes to be considered");
+		options.addOption("parentlevel", true,
+				"numbers of AST node where the parent is located. 1 implies immediate parent");
 
-        options.addOption("hunkanalysis", true, "include analysis of hunks");
+		options.addOption("hunkanalysis", true, "include analysis of hunks");
 
-        options.addOption("showactions", false, "show all actions");
-        options.addOption("showentities", false, "show all entities");
+		options.addOption("showactions", false, "show all actions");
+		options.addOption("showentities", false, "show all entities");
 
-        // Revision filter
-        options.addOption("filter", true, "name of the filter");
-        options.addOption("filtervalue", true, "values of the filter  mentioned in -filter");
+		// Revision filter
+		options.addOption("filter", true, "name of the filter");
+		options.addOption("filtervalue", true, "values of the filter  mentioned in -filter");
 
-        // In case of git
-        options.addOption(Option.builder("branch")
-                .argName("branch name").hasArg()
-                .desc("In case of -input=\'git\', use this branch name. Default is master.")
-                .build());
-        options.addOption("message", true, "comming message"); // TODO: What's this?
-        options.addOption("parameters", true, "Parameters, divided by " + File.pathSeparator);
+		// In case of git
+		options.addOption(Option.builder("branch").argName("branch name").hasArg()
+				.desc("In case of -input=\'git\', use this branch name. Default is master.").build());
+		options.addOption("message", true, "comming message"); // TODO: What's this?
+		options.addOption("parameters", true, "Parameters, divided by " + File.pathSeparator);
 	}
 
 	public static void main(String[] args) {
@@ -250,9 +234,9 @@ public class ComingMain {
 			navigatorEngine = new GITRepositoryInspector();
 		} else if (input.equals("files")) {
 			navigatorEngine = new FileNavigationExperiment();
-		} else if(input.equals("filespair")) {
-            navigatorEngine = new FilesPairNavigation();
-        } else {
+		} else if (input.equals("filespair")) {
+			navigatorEngine = new FilesPairNavigation();
+		} else {
 			// extension point
 			navigatorEngine = loadInputEngine(input);
 		}
@@ -272,8 +256,8 @@ public class ComingMain {
 				navigatorEngine.getAnalyzers().clear();
 				navigatorEngine.getAnalyzers().add(new FineGrainDifftAnalyzer());
 
-				ChangePatternSpecification pattern = loadPattern();
-				navigatorEngine.getAnalyzers().add(new PatternInstanceAnalyzer(pattern));
+				List<ChangePatternSpecification> patterns = loadPattern();
+				navigatorEngine.getAnalyzers().add(new PatternInstanceAnalyzer(patterns));
 
 				// By default JSON output of pattern instances
 				navigatorEngine.getOutputProcessors().add(new JSonPatternInstanceOutput());
@@ -387,20 +371,24 @@ public class ComingMain {
 		return null;
 	}
 
-	private ChangePatternSpecification loadPattern() {
+	private List<ChangePatternSpecification> loadPattern() {
 		String patternProperty = ComingProperties.getProperty("pattern");
+		List<ChangePatternSpecification> patternsFound = new ArrayList();
 
 		if (patternProperty != null) {
-			// Load pattern from file
-			File fl = new File(patternProperty);
-			if (fl.exists()) {
-				PatternFileParser patternParser = loadPatternParser();
-				ChangePatternSpecification patternParsed = patternParser.parse(fl);
-				return patternParsed;
-			} else {
-				throw new IllegalAccessError("The pattern file given as input does not exist " + fl.getAbsolutePath());
-			}
 
+			String[] patterns = patternProperty.split(File.pathSeparator);
+			// Load pattern from file
+			for (String pattern : patterns) {
+				File fl = new File(pattern);
+				if (fl.exists()) {
+					PatternFileParser patternParser = loadPatternParser();
+					ChangePatternSpecification patternParsed = patternParser.parse(fl);
+					patternsFound.add(patternParsed);
+				} else {
+					log.error("The pattern file given as input does not exist " + fl.getAbsolutePath());
+				}
+			}
 		} else {
 			// Simple pattern
 			String actionProperty = ComingProperties.getProperty("action");
@@ -420,14 +408,16 @@ public class ComingMain {
 					affectedEntity.setParent(parentEntity, parentlevelProperty);
 				}
 				cpattern.addChange(pa);
-				return cpattern;
+				patternsFound.add(cpattern);
 			} else {
 				throw new IllegalAccessError("The pattern is not well specified: missing entitytype or entityvalue");
 			}
 
 		}
-
-		// return null;
+		if (patternsFound.isEmpty()) {
+			throw new IllegalAccessError("Any valid pattern file in " + patternProperty);
+		}
+		return patternsFound;
 	}
 
 	public PatternFileParser loadPatternParser() {

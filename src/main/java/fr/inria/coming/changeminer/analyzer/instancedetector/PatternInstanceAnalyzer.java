@@ -19,7 +19,7 @@ import gumtree.spoon.diff.Diff;
  */
 public class PatternInstanceAnalyzer implements Analyzer {
 
-	ChangePatternSpecification patternToMine = null;
+	List<ChangePatternSpecification> patternsToMine = new ArrayList();
 
 	public PatternInstanceAnalyzer() {
 		loadPattern();
@@ -27,7 +27,14 @@ public class PatternInstanceAnalyzer implements Analyzer {
 
 	public PatternInstanceAnalyzer(ChangePatternSpecification patternToMine) {
 		super();
-		this.patternToMine = patternToMine;
+
+		this.patternsToMine.add(patternToMine);
+	}
+
+	public PatternInstanceAnalyzer(List<ChangePatternSpecification> patternToMine) {
+		super();
+
+		this.patternsToMine = patternToMine;
 	}
 
 	public void loadPattern() {
@@ -50,9 +57,11 @@ public class PatternInstanceAnalyzer implements Analyzer {
 
 			Diff singleDiff = (Diff) value;
 			DetectorChangePatternInstanceEngine instanceDetector = new DetectorChangePatternInstanceEngine();
-			List<ChangePatternInstance> instances = instanceDetector.findPatternInstances(this.patternToMine,
-					singleDiff);
 
+			List<ChangePatternInstance> instances = new ArrayList<>();
+			for (ChangePatternSpecification changePatternSpecification : patternsToMine) {
+				instances.addAll(instanceDetector.findPatternInstances(changePatternSpecification, singleDiff));
+			}
 			PatternInstancesFromDiff resultDiff = new PatternInstancesFromDiff(input, instances, singleDiff);
 			instancesAll.add(resultDiff);
 
@@ -63,12 +72,12 @@ public class PatternInstanceAnalyzer implements Analyzer {
 		return revisionResult;
 	}
 
-	public ChangePatternSpecification getPatternToMine() {
-		return patternToMine;
+	public List<ChangePatternSpecification> getPatternsToMine() {
+		return patternsToMine;
 	}
 
-	public void setPatternToMine(ChangePatternSpecification patternToMine) {
-		this.patternToMine = patternToMine;
+	public void setPatternsToMine(List<ChangePatternSpecification> patternToMine) {
+		this.patternsToMine = patternToMine;
 	}
 
 }

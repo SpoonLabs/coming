@@ -18,7 +18,10 @@ public class FileNavigationExperiment extends RevisionNavigationExperiment<IRevi
 
 	public FileNavigationExperiment() {
 
-		String repositoryPath = ComingProperties.getProperty("location");
+		this(ComingProperties.getProperty("location"));
+	}
+
+	public FileNavigationExperiment(String repositoryPath) {
 
 		flocation = new File(repositoryPath);
 		if (!flocation.exists())
