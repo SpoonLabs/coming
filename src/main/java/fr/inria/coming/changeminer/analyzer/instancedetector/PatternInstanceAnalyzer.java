@@ -53,7 +53,9 @@ public class PatternInstanceAnalyzer implements Analyzer {
 		DiffResult diffResut = (DiffResult) resultFromDiffAnalysis;
 		List<PatternInstancesFromDiff> instancesAll = new ArrayList<>();
 
-		for (Object value : diffResut.getDiffOfFiles().values()) {
+		for (Object file : diffResut.getDiffOfFiles().keySet()) {
+
+			Object value = diffResut.getDiffOfFiles().get(file);
 
 			Diff singleDiff = (Diff) value;
 			DetectorChangePatternInstanceEngine instanceDetector = new DetectorChangePatternInstanceEngine();
@@ -62,7 +64,8 @@ public class PatternInstanceAnalyzer implements Analyzer {
 			for (ChangePatternSpecification changePatternSpecification : patternsToMine) {
 				instances.addAll(instanceDetector.findPatternInstances(changePatternSpecification, singleDiff));
 			}
-			PatternInstancesFromDiff resultDiff = new PatternInstancesFromDiff(input, instances, singleDiff);
+			PatternInstancesFromDiff resultDiff = new PatternInstancesFromDiff(input, instances, singleDiff,
+					file.toString());
 			instancesAll.add(resultDiff);
 
 		}

@@ -4,6 +4,7 @@ import java.io.File;
 
 import fr.inria.coming.core.entities.interfaces.Commit;
 import fr.inria.coming.core.entities.interfaces.FileCommit;
+import fr.inria.coming.main.ComingProperties;
 
 public class FileCommitGit implements FileCommit {
 
@@ -40,8 +41,12 @@ public class FileCommitGit implements FileCommit {
 
 	@Override
 	public String getFileName() {
-		int idx = this.nextFileName.lastIndexOf(File.separator);
-		return this.nextFileName.substring(idx + 1);
+		if (ComingProperties.getPropertyBoolean("file_complete_name")) {
+			return this.nextFileName;
+		} else {
+			int idx = this.nextFileName.lastIndexOf(File.separator);
+			return this.nextFileName.substring(idx + 1);
+		}
 	}
 
 	@Override

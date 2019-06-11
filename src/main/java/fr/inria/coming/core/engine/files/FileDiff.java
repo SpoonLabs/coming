@@ -60,7 +60,7 @@ public class FileDiff implements IRevision {
 					String previousString = new String(Files.readAllBytes(previousVersion.toPath()));
 					String postString = new String(Files.readAllBytes(postVersion.toPath()));
 
-					FilePair fpair = new FilePair(previousString, postString, fileModif.getName());
+					FilePair fpair = new FilePair(previousString, postString, getName(fileModif));
 					pairs.add(fpair);
 
 				} catch (Exception e) {
@@ -76,6 +76,20 @@ public class FileDiff implements IRevision {
 		return pairs;
 	}
 
+	private String getName(File fileModif) {
+		if (!ComingProperties.getPropertyBoolean("file_complete_name")) {
+			return fileModif.getName();
+		} else {
+			String location = ComingProperties.getProperty("location");
+			if (location != null) {
+				return fileModif.getAbsolutePath().replace(location, "");
+			} else
+				return fileModif.getAbsolutePath();
+
+		}
+
+	}
+
 	public String calculatePathName(File fileModif) {
 		return
 		// The folder with the file name
@@ -84,9 +98,9 @@ public class FileDiff implements IRevision {
 				+ (ComingProperties.getPropertyBoolean("excludecommitnameinfile") ? "" : (diffFolder.getName() + "_"))
 				// File name
 				+ fileModif.getName()
-				// TODO:
-			//	+ "_0"
-				;
+		// TODO:
+		// + "_0"
+		;
 
 	}
 

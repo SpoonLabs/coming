@@ -15,6 +15,7 @@ public class PatternInstancesFromDiff extends AnalysisResult<IRevision> {
 
 	protected List<ChangePatternInstance> instances = null;
 	protected Diff diff = null;
+	protected String location = null;
 
 	public PatternInstancesFromDiff(IRevision analyzed) {
 		super(analyzed);
@@ -24,6 +25,14 @@ public class PatternInstancesFromDiff extends AnalysisResult<IRevision> {
 		super(analyzed);
 		this.instances = instances;
 		this.diff = diff;
+	}
+
+	public PatternInstancesFromDiff(IRevision analyzed, List<ChangePatternInstance> instances, Diff diff,
+			String location) {
+		super(analyzed);
+		this.instances = instances;
+		this.diff = diff;
+		this.location = location;
 	}
 
 	@Override
@@ -69,6 +78,14 @@ public class PatternInstancesFromDiff extends AnalysisResult<IRevision> {
 
 	public void setDiff(Diff diff) {
 		this.diff = diff;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
 	}
 
 }
