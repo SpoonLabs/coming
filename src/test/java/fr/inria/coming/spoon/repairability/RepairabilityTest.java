@@ -15,6 +15,6 @@ public class RepairabilityTest {
                 "-input",
                 "files",
                 "-location",
-                "/home/sid/projects/swe/defects4j-repair-reloaded/jMutRepairTest"});
+                getClass().getResource("/jMutRepairTest/").getFile()});
     }
 }
