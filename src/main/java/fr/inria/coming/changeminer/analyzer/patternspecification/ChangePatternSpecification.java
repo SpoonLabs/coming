@@ -85,4 +85,7 @@ public class ChangePatternSpecification {
 		return new PatternRelations(relations, paEntity);
 	}
 
+    public void setName(String name) {
+        this.name = name;
+    }
 }
