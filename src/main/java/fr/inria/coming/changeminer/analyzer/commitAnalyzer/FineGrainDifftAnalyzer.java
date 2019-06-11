@@ -38,9 +38,7 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 	protected GranuralityType granularity;
 
 	/**
-	 * 
-	 * @param typeLabel     node label to mine
-	 * @param operationType operation type to mine
+	 *
 	 */
 	public FineGrainDifftAnalyzer() {
 		granularity = GranuralityType.valueOf(ComingProperties.getProperty("GRANULARITY"));

@@ -1,0 +1,4 @@
+<pattern name="unary">
+    <entity id="2" type="UnaryOperator"/>
+    <action entityId="2" type="ANY"/>
+</pattern>

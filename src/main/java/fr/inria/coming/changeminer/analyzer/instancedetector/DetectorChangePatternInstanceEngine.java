@@ -139,7 +139,7 @@ public class DetectorChangePatternInstanceEngine {
 	}
 
 	/**
-	 * This method ckecks if the entities are used correctly: eg,
+	 * This method checks if the entities are used correctly: eg,
 	 * 
 	 * @param instance
 	 * @return

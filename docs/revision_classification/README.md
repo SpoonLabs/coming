@@ -7,6 +7,12 @@ and for each commits/revision it outputs a list of program repair tools.
 If commit `c` is classified as `x`, it means that `c` might have been produced by the program repair tool `x` 
 or in order words `c` lies in the search space of `x` tool.
 
+
+## Possible Coming Specification Improvement 
+- Binary Operator Kind or other kind of equality
+- Multiple pattern within a 
+
+## Program Repair Tools
 A list of program repair tools we are going to handle:- 
  
  ### jMutRepair 
@@ -36,8 +42,8 @@ A list of program repair tools we are going to handle:-
  #### Implementation Details
  
  Actions:
- - Update
- - Maybe Others 
+ - Update (for binary)
+ - Others (for unary)
  
  Entities:
  - BinaryOperator
@@ -49,25 +55,28 @@ A list of program repair tools we are going to handle:-
      - Do
      - For
      
- - TODO: Discuss what `action` are allowed? Just UPD or INS(in case of unary)?
- - TODO: In code check if the operator belong to the same class
+ - TODO: Discuss what `action` are allowed? Just UPD or INS or DEL or ? in the case of unary?
+ - TODO: Check if the operator(Updates) belong to the same class.
+ - TODO: One line change? No - to many variations to consider?
      
  #### Pattern
+ 
+ This pattern is able detect almost all commits in jMutRepair. 
 
  ```xml
 <pattern name="binary">
-	<entity id="1" type="CtBinaryOperator"/>
+	<entity id="1" type="BinaryOperator"/>
 	<action entityId="1" type="UPD"/>
 </pattern>
 ```
 ```xml
-<pattern name="binary">
-  	<entity id="2" type="CtUnaryOperator"/>
-    <action entityId="2" type="UPD"/>
-    <action entityId="2" type="INS"/>
-    <action entityId="2" type="DEL"/>
+<pattern name="unary">
+    <entity id="2" type="UnaryOperator"/>
+    <action entityId="2" type="ANY"/>
 </pattern>
 ```
+
+
  ### Nopol
  
  Paper: [Nopol: Automatic Repair of Conditional Statement Bugs in Java Programs](https://hal.archives-ouvertes.fr/hal-01285008/file/nopol.pdf)
