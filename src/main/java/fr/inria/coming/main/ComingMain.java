@@ -30,6 +30,7 @@ import fr.inria.coming.core.filter.commitmessage.KeyWordsMessageFilter;
 import fr.inria.coming.core.filter.diff.NbHunkFilter;
 import fr.inria.coming.core.filter.files.CommitSizeFilter;
 import fr.inria.coming.core.filter.files.ContainTestFilterFilter;
+import fr.inria.coming.repairability.JSONRepairabilityOutput;
 import fr.inria.coming.repairability.RepairTools;
 import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
@@ -276,7 +277,7 @@ public class ComingMain {
 
                 navigatorEngine.getAnalyzers().add(new PatternInstanceAnalyzer(patterns));
 
-                navigatorEngine.getOutputProcessors().add(new JSonPatternInstanceOutput());
+                navigatorEngine.getOutputProcessors().add(new JSONRepairabilityOutput());
 
 
             } else {
