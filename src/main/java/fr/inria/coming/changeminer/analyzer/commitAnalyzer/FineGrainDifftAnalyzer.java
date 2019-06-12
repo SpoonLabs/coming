@@ -34,6 +34,7 @@ import gumtree.spoon.diff.operations.Operation;
 public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 
 	Logger log = Logger.getLogger(FineGrainDifftAnalyzer.class.getName());
+	DiffEngineFacade cdiff = new DiffEngineFacade();
 
 	protected GranuralityType granularity;
 
@@ -61,7 +62,10 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 			String left = fileFromRevision.getPreviousVersion();
 			String right = fileFromRevision.getNextVersion();
 
-			Diff diff = compare(left, right);
+			String leftName = fileFromRevision.getPreviousName();
+			String rightName = fileFromRevision.getName();
+
+			Diff diff = compare(left, right, leftName, rightName);
 			if (diff != null) {
 				diffOfFiles.put(fileFromRevision.getName(), diff);
 			}
@@ -77,16 +81,24 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 	}
 
 	public Diff compare(String left, String right) {
+		return this.compare(left, right, "leftFile", "rightFile");
+	}
+
+	public Diff compare(String left, String right, GranuralityType granularity) {
+		return this.compare(left, right, "leftFile", "rightFile");
+	}
+
+	public Diff compare(String left, String right, String leftName, String rightName) {
 		if (!left.trim().isEmpty()) {
 
 			List<Operation> operations;
 
 			try {
-				Diff diff = this.compareContent(left, right, granularity);
+
+				Diff diff = cdiff.compareContent(left, right, leftName, rightName);
 
 				operations = diff.getRootOperations();
 
-				// TODO: Move to filter?
 				if (operations == null
 						|| operations.size() > ComingProperties.getPropertyInteger("MAX_AST_CHANGES_PER_FILE")
 						|| operations.size() < ComingProperties.getPropertyInteger("MIN_AST_CHANGES_PER_FILE")) {
@@ -107,13 +119,6 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 			}
 		}
 		return null;
-	}
-
-	public Diff compareContent(String left, String right, GranuralityType granularity) throws Exception {
-
-		DiffEngineFacade cdiff = new DiffEngineFacade();
-		return cdiff.compareContent(left, right, granularity);
-
 	}
 
 	public Diff getDiff(File left, File right) throws Exception {

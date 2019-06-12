@@ -26,12 +26,19 @@ public class DiffEngineFacade {
 		AstComparator comparator = new AstComparator();
 		return comparator.compare(contentL, contentR);
 
-	};
+	}
+
+	public Diff compareContent(String contentL, String contentR, String nameLeft, String nameRight) throws Exception {
+
+		AstComparator comparator = new AstComparator();
+		return comparator.compare(contentL, contentR, nameLeft, nameRight);
+
+	}
 
 	public Diff compareFiles(File contentL, File contentR, GranuralityType granularity) throws Exception {
 		AstComparator comparator = new AstComparator();
 		return comparator.compare(contentL, contentR);
 
-	};
+	}
 
 }
