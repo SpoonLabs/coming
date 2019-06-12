@@ -41,7 +41,7 @@ Evaluate the correctness probability of patch (by learning existing patches)
   -f, --feature-option=<featureOption>
                       Feature Option
                       default value: ORIGINAL
-                      valid values: ENHANCED, EXTENDED, ORIGINAL, S4R
+                      valid values: ENHANCED, EXTENDED, ORIGINAL, S4R, S4RO
   -p, --patch-option=<patchOption>
                       Patch Option
                       default value: BUG_DOT_JAR_MINUS_MATH
@@ -53,7 +53,7 @@ Evaluate the correctness probability of patch (by learning existing patches)
 https://github.com/SpoonLabs/coming
 ```
 
-All tasks run on predefined data-sets (shown above), among them, dataOption=SANER is valid iff patchOption=SPR.
+All tasks run on predefined data-sets (shown above), among them, dataOption=SANER is valid only when patchOption=SPR, patchOption=SPR is valid except when featureOption=S4R/S4RO.
 
 NOTICE: If you want to run the Evaluation task, you have to run the Learn task beforehand.
 

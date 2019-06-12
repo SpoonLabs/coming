@@ -167,6 +167,8 @@ public class RepairEvaluator {
     }
 
     public void run() {
+        run(RankingOption.D_CORRECT, RankingOption.D_INCORRECT);
+//        run(RankingOption.D_HUMAN, RankingOption.D_CORRECT);
         run(RankingOption.D_HUMAN, RankingOption.D_INCORRECT);
     }
 
@@ -175,7 +177,7 @@ public class RepairEvaluator {
         String foreFilePath = Support.getFilePath4Ranking(this.option, foreOption, false);
         String backFilePath = Support.getFilePath4Ranking(this.option, backOption, false);
 
-        Map<String, Map<File, File>> foreFiles = null;
+        Map<String, Map<File, File>> foreFiles;
         if (foreOption == RankingOption.D_HUMAN) {
             foreFiles = loadFiles(foreFilePath, backFilePath);
         } else {

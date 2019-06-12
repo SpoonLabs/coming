@@ -86,6 +86,19 @@ public class CLI {
         option.patchOption = cli.patchOption;
         option.featureOption = cli.featureOption;
 
+        // check the validity
+        if (option.dataOption == DataOption.SANER) {
+            if (option.patchOption != PatchOption.SPR) {
+                System.out.println("dataOption=SANER is valid only when patchOption=SPR");
+                return;
+            }
+        }
+        if (option.patchOption == PatchOption.SPR) {
+            if (option.featureOption == FeatureOption.S4R || option.featureOption == FeatureOption.S4RO) {
+                System.out.println("patchOption=SPR is valid except when featureOption=S4R/S4RO");
+            }
+        }
+
         System.out.println(option);
         System.out.println("TASK: " + cli.task.name());
 

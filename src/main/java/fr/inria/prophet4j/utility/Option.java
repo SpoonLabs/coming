@@ -28,20 +28,17 @@ public class Option {
 
     public enum FeatureOption {
         // based on EXTENDED
-        ENHANCED, // appended more ways of crossing features (POS_VF_RF_CT POS_VF_AF_CT AF_RF_CT VF_RF_CT)
+        ENHANCED, // more ways of crossing features (POS_VF_RF_CT POS_VF_AF_CT AF_RF_CT VF_RF_CT)
         // based on ORIGINAL
-        EXTENDED, // appended more features and reorganized them
+        EXTENDED, // more features and reorganized them
         ORIGINAL, // Prophet4J
         S4R, // SKETCH4REPAIR (sri-lab@ETH)
+        // S4RO is just for test, DO NOT use it when PatchOption = SPR
+        S4RO, // Complex Option
     }
 
     public enum LearnerOption {
-        // extra choices are just for experiments
-        // for example, on BUG_DOT_JAR-REPAIR_THEM_ALL
-        // BY_PAIR costs about 8X time than BY_SAMPLE
-        // but still performance worse than BY_SAMPLE
-        BY_PAIR, // NEVER CHOOSE THIS
-        BY_SAMPLE, // ALWAYS CHOOSE THIS
+        CROSS_ENTROPY,
     }
 
     public DataOption dataOption;
@@ -53,11 +50,10 @@ public class Option {
         this.dataOption = DataOption.CARDUMEN;
         this.patchOption = PatchOption.CARDUMEN;
         this.featureOption = FeatureOption.ORIGINAL;
-        this.learnerOption = LearnerOption.BY_SAMPLE;
+        this.learnerOption = LearnerOption.CROSS_ENTROPY;
     }
 
     public enum RankingOption {
-        // github.com/kth-tcs/overfitting-analysis/tree/master/data/Training/
         D_HUMAN,
         D_CORRECT,
         D_INCORRECT,
