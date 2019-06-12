@@ -11,6 +11,10 @@ import fr.inria.prophet4j.feature.FeatureExtractor;
 import fr.inria.prophet4j.feature.RepairGenerator;
 import fr.inria.prophet4j.feature.S4R.S4RFeature;
 import fr.inria.prophet4j.feature.S4R.S4RFeatureCross;
+import fr.inria.prophet4j.feature.S4RO.S4ROFeature;
+import fr.inria.prophet4j.feature.S4RO.S4ROFeatureCross;
+import fr.inria.prophet4j.feature.S4RO.S4ROFeatureExtractor;
+import fr.inria.prophet4j.feature.S4RO.S4RORepairGenerator;
 import fr.inria.prophet4j.utility.Structure.DiffType;
 import fr.inria.prophet4j.utility.Structure.FeatureMatrix;
 import fr.inria.prophet4j.utility.Structure.FeatureVector;
@@ -48,7 +52,7 @@ public class CodeDiffer {
     private String pathName;
     private static final Logger logger = LogManager.getLogger(CodeDiffer.class.getName());
 
-    public CodeDiffer(boolean byGenerator, Option option){
+    public CodeDiffer(boolean byGenerator, Option option) {
         this.byGenerator = byGenerator;
         this.option = option;
         this.pathName = "";
@@ -73,6 +77,9 @@ public class CodeDiffer {
             case S4R:
                 logger.warn("S4R should not call newFeatureExtractor");
                 break;
+            case S4RO:
+                featureExtractor = new S4ROFeatureExtractor();
+                break;
         }
         return featureExtractor;
     }
@@ -92,6 +99,9 @@ public class CodeDiffer {
             case S4R:
                 logger.warn("S4R should not call newRepairGenerator");
                 break;
+            case S4RO:
+                repairGenerator = new S4RORepairGenerator(diffEntry);
+                break;
         }
         return repairGenerator;
     }
@@ -107,27 +117,98 @@ public class CodeDiffer {
             Pattern pattern = Pattern.compile(":(\\d+)");
             Matcher matcher = pattern.matcher(operation.toString());
             if (operation instanceof DeleteOperation) {
-                if(matcher.find()) {
+                if (matcher.find()) {
                     deleteOperations.put(Integer.valueOf(matcher.group(1)), operation);
                 }
             } else if (operation instanceof InsertOperation) {
-                if(matcher.find()) {
+                if (matcher.find()) {
                     insertOperations.put(Integer.valueOf(matcher.group(1)), operation);
                 }
             } else if (operation instanceof MoveOperation) {
-                if(matcher.find()) {
+                if (matcher.find()) {
                     deleteOperations.put(Integer.valueOf(matcher.group(1)), operation);
                 }
-                if(matcher.find()) {
+                if (matcher.find()) {
                     insertOperations.put(Integer.valueOf(matcher.group(1)), operation);
                 }
             } else if (operation instanceof UpdateOperation) {
-                if(matcher.find()) {
+                if (matcher.find()) {
                     deleteOperations.put(Integer.valueOf(matcher.group(1)), operation);
                     insertOperations.put(Integer.valueOf(matcher.group(1)), operation);
                 }
             }
         }
+        Set<Integer> lineNums = new HashSet<>();
+        lineNums.addAll(deleteOperations.keySet());
+        lineNums.addAll(insertOperations.keySet());
+        for (Integer lineNum : lineNums) {
+            Operation deleteOperation = deleteOperations.get(lineNum);
+            Operation insertOperation = insertOperations.get(lineNum);
+
+            DiffType type = null;
+            CtElement srcNode = null;
+            CtElement dstNode = null;
+            if (deleteOperation != null && insertOperation != null) {
+                type = DiffType.UpdateType;
+                srcNode = deleteOperation.getSrcNode(); // ...
+                dstNode = insertOperation.getDstNode(); // ...
+                if (insertOperation instanceof InsertOperation) {
+                    dstNode = insertOperation.getSrcNode(); // ...
+                }
+            } else if (deleteOperation != null) {
+                type = DiffType.DeleteType;
+                srcNode = deleteOperation.getSrcNode(); // ...
+                dstNode = deleteOperation.getDstNode(); // null
+                if (srcNode == null) srcNode = dstNode;
+                if (dstNode == null) dstNode = srcNode;
+            } else if (insertOperation != null) {
+                type = DiffType.InsertType;
+                srcNode = insertOperation.getSrcNode(); // ...
+                dstNode = insertOperation.getDstNode(); // null
+                if (srcNode == null) srcNode = dstNode;
+                if (dstNode == null) dstNode = srcNode;
+            }
+            // distinguish functionality changes from revision changes
+            if (srcNode instanceof CtClass || srcNode instanceof CtMethod ||
+                    dstNode instanceof CtClass || dstNode instanceof CtMethod) {
+                continue;
+            }
+            diffEntries.add(new DiffEntry(type, srcNode, dstNode));
+        }
+        return diffEntries;
+    }
+
+    // this is only for compatible with S4R, therefore we do not handle MoveOperation
+    private List<DiffEntry> genDiffEntry(Operation operation) throws IndexOutOfBoundsException {
+        List<DiffEntry> diffEntries = new ArrayList<>();
+        Map<Integer, Operation> deleteOperations = new HashMap<>();
+        Map<Integer, Operation> insertOperations = new HashMap<>();
+        // tmp wrapper for gumtree-spoon-ast-diff
+        // may be affected by future versions of gumtree-spoon-ast-diff
+        Pattern pattern = Pattern.compile(":(\\d+)");
+        Matcher matcher = pattern.matcher(operation.toString());
+        if (operation instanceof DeleteOperation) {
+            if (matcher.find()) {
+                deleteOperations.put(Integer.valueOf(matcher.group(1)), operation);
+            }
+        } else if (operation instanceof InsertOperation) {
+            if (matcher.find()) {
+                insertOperations.put(Integer.valueOf(matcher.group(1)), operation);
+            }
+        } else if (operation instanceof MoveOperation) {
+            if (matcher.find()) {
+                deleteOperations.put(Integer.valueOf(matcher.group(1)), operation);
+            }
+            if (matcher.find()) {
+                insertOperations.put(Integer.valueOf(matcher.group(1)), operation);
+            }
+        } else if (operation instanceof UpdateOperation) {
+            if (matcher.find()) {
+                deleteOperations.put(Integer.valueOf(matcher.group(1)), operation);
+                insertOperations.put(Integer.valueOf(matcher.group(1)), operation);
+            }
+        }
+
         Set<Integer> lineNums = new HashSet<>();
         lineNums.addAll(deleteOperations.keySet());
         lineNums.addAll(insertOperations.keySet());
@@ -246,6 +327,92 @@ public class CodeDiffer {
                     featureVectors.add(featureVector);
                 }
                 featureMatrices.add(new FeatureMatrix(true, fileKey, featureVectors));
+            } else if (option.featureOption == FeatureOption.S4RO) {
+                FeatureExtractor featureExtractor = newFeatureExtractor();
+                List<FeatureVector> featureVectors = new ArrayList<>();
+                // based on L152-186 at FeatureAnalyzer.java
+                JsonObject file = new JsonObject();
+                try {
+                    JsonArray changesArray = new JsonArray();
+                    file.add("features", changesArray);
+                    List<Operation> ops = diff.getRootOperations();
+                    for (Operation operation : ops) {
+                        try {
+                            CtElement affectedCtElement = featureAnalyzer.getLeftElement(operation);
+                            if (affectedCtElement != null) {
+                                Cntx iContext = cresolver.analyzeFeatures(affectedCtElement);
+                                changesArray.add(iContext.toJSON());
+
+                                // here we merge two feature-vectors of one MoveOperation
+                                FeatureVector featureVector = new FeatureVector();
+                                for (DiffEntry diffEntry : genDiffEntry(operation)) {
+                                    // generate P4J featureVectors beforehand
+                                    RepairGenerator generator = newRepairGenerator(diffEntry);
+                                    Repair repair = generator.obtainHumanRepair();
+                                    for (CtElement atom : repair.getCandidateAtoms()) {
+                                        featureVector.merge(featureExtractor.extractFeature(repair, atom));
+                                    }
+                                }
+                                featureVectors.add(featureVector);
+                            }
+                        } catch (Exception e) {
+//                            e.printStackTrace();
+                        }
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+                // based on L61-79 at FeaturesOnD4jTest.java
+                JsonElement elAST = file.get("features");
+//        			assertNotNull(elAST);
+//		        	assertTrue(elAST instanceof JsonArray);
+                JsonArray featuresOperationList = (JsonArray) elAST;
+//			        assertTrue(featuresOperationList.size() > 0);
+                int index = 0;
+                for (JsonElement featuresOfOperation : featuresOperationList) {
+                    // the first one in newFiles is human patch
+                    FeatureVector featureVector = featureVectors.get(index);
+                    index += 1;
+                    JsonObject jso = featuresOfOperation.getAsJsonObject();
+                    for (S4ROFeature.CodeFeature codeFeature : S4ROFeature.CodeFeature.values()) {
+                        JsonElement property = jso.get(codeFeature.toString());
+                        if (property != null) {
+                            try {
+                                JsonPrimitive value = property.getAsJsonPrimitive();
+                                String str = value.getAsString();
+
+                                if (str.equalsIgnoreCase("true")) {
+                                    // handle boolean-form features
+                                    List<Feature> features = new ArrayList<>();
+                                    features.add(codeFeature);
+                                    FeatureCross featureCross = new S4ROFeatureCross(S4ROFeature.CrossType.CF_CT, features, 1.0);
+                                    featureVector.addFeatureCross(featureCross);
+                                } else if (str.equalsIgnoreCase("false")) {
+                                    // handle boolean-form features
+                                    List<Feature> features = new ArrayList<>();
+                                    features.add(codeFeature);
+                                    FeatureCross featureCross = new S4ROFeatureCross(S4ROFeature.CrossType.CF_CT, features, 0.0);
+                                    featureVector.addFeatureCross(featureCross);
+                                } else {
+                                    // handle numerical-form features
+                                    try {
+                                        double degree = Double.parseDouble(value.getAsString());
+                                        List<Feature> features = new ArrayList<>();
+                                        features.add(codeFeature);
+                                        FeatureCross featureCross = new S4ROFeatureCross(S4ROFeature.CrossType.CF_CT, features, degree);
+                                        featureVector.addFeatureCross(featureCross);
+                                    } catch (Exception e) {
+//                                        e.printStackTrace();
+                                    }
+                                }
+                            } catch (IllegalStateException e) {
+//                                logger.error("Not a JSON Primitive");
+                            }
+                        }
+                    }
+//                    featureVectors.add(featureVector);
+                }
+                featureMatrices.add(new FeatureMatrix(true, fileKey, featureVectors));
             } else {
                 // RepairGenerator receive diffEntry as parameter, so we do not need ErrorLocalizer
                 {
@@ -272,12 +439,19 @@ public class CodeDiffer {
                     FeatureExtractor featureExtractor = newFeatureExtractor();
                     for (DiffEntry diffEntry : genDiffEntries(diff)) {
                         RepairGenerator generator = newRepairGenerator(diffEntry);
-                        for (Repair repair: generator.obtainRepairCandidates()) {
+                        for (Repair repair : generator.obtainRepairCandidates()) {
                             for (CtElement atom : repair.getCandidateAtoms()) {
                                 List<FeatureVector> featureVectors = new ArrayList<>();
                                 featureVectors.add(featureExtractor.extractFeature(repair, atom));
                                 featureMatrices.add(new FeatureMatrix(false, fileKey, featureVectors));
                             }
+//                            List<FeatureVector> featureVectors = new ArrayList<>();
+//                            FeatureVector featureVector = new FeatureVector();
+//                            for (CtElement atom : repair.getCandidateAtoms()) {
+//                                featureVector.merge(featureExtractor.extractFeature(repair, atom));
+//                            }
+//                            featureVectors.add(featureVector);
+//                            featureMatrices.add(new FeatureMatrix(false, fileKey, featureVectors));
                         }
                     }
                 }

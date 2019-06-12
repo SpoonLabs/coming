@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import fr.inria.prophet4j.feature.Feature;
 import fr.inria.prophet4j.feature.FeatureCross;
 import fr.inria.prophet4j.feature.S4R.S4RFeature;
+import fr.inria.prophet4j.feature.S4RO.S4ROFeature;
 import fr.inria.prophet4j.feature.enhanced.EnhancedFeature;
 import fr.inria.prophet4j.feature.extended.ExtendedFeature;
 import fr.inria.prophet4j.feature.original.OriginalFeature;
@@ -18,23 +19,6 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public interface Structure {
-    class Pair {
-        private FeatureMatrix humanPatch;
-        private FeatureMatrix machinePatch;
-
-        public Pair(FeatureMatrix humanPatch, FeatureMatrix machinePatch) {
-            this.humanPatch = humanPatch;
-            this.machinePatch = machinePatch;
-        }
-
-        public List<FeatureMatrix> getFeatureMatrices() {
-            List<FeatureMatrix> featureMatrices = new ArrayList<>();
-            featureMatrices.add(humanPatch);
-            featureMatrices.add(machinePatch);
-            return featureMatrices;
-        }
-    }
-
     class Sample { // namely TrainingCase
         private String filePath;
         private List<FeatureMatrix> featureMatrices;
@@ -64,7 +48,7 @@ public interface Structure {
                     }
                     List<FeatureVector> tmpFeatureVectors = new ArrayList<>();
                     tmpFeatureVectors.add(tmpFeatureVector);
-                    tmpFeatureMatrices.add(new FeatureMatrix(featureMatrix.marked, tmpFeatureVectors));
+                    tmpFeatureMatrices.add(new FeatureMatrix(featureMatrix.marked, featureMatrix.fileKey, tmpFeatureVectors));
                 }
                 featureMatrices = tmpFeatureMatrices;
                  */
@@ -108,6 +92,9 @@ public interface Structure {
                     break;
                 case S4R:
                     arraySize = S4RFeature.FEATURE_SIZE;
+                    break;
+                case S4RO:
+                    arraySize = S4ROFeature.FEATURE_SIZE;
                     break;
             }
 
@@ -258,6 +245,9 @@ public interface Structure {
                     break;
                 case S4R:
                     this.arraySize = S4RFeature.FEATURE_SIZE;
+                    break;
+                case S4RO:
+                    this.arraySize = S4ROFeature.FEATURE_SIZE;
                     break;
             }
             this.parameterArray = new double[arraySize];
