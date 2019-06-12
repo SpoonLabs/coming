@@ -39,7 +39,7 @@ public class SpoonGranularitySingleChangePatternTest {
 
 		FineGrainDifftAnalyzer fineGrainAnalyzer = new FineGrainDifftAnalyzer();
 
-		Diff diff = fineGrainAnalyzer.compareContent(contentLeft, contentRigh, GranuralityType.SPOON);
+		Diff diff = fineGrainAnalyzer.compare(contentLeft, contentRigh, GranuralityType.SPOON);
 
 		assertTrue(diff.getRootOperations().size() > 0);
 	}
@@ -55,7 +55,7 @@ public class SpoonGranularitySingleChangePatternTest {
 		// PatternFilter patternFilter = new PatternFilter("*", ActionType.ANY);
 		FineGrainDifftAnalyzer fineGrainAnalyzer = new FineGrainDifftAnalyzer();
 
-		Diff diff = fineGrainAnalyzer.compareContent(contentLeft, contentRigh, GranuralityType.SPOON);
+		Diff diff = fineGrainAnalyzer.compare(contentLeft, contentRigh, GranuralityType.SPOON);
 		System.out.println("" + diff.getRootOperations());
 		System.out.println();
 		assertTrue(diff.getRootOperations().size() > 0);
@@ -71,7 +71,7 @@ public class SpoonGranularitySingleChangePatternTest {
 
 		FineGrainDifftAnalyzer fineGrainAnalyzer = new FineGrainDifftAnalyzer();
 
-		Diff diff = fineGrainAnalyzer.compareContent(contentLeft, contentRigh, GranuralityType.SPOON);
+		Diff diff = fineGrainAnalyzer.compare(contentLeft, contentRigh, GranuralityType.SPOON);
 		System.out.println("" + diff.getRootOperations());
 		System.out.println();
 		assertTrue(diff.getRootOperations().size() > 0);
@@ -87,7 +87,7 @@ public class SpoonGranularitySingleChangePatternTest {
 
 		FineGrainDifftAnalyzer fineGrainAnalyzer = new FineGrainDifftAnalyzer();
 
-		Diff diff = fineGrainAnalyzer.compareContent(contentLeft, contentRigh, GranuralityType.SPOON);
+		Diff diff = fineGrainAnalyzer.compare(contentLeft, contentRigh, GranuralityType.SPOON);
 		System.out.println("" + diff.getRootOperations());
 		System.out.println();
 		assertTrue(diff.getRootOperations().size() > 0);
@@ -103,7 +103,7 @@ public class SpoonGranularitySingleChangePatternTest {
 
 		FineGrainDifftAnalyzer fineGrainAnalyzer = new FineGrainDifftAnalyzer();
 
-		Diff diff = fineGrainAnalyzer.compareContent(contentLeft, contentRigh, GranuralityType.SPOON);
+		Diff diff = fineGrainAnalyzer.compare(contentLeft, contentRigh, GranuralityType.SPOON);
 		System.out.println("" + diff.getRootOperations());
 		System.out.println();
 		assertTrue(diff.getRootOperations().size() > 0);
@@ -119,7 +119,7 @@ public class SpoonGranularitySingleChangePatternTest {
 
 		FineGrainDifftAnalyzer fineGrainAnalyzer = new FineGrainDifftAnalyzer();
 
-		Diff diff = fineGrainAnalyzer.compareContent(contentLeft, contentRigh, GranuralityType.SPOON);
+		Diff diff = fineGrainAnalyzer.compare(contentLeft, contentRigh, GranuralityType.SPOON);
 		System.out.println("" + diff.getRootOperations());
 		System.out.println();
 		assertTrue(diff.getRootOperations().size() > 0);
@@ -135,7 +135,7 @@ public class SpoonGranularitySingleChangePatternTest {
 
 		FineGrainDifftAnalyzer fineGrainAnalyzer = new FineGrainDifftAnalyzer();
 
-		Diff diff = fineGrainAnalyzer.compareContent(contentLeft, contentRigh, GranuralityType.SPOON);
+		Diff diff = fineGrainAnalyzer.compare(contentLeft, contentRigh, GranuralityType.SPOON);
 		System.out.println("" + diff.getRootOperations());
 		System.out.println();
 		assertTrue(diff.getRootOperations().size() > 0);
@@ -151,7 +151,7 @@ public class SpoonGranularitySingleChangePatternTest {
 
 		FineGrainDifftAnalyzer fineGrainAnalyzer = new FineGrainDifftAnalyzer();
 
-		Diff diff = fineGrainAnalyzer.compareContent(contentLeft, contentRigh, GranuralityType.SPOON);
+		Diff diff = fineGrainAnalyzer.compare(contentLeft, contentRigh, GranuralityType.SPOON);
 		System.out.println("" + diff.getRootOperations());
 		System.out.println();
 		assertTrue(diff.getRootOperations().size() > 0);

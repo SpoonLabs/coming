@@ -1,17 +1,27 @@
 package fr.inria.coming.spoon.diffanalyzer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
+import fr.inria.coming.changeminer.entity.CommitFinalResult;
+import fr.inria.coming.core.entities.DiffResult;
+import fr.inria.coming.core.entities.RevisionResult;
+import fr.inria.coming.core.entities.interfaces.Commit;
+import fr.inria.coming.main.ComingMain;
 import gumtree.spoon.AstComparator;
 import gumtree.spoon.diff.Diff;
+import gumtree.spoon.diff.operations.InsertOperation;
 import gumtree.spoon.diff.operations.Operation;
 
 /**
@@ -180,4 +190,79 @@ public class DiffCasesTest {
 		File file = new File(classLoader.getResource(name).getFile());
 		return file;
 	}
+
+	@Test
+	public void testFileNameGivenByArg1() throws Exception {
+		String contentLeft = "" + "class X {" + "public Object foo() {" + " Integer.toString(10);"
+				+ " int a = 1,b = 1,c = 1,d = 1; " + "a = a + b / c +d ; " + " return null;" + "}};";
+
+		String contentRigh = "" + "class X {" + "public Object foo() {" + " Integer.toString(10);"
+				+ " int a = 1,b = 1,c = 1,d = 1; " + " a = a + b / c + d ; b = 0; " + " return null;" + "}};";
+
+		FineGrainDifftAnalyzer fineGrainAnalyzer = new FineGrainDifftAnalyzer();
+
+		String rightName = "mynameRight.java";
+		String leftName = "mynameLeft.java";
+		Diff diff = fineGrainAnalyzer.compare(contentLeft, contentRigh, leftName, rightName);
+
+		assertTrue(diff.getRootOperations().size() > 0);
+
+		Operation opInser = diff.getRootOperations().get(0);
+		assertTrue(opInser instanceof InsertOperation);
+		InsertOperation ins = (InsertOperation) opInser;
+		assertEquals(rightName, opInser.getSrcNode().getPosition().getFile().getName());
+		assertEquals(leftName, ins.getParent().getPosition().getFile().getName());
+
+	}
+
+	@Test
+	public void testFileNameFromFile2() throws Exception {
+		String nameLeft = "diffcases/919148/ReplicationRun/919148_ReplicationRun_0_s.java";
+		File s = getFile(nameLeft);
+		String nameRight = "diffcases/919148/ReplicationRun/919148_ReplicationRun_0_t.java";
+		File t = getFile(nameRight);
+		FineGrainDifftAnalyzer r = new FineGrainDifftAnalyzer();
+		Diff diffOut = r.getdiffFuture(s, t);
+		Assert.assertTrue(diffOut.getRootOperations().size() > 0);
+
+		Optional<Operation> firstInsert = diffOut.getRootOperations().stream().filter(e -> e instanceof InsertOperation)
+				.findFirst();
+		assertTrue(firstInsert.isPresent());
+		InsertOperation insop = (InsertOperation) firstInsert.get();
+		assertNotNull(insop);
+
+		assertEquals(t.getName(), insop.getSrcNode().getPosition().getFile().getName());
+		assertEquals(s.getName(), insop.getParent().getPosition().getFile().getName());
+
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testNameFileGit() throws Exception {
+		ComingMain cm = new ComingMain();
+		Object result = cm.run(new String[] { "-location", "repogit4testv0", });
+		assertNotNull(result);
+		assertTrue(result instanceof CommitFinalResult);
+		CommitFinalResult cfres = (CommitFinalResult) result;
+		Map<Commit, RevisionResult> commits = cfres.getAllResults();
+
+		Commit c1 = commits.keySet().stream()
+				.filter(e -> e.getName().equals("4120ab0c714911a9c9f26b591cb3222eaf57d127")).findFirst().get();
+		DiffResult<Commit, Diff> diff1 = (DiffResult<Commit, Diff>) commits.get(c1)
+				.getResultFromClass(FineGrainDifftAnalyzer.class);
+
+		assertEquals(1, diff1.getAll().size());
+
+		Diff diffOut = diff1.getAll().get(0);
+		Optional<Operation> firstInsert = diffOut.getRootOperations().stream().filter(e -> e instanceof InsertOperation)
+				.findFirst();
+		assertTrue(firstInsert.isPresent());
+		InsertOperation insop = (InsertOperation) firstInsert.get();
+		assertNotNull(insop);
+
+		assertEquals("CharSequenceUtils.java", insop.getSrcNode().getPosition().getFile().getName());
+		assertEquals("CharSequenceUtils.java", insop.getParent().getPosition().getFile().getName());
+
+	}
+
 }
