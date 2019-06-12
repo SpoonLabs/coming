@@ -117,7 +117,7 @@ public class RepairTools extends AbstractRepairTool {
      * @param toolName name of the repair-tool. Same as the simple class-name
      * @return An object corresponding to rep
      */
-    private static AbstractRepairTool getRepairToolInstance(String toolName) {
+    public static AbstractRepairTool getRepairToolInstance(String toolName) {
         AbstractRepairTool object = null;
         try {
             if (supportsTool(toolName) < 0) {
@@ -137,7 +137,7 @@ public class RepairTools extends AbstractRepairTool {
      * @param toolNames a list of string containing repair tool name(classname)
      * @return a list of objects corresponding to the
      */
-    private static List<AbstractRepairTool> getRepairToolsInstance(List<String> toolNames) {
+    public static List<AbstractRepairTool> getRepairToolsInstance(List<String> toolNames) {
         List<AbstractRepairTool> list = new ArrayList<>();
         for (String toolName : toolNames) {
             list.add(getRepairToolInstance(toolName));

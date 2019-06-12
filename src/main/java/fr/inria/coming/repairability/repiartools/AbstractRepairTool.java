@@ -1,13 +1,13 @@
 package fr.inria.coming.repairability.repiartools;
 
+import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
-import fr.inria.coming.core.entities.RevisionResult;
 
 import java.io.File;
 import java.util.List;
 
 /**
- * Each repair tool in RepairabilityAnalyzer must be a subclass of Repair tool
+ * Each repair tool in RepairabilityFilterAnalyzer must be a subclass of Repair tool
  */
 public abstract class AbstractRepairTool {
 
@@ -30,11 +30,11 @@ public abstract class AbstractRepairTool {
      * Certain patterns/characteristics of search-space of a repair tool can't be represented by ChangePatternSpecification
      * This filter is supposed to delete/remove such instances from the results given by PatternInstanceAnalyser.
      *
-     * @param revisionResult
-     * @return revisionResult
+     * @param instance
+     * @return boolean value
      */
-    public RevisionResult filter(RevisionResult revisionResult) {
-        return revisionResult;
+    public boolean filter(ChangePatternInstance instance) {
+        return true;
     }
 
     /**
