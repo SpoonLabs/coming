@@ -4,9 +4,9 @@ import fr.inria.prophet4j.dataset.DataManager;
 import fr.inria.prophet4j.learner.FeatureLearner;
 import fr.inria.prophet4j.learner.RepairEvaluator;
 import fr.inria.prophet4j.utility.Option;
-import fr.inria.prophet4j.utility.Option.FeatureOption;
 import fr.inria.prophet4j.utility.Option.DataOption;
 import fr.inria.prophet4j.utility.Option.PatchOption;
+import fr.inria.prophet4j.utility.Option.FeatureOption;
 import fr.inria.prophet4j.utility.Structure.Sample;
 
 import java.util.List;
@@ -39,20 +39,12 @@ public class Demo {
 
     void evaluate() {
         RepairEvaluator repairEvaluator = new RepairEvaluator(option);
-//        repairEvaluator.run(RankingOption.D_CORRECT, RankingOption.D_INCORRECT);
-//        System.out.println("1/3 Done");
-//        repairEvaluator.run(RankingOption.D_HUMAN, RankingOption.D_CORRECT);
-//        System.out.println("2/3 Done");
-//        repairEvaluator.run(RankingOption.D_HUMAN, RankingOption.D_INCORRECT);
-//        System.out.println("3/3 Done");
         repairEvaluator.run();
         System.out.println("1/1 EVALUATED");
     }
 
-    private static void jobsDemo(Option option) {
+    private static void run(Option option) {
         try {
-            option.dataOption = DataOption.SANER;
-            option.patchOption = PatchOption.SPR;
             new Demo(option).extract();
             new Demo(option).learn();
             new Demo(option).evaluate();
@@ -61,65 +53,44 @@ public class Demo {
         }
     }
 
-    private static void jobsODS(Option option) {
-        try {
-            option.dataOption = DataOption.BUG_DOT_JAR_MINUS_MATH;
-            option.patchOption = PatchOption.BUG_DOT_JAR_MINUS_MATH;
-            new Demo(option).extract();
-            new Demo(option).learn();
-            new Demo(option).evaluate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-//        try {
-//            option.dataOption = DataOption.BUG_DOT_JAR_MINUS_MATH;
-//            option.patchOption = PatchOption.SPR;
-//            new Demo(option).extract();
-//            new Demo(option).learn();
-//            new Demo(option).evaluate();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+    private static void runDemo(Option option) {
+        option.dataOption = DataOption.SANER;
+        option.patchOption = PatchOption.SPR;
+        option.featureOption = FeatureOption.ORIGINAL;
+        run(option);
+        option.featureOption = FeatureOption.EXTENDED;
+        run(option);
     }
 
-    private static void jobsS4R(Option option) {
-        try {
-            option.dataOption = DataOption.BUG_DOT_JAR_MINUS_MATH;
-            option.patchOption = PatchOption.BUG_DOT_JAR_MINUS_MATH;
-            new Demo(option).extract();
-            new Demo(option).learn();
-            new Demo(option).evaluate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-//        try {
-//            option.dataOption = DataOption.BUG_DOT_JAR_MINUS_MATH;
-//            option.patchOption = PatchOption.SPR;
-//            new Demo(option).extract();
-//            new Demo(option).learn();
-//            new Demo(option).evaluate();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+    private static void runODS1(Option option) {
+        option.dataOption = DataOption.BUG_DOT_JAR_MINUS_MATH;
+        option.patchOption = PatchOption.BUG_DOT_JAR_MINUS_MATH;
+        option.featureOption = FeatureOption.ORIGINAL;
+        run(option);
+        option.featureOption = FeatureOption.EXTENDED;
+        run(option);
+        option.featureOption = FeatureOption.S4R;
+        run(option);
+        option.featureOption = FeatureOption.S4RO;
+        run(option);
+    }
+
+    private static void runODS2(Option option) {
+        option.dataOption = DataOption.BUG_DOT_JAR_MINUS_MATH;
+        option.patchOption = PatchOption.SPR;
+        option.featureOption = FeatureOption.ORIGINAL;
+        run(option);
+        option.featureOption = FeatureOption.EXTENDED;
+        run(option);
     }
 
     // seem meaningless to use FeatureOption.ENHANCED
     public static void main(String[] args) {
         try {
             Option option = new Option();
-            // for Demo
-//            option.featureOption = FeatureOption.ORIGINAL;
-//            jobsDemo(option);
-//            option.featureOption = FeatureOption.EXTENDED;
-//            jobsDemo(option);
-            // for ODS
-             option.featureOption = FeatureOption.ORIGINAL;
-             jobsODS(option);
-//             option.featureOption = FeatureOption.EXTENDED;
-//             jobsODS(option);
-            // for S4R
-//            option.featureOption = FeatureOption.S4R;
-//            jobsS4R(option);
+//            runDemo(option);
+//            runODS1(option);
+//            runODS2(option);
         } catch (Exception e) {
             e.printStackTrace();
         }
