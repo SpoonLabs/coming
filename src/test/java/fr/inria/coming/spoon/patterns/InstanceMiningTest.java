@@ -9,6 +9,7 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -16,9 +17,12 @@ import org.junit.Test;
 
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
 import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
+import fr.inria.coming.changeminer.analyzer.instancedetector.DetectorChangePatternInstanceEngine;
+import fr.inria.coming.changeminer.analyzer.instancedetector.MegaDiff;
 import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstanceAnalyzer;
 import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstancesFromDiff;
 import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstancesFromRevision;
+import fr.inria.coming.changeminer.analyzer.instancedetector.ResultMapping;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.analyzer.patternspecification.PatternAction;
 import fr.inria.coming.changeminer.analyzer.patternspecification.PatternEntity;
@@ -31,7 +35,11 @@ import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.core.entities.interfaces.Commit;
 import fr.inria.coming.main.ComingMain;
 import fr.inria.coming.utils.CommandSummary;
+import gumtree.spoon.AstComparator;
 import gumtree.spoon.diff.Diff;
+import gumtree.spoon.diff.operations.InsertOperation;
+import gumtree.spoon.diff.operations.Operation;
+import gumtree.spoon.diff.operations.UpdateOperation;
 
 /**
  * 
@@ -741,4 +749,51 @@ public class InstanceMiningTest {
 
 	}
 
+	@Test
+	public void testMultipattern1() {
+
+		String c1 = "" + "class X {" + "public void foo0() {" + " int x = 0;" + "}" + "};";
+
+		String c2 = "" + "class X {" + "public void foo0() {" + " int x = 1;" + "}" + "};";
+
+		AstComparator diff = new AstComparator();
+		Diff editScript = diff.compare(c1, c2);
+		assertTrue(editScript.getRootOperations().size() == 1);
+
+		Optional<Operation> op = editScript.getRootOperations().stream().filter(e -> e instanceof UpdateOperation)
+				.findFirst();
+
+		assertTrue(op.isPresent());
+
+		c1 = "" + "class X {" + "public void foo0() {" + " int x = 0;" + "}" + "};";
+
+		c2 = "" + "class X {" + "public void foo0() {" + " int x = 0; double d;" + "}" + "};";
+
+		AstComparator diff2 = new AstComparator();
+		Diff editScript2 = diff2.compare(c1, c2);
+		assertTrue(editScript2.getRootOperations().size() == 1);
+
+		Optional<Operation> op2 = editScript2.getRootOperations().stream().filter(e -> e instanceof InsertOperation)
+				.findFirst();
+
+		assertTrue(op2.isPresent());
+
+		MegaDiff md = new MegaDiff();
+		md.merge(editScript);
+		md.merge(editScript2);
+
+		ChangePatternSpecification pattern = new ChangePatternSpecification("megadifftest");
+
+		PatternEntity enany = new PatternEntity("*");
+		PatternEntity elv = new PatternEntity("LocalVariable");
+
+		pattern.addChange(new PatternAction(elv, ActionType.INS));
+		pattern.addChange(new PatternAction(enany, ActionType.UPD));
+
+		DetectorChangePatternInstanceEngine detector = new DetectorChangePatternInstanceEngine();
+		ResultMapping mappings = detector.mappingActions(pattern, md);
+		assertTrue(mappings.getMappings().size() > 0);
+		List<ChangePatternInstance> instances = detector.findPatternInstances(pattern, md);
+		assertTrue(instances.size() > 0);
+	}
 }
