@@ -23,6 +23,7 @@ import fr.inria.coming.changeminer.analyzer.patternspecification.PatternAction;
 import fr.inria.coming.changeminer.analyzer.patternspecification.PatternEntity;
 import fr.inria.coming.changeminer.analyzer.patternspecification.PatternRelations;
 import fr.inria.coming.changeminer.entity.ActionType;
+import fr.inria.coming.main.ComingProperties;
 import fr.inria.coming.utils.MapList;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
@@ -44,6 +45,13 @@ public class DetectorChangePatternInstanceEngine {
 
 		ResultMapping mapping = mappingActions(changePatternSpecification, diffToAnalyze);
 
+		log.debug("Diff size " + diffToAnalyze.getAllOperations().size() + ": "
+				+ diffToAnalyze.getAllOperations().stream()
+						.map(e -> e.getClass().getSimpleName() + " " + e.getSrcNode().getClass().getSimpleName())
+						.collect(Collectors.joining(" - ")));
+
+		log.debug("#Mapped  " + mapping.mappings.size() + " #NotMapped " + mapping.notMapped.size());
+
 		if (!mapping.getNotMapped().isEmpty()) {
 			log.debug("There are pattern actions not mapped: " + mapping.getNotMapped());
 			return Collections.EMPTY_LIST;
@@ -61,7 +69,9 @@ public class DetectorChangePatternInstanceEngine {
 		List<ChangePatternInstance> instancesFinalSet = new ArrayList<>();
 
 		// All Combinations
-		List<ChangePatternInstance> instancesAllCombinations = allCombinations(changePatternSpecification, matching);
+		List<ChangePatternInstance> instancesAllCombinations = (ComingProperties.getPropertyBoolean("singleinstance"))
+				? singleInstance(changePatternSpecification, matching)
+				: allCombinations(changePatternSpecification, matching);
 
 		instancesAllCombinations = instancesAllCombinations.stream().filter(e -> validate(e))
 				.collect(Collectors.toList());
@@ -91,6 +101,39 @@ public class DetectorChangePatternInstanceEngine {
 
 		return instancesFinalSet;
 
+	}
+
+	/**
+	 * We return a single instance, with the mapping to the first element. It can we
+	 * use when it's necessary to assert the presence of a pattern instance, but we
+	 * dont want to analyze them.
+	 * 
+	 * @param changePatternSpecification
+	 * @param matching
+	 * @return
+	 */
+	private List<ChangePatternInstance> singleInstance(ChangePatternSpecification changePatternSpecification,
+			MapList<PatternAction, MatchingAction> matching) {
+		List<ChangePatternInstance> instancesAllCombinations = new ArrayList<>();
+
+		ChangePatternInstance ins = new ChangePatternInstance(changePatternSpecification);
+		for (PatternAction pa : matching.keySet()) {
+
+			List<ChangePatternInstance> temp = new ArrayList<>();
+
+			List<MatchingAction> actions = matching.get(pa);
+
+			MatchingAction matchingAction = actions.get(0);
+
+			ins.addInstance(matchingAction.getPatternAction(), matchingAction.getOperation());
+			ins.getMapping().put(pa, matchingAction);
+
+			temp.add(ins);
+
+			instancesAllCombinations.clear();
+			instancesAllCombinations.addAll(temp);
+		}
+		return instancesAllCombinations;
 	}
 
 	public List<ChangePatternInstance> allCombinations(ChangePatternSpecification changePatternSpecification,
