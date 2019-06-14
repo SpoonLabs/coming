@@ -6,8 +6,10 @@ The flow of this module is as follows:
 
 - Apply FineGrainDifftAnalyzer to input: This basically produces a list of fine-grained diffs/revisions in the input
 - Use `fr.inria.coming.repairability.RepairTools` to get list of patterns to be mined as per repair-tools specified in `-repairtool`
-- We use patterns we get from above and invoke PatternInstanceAnalyzer, which outputs a list of instances that match any one of the patterns given as input.
-- The output of PatternInstanceAnalyzer is given to JSONRepairabilityOutput, which produces a json with a list of instances
+- We use patterns we get from above and invoke `PatternInstanceAnalyzer`, 
+which outputs a list of instances that match any one of the patterns given as input.
+- The output of `PatternInstanceAnalyzer` is given `RepairabilityAnalyzer. It invokes filter(of the repair-tool, with whose pattern it was matched) on each instance found above
+- The output of `RepairabilityAnalyzer` is given to  `JSONRepairabilityOutput`, which produces a json with a list of instances
     - each instance is a single revision
     - each revision has a list of repairability
     - each repairability represents a single repair tool that could have generated that revision
@@ -18,7 +20,7 @@ The flow of this module is as follows:
 - Create a new class, `x`, in the package `fr.inria.coming.repairability.repiartools`. `x` should extend `fr.inria.coming.repairability.repiartools.AbstractRepairTool`.
 - Add the name of the class, `x`, to the array `supportedTools` in `fr.inria.coming.repairability.RepairTools`
 - The new class should at least implement the method ` protected List<ChangePatternSpecification> readPatterns()`
-
+- The class may override ` public boolean filter(ChangePatternInstance instance);`
 
 ### readPatterns()
 
@@ -41,7 +43,16 @@ One of the methods to do it is:
 
 The output of `readPatterns()` will be modified a little bit by `AbstractRepairTool.getPatterns()` and then given to `PatternInstanceAnalyser` to mine the required patterns.
 
+### filter()
+Certain characteristics/features of search space of a repair-tool can't be specified in the .xml or the Change Pattern Specification. 
+There filter function is provided to specify extra constrains over the instances mined `PatternInstanceAnalyzer` using the patterns provided by `readPatterns()` of that repair-tool.
+This means that we can allow patterns in readPatterns() to be lenient and apply stronger checks in filter to get the desired search space. `ChangePatternInstance` is a very information rich object that contains almost all the information about the AST nodes involved.
 
+A `ChangePatternInstance` object is input to the `filter()`. The object represents a change instance in code that was matched with one of the patterns specific to that repair-tool.
+If `filter()` returns false, the `ChangePatternInstance` is dropped. Otherwise it is passed to the output processor.  
+
+
+  
 ## Usage
 Though you need to implement `readPatterns()`, one should only use `getPatterns()` while trying to use the repair tool module.
 `RepairTools` class provides several features to use one or several repair-tools with ease.

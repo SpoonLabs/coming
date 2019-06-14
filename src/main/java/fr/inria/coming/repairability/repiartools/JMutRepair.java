@@ -1,9 +1,14 @@
 package fr.inria.coming.repairability.repiartools;
 
+import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
-import fr.inria.coming.core.entities.RevisionResult;
+import gumtree.spoon.diff.operations.Operation;
+import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.declaration.CtElement;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,11 +37,13 @@ public class JMutRepair extends AbstractRepairTool {
      * Certain patterns/characteristics of search-space of a repair tool can't be represented by ChangePatternSpecification
      * This filter is supposed to delete/remove such instances from the results given by PatternInstanceAnalyser.
      *
-     * @param revisionResult
+     * @param patternInstance
      * @return
      */
     @Override
-    public RevisionResult filter(RevisionResult revisionResult) {
-        return revisionResult;
+    public boolean filter(ChangePatternInstance patternInstance) {
+
+        return true;
     }
+
 }

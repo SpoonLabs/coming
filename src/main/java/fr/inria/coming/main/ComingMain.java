@@ -32,6 +32,7 @@ import fr.inria.coming.core.filter.files.CommitSizeFilter;
 import fr.inria.coming.core.filter.files.ContainTestFilterFilter;
 import fr.inria.coming.repairability.JSONRepairabilityOutput;
 import fr.inria.coming.repairability.RepairTools;
+import fr.inria.coming.repairability.RepairabilityAnalyzer;
 import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
 
@@ -276,6 +277,7 @@ public class ComingMain {
                 List<ChangePatternSpecification> patterns = repairTools.getPatterns();
 
                 navigatorEngine.getAnalyzers().add(new PatternInstanceAnalyzer(patterns));
+                navigatorEngine.getAnalyzers().add(new RepairabilityAnalyzer());
 
                 navigatorEngine.getOutputProcessors().add(new JSONRepairabilityOutput());
 

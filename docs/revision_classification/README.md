@@ -10,7 +10,7 @@ or in order words `c` lies in the search space of `x` tool.
 
 ## Possible Coming Specification Improvement 
 - Binary Operator Kind or other kind of equality
-- Multiple pattern within a 
+- Multiple pattern within a single .xml
 
 ## Program Repair Tools
 A list of program repair tools we are going to handle:- 
@@ -34,32 +34,12 @@ A list of program repair tools we are going to handle:-
  
  ##### Real-world patches note
  But these settings can change, for example negation an be considerd in `for` statement or `ternary` statements. 
- Or more operations could be considered. Like? TODO:  
+ Or more operations could be considered. Like? 
  
  #### Dataset
- It's present [here](https://github.com/kth-tcs/defects4j-repair-reloaded/tree/master/DRR/D_unassessed_init/jMutRepair/). It will be published later. 
+ It's present [here](https://github.com/kth-tcs/defects4j-repair-reloaded/tree/comrepair-coming/coming_data/jMutRepair). It will be published later. 
  
  #### Implementation Details
- 
- Actions:
- - Update (for binary)
- - Others (for unary)
- 
- Entities:
- - BinaryOperator
- - UnaryOperator
- - Assignment
- - Conditionals
-     - If
-     - While
-     - Do
-     - For
-     
- - TODO: Discuss what `action` are allowed? Just UPD or INS or DEL or ? in the case of unary?
- - TODO: Check if the operator(Updates) belong to the same class.
- - TODO: One line change? No - to many variations to consider?
-     
- #### Pattern
  
  This pattern is able detect almost all commits in jMutRepair. 
 
@@ -69,12 +49,24 @@ A list of program repair tools we are going to handle:-
 	<action entityId="1" type="UPD"/>
 </pattern>
 ```
+We don't require to add check of the src and dst node having BinaryOperator of the same class 
+because changing the class of an operator will result in an uncompilable program.
+Problems:
+ - How to make sure that the entities involved are not changed? Example: (a == b) -> (b != c) doesnt happen.
+
+
 ```xml
 <pattern name="unary">
     <entity id="2" type="UnaryOperator"/>
-    <action entityId="2" type="ANY"/>
+    <action entityId="2" type="UPD"/>
 </pattern>
 ```
+ Problems: 
+ - increments and decrements can only to be changed/upd not inserted
+ - `!` can be inserted or deleted. 
+ - Are `+`,`-`,`~` also considered here?
+ 
+
 
 
  ### Nopol
@@ -90,10 +82,8 @@ A list of program repair tools we are going to handle:-
  None
  
  #### Dataset
- - [2017](https://github.com/kth-tcs/defects4j-repair-reloaded/tree/master/DRR/D_unassessed_init/Nopol2017)
- - [2015_1](https://github.com/kth-tcs/defects4j-repair-reloaded/tree/master/DRR/D_correct_init/Nopol2015)
- - [2015_2](https://github.com/kth-tcs/defects4j-repair-reloaded/tree/master/DRR/D_incorrect_init/Nopol2015)
- 
+ - [here](https://github.com/kth-tcs/defects4j-repair-reloaded/tree/comrepair-coming/coming_data/Nopol)
+
  #### Implementation Details
  Entities: 
  - If
