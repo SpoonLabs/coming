@@ -7,7 +7,7 @@ import java.io.File;
 import java.util.List;
 
 /**
- * Each repair tool in RepairabilityFilterAnalyzer must be a subclass of Repair tool
+ * Each repair tool in RepairabilityAnalyzer must be a subclass of Repair tool
  */
 public abstract class AbstractRepairTool {
 

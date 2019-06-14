@@ -14,7 +14,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RepairabilityFilterAnalyzer implements Analyzer {
+public class RepairabilityAnalyzer implements Analyzer {
     /**
      * This goes through each instances and pass it to the filter of corresponding repair-tool
      *

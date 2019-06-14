@@ -8,8 +8,8 @@ The flow of this module is as follows:
 - Use `fr.inria.coming.repairability.RepairTools` to get list of patterns to be mined as per repair-tools specified in `-repairtool`
 - We use patterns we get from above and invoke `PatternInstanceAnalyzer`, 
 which outputs a list of instances that match any one of the patterns given as input.
-- The output of `PatternInstanceAnalyzer` is given `RepairabilityFilterAnalyzer. It invokes filter(of the repair-tool, with whose pattern it was matched) on each instance found above
-- The output of `RepairabilityFilterAnalyzer` is given to  `JSONRepairabilityOutput`, which produces a json with a list of instances
+- The output of `PatternInstanceAnalyzer` is given `RepairabilityAnalyzer. It invokes filter(of the repair-tool, with whose pattern it was matched) on each instance found above
+- The output of `RepairabilityAnalyzer` is given to  `JSONRepairabilityOutput`, which produces a json with a list of instances
     - each instance is a single revision
     - each revision has a list of repairability
     - each repairability represents a single repair tool that could have generated that revision
