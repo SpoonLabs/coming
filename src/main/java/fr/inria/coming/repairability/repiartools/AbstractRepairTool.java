@@ -4,6 +4,9 @@ import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstan
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -67,8 +70,24 @@ public abstract class AbstractRepairTool {
 
     }
 
-
     public String getPathFromResources(String name) {
-        return getClass().getResource("/repairability/" + this.getClass().getSimpleName() + "/" + name).getFile();
+        String rootInputFile = "/repairability/" + this.getClass().getSimpleName() + "/" + name;
+        String outFile = "/tmp/" + this.getClass().getSimpleName() + name;
+        try {
+            // read the file into buffer
+            InputStream inputStream = this.getClass().getResourceAsStream(rootInputFile);
+            byte[] buffer = new byte[inputStream.available()];
+            inputStream.read(buffer);
+            inputStream.close();
+
+            // make a tmp file
+            OutputStream outStream = new FileOutputStream(outFile);
+            outStream.write(buffer);
+            outStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        return outFile;
     }
 }
