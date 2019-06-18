@@ -52,7 +52,7 @@ public class RepairTools extends AbstractRepairTool {
         toolsToBeConsidered = new ArrayList<>();
 
         // input checks and loading class objects for the specified repair tools
-        if (repairToolArg != null && (repairToolArg.equals("")) || repairToolArg.equals("ALL")) {
+        if (repairToolArg == null && repairToolArg.equals("") || repairToolArg.equals("ALL")) {
             // consider default/ALL Case
             toolsToBeConsidered = getRepairToolsInstance(Arrays.asList(supportedTools));
         } else {
