@@ -45,23 +45,44 @@ A list of program repair tools we are going to handle:-
 
  ```xml
 <pattern name="binary">
-	<entity id="1" type="BinaryOperator"/>
-	<action entityId="1" type="UPD"/>
+
+    <entity id="1" type="BinaryOperator"/>
+    <action entityId="1" type="UPD"/>
+
+    <!-- For making sure that operands remains the same -->
+    <entity id="2" type="*" role="LEFT_OPERAND">
+        <parent parentId="1" distance="1"/>
+    </entity>
+    <action entityId="2" type="UNCHANGED_HIGH_PRIORITY"/>
+
+    <entity id="3" type="*" role="RIGHT_OPERAND">
+        <parent parentId="1" distance="1"/>
+    </entity>
+    <action entityId="3" type="UNCHANGED_HIGH_PRIORITY"/>
+
 </pattern>
+
 ```
-We don't require to add check of the src and dst node having BinaryOperator of the same class 
+We don't require to add check of the src and dst node having BinaryOperator of the same class.
 because changing the class of an operator will result in an uncompilable program.
-Problems:
+**Problems:**
  - How to make sure that the entities involved are not changed? Example: (a == b) -> (b != c) doesnt happen.
 
 
 ```xml
 <pattern name="unary">
-    <entity id="2" type="UnaryOperator"/>
-    <action entityId="2" type="UPD"/>
+    <entity id="1" type="UnaryOperator"/>
+    <action entityId="1" type="ANY"/>
+
+
+    <!-- For making sure that operands remains the same -->
+    <entity id="2" type="*" role="OPERAND">
+        <parent parentId="1" distance="1"/>
+    </entity>
+    <action entityId="2" type="UNCHANGED_HIGH_PRIORITY"/>
 </pattern>
 ```
- Problems: 
+**Problems:**
  - increments and decrements can only to be changed/upd not inserted
  - `!` can be inserted or deleted. 
  - Are `+`,`-`,`~` also considered here?
