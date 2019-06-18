@@ -7,15 +7,14 @@ import fr.inria.coming.changeminer.util.PatternXMLParser;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JMutRepair extends AbstractRepairTool {
-
+public class Nopol extends AbstractRepairTool {
     private static final String[] patternFileNames = {
-            "binary.xml",
-            "unary.xml"
+            "if_upd.xml",
+            "if_ins.xml"
     };
 
     /**
-     * Encodes the search space of JMutRepair
+     * Encodes the search space of Nopol
      *
      * @return a List of ChangePatternSpecifications that are supposed to be mined by PatternInstanceAnalyzer
      */
@@ -37,7 +36,6 @@ public class JMutRepair extends AbstractRepairTool {
      */
     @Override
     public boolean filter(ChangePatternInstance patternInstance) {
-
         return true;
     }
 
