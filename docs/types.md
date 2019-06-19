@@ -84,38 +84,39 @@
 | 	UNCHANGED_HIGH_PRIORITY	|
 
 
-# Roles in Parent
+# Roles in Parent  
+Note: the comparison is case-insensitive
 
 |Roles|
 |------------- |
 |	Name	|
 |	Type	|
-|	Multi_type	|
-|	Declaring_type	|
-|	Contained_type	|
+|	MultiType	|
+|	DeclaringType	|
+|	ContainedType	|
 |	Body	|
-|	Is_shadow	|
+|	IsShadow	|
 |	Bound	|
-|	Bounding_type	|
-|	Is_final	|
-|	Is_static	|
-|	Is_upper 	|
-|	Is_implicit	|
-|	Is_default	|
-|	Is_varargs	|
-|	Default_expression	|
+|	BoundingType	|
+|	IsFinal	|
+|	IsStatic	|
+|	IsUpper 	|
+|	IsImplicit	|
+|	IsDefault	|
+|	IsVarargs	|
+|	DefaultExpression	|
 |	Then	|
 |	Else	|
-|	Package_ref	|
-|	Sub_package	|
+|	PackageRef	|
+|	SubPackage	|
 |	Condition	|
-|	Right_operand	|
-|	Left_operand	|
+|	RightOperand	|
+|	LeftOperand	|
 |	Label	|
 |	Case	|
-|	Operator_kind	|
+|	OperatorKind	|
 |	Parameter	|
-|	Argument_type	|
+|	ArgumentType	|
 |	Expression	|
 |	Target	|
 |	Variable	|
@@ -125,48 +126,48 @@
 |	Assigned	|
 |	Modifier	|
 |	Comment	|
-|	Annotation_type	|
+|	AnnotationType	|
 |	Interface	|
 |	Annotation	|
 |	Statement	|
 |	Argument	|
-|	Super_type	|
-|	Type_member	|
-|	Nested_type	|
+|	SuperType	|
+|	TypeMember	|
+|	NestedType	|
 |	Constructor	|
 |	Method	|
 |	Annonymous_executable	|
 |	Field	|
-|	Executable_ref	|
+|	ExecutableRef	|
 |	Cast	|
 |	Value	|
-|	For_update	|
-|	For_init	|
-|	Foreach_variable	|
-|	Try_resource	|
+|	ForUpdate	|
+|	ForInit	|
+|	ForeachVariable	|
+|	TryResource	|
 |	Dimension	|
 |	Catch	|
-|	Target_label	|
-|	Type_parameter	|
-|	Type_argument	|
-|	Comment_tag	|
-|	Comment_content	|
-|	Comment_type	|
-|	Documentation_type	|
-|	Javadoc_tag_value	|
+|	TargetLabel	|
+|	TypeParameter	|
+|	TypeArgument	|
+|	CommentTag	|
+|	CommentContent	|
+|	CommentType	|
+|	DocumentationType	|
+|	JavadocTagValue	|
 |	Position	|
 |	Snippet	|
-|	Accessed_type	|
-|	Import_reference	|
-|	Module_directive	|
-|	Required_module	|
-|	Module_ref	|
-|	Exported_package	|
-|	Opened_package	|
-|	Service_type	|
-|	Implementation_type	|
-|	Provided_service	|
-|	Is_inferred	|
+|	AccessedType	|
+|	ImportReference	|
+|	ModuleDirective	|
+|	RequiredModule	|
+|	ModuleRef	|
+|	ExportedPackage	|
+|	OpenedPackage	|
+|	ServiceType	|
+|	ImplementationType	|
+|	ProvidedService	|
+|	IsInferred	|
 
 
 
