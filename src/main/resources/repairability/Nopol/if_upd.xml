@@ -1,12 +1,15 @@
-<pattern name="if_condition_ins">
+<pattern name="if_condition_upd">
 
     <entity id="1" type="If"/>
 
     <entity id="2" type="*" role="condition">
-        <parent parentId="1" distance="1"/>
+        <parent parentId="1" distance="10"/>
     </entity>
-    <action entityId="2" type="UPD"/>
 
+<!--    <entity id="4" type="Block">-->
+<!--        <parent parentId="2" distance="10"/>-->
+<!--    </entity>-->
+<!--    <action entityId="4" type="UPD"/>-->
 
     <entity id="3" type="Block" role="Then">
         <parent parentId="1" distance="1"/>

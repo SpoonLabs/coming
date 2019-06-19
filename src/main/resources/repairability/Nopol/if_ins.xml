@@ -5,10 +5,6 @@
         <parent parentId="1" distance="1"/>
     </entity>
 
-    <entity id="2" type="*">
-        <parent parentId="3" distance="10"/>
-    </entity>
-
     <action entityId="1" type="INS"/>
     <action entityId="2" type="MOV"/>
 </pattern>

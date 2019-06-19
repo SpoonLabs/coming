@@ -53,8 +53,12 @@ public class JSONRepairabilityOutput extends JSonPatternInstanceOutput {
                         opjson.add("concrete_change", getJSONFromOperator(op));
 
                         if (op.getNode().getPosition() != null) {
-                            opjson.addProperty("file", op.getNode().getPosition().getFile().getAbsolutePath());
-                            opjson.addProperty("line", op.getNode().getPosition().getLine());
+                            if (op.getNode().getPosition() != null) {
+                                opjson.addProperty("line", op.getNode().getPosition().getLine());
+                                if (op.getNode().getPosition().getFile() != null) {
+                                    opjson.addProperty("file", op.getNode().getPosition().getFile().getAbsolutePath());
+                                }
+                            }
                         }
                         ops.add(opjson);
                     }
