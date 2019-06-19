@@ -50,12 +50,12 @@ A list of program repair tools we are going to handle:-
     <action entityId="1" type="UPD"/>
 
     <!-- For making sure that operands remains the same -->
-    <entity id="2" type="*" role="LEFT_OPERAND">
+    <entity id="2" type="*" role="LEFTOPERAND">
         <parent parentId="1" distance="1"/>
     </entity>
     <action entityId="2" type="UNCHANGED_HIGH_PRIORITY"/>
 
-    <entity id="3" type="*" role="RIGHT_OPERAND">
+    <entity id="3" type="*" role="RIGHTOPERAND">
         <parent parentId="1" distance="1"/>
     </entity>
     <action entityId="3" type="UNCHANGED_HIGH_PRIORITY"/>
