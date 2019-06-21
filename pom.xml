@@ -236,7 +236,8 @@
 						<version>3.0.1</version>
 						<executions>
 							<execution>
-								<phase>package</phase>
+								<id>attach-sources</id>
+                                <phase>package</phase>
 								<goals>
 									<goal>jar-no-fork</goal>
 								</goals>
@@ -250,7 +251,8 @@
 						<version>2.10.4</version>
 						<executions>
 							<execution>
-								<phase>package</phase>
+								<id>attach-javadocs</id>
+                                <phase>package</phase>
 								<goals>
 									<goal>jar</goal>
 								</goals>
@@ -264,6 +266,7 @@
 						<version>1.6</version>
 						<executions>
 							<execution>
+                                <id>sign-artifacts</id>
 								<phase>verify</phase>
 								<goals>
 									<goal>sign</goal>
@@ -292,4 +295,24 @@
 		<connection>scm:git:https://github.com/SpoonLabs/coming.git</connection>
 		<developerConnection>scm:git:git@github.com:SpoonLabs/coming.git</developerConnection>
 	</scm>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/SpoonLabs/coming/issues</url>
+    </issueManagement>
+
+    <licenses>
+        <license>
+            <name>The MIT License</name>
+            <url>https://mit-license.org</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>matias</id>
+            <name>Matias Martinez</name>
+            <email>matias.martinez@inria.fr</email>
+        </developer>
+    </developers>
 </project>
