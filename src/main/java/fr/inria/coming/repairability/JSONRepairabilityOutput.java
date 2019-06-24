@@ -54,7 +54,12 @@ public class JSONRepairabilityOutput extends JSonPatternInstanceOutput {
 
                         if (op.getNode().getPosition() != null) {
                             if (op.getNode().getPosition() != null) {
-                                opjson.addProperty("line", op.getNode().getPosition().getLine());
+                                try {
+                                    opjson.addProperty("line", op.getNode().getPosition().getLine());
+                                } catch (UnsupportedOperationException e) {
+                                    e.printStackTrace();
+                                    opjson.addProperty("line", -1);
+                                }
                                 if (op.getNode().getPosition().getFile() != null) {
                                     opjson.addProperty("file", op.getNode().getPosition().getFile().getAbsolutePath());
                                 }
