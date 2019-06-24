@@ -10,7 +10,8 @@ import java.util.List;
 public class Nopol extends AbstractRepairTool {
     private static final String[] patternFileNames = {
             "if_upd.xml",
-            "if_ins.xml"
+            "if_ins_s.xml",
+            "if_ins_d.xml"
     };
 
     /**
