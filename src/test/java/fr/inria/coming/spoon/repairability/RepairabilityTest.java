@@ -34,7 +34,7 @@ public class RepairabilityTest {
                 new String[]{"-mode",
                         "repairability",
                         "-repairtool",
-                        "ALL4",
+                        "ALL",
                         "-input",
                         "files",
                         "-location",
