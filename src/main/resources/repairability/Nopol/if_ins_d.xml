@@ -1,15 +1,13 @@
 <pattern name="if_condition_ins_deep">
     <entity id="1" type="If"/>
+    <action entityId="1" type="INS"/>
 
-    <entity id="2" type="Block" role="Then">
+    <entity id="2" type="*" role="Then">
         <parent parentId="1" distance="10"/>
     </entity>
-
     <entity id="3" type="*">
         <parent parentId="2" distance="100000"/>
     </entity>
 
-
-    <action entityId="1" type="INS"/>
     <action entityId="3" type="MOV"/>
 </pattern>
