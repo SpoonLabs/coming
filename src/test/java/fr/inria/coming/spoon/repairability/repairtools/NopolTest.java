@@ -65,7 +65,7 @@ public class NopolTest {
             }
         }
 
-        assertEquals(55, counter);
+        assertEquals(52, counter);
 
     }
 }
