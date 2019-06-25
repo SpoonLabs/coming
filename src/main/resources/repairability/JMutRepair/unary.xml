@@ -3,9 +3,12 @@
     <action entityId="1" type="ANY"/>
 
 
-    <!-- For making sure that operands remains the same -->
-    <entity id="2" type="*" role="OPERAND">
+    <!-- For making sure that operand remains the same -->
+    <entity id="2" type="*" role="*"> <!-- role=operand not present -->
         <parent parentId="1" distance="1"/>
     </entity>
-    <action entityId="2" type="UNCHANGED_HIGH_PRIORITY"/>
+    <entity id="3" type="*" role="*">
+        <parent parentId="2" distance="10000"/>
+    </entity>
+    <action entityId="3" type="UNCHANGED_HIGH_PRIORITY"/>
 </pattern>
