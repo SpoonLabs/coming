@@ -31,19 +31,16 @@ public class RepairabilityAnalyzer implements Analyzer {
         // Will store PatternInstancesFromDiff that pass the filter of the corresponding repair tool
         List<PatternInstancesFromDiff> allInstances = new ArrayList<>();
 
-
-
+        /*
+         * - one instancePerDiff represent one result/one revision
+         * - in one revision there should be at max of one instance of any repair-tool
+         */
+        List<String> toolsSeen = new ArrayList<>();
 
         for (PatternInstancesFromDiff instancesPerDiff : result.getInfoPerDiff()) {
 
             // Will store ChangePatternInstance that pass the filter of the corresponding repair tool
             List<ChangePatternInstance> patternInstanceList = new ArrayList<>();
-
-            /*
-             * - one instancePerDiff represent one result/one revision
-             * - in one revision there should be at max of one instance of any repair-tool
-             */
-            List<String> toolsSeen = new ArrayList<>();
 
             for (ChangePatternInstance instancePattern : instancesPerDiff.getInstances()) {
                 // for each matching instance
@@ -56,7 +53,7 @@ public class RepairabilityAnalyzer implements Analyzer {
                     // if filter is passed add it too patternInstanceList
 
                     if (!toolsSeen.contains(toolName)) {
-                        // add instance of single repair tool only once
+                        //add instance of single repair tool only once
                         patternInstanceList.add(instancePattern);
                         toolsSeen.add(toolName);
                     }
