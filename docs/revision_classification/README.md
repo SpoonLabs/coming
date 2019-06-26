@@ -104,6 +104,9 @@ because changing the class of an operator will result in an uncompilable program
  
  #### Dataset
  - [here](https://github.com/kth-tcs/defects4j-repair-reloaded/tree/comrepair-coming/coming_data/Nopol)
+ - 103 total patches 
+    - 81 INS patches
+    - 22 UPD patches
 
  #### Implementation Details
  Entities: 

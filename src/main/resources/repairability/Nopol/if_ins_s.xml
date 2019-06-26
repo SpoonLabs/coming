@@ -1,13 +1,11 @@
 <pattern name="if_condition_ins_shallow">
     <entity id="1" type="If"/>
+    <action entityId="1" type="INS"/>
 
 
-    <entity id="2" type="Block" role="Then">
+    <entity id="2" type="*" role="Then">
         <parent parentId="1" distance="1"/>
     </entity>
-
-
-    <action entityId="1" type="INS"/>
     <action entityId="2" type="MOV"/>
 </pattern>
 

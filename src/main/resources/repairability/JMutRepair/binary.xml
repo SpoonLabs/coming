@@ -4,13 +4,8 @@
     <action entityId="1" type="UPD"/>
 
     <!-- For making sure that operands remains the same -->
-    <entity id="2" type="*" role="LeftOperand">
-        <parent parentId="1" distance="1"/>
-    </entity>
-    <action entityId="2" type="UNCHANGED_HIGH_PRIORITY"/>
-
-    <entity id="3" type="*" role="RightOperand">
-        <parent parentId="1" distance="1"/>
+    <entity id="3" type="*" role="*">
+        <parent parentId="1" distance="10000"/>
     </entity>
     <action entityId="3" type="UNCHANGED_HIGH_PRIORITY"/>
 
