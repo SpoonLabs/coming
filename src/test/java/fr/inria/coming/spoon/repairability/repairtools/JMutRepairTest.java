@@ -39,10 +39,7 @@ public class JMutRepairTest {
         for (Map.Entry<IRevision, RevisionResult> entry : revisionsMap.entrySet()) {
             RevisionResult rr = entry.getValue();
             PatternInstancesFromRevision instances = (PatternInstancesFromRevision) rr.getResultFromClass(RepairabilityAnalyzer.class);
-            int temp = instances.getInfoPerDiff().stream().mapToInt(v -> v.getInstances().size()).sum();
-            if (temp > 0) {
-                counter += temp;
-            }
+            counter += instances.getInfoPerDiff().stream().mapToInt(v -> v.getInstances().size()).sum();
         }
 
         assertEquals(3, counter);
