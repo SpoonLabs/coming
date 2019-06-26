@@ -16,21 +16,22 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Test files existence reasons
- * <p>
+ *
  * if-ins-shallow:
  * - patch1-Chart-13-Nopol2017
  * - patch1-Time-4-Nopol2017
  * - patch1-Closure-22-Nopol2017
- * <p>
+ *
  * if-ins-deep:
  * - patch1-Math-42-Nopol2017
  * - patch1-Closure-28-Nopol2017
- * <p>
+ *
  * if-update
  * - patch1-Closure-62-Nopol2017
  * - patch1-Math-81-Nopol2017
  * - patch1-Time-14-Nopol2017
  * - patch1-Closure-7-Nopol2017
+ * 
  */
 public class NopolTest {
 
@@ -58,10 +59,13 @@ public class NopolTest {
         for (Map.Entry<IRevision, RevisionResult> entry : revisionsMap.entrySet()) {
             RevisionResult rr = entry.getValue();
             PatternInstancesFromRevision instances = (PatternInstancesFromRevision) rr.getResultFromClass(RepairabilityAnalyzer.class);
-            counter += instances.getInfoPerDiff().stream().mapToInt(v -> v.getInstances().size()).sum();
+            int temp = instances.getInfoPerDiff().stream().mapToInt(v -> v.getInstances().size()).sum();
+            if(temp > 0){
+                counter += temp;
+            }
         }
 
-        assertEquals(12, counter);
+        assertEquals(52, counter);
 
     }
 }
