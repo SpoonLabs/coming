@@ -7,6 +7,13 @@ env:
   - secure: cadS2RXzt+whdZk04koNiuAWH88z7MRIBqTxuIRvsyn9hGd0k3zWI97wdNAP+jewBRov9an5sOyUAIEQfuybuh41atBUrlvC54eT4DfAEtMj/8T5sP4+GsW6ybMoxSa+t6bFWkvIz+VJjVUYSqlwqF+MjAJnYYGGUKCXjCS9EEs=
   - secure: LmSb0lkvLHeytOda/UCosJZ0TCwcdkkiXp7i8jLz8/BCS6/d3daNTfm4DvFpEHWh0D+NeLjBqp6Y+GXVOfGixyRyrO2H1OJgDFfjZOE7WNXWBEu121u+3c7dic0G5jBUOJNibLnzmmP8EqKvsfael799nfK2RR8qdLLEF3zF7Xc=
 
+notifications:
+  email: false
+
+cache:
+  directories:
+  - "$HOME/.m2"
+
 before_install: 
   - sed -i -e 's|https://nexus.codehaus.org/snapshots/|https://oss.sonatype.org/content/repositories/codehaus-snapshots/|g' ~/.m2/settings.xml
   - unzip ./src/main/resources/repogit4testv0.zip
