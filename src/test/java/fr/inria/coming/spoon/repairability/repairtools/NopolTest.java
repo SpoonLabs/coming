@@ -62,7 +62,7 @@ public class NopolTest {
             counter += instances.getInfoPerDiff().stream().mapToInt(v -> v.getInstances().size()).sum();
         }
 
-        assertEquals(12, counter);
+        assertEquals(13, counter);
 
     }
 }
