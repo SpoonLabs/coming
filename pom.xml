@@ -3,9 +3,12 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.github.spoonlabs</groupId>
+	<groupId>com.github.spoonlabs.coming</groupId>
 	<artifactId>coming</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<!-- DO NOT CHANGE THIS VERSION, VERSION NUMBER IS AUTOMATICALLY HANDLED 
+		IN .buildscript/deploy_to_maven.sh -->
+	<version>SNAPSHOT</version>
+
 	<packaging>jar</packaging>
 	<name>coming-parent</name>
 	<properties>
@@ -237,7 +240,7 @@
 						<executions>
 							<execution>
 								<id>attach-sources</id>
-                                <phase>package</phase>
+								<phase>package</phase>
 								<goals>
 									<goal>jar-no-fork</goal>
 								</goals>
@@ -252,7 +255,7 @@
 						<executions>
 							<execution>
 								<id>attach-javadocs</id>
-                                <phase>package</phase>
+								<phase>package</phase>
 								<goals>
 									<goal>jar</goal>
 								</goals>
@@ -269,7 +272,7 @@
 						<version>1.6</version>
 						<executions>
 							<execution>
-                                <id>sign-artifacts</id>
+								<id>sign-artifacts</id>
 								<phase>verify</phase>
 								<goals>
 									<goal>sign</goal>
@@ -299,23 +302,23 @@
 		<developerConnection>scm:git:git@github.com:SpoonLabs/coming.git</developerConnection>
 	</scm>
 
-    <issueManagement>
-        <system>GitHub</system>
-        <url>https://github.com/SpoonLabs/coming/issues</url>
-    </issueManagement>
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/SpoonLabs/coming/issues</url>
+	</issueManagement>
 
-    <licenses>
-        <license>
-            <name>The MIT License</name>
-            <url>https://mit-license.org</url>
-        </license>
-    </licenses>
+	<licenses>
+		<license>
+			<name>The MIT License</name>
+			<url>https://mit-license.org</url>
+		</license>
+	</licenses>
 
-    <developers>
-        <developer>
-            <id>matias</id>
-            <name>Matias Martinez</name>
-            <email>matias.martinez@inria.fr</email>
-        </developer>
-    </developers>
+	<developers>
+		<developer>
+			<id>matias</id>
+			<name>Matias Martinez</name>
+			<email>matias.martinez@inria.fr</email>
+		</developer>
+	</developers>
 </project>
