@@ -1,0 +1,23 @@
+<pattern name="binary_4">
+
+    <entity id="1" type="BinaryOperator"/>
+    <action entityId="1" type="UPD"/>
+
+    <!-- For making sure that operands remains the same -->
+    <entity id="2" type="*" role="LeftOperand">
+        <parent parentId="1" distance="1"/>
+    </entity>
+    <entity id="4" type="*" role="*">
+        <parent parentId="2" distance="1000"/>
+    </entity>
+    <action entityId="4" type="UNCHANGED_HIGH_PRIORITY"/>
+
+    <entity id="3" type="*" role="RightOperand">
+        <parent parentId="1" distance="1"/>
+    </entity>
+    <entity id="5" type="*" role="*">
+        <parent parentId="3" distance="1000"/>
+    </entity>
+    <action entityId="5" type="UNCHANGED_HIGH_PRIORITY"/>
+
+</pattern>

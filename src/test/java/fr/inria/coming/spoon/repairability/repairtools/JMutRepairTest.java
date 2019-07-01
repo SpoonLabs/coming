@@ -33,16 +33,19 @@ public class JMutRepairTest {
         assertNotNull(result);
 
         Map<IRevision, RevisionResult> revisionsMap = result.getAllResults();
-        assertEquals(12, revisionsMap.keySet().size());
+        assertEquals(13, revisionsMap.keySet().size());
 
         int counter = 0;
         for (Map.Entry<IRevision, RevisionResult> entry : revisionsMap.entrySet()) {
             RevisionResult rr = entry.getValue();
             PatternInstancesFromRevision instances = (PatternInstancesFromRevision) rr.getResultFromClass(RepairabilityAnalyzer.class);
-            counter += instances.getInfoPerDiff().stream().mapToInt(v -> v.getInstances().size()).sum();
+            int temp = instances.getInfoPerDiff().stream().mapToInt(v -> v.getInstances().size()).sum();
+            if (temp > 0) {
+                counter += 1;
+            }
         }
 
-        assertEquals(3, counter);
+        assertEquals(4, counter);
 
     }
 }
