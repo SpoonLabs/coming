@@ -1,0 +1,7 @@
+<pattern name="binary_1">
+
+    <entity id="1" type="BinaryOperator"/>
+    <action entityId="1" type="UPD"/>
+
+    <!-- For making sure that operands remains the same In the filter-->
+</pattern>

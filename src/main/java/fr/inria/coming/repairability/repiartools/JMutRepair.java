@@ -13,10 +13,7 @@ import java.util.List;
 public class JMutRepair extends AbstractRepairTool {
 
     private static final String[] patternFileNames = {
-            "binary_1.xml",
-            "binary_2.xml",
-            "binary_3.xml",
-            "binary_4.xml",
+            "binary.xml",
             "unary.xml"
     };
 
