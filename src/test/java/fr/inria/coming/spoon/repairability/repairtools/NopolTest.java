@@ -53,7 +53,7 @@ public class NopolTest {
         assertNotNull(result);
 
         Map<IRevision, RevisionResult> revisionsMap = result.getAllResults();
-        assertEquals(12, revisionsMap.keySet().size());
+        assertEquals(13, revisionsMap.keySet().size());
 
         int counter = 0;
         for (Map.Entry<IRevision, RevisionResult> entry : revisionsMap.entrySet()) {
