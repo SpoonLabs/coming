@@ -1,51 +1,20 @@
 package fr.inria.coming.spoon.repairability.repairtools;
 
 
-import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstancesFromRevision;
 import fr.inria.coming.changeminer.entity.FinalResult;
-import fr.inria.coming.changeminer.entity.IRevision;
-import fr.inria.coming.core.entities.RevisionResult;
-import fr.inria.coming.main.ComingMain;
-import fr.inria.coming.repairability.RepairabilityAnalyzer;
+import fr.inria.coming.spoon.repairability.TestUtills;
 import org.junit.Test;
-
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 public class JMutRepairTest {
     @Test
-    public void testJMutRepairBasic() throws Exception {
+    public void testJMutRepairTruePositive1() throws Exception {
+        FinalResult result = TestUtills.runRepairability("JMutRepair", "/repairability_test_files/jMutRepairTest/");
+        TestUtills.numberOfInstances(result, 4, 4);
+    }
 
-        ComingMain cm = new ComingMain();
-
-        FinalResult result = cm.run(
-                new String[]{"-mode",
-                        "repairability",
-                        "-repairtool",
-                        "JMutRepair",
-                        "-input",
-                        "files",
-                        "-location",
-                        getClass().getResource("/jMutRepairTest/").getFile()});
-
-        assertNotNull(result);
-
-        Map<IRevision, RevisionResult> revisionsMap = result.getAllResults();
-        assertEquals(13, revisionsMap.keySet().size());
-
-        int counter = 0;
-        for (Map.Entry<IRevision, RevisionResult> entry : revisionsMap.entrySet()) {
-            RevisionResult rr = entry.getValue();
-            PatternInstancesFromRevision instances = (PatternInstancesFromRevision) rr.getResultFromClass(RepairabilityAnalyzer.class);
-            int temp = instances.getInfoPerDiff().stream().mapToInt(v -> v.getInstances().size()).sum();
-            if (temp > 0) {
-                counter += 1;
-            }
-        }
-
-        assertEquals(4, counter);
-
+    @Test
+    public void testJMutRepairTrueNegatives1() throws Exception {
+        FinalResult result = TestUtills.runRepairability("JMutRepair", "/repairability_test_files/NopolTest/");
+        TestUtills.numberOfInstances(result, 9, 0);
     }
 }
