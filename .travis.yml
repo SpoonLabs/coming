@@ -1,19 +1,19 @@
 language: java
 jdk:
-  - oraclejdk8
-
+- oraclejdk8
 notifications:
   email: false
-
 cache:
   directories:
   - "$HOME/.m2"
-
-before_install: 
-  - sed -i -e 's|https://nexus.codehaus.org/snapshots/|https://oss.sonatype.org/content/repositories/codehaus-snapshots/|g' ~/.m2/settings.xml
-  - unzip ./src/main/resources/repogit4testv0.zip
-
+before_install:
+- sed -i -e 's|https://nexus.codehaus.org/snapshots/|https://oss.sonatype.org/content/repositories/codehaus-snapshots/|g'
+  ~/.m2/settings.xml
+- unzip ./src/main/resources/repogit4testv0.zip
 after_success:
-  - .buildscript/deploy_to_maven.sh
-
+- ".buildscript/deploy_to_maven.sh"
 dist: trusty
+env:
+  global:
+  - secure: D3Jaco9mX/3rN4KMU/MShDFHJ5QazErX3AQxWuDGk4/NdSEjCLS+pF+sOA0X0pOcvczz9wzDvgj7oCvYbrTTvapCY5iFBni2yiVscpi7lifAA8c81TSTzVa+jdD+JKIsfaUx4DthIEPePWObq+C5u0EXJy6RKlx1HGc1efUKwEZx3035qtSKLoI/DGOcuk6tAe9DJ+z9MmuCm6TewYOv4Xns6AeDn06cp243mthIayNmEQtTuhCyEPwLlk7RqwDbLfuPD23QOIRzgnvwK6qbOfipUNM/10TCf6M8j0Sn7RjvdGV/FLst2GKFv9SpUSivgufgwSPMwR/q5lMOAi03o5VvBURwlzJrYygnZ9JCcrmxKgsGpSHTuKVx88v/U2tY1Wi8U3PzrNZG26eFbbYrG3D6UF4tMlWVP7ZkKxOcvTevEzeNnyVbhJqqTjuxwL3aY3sAeNW/W8TZXTIFOoS0Mat7Je4gjzyDf6S6+W7IaNX3k2r7iqI3IDxeaU9W1CPFuMv3HoAd28RIxpzAJXtMvpQlR6WRe0xzSZcB3NkvfOHW0pfWdR2oyknET4v4dMdzeeDTPf+R9XQ0c5th1iU6eRh171TRHsfs7t0Goai1rEH4ywB0TEvIdsLM38tie8fRjsSmQTbdFYsFPdcWBbJfMXu1KzZIV4Be6vxpwuyxQJ4=
+  - secure: Il5N8D/ip2aw6tJqMW5iZskvnCNWfQuoLQ4HegnR2icccD/35947SLfu38vCeM0q+kkGT/lSVnNkoLsNKJzOtmNJi6ouy8l9KKciZ/6araHq9h+t19+joh9lYra3+RwNnBOoAGVZudqZixU1kx/P2Ifc0GUNb7BTLPhoIz/kUwRbrcjJP1h5epaR5mwRgZBWmSR1lT3yFWKkmkruH6S453kQC6sB6EhXP4ehFu1DTPhdTUuAjKsbytmpx+98aqZ+RL2zOfAQdCs5vHamqjShUZ3hFYNGvPPYSp0XzuRLjJwVad3ov4nQdUJODi+lwu0E59eQzmVBD2K8KUouF7fICfcovIPWsXg5A9/jbbEP2VcYh0gv3oIAgBl2N0OpY/d/xfWNKAcE5/jk/4ccPcg1mEfPk6qnrBgYWFlk+RCyIGuHAK7ri3megqb2pnM7SlIfjpRWwHflU8T/ZzmGgbi5G0LIqJwgON1dJi3Okriw3+L81yfXSR2aRvgAsPJAHQzZ9jo8+diDAkLq9o+Zp43doavOlWzRTdFeTaS981SHlUQBKIIJiLNDJ0AiuDEZz2BDMeFRFz5yFsSCOSgmoRpnVscaj9d8QUrXzltMQ3Btn61hB+oFGcxue2DtQvprkBLID3v7XoOqkbQxi+lGp1DI1irM9JWlUm5mRgEAkh8XeYg=
