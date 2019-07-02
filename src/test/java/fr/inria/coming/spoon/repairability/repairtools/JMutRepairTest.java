@@ -15,7 +15,7 @@ public class JMutRepairTest {
     @Test
     public void testJMutRepairTrueNegatives1() throws Exception {
         FinalResult result = TestUtills.runRepairability("JMutRepair", "/repairability_test_files/NopolTest/");
-        TestUtills.numberOfInstances(result, 9, 0);
+        TestUtills.numberOfInstances(result, 6, 0);
     }
 
 
