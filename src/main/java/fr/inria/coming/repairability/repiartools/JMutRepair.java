@@ -3,7 +3,10 @@ package fr.inria.coming.repairability.repiartools;
 import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
+import gumtree.spoon.diff.operations.Operation;
+import spoon.reflect.code.CtBinaryOperator;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +40,17 @@ public class JMutRepair extends AbstractRepairTool {
      */
     @Override
     public boolean filter(ChangePatternInstance patternInstance) {
+
+        String patternType = patternInstance.getPattern().getName().split(File.pathSeparator)[1];
+        if (patternType.startsWith("binary")) {
+
+            Operation upd = patternInstance.getActions().get(0);
+            CtBinaryOperator src = (CtBinaryOperator) upd.getSrcNode();
+            CtBinaryOperator dst = (CtBinaryOperator) upd.getDstNode();
+
+            return src.getLeftHandOperand().equals(dst.getLeftHandOperand())
+                    && src.getRightHandOperand().equals(dst.getRightHandOperand());
+        }
 
         return true;
     }

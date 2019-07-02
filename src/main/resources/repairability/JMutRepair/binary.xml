@@ -1,12 +1,7 @@
-<pattern name="binary">
+<pattern name="binary_1">
 
     <entity id="1" type="BinaryOperator"/>
     <action entityId="1" type="UPD"/>
 
-    <!-- For making sure that operands remains the same -->
-    <entity id="3" type="*" role="*">
-        <parent parentId="1" distance="10000"/>
-    </entity>
-    <action entityId="3" type="UNCHANGED_HIGH_PRIORITY"/>
-
+    <!-- For making sure that operands remains the same In the filter-->
 </pattern>
