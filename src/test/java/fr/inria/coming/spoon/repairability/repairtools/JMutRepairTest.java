@@ -17,4 +17,30 @@ public class JMutRepairTest {
         FinalResult result = TestUtills.runRepairability("JMutRepair", "/repairability_test_files/NopolTest/");
         TestUtills.numberOfInstances(result, 9, 0);
     }
+
+
+    @Test
+    public void testJMutRepairBinaryTestSS() throws Exception {
+        FinalResult result = TestUtills.runRepairability("JMutRepair", "/repairability_test_files/jMutRepairBinaryTypes/ss/");
+        TestUtills.numberOfInstances(result, 1, 1);
+    }
+
+    @Test
+    public void testJMutRepairBinaryTestSD() throws Exception {
+        FinalResult result = TestUtills.runRepairability("JMutRepair", "/repairability_test_files/jMutRepairBinaryTypes/sd/");
+        TestUtills.numberOfInstances(result, 1, 1);
+    }
+
+    @Test
+    public void testJMutRepairBinaryTestDS() throws Exception {
+        FinalResult result = TestUtills.runRepairability("JMutRepair", "/repairability_test_files/jMutRepairBinaryTypes/ds/");
+        TestUtills.numberOfInstances(result, 1, 1);
+    }
+
+    @Test
+    public void testJMutRepairBinaryTestDD() throws Exception {
+        FinalResult result = TestUtills.runRepairability("JMutRepair", "/repairability_test_files/jMutRepairBinaryTypes/dd/");
+        TestUtills.numberOfInstances(result, 1, 1);
+    }
+
 }
