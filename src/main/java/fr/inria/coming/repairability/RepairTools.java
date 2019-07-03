@@ -25,7 +25,8 @@ public class RepairTools extends AbstractRepairTool {
             "JMutRepair",
             "Nopol",
             "JKali",
-            "NPEfix"
+            "NPEfix",
+            "JGenProg"
     };
 
     /**

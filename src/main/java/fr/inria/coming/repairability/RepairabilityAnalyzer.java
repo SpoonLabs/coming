@@ -49,7 +49,7 @@ public class RepairabilityAnalyzer implements Analyzer {
                 String toolName = instancePattern.getPattern().getName().split(File.pathSeparator)[0];
                 AbstractRepairTool tool = RepairTools.getRepairToolInstance(toolName);
 
-                if (tool.filter(instancePattern)) {
+                if (tool.filter(instancePattern, input)) {
                     // if filter is passed add it too patternInstanceList
 
                     if (!toolsSeen.contains(toolName)) {
