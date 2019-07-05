@@ -1,0 +1,6 @@
+<pattern name="del">
+    <entity id="1" tye="*"/>
+    <action entityId="1" type="DEL"/>
+
+</pattern>
+

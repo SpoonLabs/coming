@@ -1,0 +1,6 @@
+<pattern name="changetoT">
+    <entity id="1"  role="condition" value="true"/>
+    <action entityId="1" type="INS"/>
+
+</pattern>
+
