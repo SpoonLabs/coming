@@ -1,5 +1,5 @@
 <pattern name="del">
-    <entity id="1" tye="*"/>
+    <entity id="1" type="*" role="Statement"/>
     <action entityId="1" type="DEL"/>
 
 </pattern>
