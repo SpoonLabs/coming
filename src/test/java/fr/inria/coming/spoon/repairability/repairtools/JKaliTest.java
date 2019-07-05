@@ -7,7 +7,7 @@ import org.junit.Test;
 
 public class JKaliTest {
     @Test
-    public void testJKali1() throws Exception {
+    public void JKaliTest() throws Exception {
         FinalResult result = TestUtills.runRepairability("JKaliTest", "/repairability_test_files/JKali/");
         TestUtills.numberOfInstances(result, 5, 5);
     }
