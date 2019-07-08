@@ -1,0 +1,6 @@
+<pattern name="add_rtrn">
+    <entity id="1" type="Return" role="Statement"/>
+    <action entityId="1" type="INS"/>
+
+</pattern>
+

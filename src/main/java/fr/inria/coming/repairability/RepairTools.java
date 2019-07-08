@@ -23,7 +23,8 @@ public class RepairTools extends AbstractRepairTool {
      */
     private static final String[] supportedTools = {
             "JMutRepair",
-            "Nopol"
+            "Nopol",
+            "JKali"
     };
 
     /**
