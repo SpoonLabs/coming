@@ -1,0 +1,168 @@
+{
+  "instances": [
+    {
+      "revision": "patch1-Chart-13-Nopol2017",
+      "repairability": [
+        {
+          "tool-name": "Nopol",
+          "pattern-name": "Nopol:if_condition_ins_deep",
+          "instance_detail": [
+            {
+              "pattern_action": "MOV",
+              "pattern_entity": {
+                "entity_type": "*",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": {
+                  "entity_type": "*",
+                  "entity_new value": "*",
+                  "entity_role": "Then",
+                  "entity_parent": {
+                    "entity_type": "If",
+                    "entity_new value": "*",
+                    "entity_role": "*",
+                    "entity_parent": "null"
+                  }
+                }
+              },
+              "concrete_change": {
+                "operator": "MOV",
+                "src_type": "If",
+                "dst_type": "If",
+                "src": "if ((this.rightBlock) !\u003d null) {\n    org.jfree.chart.block.RectangleConstraint c4 \u003d new org.jfree.chart.block.RectangleConstraint(0.0, new org.jfree.data.Range(0.0, ((constraint.getWidth()) - (w[2]))), LengthConstraintType.RANGE, h[2], null, LengthConstraintType.FIXED);\n    org.jfree.chart.util.Size2D size \u003d this.rightBlock.arrange(g2, c4);\n    w[3] \u003d size.width;\n}",
+                "dst": "if ((this.rightBlock) !\u003d null) {\n    org.jfree.chart.block.RectangleConstraint c4 \u003d new org.jfree.chart.block.RectangleConstraint(0.0, new org.jfree.data.Range(0.0, ((constraint.getWidth()) - (w[2]))), LengthConstraintType.RANGE, h[2], null, LengthConstraintType.FIXED);\n    org.jfree.chart.util.Size2D size \u003d this.rightBlock.arrange(g2, c4);\n    w[3] \u003d size.width;\n}",
+                "src_parent_type": "Block",
+                "dst_parent_type": "Block",
+                "src_parent": "{\n    double[] w \u003d new double[5];\n    double[] h \u003d new double[5];\n    w[0] \u003d constraint.getWidth();\n    if ((this.topBlock) !\u003d null) {\n        org.jfree.chart.block.RectangleConstraint c1 \u003d new org.jfree.chart.block.RectangleConstraint(w[0], null, LengthConstraintType.FIXED, 0.0, new org.jfree.data.Range(0.0, constraint.getHeight()), LengthConstraintType.RANGE);\n        org.jfree.chart.util.Size2D size \u003d this.topBlock.arrange(g2, c1);\n        h[0] \u003d size.height;\n    }\n    w[1] \u003d w[0];\n    if ((this.bottomBlock) !\u003d null) {\n        org.jfree.chart.block.RectangleConstraint c2 \u003d new org.jfree.chart.block.RectangleConstraint(w[0], null, LengthConstraintType.FIXED, 0.0, new org.jfree.data.Range(0.0, ((constraint.getHeight()) - (h[0]))), LengthConstraintType.RANGE);\n        org.jfree.chart.util.Size2D size \u003d this.bottomBlock.arrange(g2, c2);\n        h[1] \u003d size.height;\n    }\n    h[2] \u003d ((constraint.getHeight()) - (h[1])) - (h[0]);\n    if ((this.leftBlock) !\u003d null) {\n        org.jfree.chart.block.RectangleConstraint c3 \u003d new org.jfree.chart.block.RectangleConstraint(0.0, new org.jfree.data.Range(0.0, constraint.getWidth()), LengthConstraintType.RANGE, h[2], null, LengthConstraintType.FIXED);\n        org.jfree.chart.util.Size2D size \u003d this.leftBlock.arrange(g2, c3);\n        w[2] \u003d size.width;\n    }\n    h[3] \u003d h[2];\n    if ((this.rightBlock) !\u003d null) {\n        org.jfree.chart.block.RectangleConstraint c4 \u003d new org.jfree.chart.block.RectangleConstraint(0.0, new org.jfree.data.Range(0.0, ((constraint.getWidth()) - (w[2]))), LengthConstraintType.RANGE, h[2], null, LengthConstraintType.FIXED);\n        org.jfree.chart.util.Size2D size \u003d this.rightBlock.arrange(g2, c4);\n        w[3] \u003d size.width;\n    }\n    h[4] \u003d h[2];\n    w[4] \u003d ((constraint.getWidth()) - (w[3])) - (w[2]);\n    org.jfree.chart.block.RectangleConstraint c5 \u003d new org.jfree.chart.block.RectangleConstraint(w[4], h[4]);\n    if ((this.centerBlock) !\u003d null) {\n        this.centerBlock.arrange(g2, c5);\n    }\n    if ((this.topBlock) !\u003d null) {\n        this.topBlock.setBounds(new java.awt.geom.Rectangle2D.Double(0.0, 0.0, w[0], h[0]));\n    }\n    if ((this.bottomBlock) !\u003d null) {\n        this.bottomBlock.setBounds(new java.awt.geom.Rectangle2D.Double(0.0, ((h[0]) + (h[2])), w[1], h[1]));\n    }\n    if ((this.leftBlock) !\u003d null) {\n        this.leftBlock.setBounds(new java.awt.geom.Rectangle2D.Double(0.0, h[0], w[2], h[2]));\n    }\n    if ((this.rightBlock) !\u003d null) {\n        this.rightBlock.setBounds(new java.awt.geom.Rectangle2D.Double(((w[2]) + (w[4])), h[0], w[3], h[3]));\n    }\n    if ((this.centerBlock) !\u003d null) {\n        this.centerBlock.setBounds(new java.awt.geom.Rectangle2D.Double(w[2], h[0], w[4], h[4]));\n    }\n    return new org.jfree.chart.util.Size2D(constraint.getWidth(), constraint.getHeight());\n}",
+                "dst_parent": "{\n    if ((this.rightBlock) !\u003d null) {\n        org.jfree.chart.block.RectangleConstraint c4 \u003d new org.jfree.chart.block.RectangleConstraint(0.0, new org.jfree.data.Range(0.0, ((constraint.getWidth()) - (w[2]))), LengthConstraintType.RANGE, h[2], null, LengthConstraintType.FIXED);\n        org.jfree.chart.util.Size2D size \u003d this.rightBlock.arrange(g2, c4);\n        w[3] \u003d size.width;\n    }\n}"
+              },
+              "line": 453,
+              "file": "/Users/macbook/Documents/coming/Spoon/coming/patch1-Chart-13-Nopol2017"
+            },
+            {
+              "pattern_action": "INS",
+              "pattern_entity": {
+                "entity_type": "If",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "INS",
+                "src_type": "If",
+                "dst_type": "null",
+                "src": "if (null !\u003d null) {\n    if ((this.rightBlock) !\u003d null) {\n        org.jfree.chart.block.RectangleConstraint c4 \u003d new org.jfree.chart.block.RectangleConstraint(0.0, new org.jfree.data.Range(0.0, ((constraint.getWidth()) - (w[2]))), LengthConstraintType.RANGE, h[2], null, LengthConstraintType.FIXED);\n        org.jfree.chart.util.Size2D size \u003d this.rightBlock.arrange(g2, c4);\n        w[3] \u003d size.width;\n    }\n}",
+                "dst": "null",
+                "src_parent_type": "Block",
+                "dst_parent_type": "null",
+                "src_parent": "{\n    double[] w \u003d new double[5];\n    double[] h \u003d new double[5];\n    w[0] \u003d constraint.getWidth();\n    if ((this.topBlock) !\u003d null) {\n        org.jfree.chart.block.RectangleConstraint c1 \u003d new org.jfree.chart.block.RectangleConstraint(w[0], null, LengthConstraintType.FIXED, 0.0, new org.jfree.data.Range(0.0, constraint.getHeight()), LengthConstraintType.RANGE);\n        org.jfree.chart.util.Size2D size \u003d this.topBlock.arrange(g2, c1);\n        h[0] \u003d size.height;\n    }\n    w[1] \u003d w[0];\n    if ((this.bottomBlock) !\u003d null) {\n        org.jfree.chart.block.RectangleConstraint c2 \u003d new org.jfree.chart.block.RectangleConstraint(w[0], null, LengthConstraintType.FIXED, 0.0, new org.jfree.data.Range(0.0, ((constraint.getHeight()) - (h[0]))), LengthConstraintType.RANGE);\n        org.jfree.chart.util.Size2D size \u003d this.bottomBlock.arrange(g2, c2);\n        h[1] \u003d size.height;\n    }\n    h[2] \u003d ((constraint.getHeight()) - (h[1])) - (h[0]);\n    if ((this.leftBlock) !\u003d null) {\n        org.jfree.chart.block.RectangleConstraint c3 \u003d new org.jfree.chart.block.RectangleConstraint(0.0, new org.jfree.data.Range(0.0, constraint.getWidth()), LengthConstraintType.RANGE, h[2], null, LengthConstraintType.FIXED);\n        org.jfree.chart.util.Size2D size \u003d this.leftBlock.arrange(g2, c3);\n        w[2] \u003d size.width;\n    }\n    h[3] \u003d h[2];\n    if (null !\u003d null) {\n        if ((this.rightBlock) !\u003d null) {\n            org.jfree.chart.block.RectangleConstraint c4 \u003d new org.jfree.chart.block.RectangleConstraint(0.0, new org.jfree.data.Range(0.0, ((constraint.getWidth()) - (w[2]))), LengthConstraintType.RANGE, h[2], null, LengthConstraintType.FIXED);\n            org.jfree.chart.util.Size2D size \u003d this.rightBlock.arrange(g2, c4);\n            w[3] \u003d size.width;\n        }\n    }\n    h[4] \u003d h[2];\n    w[4] \u003d ((constraint.getWidth()) - (w[3])) - (w[2]);\n    org.jfree.chart.block.RectangleConstraint c5 \u003d new org.jfree.chart.block.RectangleConstraint(w[4], h[4]);\n    if ((this.centerBlock) !\u003d null) {\n        this.centerBlock.arrange(g2, c5);\n    }\n    if ((this.topBlock) !\u003d null) {\n        this.topBlock.setBounds(new java.awt.geom.Rectangle2D.Double(0.0, 0.0, w[0], h[0]));\n    }\n    if ((this.bottomBlock) !\u003d null) {\n        this.bottomBlock.setBounds(new java.awt.geom.Rectangle2D.Double(0.0, ((h[0]) + (h[2])), w[1], h[1]));\n    }\n    if ((this.leftBlock) !\u003d null) {\n        this.leftBlock.setBounds(new java.awt.geom.Rectangle2D.Double(0.0, h[0], w[2], h[2]));\n    }\n    if ((this.rightBlock) !\u003d null) {\n        this.rightBlock.setBounds(new java.awt.geom.Rectangle2D.Double(((w[2]) + (w[4])), h[0], w[3], h[3]));\n    }\n    if ((this.centerBlock) !\u003d null) {\n        this.centerBlock.setBounds(new java.awt.geom.Rectangle2D.Double(w[2], h[0], w[4], h[4]));\n    }\n    return new org.jfree.chart.util.Size2D(constraint.getWidth(), constraint.getHeight());\n}",
+                "dst_parent": "null"
+              },
+              "line": 453,
+              "file": "/Users/macbook/Documents/coming/Spoon/coming/patch1-Chart-13-Nopol2017"
+            }
+          ]
+        },
+        {
+          "tool-name": "JKali",
+          "pattern-name": "JKali:add_rtrn",
+          "instance_detail": [
+            {
+              "pattern_action": "INS",
+              "pattern_entity": {
+                "entity_type": "*",
+                "entity_new value": "*",
+                "entity_role": "Statement",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "INS",
+                "src_type": "If",
+                "dst_type": "null",
+                "src": "if (null !\u003d null) {\n    if ((this.rightBlock) !\u003d null) {\n        org.jfree.chart.block.RectangleConstraint c4 \u003d new org.jfree.chart.block.RectangleConstraint(0.0, new org.jfree.data.Range(0.0, ((constraint.getWidth()) - (w[2]))), LengthConstraintType.RANGE, h[2], null, LengthConstraintType.FIXED);\n        org.jfree.chart.util.Size2D size \u003d this.rightBlock.arrange(g2, c4);\n        w[3] \u003d size.width;\n    }\n}",
+                "dst": "null",
+                "src_parent_type": "Block",
+                "dst_parent_type": "null",
+                "src_parent": "{\n    double[] w \u003d new double[5];\n    double[] h \u003d new double[5];\n    w[0] \u003d constraint.getWidth();\n    if ((this.topBlock) !\u003d null) {\n        org.jfree.chart.block.RectangleConstraint c1 \u003d new org.jfree.chart.block.RectangleConstraint(w[0], null, LengthConstraintType.FIXED, 0.0, new org.jfree.data.Range(0.0, constraint.getHeight()), LengthConstraintType.RANGE);\n        org.jfree.chart.util.Size2D size \u003d this.topBlock.arrange(g2, c1);\n        h[0] \u003d size.height;\n    }\n    w[1] \u003d w[0];\n    if ((this.bottomBlock) !\u003d null) {\n        org.jfree.chart.block.RectangleConstraint c2 \u003d new org.jfree.chart.block.RectangleConstraint(w[0], null, LengthConstraintType.FIXED, 0.0, new org.jfree.data.Range(0.0, ((constraint.getHeight()) - (h[0]))), LengthConstraintType.RANGE);\n        org.jfree.chart.util.Size2D size \u003d this.bottomBlock.arrange(g2, c2);\n        h[1] \u003d size.height;\n    }\n    h[2] \u003d ((constraint.getHeight()) - (h[1])) - (h[0]);\n    if ((this.leftBlock) !\u003d null) {\n        org.jfree.chart.block.RectangleConstraint c3 \u003d new org.jfree.chart.block.RectangleConstraint(0.0, new org.jfree.data.Range(0.0, constraint.getWidth()), LengthConstraintType.RANGE, h[2], null, LengthConstraintType.FIXED);\n        org.jfree.chart.util.Size2D size \u003d this.leftBlock.arrange(g2, c3);\n        w[2] \u003d size.width;\n    }\n    h[3] \u003d h[2];\n    if (null !\u003d null) {\n        if ((this.rightBlock) !\u003d null) {\n            org.jfree.chart.block.RectangleConstraint c4 \u003d new org.jfree.chart.block.RectangleConstraint(0.0, new org.jfree.data.Range(0.0, ((constraint.getWidth()) - (w[2]))), LengthConstraintType.RANGE, h[2], null, LengthConstraintType.FIXED);\n            org.jfree.chart.util.Size2D size \u003d this.rightBlock.arrange(g2, c4);\n            w[3] \u003d size.width;\n        }\n    }\n    h[4] \u003d h[2];\n    w[4] \u003d ((constraint.getWidth()) - (w[3])) - (w[2]);\n    org.jfree.chart.block.RectangleConstraint c5 \u003d new org.jfree.chart.block.RectangleConstraint(w[4], h[4]);\n    if ((this.centerBlock) !\u003d null) {\n        this.centerBlock.arrange(g2, c5);\n    }\n    if ((this.topBlock) !\u003d null) {\n        this.topBlock.setBounds(new java.awt.geom.Rectangle2D.Double(0.0, 0.0, w[0], h[0]));\n    }\n    if ((this.bottomBlock) !\u003d null) {\n        this.bottomBlock.setBounds(new java.awt.geom.Rectangle2D.Double(0.0, ((h[0]) + (h[2])), w[1], h[1]));\n    }\n    if ((this.leftBlock) !\u003d null) {\n        this.leftBlock.setBounds(new java.awt.geom.Rectangle2D.Double(0.0, h[0], w[2], h[2]));\n    }\n    if ((this.rightBlock) !\u003d null) {\n        this.rightBlock.setBounds(new java.awt.geom.Rectangle2D.Double(((w[2]) + (w[4])), h[0], w[3], h[3]));\n    }\n    if ((this.centerBlock) !\u003d null) {\n        this.centerBlock.setBounds(new java.awt.geom.Rectangle2D.Double(w[2], h[0], w[4], h[4]));\n    }\n    return new org.jfree.chart.util.Size2D(constraint.getWidth(), constraint.getHeight());\n}",
+                "dst_parent": "null"
+              },
+              "line": 453,
+              "file": "/Users/macbook/Documents/coming/Spoon/coming/patch1-Chart-13-Nopol2017"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "revision": "patch1-Chart-26-jMutRepair",
+      "repairability": [
+        {
+          "tool-name": "JMutRepair",
+          "pattern-name": "JMutRepair:unary",
+          "instance_detail": [
+            {
+              "pattern_action": "ANY",
+              "pattern_entity": {
+                "entity_type": "UnaryOperator",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "INS",
+                "src_type": "UnaryOperator",
+                "dst_type": "null",
+                "src": "(!b1)",
+                "dst": "null",
+                "src_parent_type": "BinaryOperator",
+                "dst_parent_type": "null",
+                "src_parent": "(!b1) || b2",
+                "dst_parent": "null"
+              },
+              "line": 2538,
+              "file": "/Users/macbook/Documents/coming/Spoon/coming/patch1-Chart-26-jMutRepair"
+            }
+          ]
+        },
+        {
+          "tool-name": "Nopol",
+          "pattern-name": "Nopol:if_condition_upd_deep",
+          "instance_detail": [
+            {
+              "pattern_action": "ANY",
+              "pattern_entity": {
+                "entity_type": "*",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": {
+                  "entity_type": "*",
+                  "entity_new value": "*",
+                  "entity_role": "condition",
+                  "entity_parent": {
+                    "entity_type": "If",
+                    "entity_new value": "*",
+                    "entity_role": "*",
+                    "entity_parent": "null"
+                  }
+                }
+              },
+              "concrete_change": {
+                "operator": "INS",
+                "src_type": "UnaryOperator",
+                "dst_type": "null",
+                "src": "(!b1)",
+                "dst": "null",
+                "src_parent_type": "BinaryOperator",
+                "dst_parent_type": "null",
+                "src_parent": "(!b1) || b2",
+                "dst_parent": "null"
+              },
+              "line": 2538,
+              "file": "/Users/macbook/Documents/coming/Spoon/coming/patch1-Chart-26-jMutRepair"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
