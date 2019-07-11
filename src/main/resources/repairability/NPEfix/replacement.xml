@@ -1,0 +1,6 @@
+<pattern name="replacement">
+    <entity id="1" type="*" />
+    <action entityId="1" type="INS"/>
+
+</pattern>
+
