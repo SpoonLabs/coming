@@ -3,5 +3,10 @@
     <entity id="1" type="BinaryOperator"/>
     <action entityId="1" type="UPD"/>
 
-    <!-- For making sure that operands remains the same In the filter-->
+    <!--
+        The check for the left and right operand being the same is applied in the filter of Repairability Analyser
+
+        Applying those checks in patterns files always results in some sort of corner cases
+        See this for more info: https://github.com/SpoonLabs/coming/issues/85#issuecomment-507180078
+    -->
 </pattern>

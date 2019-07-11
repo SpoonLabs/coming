@@ -20,9 +20,9 @@ public class RepairabilityAnalyzer implements Analyzer {
      * It checks if the input revision has not more than one file modification.
      * It makes sure that each file modification or revision has not more than one instance of any repair-tool.
      *
-     * @param input           input to be analyzer
+     * @param input           input to be analyzer. it should have not more than one file modification/Children
      * @param previousResults results from PatternInstanceAnalyzer with patterns made by subclasses of AbstractRepairTool
-     * @return results that passes the corresponding filter
+     * @return Final instances of each repair tools
      */
     @Override
     public AnalysisResult analyze(IRevision input, RevisionResult previousResults) {

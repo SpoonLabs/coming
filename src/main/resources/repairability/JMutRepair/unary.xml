@@ -4,10 +4,10 @@
 
 
     <!-- For making sure that operand remains the same -->
-    <entity id="2" type="*" role="*"> <!-- role=operand not present -->
+    <entity id="2" type="*" role="*"> <!-- For the operand. TODO: shallow operand UNCHANGED CHECK check -->
         <parent parentId="1" distance="1"/>
     </entity>
-    <entity id="3" type="*" role="*">
+    <entity id="3" type="*" role="*"> <!-- And everything within it -->
         <parent parentId="2" distance="10000"/>
     </entity>
     <action entityId="3" type="UNCHANGED_HIGH_PRIORITY"/>
