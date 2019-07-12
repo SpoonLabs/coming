@@ -7,6 +7,26 @@ import fr.inria.coming.changeminer.util.PatternXMLParser;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+
+JKali fixes programs by doing three things:
+
+1. Adding return statements
+2. Replace conditions with true or false
+3. delete single line or a block of code
+
+Pattern file add_rtrn.xml takes care of number 1.
+    we search for return statements with which has been added.
+
+
+Pattern file false.xml and true.xml takes care of number 2.
+    we search for conditions which have been replaced with true or false value.
+
+Pattern file del.xml takes care of number 3.
+        we searched for deleted statements.
+
+
+*/
 public class JKali extends AbstractRepairTool {
 
     private static final String[] patternFileNames = {
