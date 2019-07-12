@@ -18,6 +18,7 @@ maven-eclipse.xml
 
 # IDEA
 .idea/
+*.iml
 
 #MacOS
 .DS_Store
