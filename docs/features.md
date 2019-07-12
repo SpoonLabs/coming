@@ -6,6 +6,8 @@ This document presents the diff features that we have in Coming.
 S4R Features
 ======
 
+This is the [sample file](https://github.com/SpoonLabs/coming/blob/master/src/test/java/fr/inria/coming/spoon/features/CodeFeatureDetectorTest.java) of detecting S4R features.
+
 __review overwritten conflicting commits before releasing one stable version of S4R__
 
 `src/main/java/fr/inria/coming/codefeatures/CodeFeatureDetector.java`
