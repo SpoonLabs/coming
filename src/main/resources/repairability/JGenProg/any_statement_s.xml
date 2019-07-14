@@ -1,0 +1,4 @@
+<pattern name="any_statement_shallow">
+    <entity id="1" type="*" role="Statement"/>
+    <action entityId="1" type="*"/>
+</pattern>

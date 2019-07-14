@@ -1,39 +1,36 @@
-package fr.inria.coming.repairability.repiartools;
+package fr.inria.coming.repairability.repairtools;
 
 import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
+import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
-
-JKali fixes programs by doing three things:
-
-1. Adding return statements
-2. Replace conditions with true or false
-3. delete single line or a block of code
-
-Pattern file add_rtrn.xml takes care of number 1.
-    we search for return statements with which has been added.
-
-
-Pattern file false.xml and true.xml takes care of number 2.
-    we search for conditions which have been replaced with true or false value.
-
-Pattern file del.xml takes care of number 3.
-        we searched for deleted statements.
-
-
-*/
-public class JKali extends AbstractRepairTool {
+ * NPEfix fixes the program by :
+ * <p>
+ * 1.local injection of an existing compatible object
+ * 2.global injection of an existing compatible object
+ * 3.local injection of a new object
+ * 4.global injection of a new object
+ * <p>
+ * 5.skip statement
+ * 6.return a null to caller
+ * 7.return a new object to caller
+ * 8.return an existing compatible object to caller
+ * 9.return to caller (void method)
+ * <p>
+ * I added two pattern files which checks for a variable being inserted or updated (1-4) and another one to check for insertion of return. (5-9)
+ */
+public class NPEfix extends AbstractRepairTool {
 
     private static final String[] patternFileNames = {
-            "del.xml",
-            "true.xml",
-            "false.xml",
-            "add_rtrn.xml"
+            "replacement.xml",
+            "replacement2.xml",
+            "replacement3.xml"
     };
 
     /**
@@ -58,7 +55,7 @@ public class JKali extends AbstractRepairTool {
      * @return
      */
     @Override
-    public boolean filter(ChangePatternInstance patternInstance) {
+    public boolean filter(ChangePatternInstance patternInstance, IRevision revision) {
         return true;
     }
 

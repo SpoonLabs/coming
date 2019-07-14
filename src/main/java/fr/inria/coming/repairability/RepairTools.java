@@ -2,7 +2,7 @@ package fr.inria.coming.repairability;
 
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.main.ComingProperties;
-import fr.inria.coming.repairability.repiartools.AbstractRepairTool;
+import fr.inria.coming.repairability.repairtools.AbstractRepairTool;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -19,13 +19,14 @@ public class RepairTools extends AbstractRepairTool {
 
     /**
      * Names of all the repair-tools supported by this module.
-     * The names should be same as the classname(case sensitive) present in fr.inria.coming.repairability.repiartools
+     * The names should be same as the classname(case sensitive) present in fr.inria.coming.repairability.repairtools
      */
     private static final String[] supportedTools = {
             "JMutRepair",
             "Nopol",
             "JKali",
-            "NPEfix"
+            "NPEfix",
+            "JGenProg"
     };
 
     /**
@@ -126,7 +127,7 @@ public class RepairTools extends AbstractRepairTool {
             if (supportsTool(toolName) < 0) {
                 throw new IllegalArgumentException("Repairability doesn't support " + toolName + " yet");
             }
-            Class classDefinition = Class.forName("fr.inria.coming.repairability.repiartools." + toolName);
+            Class classDefinition = Class.forName("fr.inria.coming.repairability.repairtools." + toolName);
             object = (AbstractRepairTool) classDefinition.newInstance();
 
         } catch (Exception e) {

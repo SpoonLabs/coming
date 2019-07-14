@@ -1,7 +1,8 @@
-package fr.inria.coming.repairability.repiartools;
+package fr.inria.coming.repairability.repairtools;
 
 import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
+import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
 import gumtree.spoon.diff.operations.Operation;
 import spoon.reflect.code.CtBinaryOperator;
@@ -36,10 +37,11 @@ public class JMutRepair extends AbstractRepairTool {
      * This filter is supposed to delete/remove such instances from the results given by PatternInstanceAnalyser.
      *
      * @param patternInstance
+     * @param revision
      * @return
      */
     @Override
-    public boolean filter(ChangePatternInstance patternInstance) {
+    public boolean filter(ChangePatternInstance patternInstance, IRevision revision) {
 
         String patternType = patternInstance.getPattern().getName().split(File.pathSeparator)[1];
         if (patternType.startsWith("binary")) {

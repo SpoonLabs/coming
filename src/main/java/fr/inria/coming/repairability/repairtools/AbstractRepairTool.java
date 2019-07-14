@@ -1,12 +1,10 @@
-package fr.inria.coming.repairability.repiartools;
+package fr.inria.coming.repairability.repairtools;
 
 import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
+import fr.inria.coming.changeminer.entity.IRevision;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.List;
 
 /**
@@ -34,9 +32,10 @@ public abstract class AbstractRepairTool {
      * This filter is supposed to delete/remove such instances from the results given by PatternInstanceAnalyser.
      *
      * @param instance
+     * @param revision
      * @return boolean value
      */
-    public boolean filter(ChangePatternInstance instance) {
+    public boolean filter(ChangePatternInstance instance, IRevision revision) {
         return true;
     }
 
