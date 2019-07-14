@@ -1,4 +1,4 @@
-package fr.inria.coming.repairability.repiartools;
+package fr.inria.coming.repairability.repairtools;
 
 import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;

@@ -17,7 +17,7 @@ which outputs a list of instances that match any one of the patterns given as in
  
 ## How to add a new Repair Tool
 
-- Create a new class, `x`, in the package `fr.inria.coming.repairability.repiartools`. `x` should extend `fr.inria.coming.repairability.repiartools.AbstractRepairTool`.
+- Create a new class, `x`, in the package `fr.inria.coming.repairability.repairtools`. `x` should extend `fr.inria.coming.repairability.repairtools.AbstractRepairTool`.
 - Add the name of the class, `x`, to the array `supportedTools` in `fr.inria.coming.repairability.RepairTools`
 - The new class should at least implement the method ` protected List<ChangePatternSpecification> readPatterns()`
 - The class may override ` public boolean filter(ChangePatternInstance instance, IRevision revision);`

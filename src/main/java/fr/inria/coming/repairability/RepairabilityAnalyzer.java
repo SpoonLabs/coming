@@ -8,7 +8,7 @@ import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.engine.Analyzer;
 import fr.inria.coming.core.entities.AnalysisResult;
 import fr.inria.coming.core.entities.RevisionResult;
-import fr.inria.coming.repairability.repiartools.AbstractRepairTool;
+import fr.inria.coming.repairability.repairtools.AbstractRepairTool;
 
 import java.io.File;
 import java.util.ArrayList;
