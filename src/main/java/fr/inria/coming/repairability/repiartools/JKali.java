@@ -2,6 +2,7 @@ package fr.inria.coming.repairability.repiartools;
 
 import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
+import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
 
 import java.util.ArrayList;
@@ -58,7 +59,7 @@ public class JKali extends AbstractRepairTool {
      * @return
      */
     @Override
-    public boolean filter(ChangePatternInstance patternInstance) {
+    public boolean filter(ChangePatternInstance patternInstance, IRevision revision) {
         return true;
     }
 
