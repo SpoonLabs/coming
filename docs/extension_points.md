@@ -75,7 +75,15 @@ public interface IOutput {
 	public void generateRevisionOutput(RevisionResult resultAllAnalyzed);
   ```
   One of them, `generateRevisionOutput(RevisionResult resultAllAnalyzed)` receives the results from a revision (e.g., commit) and is invoked *just after* this revision is analyzed.
-  The other method,  `generateFinalOutput(FinalResult finalResult)` received the results from the analysis of *all* the revision. Thsi method is invoked at the end of the execution, i.e., once all revision were analyzed.
+  The other method,  `generateFinalOutput(FinalResult finalResult)` received the results from the analysis of *all* the revision. This method is invoked at the end of the execution, i.e., once all revision were analyzed.
+  
+Important:  
+By default, Coming does not generate the output just after analyzing the revision (i.e., it does not call method `generateRevisionOutput`). Coming stores the results in memory and at the end it calls method `generateFinalOutput`.
+To store the result by revision, pass the property `outputperrevision:true` (using command line argument `-parameters outputperrevision:true:P1:V1:P2:V2` ).
+Moreover, to avoid saving the results -which can be memory consuming for large repositories- , pass the property `save_result_revision_analysis:false`
+
+
+  
   
   ### API for manipulating the results the results
   
