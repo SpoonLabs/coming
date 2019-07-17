@@ -1,134 +1,44 @@
 package fr.inria.coming.spoon.features;
-//
-//import static org.junit.Assert.assertEquals;
-//import static org.junit.Assert.assertFalse;
-//import static org.junit.Assert.assertNotNull;
-//import static org.junit.Assert.assertTrue;
-//
-//import java.io.File;
-//import java.util.List;
-//
-//import org.junit.Ignore;
-//import org.junit.Test;
-//
-//import fr.inria.coming.codefeatures.Cntx;
-//import fr.inria.coming.codefeatures.CodeFeatureDetector;
-//import fr.inria.coming.codefeatures.CodeFeatures;
-//import fr.inria.coming.main.ComingProperties;
-//import spoon.SpoonModelBuilder;
-//import spoon.compiler.SpoonResource;
-//import spoon.compiler.SpoonResourceHelper;
-//import spoon.reflect.code.BinaryOperatorKind;
-//import spoon.reflect.code.CtAssignment;
-//import spoon.reflect.code.CtBlock;
-//import spoon.reflect.code.CtIf;
-//import spoon.reflect.code.UnaryOperatorKind;
-//import spoon.reflect.declaration.CtElement;
-//import spoon.reflect.declaration.CtMethod;
-//import spoon.reflect.declaration.CtType;
-//import spoon.reflect.factory.Factory;
-//import spoon.reflect.factory.FactoryImpl;
-//import spoon.support.DefaultCoreFactory;
-//import spoon.support.StandardEnvironment;
-//import spoon.support.compiler.VirtualFile;
-//import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
-//
-///**
-// *
-// * @author Matias Martinez
-// *
-// */
-//public class CodeFeatureDetectorTest {
-//
-//	@Test
-//	public void testPropertyBinop() {
-//
-//		String content = "" + "class X {" + "public Object foo() {" + " Integer.toString(10);"
-//				+ " int a = 1,b = 1,c = 1,d = 1;" + " a = a + b / c +d  ; " //
-//				+ " return (a == b && b == c)? null: null;" + "}};";
-//
-//		CtType type = getCtType(content);
-//
-//		assertNotNull(type);
-//		CtMethod method = (CtMethod) type.getMethods().stream()
-//				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
-//
-//		assertNotNull(method);
-//		// System.out.println(method);
-//		CtElement stassig = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("a ="))
-//				.findFirst().get();
-//		// System.out.println(stassig);
-//		assertTrue(stassig instanceof CtAssignment);
-//
-//		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-//
-//		Cntx cntx = cntxResolver.analyzeFeatures(stassig);
-//
-//		Cntx binop = (Cntx) cntx.get(CodeFeatures.BIN_PROPERTIES);
-//
-//		assertEquals(Boolean.TRUE, binop.get(CodeFeatures.involve_PLUS_relation_operators));
-//		assertEquals(Boolean.FALSE, binop.get(CodeFeatures.involve_MINUS_relation_operators));
-//		assertEquals(Boolean.TRUE, binop.get(CodeFeatures.involve_DIV_relation_operators));
-//		assertEquals(Boolean.FALSE, binop.get(CodeFeatures.involve_MUL_relation_operators));
-//
-//	//	assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.LE5_BOOLEAN_EXPRESSIONS_IN_FAULTY));
-//
-//		List<String> ops = (List<String>) binop.get(CodeFeatures.involved_relation_bin_operators);
-//		assertTrue(ops.contains(BinaryOperatorKind.PLUS.toString()));
-//		assertFalse(ops.contains(BinaryOperatorKind.MINUS.toString()));
-//
-//		CtElement returnStmt = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return"))
-//				.findFirst().get();
-//		cntx = cntxResolver.analyzeFeatures(returnStmt);
-//	//	assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.LE5_BOOLEAN_EXPRESSIONS_IN_FAULTY));
-//
-//	}
-//
-//	@Test
-//	public void testPropertyUnaryOp() {
-//
-//		String content = "" + "class X {" + "public Object foo() {" + " Integer.toString(10);"
-//				+ " int a = 1,b = 1,c = 1,d = 1;" + " a = a + b / c +d  ; if (!(a>0)){a++;} " + " return null;" + "}};";
-//
-//		CtType type = getCtType(content);
-//
-//		assertNotNull(type);
-//		CtMethod method = (CtMethod) type.getMethods().stream()
-//				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
-//
-//		assertNotNull(method);
-//		// System.out.println(method);
-//		CtElement stassig = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("if"))
-//				.findFirst().get();
-//		// System.out.println(stassig);
-//		assertTrue(stassig instanceof CtIf);
-//
-//		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-//
-//		Cntx cntx = cntxResolver.analyzeFeatures(stassig);
-//
-//		Cntx unopctxt = (Cntx) cntx.get(CodeFeatures.UNARY_PROPERTIES);
-//
-//		List<String> ops = (List<String>) unopctxt.get(CodeFeatures.involved_relation_unary_operators);
-//
-//		assertTrue(ops.contains(UnaryOperatorKind.NOT.toString()));
-//		assertFalse(ops.contains(UnaryOperatorKind.POSTDEC.toString()));
-//
-//		assertEquals(Boolean.TRUE, unopctxt.get(CodeFeatures.involve_NOT_relation_operators));
-//		// assertEquals(Boolean.FALSE,
-//		// unopctxt.get(CNTX_Property.involve_INSTANCEOF_relation_operators));
-//		assertEquals(Boolean.FALSE, unopctxt.get(CodeFeatures.involve_POSTINC_relation_operators));
-//
-//		CtElement postin = ((CtIf) stassig).getThenStatement();
-//		Cntx cntxposting = cntxResolver.analyzeFeatures((CtElement) ((CtBlock) postin).getStatement(0));
-//		Cntx unopctxtposting = (Cntx) cntxposting.get(CodeFeatures.UNARY_PROPERTIES);
-//
-//		assertEquals(Boolean.FALSE, unopctxtposting.get(CodeFeatures.involve_NOT_relation_operators));
-//		// assertEquals(Boolean.FALSE,
-//		// cntxposting.get(CNTX_Property.involve_INSTANCEOF_relation_operators));
-//		assertEquals(Boolean.TRUE, unopctxtposting.get(CodeFeatures.involve_POSTINC_relation_operators));
-//
-//	}
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.util.List;
+
+import org.junit.Ignore;
+import org.junit.Test;
+
+import fr.inria.coming.codefeatures.Cntx;
+import fr.inria.coming.codefeatures.CodeFeatureDetector;
+import fr.inria.coming.codefeatures.CodeFeatures;
+import fr.inria.coming.main.ComingProperties;
+import spoon.SpoonModelBuilder;
+import spoon.compiler.SpoonResource;
+import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CtAssignment;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.UnaryOperatorKind;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
+import spoon.support.DefaultCoreFactory;
+import spoon.support.StandardEnvironment;
+import spoon.support.compiler.VirtualFile;
+import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
+
+/**
+ *
+ * @author Matias Martinez
+ *
+ */
+public class CodeFeatureDetectorTest {
 //
 //	@Test
 //	public void testProperty_V6_IS_METHOD_RETURN_TYPE_VAR() {
@@ -148,10 +58,10 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //		CtElement stassig = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return f"))
 //				.findFirst().get();
-//		// System.out.println(stassig);
+//		System.out.println(stassig);
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //		Cntx cntx = cntxResolver.analyzeFeatures(stassig);
 //
@@ -199,10 +109,10 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return f"))
 //				.findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //		Cntx cntx = cntxResolver.analyzeFeatures(element);
 //
@@ -234,7 +144,7 @@ package fr.inria.coming.spoon.features;
 //
 //		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR));
 //
-//		// System.out.println(cntx.toJSON());
+//		System.out.println(cntx.toJSON());
 //
 //	}
 //
@@ -263,10 +173,10 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return f"))
 //				.findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //		Cntx cntx = cntxResolver.analyzeFeatures(element);
 //
@@ -307,125 +217,7 @@ package fr.inria.coming.spoon.features;
 //		assertEquals(Boolean.TRUE,
 //				retrieveFeatureVarProperty(cntx, CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN, "s1"));
 //
-//		// System.out.println(cntx.toJSON());
-//
-//	}
-//
-//	@Test
-//	public void testProperty_V8_NUMBER_PRIMITIVE_VARS_IN_STMT() {
-//
-//		String content = "" + "class X {" + "public Object foo() {" //
-//				+ " String s=null;"//
-//				+ " int a = 1;"//
-//				+ "int b = a;" + "b = b+a;" + "s.toString();" //
-//				+ "String d=s;" + "return d.equals(s) || a>b ;" + "}};";
-//
-//		CtType type = getCtType(content);
-//
-//		assertNotNull(type);
-//		CtMethod method = (CtMethod) type.getMethods().stream()
-//				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
-//
-//		assertNotNull(method);
-//		// System.out.println(method);
-//		CtElement stassig = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int a"))
-//				.findFirst().get();
-//		// System.out.println(stassig);
-//		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-//		Cntx cntx = cntxResolver.analyzeFeatures(stassig);
-//
-//		assertEquals(0, cntx.get(CodeFeatures.NUMBER_PRIMITIVE_VARS_IN_STMT));
-//		assertEquals(0, cntx.get(CodeFeatures.NUMBER_OBJECT_REFERENCE_VARS_IN_STMT));
-//		assertEquals(0, cntx.get(CodeFeatures.NUMBER_TOTAL_VARS_IN_STMT));
-//
-//		//
-//		CtElement stm = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int b"))
-//				.findFirst().get();
-//
-//		cntx = cntxResolver.analyzeFeatures(stm);
-//
-//		assertEquals(1, cntx.get(CodeFeatures.NUMBER_PRIMITIVE_VARS_IN_STMT));
-//		assertEquals(0, cntx.get(CodeFeatures.NUMBER_OBJECT_REFERENCE_VARS_IN_STMT));
-//		assertEquals(1, cntx.get(CodeFeatures.NUMBER_TOTAL_VARS_IN_STMT));
-//		assertEquals(Boolean.TRUE, retrieveFeatureVarProperty(cntx, CodeFeatures.V8_VAR_PRIMITIVE, "a"));
-//
-//		stm = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("b =")).findFirst().get();
-//
-//		cntx = cntxResolver.analyzeFeatures(stm);
-//
-//		assertEquals(2, cntx.get(CodeFeatures.NUMBER_PRIMITIVE_VARS_IN_STMT));
-//		assertEquals(0, cntx.get(CodeFeatures.NUMBER_OBJECT_REFERENCE_VARS_IN_STMT));
-//		assertEquals(2, cntx.get(CodeFeatures.NUMBER_TOTAL_VARS_IN_STMT));
-//
-//		stm = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("s.to")).findFirst().get();
-//
-//		cntx = cntxResolver.analyzeFeatures(stm);
-//
-//		assertEquals(0, cntx.get(CodeFeatures.NUMBER_PRIMITIVE_VARS_IN_STMT));
-//		assertEquals(1, cntx.get(CodeFeatures.NUMBER_OBJECT_REFERENCE_VARS_IN_STMT));
-//		assertEquals(1, cntx.get(CodeFeatures.NUMBER_TOTAL_VARS_IN_STMT));
-//
-//		stm = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ")).findFirst()
-//				.get();
-//
-//		cntx = cntxResolver.analyzeFeatures(stm);
-//
-//		assertEquals(2, cntx.get(CodeFeatures.NUMBER_PRIMITIVE_VARS_IN_STMT));
-//		assertEquals(2, cntx.get(CodeFeatures.NUMBER_OBJECT_REFERENCE_VARS_IN_STMT));
-//		assertEquals(4, cntx.get(CodeFeatures.NUMBER_TOTAL_VARS_IN_STMT));
-//
-//	}
-//
-//	@Test
-//	public void testProperty_V2_HAS_VAR_SIM_NAME() {
-//
-//		String content = "" + "class X {" + " int ffii = 1;"//
-//				+ "public Object foo() {" //
-//				+ " int mysimilar = 1;"//
-//				+ "int myzimilar = 2;"//
-//				+ "float fiii = (float)myzimilar;"//
-//				+ " double dother = 0;" //
-//				+ "return fiii;" + "}" + "public float getFloat(){return 1.0;}"//
-//				+ "public int getConvertFloat(float f){return 1;}"//
-//				+ "};";
-//
-//		CtType type = getCtType(content);
-//
-//		assertNotNull(type);
-//		CtMethod method = (CtMethod) type.getMethods().stream()
-//				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
-//
-//		assertNotNull(method);
-//		// System.out.println(method);
-//		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float fiii"))
-//				.findFirst().get();
-//		// System.out.println(element);
-//		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-//		Cntx cntx = cntxResolver.analyzeFeatures(element);
-//		// affected myzimilar
-//		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.HAS_VAR_SIM_NAME));
-//		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.V2_HAS_VAR_SIM_NAME_COMP_TYPE));
-//		assertEquals(Boolean.TRUE,
-//				retrieveFeatureVarProperty(cntx, CodeFeatures.V2_HAS_VAR_SIM_NAME_COMP_TYPE, "myzimilar"));
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("double dother"))
-//				.findFirst().get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//
-//		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.HAS_VAR_SIM_NAME));
-//		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V2_HAS_VAR_SIM_NAME_COMP_TYPE));
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return f")).findFirst()
-//				.get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//
-//		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.HAS_VAR_SIM_NAME));
-//		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V2_HAS_VAR_SIM_NAME_COMP_TYPE));
-//		assertEquals(Boolean.FALSE,
-//				retrieveFeatureVarProperty(cntx, CodeFeatures.V2_HAS_VAR_SIM_NAME_COMP_TYPE, "fiii"));
-//		// System.out.println(cntx.toJSON());
+//		System.out.println(cntx.toJSON());
 //
 //	}
 //
@@ -449,34 +241,34 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int dother"))
 //				.findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //		Cntx cntx = cntxResolver.analyzeFeatures(element);
 //		// affected myzimilar
-//		// System.out.println(cntx.toJSON());
+//		System.out.println(cntx.toJSON());
 //		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V4B_USED_MULTIPLE_AS_PARAMETER));
 //		assertEquals(Boolean.FALSE,
 //				retrieveFeatureVarProperty(cntx, CodeFeatures.V4B_USED_MULTIPLE_AS_PARAMETER, "mysimilar"));
 //
 //		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return max"))
 //				.findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		cntx = cntxResolver.analyzeFeatures(element);
 //
 //		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.V4B_USED_MULTIPLE_AS_PARAMETER));
 //		assertEquals(Boolean.TRUE,
 //				retrieveFeatureVarProperty(cntx, CodeFeatures.V4B_USED_MULTIPLE_AS_PARAMETER, "mysimilar"));
-//		// System.out.println(cntx.toJSON());
+//		System.out.println(cntx.toJSON());
 //
 //		assertEquals(Boolean.TRUE,
 //				retrieveFeatureVarProperty(cntx, CodeFeatures.V4_FIRST_TIME_USED_AS_PARAMETER, "mysimilar"));
-//		// System.out.println(cntx.toJSON());
+//		System.out.println(cntx.toJSON());
 //		assertEquals(Boolean.FALSE,
 //				retrieveFeatureVarProperty(cntx, CodeFeatures.V4_FIRST_TIME_USED_AS_PARAMETER, "mysimilar_2"));
-//		// System.out.println(cntx.toJSON());
+//		System.out.println(cntx.toJSON());
 //	}
 //
 //	@Test
@@ -500,110 +292,23 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //		CtElement element = method.getBody().getStatements().stream()
 //				.filter(e -> e.toString().startsWith("java.lang.String test")).findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //		Cntx cntx = cntxResolver.analyzeFeatures(element);
 //		// affected myzimilar
-//		// System.out.println(cntx.toJSON());
+//		System.out.println(cntx.toJSON());
 //		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.C1_SAME_TYPE_CONSTANT));
 //
 //		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int myzimilar "))
 //				.findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		cntxResolver = new CodeFeatureDetector();
 //		cntx = cntxResolver.analyzeFeatures(element);
 //
 //		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.C1_SAME_TYPE_CONSTANT));
-//
-//	}
-//
-//	@Test
-//	public void testProperty_C1_case2() {
-//
-//		String content = "" + "class X {" //
-//				+ " final float DDCONSTANT = 1.0f; " //
-//
-//				+ "public Object foo() {" //
-//				+ " int ffii = 1;"//
-//				+ "float fiii = 10.0f;"//
-//				+ "return null;};";
-//
-//		CtType type = getCtType(content);
-//
-//		assertNotNull(type);
-//		CtMethod method = (CtMethod) type.getMethods().stream()
-//				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
-//
-//		assertNotNull(method);
-//		// System.out.println(method);
-//		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float fiii"))
-//				.findFirst().get();
-//		// System.out.println(element);
-//		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-//		Cntx cntx = cntxResolver.analyzeFeatures(element);
-//		// affected myzimilar
-//		// System.out.println(cntx.toJSON());
-//		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.C1_SAME_TYPE_CONSTANT));
-//
-//		assertEquals(Boolean.TRUE, retrieveVarProperty(cntx, CodeFeatures.C1_SAME_TYPE_CONSTANT, "10.0F",
-//				CodeFeatureDetector.CONSTANT_KEY));
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int ffii "))
-//				.findFirst().get();
-//		// System.out.println(element);
-//		cntxResolver = new CodeFeatureDetector();
-//		cntx = cntxResolver.analyzeFeatures(element);
-//
-//		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.C1_SAME_TYPE_CONSTANT));
-//
-//		assertEquals(null, retrieveVarProperty(cntx, CodeFeatures.C1_SAME_TYPE_CONSTANT, "10.0F",
-//				CodeFeatureDetector.CONSTANT_KEY));
-//
-//	}
-//
-//	@Test
-//	public void testProperty_C1_case2b() {
-//
-//		String content = "" + "class X {" //
-//				+ " final float DDCONSTANT = 1.0f; " //
-//
-//				+ "public Object foo() {" //
-//				+ " int ffii = 1;"//
-//				+ "float fiii = DDCONSTANT;"//
-//				+ "return null;};";
-//
-//		CtType type = getCtType(content);
-//
-//		assertNotNull(type);
-//		CtMethod method = (CtMethod) type.getMethods().stream()
-//				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
-//
-//		assertNotNull(method);
-//		// System.out.println(method);
-//		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float fiii"))
-//				.findFirst().get();
-//		// System.out.println(element);
-//		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-//		Cntx cntx = cntxResolver.analyzeFeatures(element);
-//		// affected myzimilar
-//		// System.out.println(cntx.toJSON());
-//		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.C1_SAME_TYPE_CONSTANT));
-//
-//		assertEquals(Boolean.TRUE, retrieveVarProperty(cntx, CodeFeatures.C1_SAME_TYPE_CONSTANT, "DDCONSTANT",
-//				CodeFeatureDetector.CONSTANT_KEY));
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int ffii "))
-//				.findFirst().get();
-//		// System.out.println(element);
-//		cntxResolver = new CodeFeatureDetector();
-//		cntx = cntxResolver.analyzeFeatures(element);
-//
-//		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.C1_SAME_TYPE_CONSTANT));
-//		assertEquals(null, retrieveVarProperty(cntx, CodeFeatures.C1_SAME_TYPE_CONSTANT, "DDCONSTANT",
-//				CodeFeatureDetector.CONSTANT_KEY));
 //
 //	}
 //
@@ -629,10 +334,10 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //		CtElement element = method.getBody().getStatements().stream()
 //				.filter(e -> e.toString().startsWith("java.lang.String s1")).findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //		Cntx cntx = cntxResolver.analyzeFeatures(element);
 //
@@ -641,64 +346,11 @@ package fr.inria.coming.spoon.features;
 //
 //		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("java.lang.String s2"))
 //				.findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		cntxResolver = new CodeFeatureDetector();
 //		cntx = cntxResolver.analyzeFeatures(element);
 //
 //		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V3_HAS_CONSTANT));
-//
-//	}
-//
-//	@Test
-//	public void testProperty_AE1() {
-//
-//		String content = "" + "class X {" + //
-//				"public String SC = null;"//
-//				+ "public Object foo() {" //
-//				+ " int mysimilar = 1;"//
-//				+ "int myzimilar = 2 + 1;"//
-//				+ "float fiii = (float)myzimilar - 1.0f; " //
-//				+ "String s1 = SC;"//
-//				+ "String s2 = s1 + SC;"//
-//				+ "double dother = 0;" + "return fiii;" + "}" //
-//				+ "public float getFloat(){return 1.0;}"//
-//				+ "public float getConvertFloat(float f){return 1;}"//
-//				+ "public String getConvertSFloat(String f){return null;}"//
-//				+ "};";
-//
-//		CtType type = getCtType(content);
-//
-//		assertNotNull(type);
-//		CtMethod method = (CtMethod) type.getMethods().stream()
-//				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
-//
-//		assertNotNull(method);
-//		// System.out.println(method);
-//		CtElement element = method.getBody().getStatements().stream()
-//				.filter(e -> e.toString().startsWith("java.lang.String s2")).findFirst().get();
-//		// System.out.println(element);
-//		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-//		Cntx cntx = cntxResolver.analyzeFeatures(element);
-//
-//		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.AE1_COMPATIBLE_RETURN_TYPE));
-//
-//		///
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float fiii"))
-//				.findFirst().get();
-//		// System.out.println(element);
-//		cntxResolver = new CodeFeatureDetector();
-//		cntx = cntxResolver.analyzeFeatures(element);
-//
-//		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.AE1_COMPATIBLE_RETURN_TYPE));
-//
-//		///
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int myzimilar"))
-//				.findFirst().get();
-//		// System.out.println(element);
-//		cntxResolver = new CodeFeatureDetector();
-//		cntx = cntxResolver.analyzeFeatures(element);
-//
-//		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.AE1_COMPATIBLE_RETURN_TYPE));
 //
 //	}
 //
@@ -730,49 +382,6 @@ package fr.inria.coming.spoon.features;
 //	}
 //
 //	@Test
-//	public void testProperty_HAS_VAR_SIM_TYPE() {
-//
-//		String content = "" + "class X {" + "public Object foo() {" //
-//				+ " int mysimilar = 1;"//
-//				+ "int myzimilar = 2;"//
-//				+ "float fiii = (float)myzimilar; " + "double dother = 0;" + "return fiii;" + "}"
-//				+ "public float getFloat(){return 1.0;}"//
-//				+ "public int getConvertFloat(float f){return 1;}"//
-//				+ "};";
-//
-//		CtType type = getCtType(content);
-//
-//		assertNotNull(type);
-//		CtMethod method = (CtMethod) type.getMethods().stream()
-//				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
-//
-//		assertNotNull(method);
-//		// System.out.println(method);
-//		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float fiii"))
-//				.findFirst().get();
-//		// System.out.println(element);
-//		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-//		Cntx cntx = cntxResolver.analyzeFeatures(element);
-//
-//		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.HAS_VAR_SIM_TYPE));
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return")).findFirst()
-//				.get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//
-//		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.HAS_VAR_SIM_TYPE));
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("double")).findFirst()
-//				.get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//
-//		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.HAS_VAR_SIM_TYPE));
-//
-//	}
-//
-//	@Test
 //	public void testProperty_LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED() {
 //
 //		String content = "" + "class X {" + "public Object foo() {" //
@@ -794,10 +403,10 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int f1"))
 //				.findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //		Cntx cntx = cntxResolver.analyzeFeatures(element);
 //
@@ -805,7 +414,7 @@ package fr.inria.coming.spoon.features;
 //
 //		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int f2")).findFirst()
 //				.get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		cntx = cntxResolver.analyzeFeatures(element);
 //
 //		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED));
@@ -840,10 +449,10 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //		CtElement element = method.getBody().getStatements().stream()
 //				.filter(e -> e.toString().startsWith("int myzimilar")).findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //		Cntx cntx = cntxResolver.analyzeFeatures(element);
 //		// all variables used
@@ -852,7 +461,7 @@ package fr.inria.coming.spoon.features;
 //		// a local not used
 //		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("if (avarb"))
 //				.findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		cntxResolver = new CodeFeatureDetector();
 //		cntx = cntxResolver.analyzeFeatures(element);
 //
@@ -861,7 +470,7 @@ package fr.inria.coming.spoon.features;
 //		// without the global
 //		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return")).findFirst()
 //				.get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		cntxResolver = new CodeFeatureDetector();
 //		cntx = cntxResolver.analyzeFeatures(element);
 //
@@ -896,10 +505,10 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("if (avarb"))
 //				.findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //		Cntx cntx = cntxResolver.analyzeFeatures(element);
 //		// all variables used
@@ -908,7 +517,7 @@ package fr.inria.coming.spoon.features;
 //		// without the global
 //		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return")).findFirst()
 //				.get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		cntxResolver = new CodeFeatureDetector();
 //		cntx = cntxResolver.analyzeFeatures(element);
 //
@@ -938,12 +547,12 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //
 //		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return"))
 //				.findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		cntxResolver = new CodeFeatureDetector();
 //		Cntx cntx = cntxResolver.analyzeFeatures(element);
 //
@@ -973,12 +582,12 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //
 //		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return"))
 //				.findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		cntxResolver = new CodeFeatureDetector();
 //		Cntx cntx = cntxResolver.analyzeFeatures(element);
 //
@@ -1008,12 +617,12 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //
 //		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return"))
 //				.findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		cntxResolver = new CodeFeatureDetector();
 //		Cntx cntx = cntxResolver.analyzeFeatures(element);
 //
@@ -1049,10 +658,10 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //		CtElement element = method.getBody().getStatements().stream()
 //				.filter(e -> e.toString().startsWith("int myzimilar")).findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //		Cntx cntx = cntxResolver.analyzeFeatures(element);
 //		// all variables used
@@ -1060,7 +669,7 @@ package fr.inria.coming.spoon.features;
 //
 //		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return")).findFirst()
 //				.get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		cntxResolver = new CodeFeatureDetector();
 //		cntx = cntxResolver.analyzeFeatures(element);
 //
@@ -1068,7 +677,7 @@ package fr.inria.coming.spoon.features;
 //
 //		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("if")).findFirst()
 //				.get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		cntxResolver = new CodeFeatureDetector();
 //		cntx = cntxResolver.analyzeFeatures(element);
 //
@@ -1103,10 +712,10 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //		CtElement element = method.getBody().getStatements().stream()
 //				.filter(e -> e.toString().startsWith("int myzimilar")).findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //		Cntx cntx = cntxResolver.analyzeFeatures(element);
 //		// all variables used
@@ -1114,7 +723,7 @@ package fr.inria.coming.spoon.features;
 //
 //		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return")).findFirst()
 //				.get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		cntxResolver = new CodeFeatureDetector();
 //		cntx = cntxResolver.analyzeFeatures(element);
 //
@@ -1122,7 +731,7 @@ package fr.inria.coming.spoon.features;
 //
 //		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int f1")).findFirst()
 //				.get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		cntxResolver = new CodeFeatureDetector();
 //		cntx = cntxResolver.analyzeFeatures(element);
 //
@@ -1162,10 +771,10 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("if ((get"))
 //				.findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //		Cntx cntx = cntxResolver.analyzeFeatures(element);
 //		// not method involve
@@ -1174,7 +783,7 @@ package fr.inria.coming.spoon.features;
 //		//
 //		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("if (avarb"))
 //				.findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		cntxResolver = new CodeFeatureDetector();
 //		cntx = cntxResolver.analyzeFeatures(element);
 //		// statement with a similar method
@@ -1183,7 +792,7 @@ package fr.inria.coming.spoon.features;
 //		//
 //		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("if ((!avarb"))
 //				.findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		cntxResolver = new CodeFeatureDetector();
 //		cntx = cntxResolver.analyzeFeatures(element);
 //		// statement with a similar method
@@ -1219,10 +828,10 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int f1"))
 //				.findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //		Cntx cntx = cntxResolver.analyzeFeatures(element);
 //		// not method involve
@@ -1232,11 +841,11 @@ package fr.inria.coming.spoon.features;
 //
 //		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float fiii ="))
 //				.findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		cntxResolver = new CodeFeatureDetector();
 //		cntx = cntxResolver.analyzeFeatures(element);
 //		// statement with a similar method
-//		// System.out.println(cntx.toJSON());
+//		System.out.println(cntx.toJSON());
 //		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.M3_ANOTHER_METHOD_WITH_PARAMETER_RETURN_COMP));
 //		assertEquals(Boolean.TRUE, retrieveMethodsVarProperty(cntx,
 //				CodeFeatures.M3_ANOTHER_METHOD_WITH_PARAMETER_RETURN_COMP, "getFloat()"));
@@ -1270,10 +879,10 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //		CtElement element = method.getBody().getStatements().stream()
 //				.filter(e -> e.toString().startsWith("java.lang.String f1")).findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //		Cntx cntx = cntxResolver.analyzeFeatures(element);
 //		// not method involve
@@ -1312,21 +921,21 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //		CtElement element = method.getBody().getStatements().stream()
 //				.filter(e -> e.toString().startsWith("float fiii =")).findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //		Cntx cntx = cntxResolver.analyzeFeatures(element);
-//		// System.out.println(cntx.toJSON());
+//		System.out.println(cntx.toJSON());
 //		// not method involve
 //		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.M4_PARAMETER_RETURN_COMPABILITY));
 //		retrieveMethodsVarProperty(cntx, CodeFeatures.M4_PARAMETER_RETURN_COMPABILITY, "getFloat(float)");
 //
 //		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int f1")).findFirst()
 //				.get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		cntxResolver = new CodeFeatureDetector();
 //		cntx = cntxResolver.analyzeFeatures(element);
 //		// all variables used
@@ -1360,14 +969,14 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //		CtElement element = method.getBody().getStatements().stream()
 //				.filter(e -> e.toString().startsWith("float fiii =")).findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //		Cntx cntx = cntxResolver.analyzeFeatures(element);
-//		// System.out.println(cntx.toJSON());
+//		System.out.println(cntx.toJSON());
 //		// not method involve
 //		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.M5_MI_WITH_COMPATIBLE_VAR_TYPE));
 //
@@ -1375,7 +984,7 @@ package fr.inria.coming.spoon.features;
 //				.get();
 //
 //		cntx = cntxResolver.analyzeFeatures(element);
-//		// System.out.println(cntx.toJSON());
+//		System.out.println(cntx.toJSON());
 //		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.M5_MI_WITH_COMPATIBLE_VAR_TYPE));
 //		retrieveMethodsVarProperty(cntx, CodeFeatures.M5_MI_WITH_COMPATIBLE_VAR_TYPE, "getConvertFloat(X$MYEN)");
 //
@@ -1409,14 +1018,14 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //		CtElement element = method.getBody().getStatements().stream()
 //				.filter(e -> e.toString().startsWith("float fiii =")).findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //		Cntx cntx = cntxResolver.analyzeFeatures(element);
-//		// System.out.println(cntx.toJSON());
+//		System.out.println(cntx.toJSON());
 //		// not method involve
 //		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.M8_RETURN_PRIMITIVE));
 //
@@ -1425,7 +1034,7 @@ package fr.inria.coming.spoon.features;
 //
 //		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return 1")).findFirst()
 //				.get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		cntxResolver = new CodeFeatureDetector();
 //		cntx = cntxResolver.analyzeFeatures(element);
 //		// all variables used
@@ -1460,21 +1069,21 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //		CtElement element = method.getBody().getStatements().stream()
 //				.filter(e -> e.toString().startsWith("float fiii =")).findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //		Cntx cntx = cntxResolver.analyzeFeatures(element);
-//		// System.out.println(cntx.toJSON());
+//		System.out.println(cntx.toJSON());
 //		// not method involve
 //		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.M1_OVERLOADED_METHOD));
 //		retrieveMethodsVarProperty(cntx, CodeFeatures.M1_OVERLOADED_METHOD, "getFloat()");
 //
 //		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int f1")).findFirst()
 //				.get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		cntxResolver = new CodeFeatureDetector();
 //		cntx = cntxResolver.analyzeFeatures(element);
 //		// all variables used
@@ -1510,10 +1119,10 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //		CtElement element = method.getBody().getStatements().stream()
 //				.filter(e -> e.toString().startsWith("int myzimilar")).findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //		Cntx cntx = cntxResolver.analyzeFeatures(element);
 //		// not method involve
@@ -1522,7 +1131,7 @@ package fr.inria.coming.spoon.features;
 //		/// SECOND CASE
 //		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float fiii ="))
 //				.findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		cntxResolver = new CodeFeatureDetector();
 //		cntx = cntxResolver.analyzeFeatures(element);
 //		// statement with a similar method
@@ -1535,7 +1144,7 @@ package fr.inria.coming.spoon.features;
 //		// THIRD CASE:
 //		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int f1")).findFirst()
 //				.get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		cntxResolver = new CodeFeatureDetector();
 //		cntx = cntxResolver.analyzeFeatures(element);
 //		// all variables used
@@ -1571,10 +1180,10 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //		CtElement element = method.getBody().getStatements().stream()
 //				.filter(e -> e.toString().startsWith("int myzimilar")).findFirst().get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //		Cntx cntx = cntxResolver.analyzeFeatures(element);
 //		// not method involve
@@ -1586,406 +1195,11 @@ package fr.inria.coming.spoon.features;
 //		/// SECOND CASE
 //		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return 1")).findFirst()
 //				.get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		cntxResolver = new CodeFeatureDetector();
 //		cntx = cntxResolver.analyzeFeatures(element);
 //		// statement with a similar method
 //		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.S6_METHOD_THROWS_EXCEPTION));
-//
-//	}
-//
-//	@SuppressWarnings({ "rawtypes", "unchecked" })
-//	@Test
-//	public void testProperty_HAS_VAR_IN_TRANSFORMATION() {
-//
-//		String content = "" + "class X {" + "public Object foo() {" //
-//				+ " float mysimilar = 1;"//
-//				+ "int myzimilar = 2;"
-//				+ "float fiii =  getConvertFloat(mysimilar); double dother = 0; double ddother = dother;"
-//				+ "return mysimilar;" + "}" + "public float getFloat(){return 1.0;}"//
-//				+ "public int getConvertFloat(float f){return 1;}"//
-//				+ "};";
-//
-//		CtType type = getCtType(content);
-//
-//		assertNotNull(type);
-//		CtMethod method = (CtMethod) type.getMethods().stream()
-//				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
-//
-//		assertNotNull(method);
-//		// System.out.println(method);
-//		CtElement element = method.getBody().getStatements().stream()
-//				.filter(e -> e.toString().startsWith("return mysimilar")).findFirst().get();
-//		// System.out.println(element);
-//		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-//		Cntx cntx = cntxResolver.analyzeFeatures(element);
-//
-//		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.V5_HAS_VAR_IN_TRANSFORMATION));
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("double ddother"))
-//				.findFirst().get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//
-//		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.HAS_VAR_SIM_NAME));
-//
-//	}
-//
-//	@SuppressWarnings({ "rawtypes", "unchecked" })
-//	@Test
-//	public void testProperty_USES_CONSTANT() {
-//
-//		String content = "" + "class X {" + "public Object foo() {" //
-//				+ " float mysimilar = 1;"//
-//				+ "int myzimilar = 2;" + "float fiii =  getConvertFloat(mysimilar);"//
-//				+ " double dother = 0;"//
-//				+ " double ddother = dother;"//
-//				+ "return mysimilar;" + "}" + //
-//				"public float getFloat(){return 1.0;}"//
-//				+ "public int getConvertFloat(float f){return 1;}"//
-//				+ "};";
-//
-//		CtType type = getCtType(content);
-//
-//		assertNotNull(type);
-//		CtMethod method = (CtMethod) type.getMethods().stream()
-//				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
-//
-//		assertNotNull(method);
-//		// System.out.println(method);
-//		CtElement element = method.getBody().getStatements().stream()
-//				.filter(e -> e.toString().startsWith("int myzimilar")).findFirst().get();
-//		// System.out.println(element);
-//		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-//		Cntx cntx = cntxResolver.analyzeFeatures(element);
-//
-//		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.USES_CONSTANT));
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float fiii"))
-//				.findFirst().get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//
-//		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.USES_CONSTANT));
-//
-//	}
-//
-//	@Test
-//	public void testProperty_C2USES_ENUM() {
-//
-//		String content = "" + "class X {" + "public enum MYEN  {ENU1, ENU2;}" + "public Object foo() {" //
-//				+ " float mysimilar = 1;"//
-//				+ "int myzimilar = 2;" + //
-//				"float fiii =  getConvertFloat(MYEN.ENU1);"//
-//				+ " double dother=0l;"//
-//				+ " double ddother = dother;" + "return mysimilar;" + "}" + "public float getFloat(){return 1.0;}"//
-//				+ "public int getConvertFloat(MYEN f){return 1;}"//
-//				+ "};";
-//
-//		CtType type = getCtType(content);
-//		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-//		assertNotNull(type);
-//		CtMethod method = (CtMethod) type.getMethods().stream()
-//				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
-//
-//		assertNotNull(method);
-//		// System.out.println(method);
-//
-//		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float fiii"))
-//				.findFirst().get();
-//		// System.out.println(element);
-//		Cntx cntx = cntxResolver.analyzeFeatures(element);
-//		// System.out.println(cntx.toJSON());
-//		// TODO: Failing:
-//		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.C5_USES_ENUMERATION));
-//
-//		assertEquals(Boolean.TRUE,
-//				retrieveVarProperty(cntx, CodeFeatures.C5_USES_ENUMERATION, "ENU1", CodeFeatureDetector.ENUM_KEY));
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int myzimilar"))
-//				.findFirst().get();
-//		// System.out.println(element);
-//
-//		cntx = cntxResolver.analyzeFeatures(element);
-//
-//		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.C5_USES_ENUMERATION));
-//
-//	}
-//
-//	@Test
-//	public void testProperty_NR_OBJECT_ASSIGNED() {
-//
-//		String content = "" + "class X {" + "public enum MYEN  {ENU1, ENU2;}" + "public Object foo() {" //
-//				+ " float mysimilar = 1;"//
-//				+ "Object ob = null;" //
-//				+ "ob = new String();"//
-//				+ "String t= ob.toString();" // HERE: initialized
-//				+ "boolean com = (ob == t);" //
-//				+ "com = (t==true);" + "return ob;" + //
-//				"};};";
-//
-//		CtType type = getCtType(content);
-//
-//		assertNotNull(type);
-//		CtMethod method = (CtMethod) type.getMethods().stream()
-//				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
-//
-//		assertNotNull(method);
-//		// System.out.println(method);
-//
-//		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-//		CtElement element = null;
-//		Cntx cntx = null;
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("com =")).findFirst()
-//				.get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//		assertEquals(1, cntx.get(CodeFeatures.NR_VARIABLE_ASSIGNED));
-//		assertEquals(0, cntx.get(CodeFeatures.NR_VARIABLE_NOT_ASSIGNED));
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ob"))
-//				.findFirst().get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//
-//		assertEquals(1, cntx.get(CodeFeatures.NR_VARIABLE_ASSIGNED));
-//		assertEquals(0, cntx.get(CodeFeatures.NR_VARIABLE_NOT_ASSIGNED));
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean com"))
-//				.findFirst().get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//		assertEquals(2, cntx.get(CodeFeatures.NR_VARIABLE_ASSIGNED));
-//		assertEquals(0, cntx.get(CodeFeatures.NR_VARIABLE_NOT_ASSIGNED));
-//
-//	}
-//
-//	@Test
-//	public void testProperty_NR_OBJECT_ASSIGNED_Decl_notInit() {
-//
-//		String content = "" + "class X {" + "public enum MYEN  {ENU1, ENU2;}" + "public Object foo() {" //
-//				+ " float mysimilar = 1;"//
-//				+ "Object ob = null;" //
-//				+ "ob = new String();"//
-//				+ "String t= null;" // HERE: not init
-//				+ "boolean com = (ob == t);" //
-//				+ "com = (t==true);" + "return ob;" + //
-//				"};};";
-//
-//		CtType type = getCtType(content);
-//
-//		assertNotNull(type);
-//		CtMethod method = (CtMethod) type.getMethods().stream()
-//				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
-//
-//		assertNotNull(method);
-//		// System.out.println(method);
-//
-//		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-//		CtElement element = null;
-//		Cntx cntx = null;
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("com =")).findFirst()
-//				.get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//		assertEquals(0, cntx.get(CodeFeatures.NR_VARIABLE_ASSIGNED));
-//		assertEquals(1, cntx.get(CodeFeatures.NR_VARIABLE_NOT_ASSIGNED));
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ob"))
-//				.findFirst().get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//
-//		assertEquals(1, cntx.get(CodeFeatures.NR_VARIABLE_ASSIGNED));
-//		assertEquals(0, cntx.get(CodeFeatures.NR_VARIABLE_NOT_ASSIGNED));
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean com"))
-//				.findFirst().get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//		assertEquals(1, cntx.get(CodeFeatures.NR_VARIABLE_ASSIGNED));
-//		assertEquals(1, cntx.get(CodeFeatures.NR_VARIABLE_NOT_ASSIGNED));
-//
-//	}
-//
-//	@Test
-//	public void testProperty_S1_LocalVariable_ASSIGNED() {
-//
-//		String content = "" + "class X {"
-//		//
-//				+ "public enum MYEN  {ENU1, ENU2;}" + //
-//				"public Object foo() {" //
-//				+ " float mysimilar = 1;"//
-//				+ "Object ob = null;" //
-//				+ "ob = new String();"//
-//				+ "String t= null;" // Not initialized (default expression == null)
-//				+ "boolean com = (ob == t);" //
-//				+ "if(t == null){}"// Control flow to ignore
-//				+ "com = (t==true);"//
-//				+ "return ob;" + //
-//				"};};";
-//
-//		CtType type = getCtType(content);
-//
-//		assertNotNull(type);
-//		CtMethod method = (CtMethod) type.getMethods().stream()
-//				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
-//
-//		assertNotNull(method);
-//		// System.out.println(method);
-//
-//		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-//		CtElement element = null;
-//		Cntx cntx = null;
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("com =")).findFirst()
-//				.get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//		assertEquals(0, cntx.get(CodeFeatures.NR_VARIABLE_ASSIGNED));
-//		assertEquals(1, cntx.get(CodeFeatures.NR_VARIABLE_NOT_ASSIGNED));
-//		// All are local
-//		assertEquals(0, cntx.get(CodeFeatures.NR_OBJECT_ASSIGNED_LOCAL));
-//		assertEquals(1, cntx.get(CodeFeatures.NR_OBJECT_NOT_ASSIGNED_LOCAL));
-//
-//		//
-//		boolean existsNotAssigned = Boolean.parseBoolean(cntx.get(CodeFeatures.S1_LOCAL_VAR_NOT_ASSIGNED).toString());
-//		assertTrue(existsNotAssigned);
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ob"))
-//				.findFirst().get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//
-//		assertEquals(1, cntx.get(CodeFeatures.NR_VARIABLE_ASSIGNED));
-//		assertEquals(0, cntx.get(CodeFeatures.NR_VARIABLE_NOT_ASSIGNED));
-//
-//		assertEquals(1, cntx.get(CodeFeatures.NR_OBJECT_ASSIGNED_LOCAL));
-//		assertEquals(0, cntx.get(CodeFeatures.NR_OBJECT_NOT_ASSIGNED_LOCAL));
-//
-//		boolean existsAssigned = Boolean.parseBoolean(cntx.get(CodeFeatures.S1_LOCAL_VAR_NOT_ASSIGNED).toString());
-//		assertFalse(existsAssigned);
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean com"))
-//				.findFirst().get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//		assertEquals(1, cntx.get(CodeFeatures.NR_VARIABLE_ASSIGNED));
-//		assertEquals(1, cntx.get(CodeFeatures.NR_VARIABLE_NOT_ASSIGNED));
-//
-//		assertEquals(1, cntx.get(CodeFeatures.NR_OBJECT_ASSIGNED_LOCAL));
-//		assertEquals(1, cntx.get(CodeFeatures.NR_OBJECT_NOT_ASSIGNED_LOCAL));
-//
-//	}
-//
-//	@Test
-//	public void testProperty_NR_LocalVariable_ASSIGNED_withGlobalVars() {
-//
-//		String content = "" + "class X {"
-//		//
-//				+ " String tconst = null;"//
-//
-//				+ "public enum MYEN  {ENU1, ENU2;}" + //
-//				"public Object foo() {" //
-//				+ " float mysimilar = 1;"//
-//				+ "Object ob = null;" //
-//				+ "ob = new String();"//
-//				+ "String t= null;" // Not initialized (default expression == null)
-//				+ "boolean com = (ob == t);" //
-//				+ "com = (t==tconst);" // the tconst never assigned
-//				+ "tconst = t;" // assigning
-//				+ "t = ctconst+tconst;" //
-//				+ "return ob;" + //
-//				"};};";
-//
-//		CtType type = getCtType(content);
-//
-//		assertNotNull(type);
-//		CtMethod method = (CtMethod) type.getMethods().stream()
-//				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
-//
-//		assertNotNull(method);
-//		// System.out.println(method);
-//
-//		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-//		CtElement element = null;
-//		Cntx cntx = null;
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("com =")).findFirst()
-//				.get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//		assertEquals(0, cntx.get(CodeFeatures.NR_VARIABLE_ASSIGNED));
-//		assertEquals(2, cntx.get(CodeFeatures.NR_VARIABLE_NOT_ASSIGNED));
-//		// All are local
-//		assertEquals(0, cntx.get(CodeFeatures.NR_OBJECT_ASSIGNED_LOCAL));
-//		assertEquals(1, cntx.get(CodeFeatures.NR_OBJECT_NOT_ASSIGNED_LOCAL));
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ob"))
-//				.findFirst().get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//
-//		assertEquals(1, cntx.get(CodeFeatures.NR_VARIABLE_ASSIGNED));
-//		assertEquals(0, cntx.get(CodeFeatures.NR_VARIABLE_NOT_ASSIGNED));
-//
-//		assertEquals(1, cntx.get(CodeFeatures.NR_OBJECT_ASSIGNED_LOCAL));
-//		assertEquals(0, cntx.get(CodeFeatures.NR_OBJECT_NOT_ASSIGNED_LOCAL));
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean com"))
-//				.findFirst().get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//		assertEquals(1, cntx.get(CodeFeatures.NR_VARIABLE_ASSIGNED));
-//		assertEquals(1, cntx.get(CodeFeatures.NR_VARIABLE_NOT_ASSIGNED));
-//
-//		assertEquals(1, cntx.get(CodeFeatures.NR_OBJECT_ASSIGNED_LOCAL));
-//		assertEquals(1, cntx.get(CodeFeatures.NR_OBJECT_NOT_ASSIGNED_LOCAL));
-//
-//	}
-//
-//	@Test
-//	public void testProperty_NR_OBJECT_USED() {
-//
-//		String content = "" + "class X {" + "public enum MYEN  {ENU1, ENU2;}" + "public Object foo() {" //
-//				+ " float mysimilar = 1;"//
-//				+ "Object ob = null;" //
-//				+ "ob = new String();"//
-//				+ "String t= ob.toString();" //
-//				+ "String t2 = null;" //
-//				+ "boolean com = (ob == t) && (t2 == t);" //
-//				+ "return ob;" + //
-//				"};};";
-//
-//		CtType type = getCtType(content);
-//
-//		assertNotNull(type);
-//		CtMethod method = (CtMethod) type.getMethods().stream()
-//				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
-//
-//		assertNotNull(method);
-//		// System.out.println(method);
-//
-//		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-//		CtElement element = null;
-//		Cntx cntx = null;
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean com"))
-//				.findFirst().get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//		assertEquals(1, cntx.get(CodeFeatures.NR_OBJECT_USED));
-//		assertEquals(2, cntx.get(CodeFeatures.NR_OBJECT_NOT_USED));
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ob"))
-//				.findFirst().get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//
-//		assertEquals(1, cntx.get(CodeFeatures.NR_OBJECT_USED));
-//		assertEquals(0, cntx.get(CodeFeatures.NR_OBJECT_NOT_USED));
 //
 //	}
 //
@@ -2016,7 +1230,7 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //		CtElement element = null;
@@ -2040,95 +1254,6 @@ package fr.inria.coming.spoon.features;
 //				.get();
 //		cntx = cntxResolver.analyzeFeatures(element);
 //		assertEquals("While", cntx.get(CodeFeatures.S3_TYPE_OF_FAULTY_STATEMENT));
-//
-//	}
-//
-//	@Test
-//	public void testProperty_NR_OBJECT_USED_LOCAL_VARS() {
-//
-//		String content = "" + "class X {" +
-//		//
-//				"String tdef = \"hello\";" + // defined
-//				"String tco = null;" + //
-//				"public enum MYEN  {ENU1, ENU2;}" + "public Object foo() {" //
-//				+ " float mysimilar = 1;"//
-//				+ "Object ob = null;" //
-//				+ "ob = new String();"//
-//				+ "String t= ob.toString();" //
-//				+ "String t2 = null;" //
-//				+ "boolean com = (ob == t) && (t2 == t);" //
-//				+ "String t4 = null;" // Never used
-//				+ "t2 = tco + t4 ;"// tco is not used, but it's not local, t4 never used but is local
-//				+ "t = tco + t4 + tdef + t2;"// one global used not
-//				+ "return ob;" + //
-//				"};};";
-//
-//		CtType type = getCtType(content);
-//
-//		assertNotNull(type);
-//		CtMethod method = (CtMethod) type.getMethods().stream()
-//				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
-//
-//		assertNotNull(method);
-//		// System.out.println(method);
-//
-//		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-//		CtElement element = null;
-//		Cntx cntx = null;
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean com"))
-//				.findFirst().get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//		assertEquals(1, cntx.get(CodeFeatures.NR_OBJECT_USED));
-//		assertEquals(2, cntx.get(CodeFeatures.NR_OBJECT_NOT_USED));
-//
-//		assertEquals(1, cntx.get(CodeFeatures.NR_OBJECT_USED_LOCAL_VAR));
-//		assertEquals(2, cntx.get(CodeFeatures.NR_OBJECT_NOT_USED_LOCAL_VAR));
-//
-//		boolean existsNotUsed = Boolean.parseBoolean(cntx.get(CodeFeatures.S1_LOCAL_VAR_NOT_USED).toString());
-//		assertTrue(existsNotUsed);
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ob"))
-//				.findFirst().get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//
-//		assertEquals(1, cntx.get(CodeFeatures.NR_OBJECT_USED));
-//		assertEquals(0, cntx.get(CodeFeatures.NR_OBJECT_NOT_USED));
-//
-//		existsNotUsed = Boolean.parseBoolean(cntx.get(CodeFeatures.S1_LOCAL_VAR_NOT_USED).toString());
-//		assertFalse(existsNotUsed);
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("t2 =")).findFirst()
-//				.get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//
-//		assertEquals(0, cntx.get(CodeFeatures.NR_OBJECT_USED));
-//		assertEquals(2, cntx.get(CodeFeatures.NR_OBJECT_NOT_USED));
-//
-//		assertEquals(0, cntx.get(CodeFeatures.NR_OBJECT_USED_LOCAL_VAR));
-//		assertEquals(1, cntx.get(CodeFeatures.NR_OBJECT_NOT_USED_LOCAL_VAR));
-//
-//		existsNotUsed = Boolean.parseBoolean(cntx.get(CodeFeatures.S1_LOCAL_VAR_NOT_USED).toString());
-//		assertTrue(existsNotUsed);
-//
-//		/////
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("t =")).findFirst()
-//				.get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//
-//		assertEquals(3, cntx.get(CodeFeatures.NR_OBJECT_USED));
-//		assertEquals(1, cntx.get(CodeFeatures.NR_OBJECT_NOT_USED));
-//
-//		assertEquals(2, cntx.get(CodeFeatures.NR_OBJECT_USED_LOCAL_VAR));
-//		assertEquals(0, cntx.get(CodeFeatures.NR_OBJECT_NOT_USED_LOCAL_VAR));
-//
-//		existsNotUsed = Boolean.parseBoolean(cntx.get(CodeFeatures.S1_LOCAL_VAR_NOT_USED).toString());
-//		assertFalse(existsNotUsed);
 //
 //	}
 //
@@ -2162,7 +1287,7 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //		CtElement element = null;
@@ -2232,7 +1357,7 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //		CtElement element = null;
@@ -2290,7 +1415,7 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //		CtElement element = null;
@@ -2298,129 +1423,11 @@ package fr.inria.coming.spoon.features;
 //
 //		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("f2 = ")).findFirst()
 //				.get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		cntx = cntxResolver.analyzeFeatures(element);
 //		// field not assigned fX
 //		// Strange behaviour: fails when running, works when debbuging
 //		// assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
-//
-//	}
-//
-//	@SuppressWarnings("unchecked")
-//	@Test
-//	public void testProperty_NR_FIElD_INIT_INCOMPLETE_2() {
-//		/// Case 2: all init (f2 is private so we dont initialize it)
-//
-//		String content = "" + "class X {" //
-//				+ "public X fX = null;" + //
-//				"public int f1 = 0;" + //
-//				"private int f2 = 0;" + //
-//
-//				"public Object foo() {" + //
-//				" fX = new X();"// init the field
-//				+ "fX.fX = null;"//
-//				+ "fX.f1 = 0;"//
-//				+ "int mv ;" + //
-//				"mv = fX.f2;" + //
-//				"};};";
-//
-//		CtType type = getCtType(content);
-//
-//		assertNotNull(type);
-//		CtMethod method = (CtMethod) type.getMethods().stream()
-//				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
-//
-//		assertNotNull(method);
-//		// System.out.println(method);
-//
-//		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-//		CtElement element = null;
-//		Cntx cntx = null;
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("mv = ")).findFirst()
-//				.get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.NR_FIELD_INCOMPLETE_INIT));
-//
-//	}
-//
-//	@SuppressWarnings("unchecked")
-//	@Test
-//	public void testProperty_NR_FIElD_INIT_INCOMPLETE_3() {
-//		/// Case : missing init of f2
-//
-//		String content = "" + "class X {" //
-//				+ "public X fX = null;" + //
-//				"public int f1 = 0;" + //
-//				"public int f2 = 0;" + //
-//
-//				"public Object foo() {" + //
-//				" fX = new X();"// init the field
-//				+ "fX.fX = null;"//
-//				+ "fX.f1 = 0;"//
-//				+ "int mv ;" + //
-//				"mv = fX.f2;" + //
-//				"};};";
-//
-//		CtType type = getCtType(content);
-//
-//		assertNotNull(type);
-//		CtMethod method = (CtMethod) type.getMethods().stream()
-//				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
-//
-//		assertNotNull(method);
-//		// System.out.println(method);
-//
-//		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-//		CtElement element = null;
-//		Cntx cntx = null;
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("mv = ")).findFirst()
-//				.get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.NR_FIELD_INCOMPLETE_INIT));
-//
-//	}
-//
-//	@SuppressWarnings("unchecked")
-//	@Test
-//	public void testProperty_NR_FIElD_INIT_INCOMPLETE_4() {
-//		/// Case all initialized
-//
-//		String content = "" + "class X {" //
-//				+ "public X fX = null;" + //
-//				"public int f1 = 0;" + //
-//				"public int f2 = 0;" + //
-//
-//				"public Object foo() {" + //
-//				" fX = new X();"// init the field
-//				+ "fX.fX = null;"//
-//				+ "fX.f1 = 0;"//
-//				+ "int mv ;" //
-//				+ "fX.f2 = 0;"//
-//				+ "mv = fX.f2;" + //
-//				"};};";
-//
-//		CtType type = getCtType(content);
-//
-//		assertNotNull(type);
-//		CtMethod method = (CtMethod) type.getMethods().stream()
-//				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
-//
-//		assertNotNull(method);
-//		// System.out.println(method);
-//
-//		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-//		CtElement element = null;
-//		Cntx cntx = null;
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("mv = ")).findFirst()
-//				.get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.NR_FIELD_INCOMPLETE_INIT));
 //
 //	}
 //
@@ -2450,57 +1457,16 @@ package fr.inria.coming.spoon.features;
 //				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
 //
 //		assertNotNull(method);
-//		// System.out.println(method);
+//		System.out.println(method);
 //
 //		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
 //		CtElement element = null;
 //
 //		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("mv = ")).findFirst()
 //				.get();
-//		// System.out.println(element);
+//		System.out.println(element);
 //		ComingProperties.properties.setProperty("max_synthesis_step", "100");
 //
-//	}
-//
-//	@SuppressWarnings("unchecked")
-//	@Test
-//	public void testProperty_VAR_CNT_2_small() {
-//		/// Case all initialized
-//
-//		String content = "" + "class X {" + //
-//
-//				"public int f1 = 0;" + //
-//				"public boolean b2 = 0;" + //
-//
-//				"public Object foo() {" + //
-//				"return null;"// init the field
-//				+ "};};";
-//
-//		CtType type = getCtType(content);
-//
-//		assertNotNull(type);
-//		CtMethod method = (CtMethod) type.getMethods().stream()
-//				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
-//
-//		assertNotNull(method);
-//		// System.out.println(method);
-//
-//		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-//		CtElement element = null;
-//		Cntx cntx = null;
-//
-//		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ")).findFirst()
-//				.get();
-//		// System.out.println(element);
-//		cntx = cntxResolver.analyzeFeatures(element);
-//		// assertEquals(Boolean.FALSE,
-//		// cntx.get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
-//
-//		List<?> space = (List<?>) cntx.get(CodeFeatures.PSPACE);
-//		int i = 0;
-//		// for (Object spaceeleemnt : space) {
-//		// // System.out.println((i++) + "--> " + spaceeleemnt);
-//		// }
 //	}
 //
 //	protected CtType getCtType(File file) throws Exception {
@@ -2541,4 +1507,4 @@ package fr.inria.coming.spoon.features;
 //		return factory;
 //	}
 //
-//}
+}

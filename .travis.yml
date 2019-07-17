@@ -19,7 +19,8 @@ install: mvn -DskipTests -Dgpg.skip install
 
 after_success:
 - ".buildscript/deploy_to_maven.sh"
-# dist: trusty
+
+dist: trusty
 
 env:
   global:

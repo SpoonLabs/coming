@@ -34,7 +34,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.filter.LineFilter;
 
 /**
- * 
+ *
  * @author Matias Martinez
  *
  */
@@ -136,7 +136,7 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 				continue;
 
 			String pathname = fileModif.getAbsolutePath() + File.separator + pairFolder.getName() + "_"
-					+ fileModif.getName();
+				+ fileModif.getName();
 
 			File previousVersion = new File(pathname + "_s.java");
 			if (!previousVersion.exists()) {
@@ -191,7 +191,7 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 
 	/**
 	 * Get the element that is modified
-	 * 
+	 *
 	 * @param operation
 	 * @return
 	 */

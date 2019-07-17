@@ -1,120 +1,12 @@
 package fr.inria.coming.codefeatures;
 
 /**
- *
+ * 
  * @author Matias Martinez
  *
  */
 public enum CodeFeatures {
 
-	// All vars in scope
-	VARS_IN_SCOPE,
-	// Return type of the parent method
-	METHOD_RETURN_TYPE,
-	// Type of the parents
-	PARENTS_TYPE,
-	//
-	METHOD_PARAMETERS,
-	//
-	METHOD_MODIFIERS,
-	//
-	METHOD_COMMENTS,
-	//
-	CODE,
-	//
-	BUGGY_STATEMENT,
-	//
-	CODE_TREE,
-	//
-	FILE_LOCATION,
-	//
-	LINE_LOCATION,
-	//
-	SPOON_PATH,
-	//
-	PATH_ELEMENTS,
-	//
-	PARENT_CLASS,
-	//
-	VAR_NAME,
-	//
-	VARS,
-	//
-	VAR_TYPE,
-	//
-	VAR_VISIB,
-	//
-	VAR_MODIF,
-	// Statement type:
-	TYPE,
-	// Involved relational/arithmetic operato
-	involved_relation_bin_operators,
-	//
-	BIN_PROPERTIES,
-	// whether involves
-	involve_GE_relation_operators, involve_AND_relation_operators, involve_OR_relation_operators,
-	involve_BITOR_relation_operators, involve_BITXOR_relation_operators, involve_BITAND_relation_operators,
-	involve_EQ_relation_operators, involve_LT_relation_operators, involve_NE_relation_operators,
-	involve_GT_relation_operators, involve_LE_relation_operators, involve_SL_relation_operators,
-	involve_SR_relation_operators, involve_USR_relation_operators, involve_PLUS_relation_operators,
-	involve_MINUS_relation_operators, involve_MUL_relation_operators, involve_DIV_relation_operators,
-	involve_MOD_relation_operators, involve_INSTANCEOF_relation_operators,
-	// involved unary
-	involved_relation_unary_operators, UNARY_PROPERTIES,
-	//// whether involves
-	involve_POS_relation_operators, involve_NEG_relation_operators, involve_NOT_relation_operators,
-	involve_COMPL_relation_operators, involve_PREINC_relation_operators, involve_PREDEC_relation_operators,
-	involve_POSTINC_relation_operators, involve_POSTDEC_relation_operators,
-	// Involves primitive type
-	NUMBER_PRIMITIVE_VARS_IN_STMT,
-	// Involves object reference,
-	NUMBER_OBJECT_REFERENCE_VARS_IN_STMT,
-//
-
-	NUMBER_TOTAL_VARS_IN_STMT,
-
-	// is there any other variable in scope that is similar in name We can have
-	// based on Levenstein distance
-	HAS_VAR_SIM_NAME,
-
-	// Whether uses constants we can have
-	USES_CONSTANT,
-	// Whether uses enum we can have
-	USES_ENUM,
-	// If involves object reference, whether the variable has been assigned in other
-	// statements after its initial introduction
-	NR_VARIABLE_ASSIGNED,
-
-	NR_VARIABLE_NOT_ASSIGNED,
-
-	NR_OBJECT_ASSIGNED_LOCAL, NR_OBJECT_NOT_ASSIGNED_LOCAL,
-
-	// If involves object reference, whether the variable has been used in other
-	// statements after its initial introduction.
-	NR_OBJECT_USED, NR_OBJECT_NOT_USED,
-
-	// If involves object reference (which is a local variable), whether the
-	// variable has been used in other
-	// statements after its initial introduction.
-	NR_OBJECT_USED_LOCAL_VAR, NR_OBJECT_NOT_USED_LOCAL_VAR,
-
-	NR_PRIMITIVE_USED_LOCAL_VAR, NR_PRIMITIVE_NOT_USED_LOCAL_VAR,
-
-	// Is field (of an object type) initialization statement? If so, whether the
-	// object type has other fields which are not initialized since the definition
-	// of the object
-	NR_FIELD_INCOMPLETE_INIT,
-	// whether has other variables in scope that are type compatible
-	HAS_VAR_SIM_TYPE,
-	//
-	PSPACE,
-	//
-	BUG_INFO,
-	//
-	PATCH_INFO,
-
-	// The element corresponding to the patch
-	PATCH_CODE_ELEMENT, PATCH_CODE_STATEMENT, POSITION, AFFECTED_PARENT, AFFECTED, OPERATION, AST_PARENT, AST,
 	// If the faulty statement involves object reference to local variables (i.e.,
 	// use object type local variables), do there exist certain referenced local
 	// variable(s) that have never been referenced in other statements
@@ -142,16 +34,18 @@ public enum CodeFeatures {
 	// Spoon class of the fault statement.
 	S3_TYPE_OF_FAULTY_STATEMENT,
 	S14_TYPE_OF_FAULTY_STATEMENT_PARENT,
-
+	
 	S15_HAS_OBJECTIVE_METHOD_CALL,
-
+	S16_HAS_Invocations_Prone_Exception,
+	S18_In_Synchronized_Method,
+	
 	S13_TYPE_OF_FAULTY_STATEMENT_BEFORE_1,
 	S13_TYPE_OF_FAULTY_STATEMENT_BEFORE_2,
 	S13_TYPE_OF_FAULTY_STATEMENT_BEFORE_3,
 	S13_TYPE_OF_FAULTY_STATEMENT_AFTER_1,
 	S13_TYPE_OF_FAULTY_STATEMENT_AFTER_2,
 	S13_TYPE_OF_FAULTY_STATEMENT_AFTER_3,
-
+	
 	// If the faulty statement involves object reference to field (i.e., use object
 	// type class field), do there exist certain field(s) that have never been
 	// referenced in other methods of the faulty class.
@@ -164,7 +58,7 @@ public enum CodeFeatures {
 	// primitive type variables (with some of the primitive type variables used in
 	// the faulty statement), but add guard check (for global variables
 	S5_SIMILAR_PRIMITIVE_TYPE_WITH_NORMAL_GUARD,
-
+	
 	S5_SIMILAR_PRIMITIVE_TYPE_WITH_NULL_GUARD,
 
 	// For any variable involved in a logical expression,
@@ -210,29 +104,27 @@ public enum CodeFeatures {
 	// control flow structure) since the introduction
 	//LE8_LOGICAL_WITH_USED_LOCAL_VARS,
 	LE8_SCOPE_VAR_USED_OTHER_BOOLEXPER,
-
+	
 	LE9_NORMAL_CHECK,
-
+	
 	LE9_NULL_CHECK,
-
+	
 	LE9_MIX_CHECK,
-
+	
 	LE9_EQUAL_NOTEQUAL_NULL_CHECK,
-
+	
 	LE10_ATOMIC_EXPRESSION_SAME_INVOCATION_TARGET,
-
+	
 	LE10_ATOMIC_EXPRESSION_COMPARISION_SAME_LEFT,
-
+	
 	LE10_ATOMIC_EXPRESSION_COMPARISION_SAME_RIGHT,
-
-	LE10_ATOMIC_EXPRESSION_MULTIPLE_VAR_AS_BOOLEAN,
-
-	LE10_ATOMIC_EXPRESSION_USED_IN_INVOCATION_COMPARISION_VARIABLE,
-
+	
+	LE10_ATOMIC_EXPRESSION_MULTIPLE_VAR_AS_BOOLEAN, 
+	
+	LE10_ATOMIC_EXPRESSION_USED_IN_INVOCATION_COMPARISION_VARIABLE, 
+	
 	LE10_CONTAINS_ALL_INVOCATION_COMPARISION_VARIABLE,
-
-	LE11_COMPLEX_REFERENCE,
-
+	
 	// For each involved variable, whether has method definitions or method calls
 	// (in the fault class) that take the type of the involved variable as one of
 	// its parameters and the return type of the method is type compatible with the
@@ -245,40 +137,43 @@ public enum CodeFeatures {
 	// For each involved variable, is it constant? –can assume variables whose
 	// identifier names are majorly capital letters are constant variables
 	V3_HAS_CONSTANT,
-
 	V4B_USED_MULTIPLE_AS_PARAMETER,
-
 	// V4: For each involved variable, if it is used as parameter inmethod call, for
 	// this method call, is it the first time that it isused as parameter
 	V4_FIRST_TIME_USED_AS_PARAMETER,
-
 	// For an involved variable, is there any other variable in scope that is
 	// assigned to a certain function transformation of the involved variable
 	V5_HAS_VAR_IN_TRANSFORMATION,
-
-	//For each involved variable, whether has methods in scope(method definitions or method calls in the faulty class) thatreturn a type which is the same or compatible with the typeof the involved variable.
-	V6_IS_METHOD_RETURN_TYPE_VAR,
-
+//For each involved variable, whether has methods in scope(method definitions or method calls in the faulty class) thatreturn a type which is the same or compatible with the typeof the involved variable. 
+	V6_IS_METHOD_RETURN_TYPE_VAR,	
 	V16_IS_METHOD_PARAMETER_TYPE_VAR,
 	// For each variable, is it primitive type?
 	V8_VAR_PRIMITIVE,
+	V8_VAR_OBJECT,
 	// For each method invocation, whether the method has overloaded method
-	V9_VAR_TYPE_Similar_Literal,
-
-	V10_VAR_TYPE_Similar_VAR,
-
-	V11_VAR_COMPATIBLE_TYPE_IN_CONDITION,
-
-	V12_VAR_Invocation_VAR_REPLACE_BY_VAR,
-
-	V13_VAR_Invocation_VAR_REPLACE_BY_INVOCATION,
-
-	V14_VAR_INSTANCE_OF_CLASS,
-
-	V15_VAR_LAST_THREE_SAME_TYPE_LOC,
-
+	V9_VAR_TYPE_Similar_Literal,	
+	V10_VAR_TYPE_Similar_VAR,	
+	V11_VAR_COMPATIBLE_TYPE_IN_CONDITION,	
+	V12_VAR_Invocation_VAR_REPLACE_BY_VAR,	
+	V13_VAR_Invocation_VAR_REPLACE_BY_INVOCATION,	
+	V14_VAR_INSTANCE_OF_CLASS, 	
+	V15_VAR_LAST_THREE_SAME_TYPE_LOC, 
 	V17_VAR_IS_ENUMERATION,
-
+	V18_Has_Method_Similar_In_Name,
+	V19_With_Special_Name,
+	
+	
+	V1_LOCAL_VAR_NOT_USED,
+	V1_LOCAL_VAR_NOT_ASSIGNED,
+	V2_SIMILAR_OBJECT_TYPE_WITH_NORMAL_GUARD,
+	V5_SIMILAR_PRIMITIVE_TYPE_WITH_NORMAL_GUARD,
+	V2_SIMILAR_OBJECT_TYPE_WITH_NULL_GUARD,
+	V5_SIMILAR_PRIMITIVE_TYPE_WITH_NULL_GUARD,
+	V4_Field_NOT_USED,
+	V4_Field_NOT_ASSIGNED,
+	V7_OBJECT_USED_IN_ASSIGNMENT,
+	V8_PRIMITIVE_USED_IN_ASSIGNMENT,
+	
 	M1_OVERLOADED_METHOD,
 	// For each method invocation, whether there exist methods that return the same
 	// type (or type compatible) and are similar in identifier name with the called
@@ -292,19 +187,35 @@ public enum CodeFeatures {
 	// the
 	// return type of the method invocation.
 	M3_ANOTHER_METHOD_WITH_PARAMETER_RETURN_COMP,
-
 	// For each method invocation, whether the types of some of its parameters are
 	// same or compatible with the return type of the method.
 	M4_PARAMETER_RETURN_COMPABILITY,
-	//	 For each method invocation, whether has variables in scope whose types are the same or compatible with the return types of the method invocation. I am not sure whether it is easy to add this feature
+//	 For each method invocation, whether has variables in scope whose types are the same or compatible with the return types of the method invocation. I am not sure whether it is easy to add this feature
 	M5_MI_WITH_COMPATIBLE_VAR_TYPE,
-
 	M6_INV_Invocation_INV_REPLACE_BY_VAR,
 	M7_INV_Invocation_INV_REPLACE_BY_INV,
 	// For each method invocation, whether the return value of it is primitive
 	M8_RETURN_PRIMITIVE,
-
 	M9_RETURN_OBJECTIVE,
+	M10_WRAPTTED_IN_OTHER_CALLS,
+	M11_Satrt_With_Get,
+	M12_Has_Var_Similar_In_Name,
+	M13_Argument_Has_Primitive,
+	
+	M1_LOCAL_VAR_NOT_USED,
+	M1_LOCAL_VAR_NOT_ASSIGNED,
+	M2_SIMILAR_OBJECT_TYPE_WITH_NORMAL_GUARD,
+	M5_SIMILAR_PRIMITIVE_TYPE_WITH_NORMAL_GUARD,
+	M2_SIMILAR_OBJECT_TYPE_WITH_NULL_GUARD,
+	M5_SIMILAR_PRIMITIVE_TYPE_WITH_NULL_GUARD,
+	M4_Field_NOT_USED,
+	M4_Field_NOT_ASSIGNED,
+	M7_OBJECT_USED_IN_ASSIGNMENT,
+	M8_PRIMITIVE_USED_IN_ASSIGNMENT,
+	M9_METHOD_CALL_WITH_NORMAL_GUARD,
+	M10_METHOD_CALL_WITH_NULL_GUARD,
+	M12_METHOD_CALL_WITH_TRY_CATCH,
+	
 	// C1: For each constantc, whether exist other constants used inthe faulty class
 	// whose types are the same (or type compatible)withcbut values are different
 	C1_SAME_TYPE_CONSTANT,
@@ -315,11 +226,17 @@ public enum CodeFeatures {
 	// For each constant, is it an enum vlaue (But may be it ishard to detect it use
 	// partial program analysis).
 	C5_USES_ENUMERATION,
-
+	
 	CON1_OVERLOADED_CONSTRUCTOR,
-
 	CON2_SIMILAR_CONSTRUCTOR,
-
+	CON3_WRAPTTED_IN_OTHER_CALLS,
+	CON4_Return_Primitive,
+	CON5_Of_Class,
+	CON6_Argument_Has_Primitive,
+	CON9_METHOD_CALL_WITH_NORMAL_GUARD,
+	CON10_METHOD_CALL_WITH_NULL_GUARD,
+	CON12_METHOD_CALL_WITH_TRY_CATCH,
+	
 	E1_LOCAL_VAR_NOT_USED,
 	E1_LOCAL_VAR_NOT_ASSIGNED,
 	E2_SIMILAR_OBJECT_TYPE_WITH_NORMAL_GUARD,
@@ -332,14 +249,24 @@ public enum CodeFeatures {
 	E8_PRIMITIVE_USED_IN_ASSIGNMENT,
 	E9_METHOD_CALL_WITH_NORMAL_GUARD,
 	E10_METHOD_CALL_WITH_NULL_GUARD,
-
-	E1_RETURN_PRIMITIVE,
+	
+	E1_RETURN_PRIMITIVE, 
 	E2_COMPATIBLE_INVOCATION_PAREMETER_RETURN,
 	E3_COMPATIBLE_INVOCATION_PAREMETER,
-
+	
+	O1_IS_LOGICAL,
+	O1_IS_BIT,
+	O1_IS_COMPARE, 
+	O1_IS_SHIFT,
+	O1_IS_MATH,
+	O1_IS_OTHERS,
+	O2_LOGICAL_CONTAIN_NOT,
+	O3_CONTAIN_NULL,
+	O3_CONTAIN_01,
+	O4_COMPARE_IN_CONDITION,
+	O5_IS_MATH_ROOT
 	// For each arithmetic expression, whether has method definitions or method
 	// calls (in the fault class) that take the return type of the arithmetic
 	// expression as one of its parameters and the return type of the method is
 	// type compatible with the return type of the arithmetic expression.
-	AE1_COMPATIBLE_RETURN_TYPE;
 }

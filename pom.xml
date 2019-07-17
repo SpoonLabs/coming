@@ -16,11 +16,9 @@
 		<jdk.version>1.8</jdk.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
 		<github.global.server>github</github.global.server>
-
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>log4j</groupId>
@@ -149,6 +147,7 @@
 		</dependency>
 
 	</dependencies>
+
 	<repositories>
 		<repository>
 			<id>inria</id>
@@ -191,6 +190,7 @@
 			<url>http://maven.inria.fr/artifactory/spoon-public-snapshot</url>
 		</repository>
 	</repositories>
+
 	<build>
 		<plugins>
 			<plugin>

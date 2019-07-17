@@ -95,10 +95,7 @@ public class Demo {
             e.printStackTrace();
         }
     }
-    /* todo sync S4R regularly until one stable version
-     * 1 check commits from zhongxingyu/coming since June
-     * 2 note conflicting commits from SpoonLabs/coming
-     * 3 comment corresponding testing files
-     */
+    // last time to sync zhongxingyu/coming is in July
     // if necessary, config Java VM: -Xms1024m -Xmx16384m
+    // one idea: using distributed representation instead of crossing features
 }
