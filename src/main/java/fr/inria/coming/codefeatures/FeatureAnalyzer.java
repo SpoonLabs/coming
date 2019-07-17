@@ -48,56 +48,7 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 
 	@Override
 	public AnalysisResult analyze(IRevision revision, RevisionResult previousResults) {
-
-		AnalysisResult resultFromDiffAnalysis = previousResults.getResultFromClass(FineGrainDifftAnalyzer.class);
-
-		if (resultFromDiffAnalysis == null) {
-			System.err.println("Error Diff must be executed before");
-			throw new IllegalArgumentException("Error: missing diff");
-		}
-		JsonArray filesArray = new JsonArray();
-		DiffResult diffResut = (DiffResult) resultFromDiffAnalysis;
-
-		for (Object nameFile : diffResut.getDiffOfFiles().keySet()) {
-			Diff diff = (Diff) diffResut.getDiffOfFiles().get(nameFile);
-
-			List<Operation> ops = diff.getRootOperations();
-
-			JsonObject file = new JsonObject();
-
-			filesArray.add(file);
-			file.addProperty("file_name", nameFile.toString());
-
-			JsonArray changesArray = new JsonArray();
-
-			putCodeFromHunk(previousResults, nameFile, file);
-
-			file.add("features", changesArray);
-
-			for (Operation operation : ops) {
-				CtElement affectedCtElement = getLeftElement(operation);
-
-				if (affectedCtElement != null) {
-					Cntx iContext = cresolver.analyzeFeatures(affectedCtElement);
-					if (iContext != null) {
-						JsonObject jsonFeature = iContext.toJSON();
-
-						if (ComingProperties.getPropertyBoolean("addchangeinfoonfeatures")) {
-							JsonObject opjson = JSonPatternInstanceOutput.getJSONFromOperator(operation);
-							jsonFeature.add("ast_info", opjson);
-						}
-
-						changesArray.add(jsonFeature);
-					}
-				}
-			}
-
-		}
-		JsonObject root = new JsonObject();
-		root.addProperty("id", revision.getName());
-		root.add("files", filesArray);
-		return new FeaturesResult(revision, root);
-
+		return null;
 	}
 
 	public void putCodeFromHunk(RevisionResult previousResults, Object nameFile, JsonObject file) {
@@ -173,10 +124,7 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 				for (Operation operation : ops) {
 					CtElement affectedCtElement = getLeftElement(operation);
 
-					if (affectedCtElement != null) {
-						Cntx iContext = cresolver.analyzeFeatures(affectedCtElement);
-						changesArray.add(iContext.toJSON());
-					}
+					if (affectedCtElement != null) {}
 				}
 
 			} catch (Throwable e) {
@@ -225,13 +173,9 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 			affectedCtElement = oldLocation;
 		}
 		// Let's find the parent statement
-		try {
-			CtStatement parentLine = affectedCtElement.getParent(FILTER);
-			if (parentLine != null)
-				return parentLine;
-		} catch (Exception e) {
-			log.error("Problems getting parents of line: " + affectedCtElement);
-		}
+		CtStatement parentLine = affectedCtElement.getParent(FILTER);
+		if (parentLine != null)
+			return parentLine;
 		// by default, we return the affected element
 		return affectedCtElement;
 
