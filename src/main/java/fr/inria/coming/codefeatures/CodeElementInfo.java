@@ -58,7 +58,7 @@ public class CodeElementInfo {
 	
 	public List<CtExpression> desirableExpressions = new ArrayList();
 	
-	public List<CtBinaryOperator> binoperators = new ArrayList();;
+	public List<CtBinaryOperator> binoperators = new ArrayList();
 
 
 	public CodeElementInfo(CtElement elementoriginal, List<CtExpression> allExpressions, 
