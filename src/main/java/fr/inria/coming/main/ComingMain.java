@@ -55,7 +55,7 @@ import fr.inria.coming.repairability.RepairabilityAnalyzer;
  */
 public class ComingMain {
 
-	Logger log = Logger.getLogger(FineGrainDifftAnalyzer.class.getName());
+	static Logger logm = Logger.getLogger(FineGrainDifftAnalyzer.class.getName());
 
 	static Options options = new Options();
 
@@ -123,8 +123,10 @@ public class ComingMain {
 		try {
 			cmain.run(args);
 		} catch (Exception e) {
-			System.err.println("Error initializing Coming with args" + Arrays.toString(args));
-			System.err.println(e);
+			logm.error("Error initializing Coming with args\" + Arrays.toString(args)");
+//			System.err.println("Error initializing Coming with args" + Arrays.toString(args));
+			logm.error(e);
+//			System.err.println(e);
 			e.printStackTrace();
 		}
 	}
@@ -157,7 +159,8 @@ public class ComingMain {
 		try {
 			cmd = parser.parse(options, args);
 		} catch (UnrecognizedOptionException e) {
-			System.out.println("Error: " + e.getMessage());
+			logm.error("Error: " + e.getMessage());
+//			System.out.println("Error: " + e.getMessage());
 			help();
 			return false;
 		}
@@ -413,7 +416,7 @@ public class ComingMain {
 					ChangePatternSpecification patternParsed = patternParser.parse(fl);
 					patternsFound.add(patternParsed);
 				} else {
-					log.error("The pattern file given as input does not exist " + fl.getAbsolutePath());
+					logm.error("The pattern file given as input does not exist " + fl.getAbsolutePath());
 				}
 			}
 		} else {
@@ -470,7 +473,8 @@ public class ComingMain {
 
 		HelpFormatter formater = new HelpFormatter();
 		formater.printHelp("Main", options);
-		System.out.println("More options and default values at 'configuration.properties' file");
+		logm.info("More options and default values at 'configuration.properties' file");
+//		System.out.println("More options and default values at 'configuration.properties' file");
 
 		System.exit(0);
 
