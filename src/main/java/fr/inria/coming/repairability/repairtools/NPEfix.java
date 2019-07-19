@@ -7,7 +7,7 @@ import fr.inria.coming.changeminer.util.PatternXMLParser;
 
 import java.util.ArrayList;
 import java.util.List;
-
+//the new version
 
 /**
  * NPEfix fixes the program by :
