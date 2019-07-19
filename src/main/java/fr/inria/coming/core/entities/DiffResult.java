@@ -1,5 +1,8 @@
 package fr.inria.coming.core.entities;
 
+import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
+import org.apache.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +15,8 @@ import java.util.Map;
  * @param <T>
  */
 public class DiffResult<T, R> extends AnalysisResult<T> {
+
+	static Logger log = Logger.getLogger(FineGrainDifftAnalyzer.class.getName());
 
 	/**
 	 * Filename
@@ -50,7 +55,9 @@ public class DiffResult<T, R> extends AnalysisResult<T> {
 			try {
 				r += "\n" + idiff.toString();
 			} catch (Exception e) {
-				System.err.println("Error when printing diff result: " + e.getMessage());
+
+//				System.err.println("Error when printing diff result: " + e.getMessage());
+				log.error("Error when printing diff result: " + e.getMessage());
 				e.printStackTrace();
 			}
 

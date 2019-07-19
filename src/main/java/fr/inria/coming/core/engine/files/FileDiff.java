@@ -29,7 +29,8 @@ public class FileDiff implements IRevision {
 	@Override
 	public List<IRevisionPair> getChildren() {
 		if (this.diffFolder == null) {
-			System.out.println("Diff folder == null");
+			log.info("Diff folder == null");
+//			System.out.println("Diff folder == null");
 			return null;
 		}
 		List<IRevisionPair> pairs = new ArrayList<>();
@@ -69,7 +70,8 @@ public class FileDiff implements IRevision {
 				;
 			}
 		} catch (Exception e) {
-			System.err.println("Error analyzing " + diffFolder);
+			log.error("Error analyzing " + diffFolder);
+//			System.err.println("Error analyzing " + diffFolder);
 			e.printStackTrace();
 		}
 

@@ -28,9 +28,16 @@ import java.util.List;
 public class NPEfix extends AbstractRepairTool {
 
     private static final String[] patternFileNames = {
-            "replacement.xml",
+            "replacement3.xml",
             "replacement2.xml",
-            "replacement3.xml"
+            "replacement.xml",
+            "replacement4.xml",
+            "replacement5.xml",
+            "replacement6.xml",
+            "replacement7.xml",
+            "replacement8.xml",
+            "replacement9.xml",
+            "replacement11.xml"
     };
 
     /**

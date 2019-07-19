@@ -1,0 +1,10 @@
+<pattern name="replacement9">
+    <entity id="1" type="VariableRead"/>
+    <action entityId="1" type="INS"/>
+
+    <entity id="2" type="*"/>
+    <action entityId="2" type="DEL"/>
+
+</pattern>
+
+

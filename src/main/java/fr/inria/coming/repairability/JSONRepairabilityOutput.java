@@ -2,6 +2,7 @@ package fr.inria.coming.repairability;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
 import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
 import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstanceAnalyzer;
 import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstancesFromDiff;
@@ -10,11 +11,13 @@ import fr.inria.coming.changeminer.analyzer.patternspecification.PatternAction;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.core.entities.output.JSonPatternInstanceOutput;
 import gumtree.spoon.diff.operations.Operation;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 
 public class JSONRepairabilityOutput extends JSonPatternInstanceOutput {
 
+    Logger log = Logger.getLogger(FineGrainDifftAnalyzer.class.getName());
 
     public void getInstancesOfRevision(RevisionResult revisionResult, JsonArray instances) {
 
@@ -33,8 +36,10 @@ public class JSONRepairabilityOutput extends JSonPatternInstanceOutput {
 
                 instance.addProperty("revision", revisionIdentifier.toString());
 
-                System.out.println("\n--------\ncommit with instance:\n " + revisionIdentifier);
-                System.out.println(pi.getInstances());
+                log.info("\n--------\ncommit with instance:\n " + revisionIdentifier);
+//                System.out.println("\n--------\ncommit with instance:\n " + revisionIdentifier);
+                log.info(pi.getInstances());
+//                System.out.println(pi.getInstances());
 
                 JsonArray repair_tools = new JsonArray();
                 for (ChangePatternInstance instancePattern : pi.getInstances()) {
