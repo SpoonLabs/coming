@@ -123,10 +123,10 @@ public class ComingMain {
 		try {
 			cmain.run(args);
 		} catch (Exception e) {
-			logm.error("Error initializing Coming with args\" + Arrays.toString(args)");
-//			System.err.println("Error initializing Coming with args" + Arrays.toString(args));
-			logm.error(e);
-//			System.err.println(e);
+//			logm.error("Error initializing Coming with args\" + Arrays.toString(args)");
+			System.err.println("Error initializing Coming with args" + Arrays.toString(args));
+//			logm.error(e);
+			System.err.println(e);
 			e.printStackTrace();
 		}
 	}
@@ -159,8 +159,8 @@ public class ComingMain {
 		try {
 			cmd = parser.parse(options, args);
 		} catch (UnrecognizedOptionException e) {
-			logm.error("Error: " + e.getMessage());
-//			System.out.println("Error: " + e.getMessage());
+//			logm.error("Error: " + e.getMessage());
+			System.out.println("Error: " + e.getMessage());
 			help();
 			return false;
 		}
@@ -473,8 +473,8 @@ public class ComingMain {
 
 		HelpFormatter formater = new HelpFormatter();
 		formater.printHelp("Main", options);
-		logm.info("More options and default values at 'configuration.properties' file");
-//		System.out.println("More options and default values at 'configuration.properties' file");
+//		logm.info("More options and default values at 'configuration.properties' file");
+		System.out.println("More options and default values at 'configuration.properties' file");
 
 		System.exit(0);
 
