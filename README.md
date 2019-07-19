@@ -14,18 +14,16 @@ Contact:
 
 [Matias Martinez](http://www.martinezmatias.com/), [Martin Monperrus](http://www.monperrus.net/martin/)
 
-Compile
+Install
 ------
 
 Please install a JDK 1.8 and configure Maven or your IDE to use it.
 
 ```
-mvn install:install-file -Dfile=lib/gumtree-spoon-ast-diff-0.0.3-SNAPSHOT-jar-with-dependencies.jar -DgeneratePom=true -DgroupId=fr.inria.spirals -DartifactId=gumtree-spoon-ast-diff -Dversion=0.0.3-SNAPSHOT -Dpackaging=jar
-mvn -Dskiptest compile
+ mvn install -DskipTests
 ```
 
-Test
-------
+Tests:
 
 ```
 unzip ./src/main/resources/repogit4testv0.zip
@@ -40,6 +38,10 @@ mvn test
 
 
 The main class is: `fr.inria.coming.main.ComingMain`.
+
+```
+mvn exec:java -Dexec.mainClass=fr.inria.coming.main.ComingMain
+```
 
 
 ####  Parameters 
