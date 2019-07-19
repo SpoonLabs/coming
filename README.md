@@ -470,13 +470,14 @@ We can combine the two precedent filters:
 
 The argument `-filter withtest` indicates that only commits with at least one modification on test cases are considered.
 
-##Analysis
+## Analysis
 In order to perform an analysis of possible repair tools that may have generated commits use the python script at https://github.com/kth-tcs/defects4j-repair-reloaded/tree/comrepair-coming/.
 
-use it as:
+create output json file by runnig the script with option `-mode Reapairibility ` and then:
 
 ``` 
 python analyse_repairability_output.py <path to the json>
+
 ``` 
 
 or
@@ -484,13 +485,10 @@ or
 ``` 
 python analyse_repairability_output.py <path to the json> <path to patches>
 ``` 
- This script produces an output showing how many commits are corresponding to each repair tool and also (in the second choice) the number of commits 
- it was unable to find.
-
+This script produces an output showing how many commits are corresponding to each repair tool and also (in the second choice) the number of commits it was unable to find.
 
 # Extending Coming
 
 To extend Coming, please read the document [Extension points of Coming](./docs/extension_points.md)
 Moreover, you can also read [code_walk-through](./docs/code_walkthrough.md).
-
 
