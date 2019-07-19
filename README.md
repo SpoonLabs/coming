@@ -386,6 +386,50 @@ Example, the previous json file shows
 ```
 which means that there are 2 changes that update binary operators inside an if condition (i.e., the parent).
 
+## Repairibility
+When running Coming in mode `-mode Repairibility` the output is a file name `all_instances_found.json` , which shows the possible tool creating the commits.
+You can choose tools of intrest by adding the option:  `-repairtool All,Jkali,..`
+
+An example of the content of such file is:
+
+```
+{
+    {
+    "instances": [
+      "revision": "8c0e7110c9ebc3ba5158e8de0f73c80ec69e1001",
+      "repairability": [
+        {
+          "tool-name": "JMutRepair",
+          "pattern-name": "JMutRepair:binary_1",
+          "instance_detail": [
+            {
+              "pattern_action": "UPD",
+              "pattern_entity": {
+                "entity_type": "BinaryOperator",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "UPD",
+                "src_type": "BinaryOperator",
+                "dst_type": "BinaryOperator",
+                "src": "sz - 1",
+                "dst": "sz + 1",
+                "src_parent_type": "Assignment",
+                "dst_parent_type": "Assignment",
+                "src_parent": "start \u003d sz - 1",
+                "dst_parent": "start \u003d sz + 1"
+              },
+              "line": 127,
+              "file": "/Users/macbook/Documents/university/internship/coming/coming/src/CharSequenceUtils.java"
+            }
+          ]
+        }
+      ]
+    }
+}
+```
 
 ## Code Features
 
