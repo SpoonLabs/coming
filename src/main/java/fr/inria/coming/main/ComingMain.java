@@ -133,6 +133,7 @@ public class ComingMain {
 
 		if (args.length == 0) {
 			help();
+			return null;
 		}
 		return start();
 	}
