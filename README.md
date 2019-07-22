@@ -41,6 +41,28 @@ The main class is: `fr.inria.coming.main.ComingMain`.
 
 ```
 mvn exec:java -Dexec.mainClass=fr.inria.coming.main.ComingMain
+
+ -action <INS | DEL | UPD | MOV | PER | ANY>                          tye of action to be mined
+ -branch <branch name>                                                In case of -input='git', use this branch name. Default is master.
+ -entitytype <arg>                                                    entity type to be mine
+ -entityvalue <arg>                                                   the value of the entity  mentioned in -entitytype
+ -filter <arg>                                                        name of the filter
+ -filtervalue <arg>                                                   values of the filter  mentioned in -filter
+ -hunkanalysis <arg>                                                  include analysis of hunks
+ -input <git(default) | files | filespair | repairability>            format of the content present in the given -path. git implies that the path is a git repository. files implies the path contains .patch files
+ -location <path>                                                     analyse the content in 'path'
+ -message <arg>                                                       comming message
+ -mode <mineinstance | diff | features>                               the mode of execution of the analysis
+ -output <path>                                                       dump the output of the analysis in the given path
+ -outputprocessor <classname>                                         output processors for result
+ -parameters <arg>                                                    Parameters, divided by :
+ -parentlevel <arg>                                                   numbers of AST node where the parent is located. 1 implies immediate parent
+ -parenttype <arg>                                                    parent type of the nodes to be considered
+ -pattern <path>                                                      path of the pattern file to be used when the -mode is 'mineinstance'
+ -patternparser <classname>                                           parser to be used for parsing the file specified -pattern. Default is XML
+ -repairtool <ALL | JMutRepair | Nopol | JKali | NPEfix | JGenProg>   If -mode=repairability, this option specifies which repair tools should we consider in our analysis. Can be a list separated by :
+ -showactions                                                         show all actions
+ -showentities                                                        show all entities
 ```
 
 
