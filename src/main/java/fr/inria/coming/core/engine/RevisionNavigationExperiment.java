@@ -101,27 +101,34 @@ public abstract class RevisionNavigationExperiment<R extends IRevision> {
 		List<Analyzer> analyzers = this.getAnalyzers();
 
 		int size = data.size();
+		int min_nb_commit = ComingProperties.getPropertyInteger("min_nb_commit");
+		if(min_nb_commit==1)
+		    min_nb_commit= (int) (size*0.9);
 
-		for (Iterator<R> iterator = it; iterator.hasNext();) {
+        for (Iterator<R> iterator = it; iterator.hasNext();) {
 
 			R oneRevision = iterator.next();
 
 			log.info("\n***********\nAnalyzing " + i + "/" + size);
 //			System.out.println("\n***********\nAnalyzing " + i + "/" + size);
-			if (!accept(oneRevision)) {
-				continue;
-			}
 
-			RevisionResult resultAllAnalyzed = new RevisionResult(oneRevision);
-			for (Analyzer analyzer : analyzers) {
+            if(i > min_nb_commit) {
+                if (!(accept(oneRevision))) {
+                    continue;
+                }
 
-				AnalysisResult resultAnalyzer = analyzer.analyze(oneRevision, resultAllAnalyzed);
-				resultAllAnalyzed.put(analyzer.getClass().getSimpleName(), resultAnalyzer);
-				if (resultAnalyzer == null || !resultAnalyzer.sucessful())
-					break;
-			}
 
-			processEndRevision(oneRevision, resultAllAnalyzed);
+                RevisionResult resultAllAnalyzed = new RevisionResult(oneRevision);
+                for (Analyzer analyzer : analyzers) {
+
+                    AnalysisResult resultAnalyzer = analyzer.analyze(oneRevision, resultAllAnalyzed);
+                    resultAllAnalyzed.put(analyzer.getClass().getSimpleName(), resultAnalyzer);
+                    if (resultAnalyzer == null || !resultAnalyzer.sucessful())
+                        break;
+                }
+
+                processEndRevision(oneRevision, resultAllAnalyzed);
+            }
 
 			i++;
 			if (i > ComingProperties.getPropertyInteger("maxrevision"))
