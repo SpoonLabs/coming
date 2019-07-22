@@ -77,6 +77,12 @@ public class MainComingTest {
 	}
 
 	@Test
+	public void testNothing() {
+		// calling with no argument should not crash
+		ComingMain.main(new String[] {});
+	}
+
+	@Test
 	public void testListEntities() {
 
 		ComingMain.main(new String[] { "-showentities" });
@@ -92,6 +98,13 @@ public class MainComingTest {
 	public void testMineBinaryOperatorMain() {
 		ComingMain.main(
 				new String[] { "-location", "repogit4testv0", "-entitytype", "BinaryOperator", "-action", "INS" });
+	}
+
+	@Test
+	public void testFeaturesMain() {
+		// the features mode does not crash
+		ComingMain.main(
+				new String[] { "-mode", "features", "-location", "repogit4testv0"});
 	}
 
     @Test

@@ -133,7 +133,6 @@ public class ComingMain {
 
 		if (args.length == 0) {
 			help();
-			System.exit(-1);
 		}
 		return start();
 	}
@@ -471,8 +470,6 @@ public class ComingMain {
 		formater.printHelp("Main", options);
 		logm.info("More options and default values at 'configuration.properties' file");
 //		System.out.println("More options and default values at 'configuration.properties' file");
-
-		System.exit(0);
 
 	}
 
