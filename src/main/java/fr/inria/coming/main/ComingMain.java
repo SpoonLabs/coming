@@ -117,29 +117,24 @@ public class ComingMain {
 				.build());
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args){
 		ComingMain cmain = new ComingMain();
-
-		try {
-			cmain.run(args);
-		} catch (Exception e) {
-			logm.error("Error initializing Coming with args\" + Arrays.toString(args)");
-//			System.err.println("Error initializing Coming with args" + Arrays.toString(args));
-			logm.error(e);
-//			System.err.println(e);
-			e.printStackTrace();
-		}
+		cmain.run(args);
 	}
 
 	RevisionNavigationExperiment<?> navigatorEngine = null;
 
 	@SuppressWarnings("rawtypes")
-	public FinalResult run(String[] args) throws Exception {
+	public FinalResult run(String[] args) {
 
 		boolean created = createEngine(args);
 		if (!created)
 			return null;
 
+		if (args.length == 0) {
+			help();
+			System.exit(-1);
+		}
 		return start();
 	}
 
@@ -152,14 +147,14 @@ public class ComingMain {
 		return result;
 	}
 
-	public boolean createEngine(String[] args) throws ParseException {
+	public boolean createEngine(String[] args) {
 		ComingProperties.reset();
 		CommandLine cmd = null;
 		this.navigatorEngine = null;
 		try {
 			cmd = parser.parse(options, args);
-		} catch (UnrecognizedOptionException e) {
-			logm.error("Error: " + e.getMessage());
+		} catch (Exception e) {
+			logm.error("Error parsing command: " + e.getMessage());
 //			System.out.println("Error: " + e.getMessage());
 			help();
 			return false;
@@ -472,6 +467,7 @@ public class ComingMain {
 	private static void help() {
 
 		HelpFormatter formater = new HelpFormatter();
+		formater.setWidth(500);
 		formater.printHelp("Main", options);
 		logm.info("More options and default values at 'configuration.properties' file");
 //		System.out.println("More options and default values at 'configuration.properties' file");
