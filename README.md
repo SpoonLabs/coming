@@ -517,7 +517,7 @@ The argument `-filter withtest` indicates that only commits with at least one mo
 # Analysis
 In order to perform an analysis of possible repair tools that may have generated commits use the python script at https://github.com/kth-tcs/defects4j-repair-reloaded/tree/comrepair-coming/.
 
-create output json file by runnig the script with option `-mode Reapairibility ` and then:
+create the output json file by running the script with option `-mode repairibility ` and then:
 
 ``` 
 python analyse_repairability_output.py <path to the json>
