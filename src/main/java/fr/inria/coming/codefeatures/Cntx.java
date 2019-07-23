@@ -55,6 +55,11 @@ public class Cntx<I> {
 
 	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
 
+	public boolean isBooleanValueTrue(String key) {
+		I res = information.getOrDefault(key, (I)Boolean.FALSE);
+		return Boolean.valueOf(res.toString());
+	}
+
 	public Map<String, I> getInformation() {
 		return information;
 	}

@@ -275,17 +275,17 @@ public class MethodAnalyzer extends AbstractCodeAnalyzer {
 						
 						    if(Boolean.valueOf(particularVar.getInformation().get("V1_LOCAL_VAR_NOT_ASSIGNED").toString()))
 							    M1_LOCAL_VAR_NOT_ASSIGNED = true;
-						
-						    if(Boolean.valueOf(particularVar.getInformation().get("V2_SIMILAR_OBJECT_TYPE_WITH_NORMAL_GUARD").toString()))
+
+							if(particularVar.isBooleanValueTrue("V2_SIMILAR_OBJECT_TYPE_WITH_NORMAL_GUARD"))
 						    	M2_SIMILAR_OBJECT_TYPE_WITH_NORMAL_GUARD = true;
-						
-						    if(Boolean.valueOf(particularVar.getInformation().get("V5_SIMILAR_PRIMITIVE_TYPE_WITH_NORMAL_GUARD").toString()))
+
+							if(particularVar.isBooleanValueTrue("V5_SIMILAR_PRIMITIVE_TYPE_WITH_NORMAL_GUARD"))
 						    	M5_SIMILAR_PRIMITIVE_TYPE_WITH_NORMAL_GUARD = true;
-						    
-						    if(Boolean.valueOf(particularVar.getInformation().get("V2_SIMILAR_OBJECT_TYPE_WITH_NULL_GUARD").toString()))
+
+							if(particularVar.isBooleanValueTrue("V2_SIMILAR_OBJECT_TYPE_WITH_NULL_GUARD"))
 						    	M2_SIMILAR_OBJECT_TYPE_WITH_NULL_GUARD = true;
-						
-						    if(Boolean.valueOf(particularVar.getInformation().get("V5_SIMILAR_PRIMITIVE_TYPE_WITH_NULL_GUARD").toString()))
+
+							if(particularVar.isBooleanValueTrue("V5_SIMILAR_PRIMITIVE_TYPE_WITH_NULL_GUARD"))
 						    	M5_SIMILAR_PRIMITIVE_TYPE_WITH_NULL_GUARD = true;
 						
 						    if(Boolean.valueOf(particularVar.getInformation().get("V4_Field_NOT_USED").toString()))
@@ -293,15 +293,16 @@ public class MethodAnalyzer extends AbstractCodeAnalyzer {
 						
 						    if(Boolean.valueOf(particularVar.getInformation().get("V4_Field_NOT_ASSIGNED").toString()))
 						    	M4_Field_NOT_ASSIGNED = true;
-						    
-						    if(Boolean.valueOf(particularVar.getInformation().get("V7_OBJECT_USED_IN_ASSIGNMENT").toString()))
+
+							if(particularVar.isBooleanValueTrue("V7_OBJECT_USED_IN_ASSIGNMENT"))
 						    	M7_OBJECT_USED_IN_ASSIGNMENT = true;
-						
-						    if(Boolean.valueOf(particularVar.getInformation().get("V8_PRIMITIVE_USED_IN_ASSIGNMENT").toString()))
+
+							if(particularVar.isBooleanValueTrue("V8_PRIMITIVE_USED_IN_ASSIGNMENT"))
 						    	M8_PRIMITIVE_USED_IN_ASSIGNMENT = true;
 						}
 				    }
 				} catch (Throwable e) {
+					System.err.println("error caught at " + new Exception().getStackTrace()[0].toString());
 					e.printStackTrace();
 				}
 			}

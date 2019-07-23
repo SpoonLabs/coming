@@ -208,33 +208,34 @@ public class WholeStatementAnalyzer extends AbstractCodeAnalyzer {
 						
 						    if(Boolean.valueOf(particularVar.getInformation().get("V1_LOCAL_VAR_NOT_ASSIGNED").toString()))
 							    S1_LOCAL_VAR_NOT_ASSIGNED = true;
-						
-						    if(Boolean.valueOf(particularVar.getInformation().get("V2_SIMILAR_OBJECT_TYPE_WITH_NORMAL_GUARD").toString()))
+
+							if(particularVar.isBooleanValueTrue("V2_SIMILAR_OBJECT_TYPE_WITH_NORMAL_GUARD"))
 						    	S2_SIMILAR_OBJECT_TYPE_WITH_NORMAL_GUARD = true;
-						
-						    if(Boolean.valueOf(particularVar.getInformation().get("V5_SIMILAR_PRIMITIVE_TYPE_WITH_NORMAL_GUARD").toString()))
+
+							if(particularVar.isBooleanValueTrue("V5_SIMILAR_PRIMITIVE_TYPE_WITH_NORMAL_GUARD"))
 						    	S5_SIMILAR_PRIMITIVE_TYPE_WITH_NORMAL_GUARD = true;
-						    
-						    if(Boolean.valueOf(particularVar.getInformation().get("V2_SIMILAR_OBJECT_TYPE_WITH_NULL_GUARD").toString()))
+
+							if(particularVar.isBooleanValueTrue("V2_SIMILAR_OBJECT_TYPE_WITH_NULL_GUARD"))
 						    	S2_SIMILAR_OBJECT_TYPE_WITH_NULL_GUARD = true;
-						
-						    if(Boolean.valueOf(particularVar.getInformation().get("V5_SIMILAR_PRIMITIVE_TYPE_WITH_NULL_GUARD").toString()))
+
+							if(particularVar.isBooleanValueTrue("V5_SIMILAR_PRIMITIVE_TYPE_WITH_NULL_GUARD"))
 						    	S5_SIMILAR_PRIMITIVE_TYPE_WITH_NULL_GUARD = true;
-						
-						    if(Boolean.valueOf(particularVar.getInformation().get("V4_Field_NOT_USED").toString()))
+
+							if(particularVar.isBooleanValueTrue("V4_Field_NOT_USED"))
 						    	S4_Field_NOT_USED = true;
-						
-						    if(Boolean.valueOf(particularVar.getInformation().get("V4_Field_NOT_ASSIGNED").toString()))
+
+							if(particularVar.isBooleanValueTrue("V4_Field_NOT_ASSIGNED"))
 						    	S4_Field_NOT_ASSIGNED = true;
-						    
-						    if(Boolean.valueOf(particularVar.getInformation().get("V7_OBJECT_USED_IN_ASSIGNMENT").toString()))
+
+							if(particularVar.isBooleanValueTrue("V7_OBJECT_USED_IN_ASSIGNMENT"))
 						    	S7_OBJECT_USED_IN_ASSIGNMENT = true;
-						
-						    if(Boolean.valueOf(particularVar.getInformation().get("V8_PRIMITIVE_USED_IN_ASSIGNMENT").toString()))
+
+							if(particularVar.isBooleanValueTrue("V8_PRIMITIVE_USED_IN_ASSIGNMENT"))
 						    	S8_PRIMITIVE_USED_IN_ASSIGNMENT = true;
 						}
 				    }
 				} catch (Throwable e) {
+					System.err.println("error caught at " + new Exception().getStackTrace()[0].toString());
 					e.printStackTrace();
 				}
 			}
@@ -259,8 +260,8 @@ public class WholeStatementAnalyzer extends AbstractCodeAnalyzer {
 		
 		for (CtInvocation invocationAffected : invocations) {	
 			
-			try {	
-			    Cntx<Object> featuresMethod = (Cntx<Object>) context.getInformation().get("FEATURES_METHODS");  
+			try {
+				Cntx<Object> featuresMethod = (Cntx<Object>) context.getInformation().get("FEATURES_METHODS");
 			    
 			    if(featuresMethod!=null) {
 					Cntx<Object> particularMethod = (Cntx<Object>) featuresMethod.getInformation().
