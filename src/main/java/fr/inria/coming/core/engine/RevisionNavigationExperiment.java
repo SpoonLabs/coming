@@ -101,9 +101,7 @@ public abstract class RevisionNavigationExperiment<R extends IRevision> {
 		List<Analyzer> analyzers = this.getAnalyzers();
 
 		int size = data.size();
-		int min_nb_commit = ComingProperties.getPropertyInteger("min_nb_commit");
-		if(min_nb_commit==1)
-		    min_nb_commit= (int) (size*0.9);
+		int nb_commit = ComingProperties.getPropertyInteger("nb_commit");
 
         for (Iterator<R> iterator = it; iterator.hasNext();) {
 
@@ -112,7 +110,7 @@ public abstract class RevisionNavigationExperiment<R extends IRevision> {
 			log.info("\n***********\nAnalyzing " + i + "/" + size);
 //			System.out.println("\n***********\nAnalyzing " + i + "/" + size);
 
-            if(i > min_nb_commit) {
+            if(i > size - nb_commit) {
                 if (!(accept(oneRevision))) {
                     continue;
                 }
