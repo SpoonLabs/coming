@@ -387,8 +387,7 @@ Example, the previous json file shows
 which means that there are 2 changes that update binary operators inside an if condition (i.e., the parent).
 
 ## Repairability
-When running Coming in mode `-mode repairibility`, the output is a file named `all_instances_found.json` , which shows the possible tool creating the commits.
-You can choose tools of intrest by including the option:  `-repairtool All,Jkali,..`
+When running Coming in mode `-mode repairibility`, the output is a file named `all_instances_found.json` , which shows the possible tool creating the commits. You can choose tools of interest by including the option:  `-repairtool All,Jkali,..`
 
 An example of the content of such file is:
 
