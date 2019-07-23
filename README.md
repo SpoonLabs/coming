@@ -410,6 +410,67 @@ Example, the previous json file shows
 ```
 which means that there are 2 changes that update binary operators inside an if condition (i.e., the parent).
 
+## Repairability
+When running Coming in mode `-mode repairibility`, the output is a file named `all_instances_found.json` , which shows the possible tool creating the commits. You can choose tools of interest by including the option:  `-repairtool All,Jkali,..`
+
+An example of the content of such file is:
+
+```
+{
+    {
+    "instances": [
+      "revision": "8c0e7110c9ebc3ba5158e8de0f73c80ec69e1001",
+      "repairability": [
+        {
+          "tool-name": "JMutRepair",
+          "pattern-name": "JMutRepair:binary_1",
+          "instance_detail": [
+            {
+              "pattern_action": "UPD",
+              "pattern_entity": {
+                "entity_type": "BinaryOperator",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "UPD",
+                "src_type": "BinaryOperator",
+                "dst_type": "BinaryOperator",
+                "src": "sz - 1",
+                "dst": "sz + 1",
+                "src_parent_type": "Assignment",
+                "dst_parent_type": "Assignment",
+                "src_parent": "start \u003d sz - 1",
+                "dst_parent": "start \u003d sz + 1"
+              },
+              "line": 127,
+              "file": "/Users/macbook/Documents/university/internship/coming/coming/src/CharSequenceUtils.java"
+            }
+          ]
+        }
+      ]
+    }
+}
+```
+
+### Analysis
+In order to perform an analysis of possible repair tools that may have generated commits use the python script at https://github.com/kth-tcs/defects4j-repair-reloaded/tree/comrepair-coming/.
+
+create the output json file by running the script with option `-mode repairibility ` and then:
+
+``` 
+python analyse_repairability_output.py <path to the json>
+
+``` 
+
+or
+
+``` 
+python analyse_repairability_output.py <path to the json> <path to patches>
+``` 
+This script produces an output showing how many commits are corresponding to each repair tool and also (in the second choice) the number of commits it was unable to find.
+
 
 ## Code Features
 
@@ -493,9 +554,6 @@ We can combine the two precedent filters:
 ## By presence of Tests
 
 The argument `-filter withtest` indicates that only commits with at least one modification on test cases are considered.
-
-
-
 
 # Extending Coming
 
