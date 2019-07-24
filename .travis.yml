@@ -15,7 +15,11 @@ before_install:
   ~/.m2/settings.xml
 - unzip ./src/main/resources/repogit4testv0.zip
 
-install: mvn -DskipTests -Dgpg.skip install
+# in Java/Maven mvn takes care of the dependencies
+install: true
+
+# this is where all tests are executed
+script: mvn test
 
 after_success:
 - ".buildscript/deploy_to_maven.sh"
