@@ -24,16 +24,9 @@ public class RepairabilityTest {
         TestUtills.runRepairability("JMutRepair", "/repairability_test_files/one/");
     }
 
-//    @Test
-//    public void testRepairabilityLastNCommits() throws Exception {
-//        TestUtills.runRepairability("ALL", "/Bukkit/", "nb_commit:" + "10");
-//    }
-
     @Test
-    public void testRepairabilityAll() throws Exception {
-
-        FinalResult result = TestUtills.runRepairability("ALL", "/repairability_test_files/mixed/");
-        TestUtills.numberOfInstances(result, 2, 3);
+    public void testRepairabilityLastNCommits() throws Exception {
+        TestUtills.runRepairability("ALL", "./repogit4testv0","git","max_nb_commit_analyze:10");
     }
 
     @Test

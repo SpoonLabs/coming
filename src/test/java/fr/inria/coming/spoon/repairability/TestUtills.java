@@ -27,25 +27,6 @@ public class TestUtills {
         assertEquals(foundInstances, counter);
     }
 
-    public static FinalResult runRepairability(String toolName, String inputFiles , String nb_commit) throws Exception {
-        ComingMain cm = new ComingMain();
-
-        FinalResult result = cm.run(
-                new String[]{"-mode",
-                        "repairability",
-                        "-repairtool",
-                        toolName,
-                        "-input",
-                        "files",
-                        "-parameters",
-                        nb_commit,
-                        "-location",
-                        TestUtills.class.getResource(inputFiles).getFile()});
-
-        assertNotNull(result);
-        return result;
-    }
-
 
     public static FinalResult runRepairability(String toolName, String inputFiles) throws Exception {
         ComingMain cm = new ComingMain();
