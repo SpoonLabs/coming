@@ -472,7 +472,6 @@ python analyse_repairability_output.py <path to the json> <path to patches>
 This script produces an output showing how many commits are corresponding to each repair tool and also (in the second choice) the number of commits it was unable to find.
 
 
-
 ## Code Features
 
 Coming has an option to compute the features associated to the code changed by a commit.
