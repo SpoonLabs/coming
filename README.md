@@ -471,6 +471,7 @@ python analyse_repairability_output.py <path to the json> <path to patches>
 ``` 
 This script produces an output showing how many commits are corresponding to each repair tool and also (in the second choice) the number of commits it was unable to find.
 
+Last 100 commits of the repository are analyzed by default, you can change this default with -parameters nb_commits:<your value>
 
 ## Code Features
 
