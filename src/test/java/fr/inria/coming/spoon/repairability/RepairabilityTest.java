@@ -25,6 +25,11 @@ public class RepairabilityTest {
     }
 
     @Test
+    public void testRepairabilityLastNCommits() throws Exception {
+        TestUtills.runRepairability("ALL", "/Bukkit/", "nb_commit:" + "10");
+    }
+
+    @Test
     public void testRepairabilityAll() throws Exception {
 
         FinalResult result = TestUtills.runRepairability("ALL", "/repairability_test_files/mixed/");
