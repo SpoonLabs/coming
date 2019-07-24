@@ -124,6 +124,31 @@ public class MainComingTest {
         assertNotNull(result);
     }
 
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testOrderOutputopt() throws Exception {
+		ComingMain cm = new ComingMain();
+		Object result = cm.run(new String[] { "-location", "repogit4testv0", "-repairability", "true","-parameters" ,"nb_commit:10"});
+		assertNotNull(result);
+		assertTrue(result instanceof CommitFinalResult);
+		CommitFinalResult cfres = (CommitFinalResult) result;
+		Map<Commit, RevisionResult> commits = cfres.getAllResults();
+
+		List<String> commitsInOrder = new ArrayList<>();
+		for (String commit : this.commitsId) {
+			commitsInOrder.add(commit);
+		}
+
+		int currentIndex = 0;
+		for (Commit commit : commits.keySet()) {
+
+			assertEquals(currentIndex, commitsInOrder.indexOf(commit.getName()));
+			currentIndex++;
+		}
+
+	}
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testDiffAnalysis() throws Exception {
