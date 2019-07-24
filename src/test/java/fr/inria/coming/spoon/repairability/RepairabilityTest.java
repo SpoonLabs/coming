@@ -24,10 +24,10 @@ public class RepairabilityTest {
         TestUtills.runRepairability("JMutRepair", "/repairability_test_files/one/");
     }
 
-    @Test
-    public void testRepairabilityLastNCommits() throws Exception {
-        TestUtills.runRepairability("ALL", "/Bukkit/", "nb_commit:" + "10");
-    }
+//    @Test
+//    public void testRepairabilityLastNCommits() throws Exception {
+//        TestUtills.runRepairability("ALL", "/Bukkit/", "nb_commit:" + "10");
+//    }
 
     @Test
     public void testRepairabilityAll() throws Exception {
