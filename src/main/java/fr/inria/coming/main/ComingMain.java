@@ -142,6 +142,7 @@ public class ComingMain {
 		if (navigatorEngine == null)
 			throw new IllegalAccessError("error: initialize the engine first");
 
+		logm.info("Analyzing");
 		FinalResult result = navigatorEngine.analyze();
 
 		return result;
@@ -203,7 +204,6 @@ public class ComingMain {
 				String key = pars[i];
 				String value = pars[i + 1];
 				ComingProperties.properties.setProperty(key, value);
-
 			}
 		}
 
@@ -349,7 +349,8 @@ public class ComingMain {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("We could not load input: " + input);
+		logm.error("We could not load input: " + input);
+//		System.out.println("We could not load input: " + input);
 		return null;
 	}
 
