@@ -492,6 +492,18 @@ We can combine the two precedent filters:
 
 The argument `-filter withtest` indicates that only commits with at least one modification on test cases are considered.
 
+### By number of AST changes
+
+Coming filters a commit according to the number of AST changes involved in that commit.
+If a commit modified a file `f` by introducing more changes than `MAX_AST_CHANGES_PER_FILE` or less than `MIN_AST_CHANGES_PER_FILE`, then those changes are not further considered by Coming. This means that his filter has a direct impact on the Analyzers based on AST changes such as pattern mining or change frequency: Coming will not apply those analyzers over `f`.
+
+To use this filter, add to the command line:
+```
+-parameters MIN_AST_CHANGES_PER_FILE:0:MAX_AST_CHANGES_PER_FILE:50
+```
+
+
+
 ## Extending Coming
 
 To extend Coming, please read the document [Extension points of Coming](./docs/extension_points.md)
