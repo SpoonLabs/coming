@@ -66,8 +66,7 @@ public class FeaturesOutput implements IOutput {
 			fw.flush();
 			fw.close();
 		} catch (Exception e) {
-			e.printStackTrace();
-			log.error(e);
+			throw new RuntimeException(e);
 		}
 		return file;
 	}
