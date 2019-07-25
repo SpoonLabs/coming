@@ -11,6 +11,7 @@ import fr.inria.coming.core.entities.RevisionResult;
 public interface IOutput {
 	/**
 	 * Compute output for the final results
+	 *
 	 * @param finalResult
 	 */
 	public void generateFinalOutput(FinalResult finalResult);
