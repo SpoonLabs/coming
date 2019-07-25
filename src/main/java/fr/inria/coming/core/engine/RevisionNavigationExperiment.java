@@ -106,7 +106,7 @@ public abstract class RevisionNavigationExperiment<R extends IRevision> {
 
 			R oneRevision = iterator.next();
 
-//			log.info("\n***********\nAnalyzing " + i + "/" + size);
+			log.info("\n***********\nAnalyzing " + i + "/" + size);
 //			System.out.println("\n***********\nAnalyzing " + i + "/" + size);
 			if (!accept(oneRevision)) {
 				continue;
