@@ -133,6 +133,7 @@ public class MainComingTest {
         assertNotNull(result);
     }
 
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testDiffAnalysis() throws Exception {
@@ -158,6 +159,35 @@ public class MainComingTest {
 		assertTrue(hasRootOp);
 
 	}
+
+
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testOrderOutputwithOptionNcount() throws Exception {
+        ComingMain cm = new ComingMain();
+        Object result = cm.run(new String[] { "-location", "repogit4testv0", "-hunkanalysis", "true" ,"-parameters","max_nb_commit_analyze:10"});
+        assertNotNull(result);
+        assertTrue(result instanceof CommitFinalResult);
+        CommitFinalResult cfres = (CommitFinalResult) result;
+        Map<Commit, RevisionResult> commits = cfres.getAllResults();
+
+        // we have only ten commits
+        assertEquals(10, commits.size());
+
+        List<String> commitsInOrder = new ArrayList<>();
+        for (String commit : this.commitsId) {
+            commitsInOrder.add(commit);
+        }
+
+        int currentIndex = commits.size()-10+3;
+        for (Commit commit : commits.keySet()) {
+
+            assertEquals(currentIndex, commitsInOrder.indexOf(commit.getName()));
+            currentIndex++;
+        }
+
+    }
 
 	@SuppressWarnings("unchecked")
 	@Test
