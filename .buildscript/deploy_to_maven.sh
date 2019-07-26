@@ -36,6 +36,6 @@ elif [ "$TRAVIS_BRANCH" != "$BRANCH" ]; then
   # and incrementing it
   mvn versions:set -DnewVersion=1.$((PREVIOUS_MAVEN_CENTRAL_VERSION+1))
   echo "Starting deployment using maven deploy ..."
-  mvn -Prelease deploy --settings .buildscript/settings.xml -Dmaven.test.skip=true #-Dgpg.passphrase=$PASSPHRASE
+  mvn -Prelease deploy --settings .buildscript/settings.xml -Dmaven.test.skip=true -Dgpg.passphrase=$PASSPHRASE
   echo "Well deployed!"
 fi
