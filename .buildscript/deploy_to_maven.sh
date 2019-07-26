@@ -22,10 +22,11 @@ elif [ "$TRAVIS_BRANCH" != "$BRANCH" ]; then
   echo "Skipping deployment: wrong branch. Expected '$BRANCH' but was '$TRAVIS_BRANCH'."
  else
   echo "Deploying ..."
-  # made with "travis encrypt-file codesigning.asc -r SpoonLabs/coming --add"
-  openssl aes-256-cbc -K $encrypted_a263e63e6aa6_key -iv $encrypted_a263e63e6aa6_iv -in .buildscript/codesigning.asc.enc -out codesigning.asc -d
+
+  # made with "travis encrypt-file signingkey.asc -r SpoonLabs/coming --add"
+  openssl aes-256-cbc -K $encrypted_a263e63e6aa6_key -iv $encrypted_a263e63e6aa6_iv -in .buildscript/signingkey.asc.enc -out signingkey.asc -d
   echo "Before gpg"
-  gpg2 --fast-import codesigning.asc
+  gpg2 --fast-import signingkey.asc
   echo "After gpg"
 
   # getting the previous version on Maven Central
