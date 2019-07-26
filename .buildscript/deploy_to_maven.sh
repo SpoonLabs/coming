@@ -22,10 +22,10 @@ elif [ "$TRAVIS_BRANCH" != "$BRANCH" ]; then
   echo "Skipping deployment: wrong branch. Expected '$BRANCH' but was '$TRAVIS_BRANCH'."
  else
   echo "Deploying ..."
-  # made with "travis encrypt-file signingkey.asc -r SpoonLabs/coming --add"
-  openssl aes-256-cbc -K $encrypted_a263e63e6aa6_key -iv $encrypted_a263e63e6aa6_iv -in .buildscript/signingkey.asc.enc -out signingkey.asc -d
-  gpg2 --fast-import signingkey.asc
-  
+  # made with "travis encrypt-file codesigning.asc -r SpoonLabs/coming --add"
+  openssl aes-256-cbc -K $encrypted_a263e63e6aa6_key -iv $encrypted_a263e63e6aa6_iv -in .buildscript/codesigning.asc.enc -out codesigning.asc -d
+  echo "Before gpg"
+  gpg2 --fast-import codesigning.asc
   echo "After gpg"
 
   # getting the previous version on Maven Central
@@ -34,7 +34,7 @@ elif [ "$TRAVIS_BRANCH" != "$BRANCH" ]; then
 	
   # and incrementing it
   mvn versions:set -DnewVersion=1.$((PREVIOUS_MAVEN_CENTRAL_VERSION+1))
-
+  echo "Starting deployment using maven deploy ..."
   mvn -Prelease deploy --settings .buildscript/settings.xml -Dmaven.test.skip=true -Dgpg.passphrase=$PASSPHRASE
   echo "Well deployed!"
 fi
