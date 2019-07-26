@@ -1,6 +1,7 @@
-<pattern name="replacement">
-    <entity id="1" type="*"/>
+<pattern name="replacement2">
+    <entity id="1" type="Assignment"/>
     <action entityId="1" type="UPD"/>
 
 </pattern>
+
 

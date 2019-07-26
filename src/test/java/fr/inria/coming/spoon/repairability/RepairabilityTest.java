@@ -25,13 +25,6 @@ public class RepairabilityTest {
     }
 
     @Test
-    public void testRepairabilityAll() throws Exception {
-
-        FinalResult result = TestUtills.runRepairability("ALL", "/repairability_test_files/mixed/");
-        TestUtills.numberOfInstances(result, 2, 5);
-    }
-
-    @Test
     public void testOneInstancePerRevision() throws Exception {
 
         FinalResult result = TestUtills.runRepairability("ALL", "/repairability_test_files/mixed/");

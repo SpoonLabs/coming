@@ -1,0 +1,10 @@
+<pattern name="replacement7">
+    <entity id="1" type="FieldRead"/>
+    <action entityId="1" type="MOV"/>
+
+    <entity id="2" type="*"/>
+    <action entityId="2" type="DEL"/>
+
+</pattern>
+
+

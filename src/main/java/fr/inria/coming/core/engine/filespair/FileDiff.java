@@ -30,7 +30,8 @@ public class FileDiff implements IRevision {
     public List<IRevisionPair> getChildren() {
 
         if (left == null || right == null) {
-            System.out.println("files is null");
+            log.info("files is null");
+//            System.out.println("files is null");
             return null;
         }
 

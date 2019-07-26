@@ -16,10 +16,10 @@ if [ "$TRAVIS_REPO_SLUG" != "$SLUG" ]; then
   echo "Skipping deployment: wrong repository. Expected '$SLUG' but was '$TRAVIS_REPO_SLUG'."
 elif [ "$TRAVIS_JDK_VERSION" != "$JDK" ]; then
   echo "Skipping deployment: wrong JDK. Expected '$JDK' but was '$TRAVIS_JDK_VERSION'."
-# elif [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
-#   echo "Skipping deployment: was pull request."
-#elif [ "$TRAVIS_BRANCH" != "$BRANCH" ]; then
- # echo "Skipping deployment: wrong branch. Expected '$BRANCH' but was '$TRAVIS_BRANCH'."
+elif [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
+  echo "Skipping deployment: was pull request."
+elif [ "$TRAVIS_BRANCH" != "$BRANCH" ]; then
+  echo "Skipping deployment: wrong branch. Expected '$BRANCH' but was '$TRAVIS_BRANCH'."
  else
   echo "Deploying ..."
   # made with "travis encrypt-file signingkey.asc -r SpoonLabs/coming --add"
@@ -35,6 +35,6 @@ elif [ "$TRAVIS_JDK_VERSION" != "$JDK" ]; then
   # and incrementing it
   mvn versions:set -DnewVersion=1.$((PREVIOUS_MAVEN_CENTRAL_VERSION+1))
 
-  mvn -Prelease deploy --settings .buildscript/settings.xml -Dmaven.test.skip=true
+  mvn -Prelease deploy --settings .buildscript/settings.xml -Dmaven.test.skip=true -Dgpg.passphrase=$PASSPHRASE
   echo "Well deployed!"
 fi

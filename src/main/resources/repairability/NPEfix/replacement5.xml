@@ -1,0 +1,7 @@
+<pattern name="replacement5">
+    <entity id="1" type="VariableRead" />
+    <action entityId="1" type="UPD"/>
+
+</pattern>
+
+

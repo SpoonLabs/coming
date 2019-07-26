@@ -2,7 +2,7 @@
 
 Coming
 =======
-Coming is a tool for mining git repositories
+Coming is a tool for mining git repositories.
 
 If you use Coming, please cite one of: 
 
@@ -14,18 +14,15 @@ Contact:
 
 [Matias Martinez](http://www.martinezmatias.com/), [Martin Monperrus](http://www.monperrus.net/martin/)
 
-Compile
-------
+## Install
 
 Please install a JDK 1.8 and configure Maven or your IDE to use it.
 
 ```
-mvn install:install-file -Dfile=lib/gumtree-spoon-ast-diff-0.0.3-SNAPSHOT-jar-with-dependencies.jar -DgeneratePom=true -DgroupId=fr.inria.spirals -DartifactId=gumtree-spoon-ast-diff -Dversion=0.0.3-SNAPSHOT -Dpackaging=jar
-mvn -Dskiptest compile
+ mvn install -DskipTests
 ```
 
-Test
-------
+Tests:
 
 ```
 unzip ./src/main/resources/repogit4testv0.zip
@@ -36,16 +33,38 @@ mvn test
 `repogit4testv0` is a GIT repository included inside Coming which is used by the test cases.
 
 
-# Run
+## Run with main class
 
 
 The main class is: `fr.inria.coming.main.ComingMain`.
 
+```
+mvn exec:java -Dexec.mainClass=fr.inria.coming.main.ComingMain
 
-####  Parameters 
+ -action <INS | DEL | UPD | MOV | PER | ANY>                          tye of action to be mined
+ -branch <branch name>                                                In case of -input='git', use this branch name. Default is master.
+ -entitytype <arg>                                                    entity type to be mine
+ -entityvalue <arg>                                                   the value of the entity  mentioned in -entitytype
+ -filter <arg>                                                        name of the filter
+ -filtervalue <arg>                                                   values of the filter  mentioned in -filter
+ -hunkanalysis <arg>                                                  include analysis of hunks
+ -input <git(default) | files | filespair | repairability>            format of the content present in the given -path. git implies that the path is a git repository. files implies the path contains .patch files
+ -location <path>                                                     analyse the content in 'path'
+ -message <arg>                                                       comming message
+ -mode <mineinstance | diff | features>                               the mode of execution of the analysis
+ -output <path>                                                       dump the output of the analysis in the given path
+ -outputprocessor <classname>                                         output processors for result
+ -parameters <arg>                                                    Parameters, divided by :
+ -parentlevel <arg>                                                   numbers of AST node where the parent is located. 1 implies immediate parent
+ -parenttype <arg>                                                    parent type of the nodes to be considered
+ -pattern <path>                                                      path of the pattern file to be used when the -mode is 'mineinstance'
+ -patternparser <classname>                                           parser to be used for parsing the file specified -pattern. Default is XML
+ -repairtool <ALL | JMutRepair | Nopol | JKali | NPEfix | JGenProg>   If -mode=repairability, this option specifies which repair tools should we consider in our analysis. Can be a list separated by :
+ -showactions                                                         show all actions
+ -showentities                                                        show all entities
+```
 
-
-Most of the properties are configured in file "configuration.properties"
+**Parameters** Most of the properties are configured in file "configuration.properties"
 
 One can change any of those properties from the command line by using   `-parameters`
 
@@ -57,9 +76,14 @@ In the following command we change the value of two properties: `max_nb_hunks` a
    -parameters max_nb_hunks:2:max_files_per_commit:1
 ```
 
+## Modes
+
+### Mode Instance Mining
+
+When running Coming in mode `-mode mineinstance` the output is a file name `instances_found.json` , which shows the different instances of the pattern passed as parameter.
 
 
-# Mining Simple Changes (i.e., with exactly one change)
+#### Mining Simple Changes (i.e., with exactly one change)
 
 
 
@@ -79,14 +103,11 @@ By default, Coming analyzes Git projects(as per `-input`), so the `-location`  s
 
 The argument  `-output` is used to indicate the folder where Coming will write the results.
 
-
-## Printing Types of Actions and Entities
-
 To know the values accepted by the arguments `-action` and  `-entitytype`, 
 please call ComingMain with the following arguments: `-showactions` and `-showentities`, resp.
 You can also find those values on this [page](/docs/types.md).
 
-# Mining Complex Changes (i.e., Two or more changes) 
+#### Mining Complex Changes (i.e., Two or more changes) 
 
 
 Instead of passing the action type and entity type per command line (which defines simple pattern),
@@ -116,8 +137,7 @@ This pattern is specified as follows:
 
 ```
 
-
-### Change Pattern Specification: 
+##### Change Pattern Specification
 
 Coming accepts Change Patterns specified in a XML files.
 As example the pattern `Add If-Return`:
@@ -154,7 +174,7 @@ This pattern is able to match a changes such:
 That change is an *instance*  of the pattern `Add If-Return`.
 
 
-#### Roles of Entities
+##### Roles of Entities
 
 The pattern specification also allows to specify the *role* of an entity in its parent entity.
 Given the code:
@@ -223,102 +243,8 @@ This pattern matches with the update of the method invocation's parameter (and n
 
 The list of available Roles is presented on this [page](/docs/types.md).
 
-# Input 
 
-Coming read the input from the folder indicated by the argument `-location`. The kind of input depends on the argument `-input`. 
-
-#### git  
-If `-input` is not specified, it is `git` by default. In the previous case or in the case of `-input git`, the path represented by `-location` should be a git repo.
-
-#### filespair
-This input format is used to do analysis on one revision mentioned by the diff between specified the source and tha target file.
-If `-input filespair`, the location argument is supposed to specified in the following format: `-location <source_file_path>:<target_file_path>`
-
-#### files 
-If `-input files`, the location path should follow the following hierarchy. Note here `-location <location_arg>`.
-```
-<location_arg>
-├── <diff_folder>
-│   └── <modif_file>
-│       ├── <diff_folder>_<modif_file>_s.java
-│       └── <diff_folder>_<modif_file>_t.java
-```
-In the above case, the analysis are performed on the revision form `<diff_folder>_<modif_file>_s.java` to `<diff_folder>_<modif_file>_t.java`, where `s` stands for source and `t` stands for target.
-
-**Example Input Specification**
-```
-java ... -location ./pairsD4j -input files ...
-
-$ tree ./pairsD4j/
-pairsD4j
-├── Math_70
-│   └── BisectionSolver
-│       ├── Math_70_BisectionSolver_s.java
-│       └── Math_70_BisectionSolver_t.java
-└── Math_73
-    └── BrentSolver
-        ├── Math_73_BrentSolver_s.java
-        └── Math_73_BrentSolver_t.java
-
-4 directories, 4 files
-
-```
-
-# Output
-
-Coming writes the output in the folder indicated by the argument ` -output `. The kind of output depends of the analysis executed. We now present the output of two analysis: Mining Instances and Change frequency computation.
-
-## Mined Instances
-
-When running Coming in mode `-mode mineinstance` the output is a file name `instances_found.json` , which shows the different instances.
-
-An example of the content of such file is:
-
-```
-{
-  "instances": [
-    {
-      "revision": "c8cf81ce1f01d4cb213b389a7b85aa13634b7d95",
-      "pattern_name": "Insert_a_literal_in_assignment"
-      "instance_detail": [
-        {
-          "pattern_action": "INS",
-          "pattern_entity": {
-            "entity_type": "Literal",
-            "entity_new value": "*",
-            "entity_role": "*",
-            "entity_parent": {
-              "entity_type": "Assignment",
-              "entity_new value": "*",
-              "entity_old value": "*",
-              "entity_role": "*",
-              "entity_parent": "null"
-            }
-          },
-          "concrete_change": {
-            "operator": "INS",
-            "src_type": "Literal",
-            "dst_type": "null",
-            "src": "1",
-            "dst": "null",
-            "src_parent_type": "BinaryOperator",
-            "dst_parent_type": "null",
-            "src_parent": "(i + 1)",
-            "dst_parent": "null"
-          },
-          "file": "/test",
-          "line": 171
-        }
-      ]
-    }
-  ]
-}
-```
-
-The JSon element for one instance shows: the revision information, the operators that match with the pattern, the pattern information, and the code matched with the pattern.
-
-
-## Change frequency
+### Mode Change Frequency
 
 
 When running Coming in mode `-mode diff` the output is a file name `change_frequency.json` , which shows the frequency and probability of each type of change (i.e., frequency of actions applied  to each type of entities).
@@ -386,27 +312,123 @@ Example, the previous json file shows
 ```
 which means that there are 2 changes that update binary operators inside an if condition (i.e., the parent).
 
+### Mode Repairability
+When running Coming in mode `-mode repairibility`, the output is a file named `all_instances_found.json` , which shows the possible tool creating the commits. You can choose tools of interest by including the option:  `-repairtool All,Jkali,..`
 
-## Code Features
+An example of the content of such file is:
+
+```
+{
+    {
+    "instances": [
+      "revision": "8c0e7110c9ebc3ba5158e8de0f73c80ec69e1001",
+      "repairability": [
+        {
+          "tool-name": "JMutRepair",
+          "pattern-name": "JMutRepair:binary_1",
+          "instance_detail": [
+            {
+              "pattern_action": "UPD",
+              "pattern_entity": {
+                "entity_type": "BinaryOperator",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "UPD",
+                "src_type": "BinaryOperator",
+                "dst_type": "BinaryOperator",
+                "src": "sz - 1",
+                "dst": "sz + 1",
+                "src_parent_type": "Assignment",
+                "dst_parent_type": "Assignment",
+                "src_parent": "start \u003d sz - 1",
+                "dst_parent": "start \u003d sz + 1"
+              },
+              "line": 127,
+              "file": "/Users/macbook/Documents/university/internship/coming/coming/src/CharSequenceUtils.java"
+            }
+          ]
+        }
+      ]
+    }
+}
+```
+
+In order to perform an analysis of possible repair tools that may have generated commits use the python script at https://github.com/kth-tcs/defects4j-repair-reloaded/tree/comrepair-coming/.
+
+create the output json file by running the script with option `-mode repairibility ` and then:
+
+``` 
+python analyse_repairability_output.py <path to the json>
+
+``` 
+
+or
+
+``` 
+python analyse_repairability_output.py <path to the json> <path to patches>
+``` 
+This script produces an output showing how many commits are corresponding to each repair tool and also (in the second choice) the number of commits it was unable to find.
+
+Last 100 commits of the repository are analyzed by default, you can change this default with -parameters nb_commits:<your value>
+
+### Mode Code Features
 
 Coming has an option to compute the features associated to the code changed by a commit.
 This functionality can be used with the argument `-mode features`.
 Coming writes in the folder specified in the `-output` a JSON file for each commit.
 
-## Specifying new outputs
+## Input Types
 
-Coming allows to specify new output. For example, instead of saving the results in Json files as presented before, it's
- possible to write a plug-in to store the results in a relational database.
- You can find more detail about extending Coming in our [documentation](https://github.com/SpoonLabs/coming/blob/master/docs/extension_points.md#post-processors-and-outputs).
+Coming read the input from the folder indicated by the argument `-location`. The kind of input depends on the argument `-input`. 
 
-# Filtering Commits
+### git  
+If `-input` is not specified, it is `git` by default. In the previous case or in the case of `-input git`, the path represented by `-location` should be a git repo.
 
-## By commit message
+### filespair
+This input format is used to do analysis on one revision mentioned by the diff between specified the source and tha target file.
+If `-input filespair`, the location argument is supposed to specified in the following format: `-location <source_file_path>:<target_file_path>`
+
+### files 
+If `-input files`, the location path should follow the following hierarchy. Note here `-location <location_arg>`.
+```
+<location_arg>
+├── <diff_folder>
+│   └── <modif_file>
+│       ├── <diff_folder>_<modif_file>_s.java
+│       └── <diff_folder>_<modif_file>_t.java
+```
+In the above case, the analysis are performed on the revision form `<diff_folder>_<modif_file>_s.java` to `<diff_folder>_<modif_file>_t.java`, where `s` stands for source and `t` stands for target.
+
+**Example Input Specification**
+```
+java ... -location ./pairsD4j -input files ...
+
+$ tree ./pairsD4j/
+pairsD4j
+├── Math_70
+│   └── BisectionSolver
+│       ├── Math_70_BisectionSolver_s.java
+│       └── Math_70_BisectionSolver_t.java
+└── Math_73
+    └── BrentSolver
+        ├── Math_73_BrentSolver_s.java
+        └── Math_73_BrentSolver_t.java
+
+4 directories, 4 files
+
+```
+
+## Filtering Commits
+
+### By commit message
 
 Coming provides a filter to discard Commits which commit message does not include some keywords
 
 
-### Bug fix keywords
+#### Bug fix keywords
 
 
 
@@ -420,7 +442,7 @@ For studying only commits which messages include words related to bug fixing (e.
 The bugfix keywords are predefined. If you want to use  other keywords, use the `Custom keywords`.
 
 
-### Custom keywords
+#### Custom keywords
 
 For studying only commits which messages include `[MATH-`, add the following two commands:
 
@@ -431,7 +453,7 @@ For studying only commits which messages include `[MATH-`, add the following two
 ```
 
 
-## By Number of Hunks
+#### By Number of Hunks
 
 Coming applies line-based diff between two files (for more information, see http://en.wikipedia.org/wiki/Diff).
 
@@ -449,7 +471,7 @@ Then, using the argument`-parameters` we specify `max_nb_hunks:2` which means ma
 
 
 
-## By number of modified files
+#### By number of modified files
 
 The arguments:
 
@@ -458,7 +480,7 @@ The arguments:
 consider commits with at least one file modified, added or deleted.
 
 
-## Combining several filters
+#### Combining several filters
 
 We can combine the two precedent filters:
 
@@ -466,14 +488,23 @@ We can combine the two precedent filters:
 -filter numberhunks:maxfiles  -parameters max_nb_hunks2:max_files_per_commit:1
 ```
 
-## By presence of Tests
+#### By presence of Tests
 
 The argument `-filter withtest` indicates that only commits with at least one modification on test cases are considered.
 
+### By number of AST changes
+
+Coming filters a commit according to the number of AST changes involved in that commit.
+If a commit modified a file `f` by introducing more changes than `MAX_AST_CHANGES_PER_FILE` or less than `MIN_AST_CHANGES_PER_FILE`, then those changes are not further considered by Coming. This means that his filter has a direct impact on the Analyzers based on AST changes such as pattern mining or change frequency: Coming will not apply those analyzers over `f`.
+
+To use this filter, add to the command line:
+```
+-parameters MIN_AST_CHANGES_PER_FILE:0:MAX_AST_CHANGES_PER_FILE:50
+```
 
 
 
-# Extending Coming
+## Extending Coming
 
 To extend Coming, please read the document [Extension points of Coming](./docs/extension_points.md)
 Moreover, you can also read [code_walk-through](./docs/code_walkthrough.md).

@@ -7,6 +7,7 @@ import java.util.List;
 import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.engine.callback.IntermediateResultProcessorCallback;
+import fr.inria.coming.core.engine.filespair.FileDiff;
 import fr.inria.coming.core.entities.AnalysisResult;
 import fr.inria.coming.core.entities.RevisionDataset;
 import fr.inria.coming.core.entities.RevisionResult;
@@ -14,6 +15,7 @@ import fr.inria.coming.core.entities.interfaces.IFilter;
 import fr.inria.coming.core.entities.interfaces.IOutput;
 import fr.inria.coming.core.entities.interfaces.RevisionOrder;
 import fr.inria.coming.main.ComingProperties;
+import org.apache.log4j.Logger;
 
 /**
  * 
@@ -21,6 +23,7 @@ import fr.inria.coming.main.ComingProperties;
  *
  */
 public abstract class RevisionNavigationExperiment<R extends IRevision> {
+	Logger log = Logger.getLogger(FileDiff.class.getName());
 
 	protected RevisionOrder<R> navigationStrategy = null;
 	protected List<Analyzer> analyzers = new ArrayList<>();
@@ -98,26 +101,32 @@ public abstract class RevisionNavigationExperiment<R extends IRevision> {
 		List<Analyzer> analyzers = this.getAnalyzers();
 
 		int size = data.size();
+		int max_nb_commit_analyze = ComingProperties.getPropertyInteger("max_nb_commit_analyze");
 
-		for (Iterator<R> iterator = it; iterator.hasNext();) {
+        for (Iterator<R> iterator = it; iterator.hasNext();) {
 
 			R oneRevision = iterator.next();
 
-			System.out.println("\n***********\nAnalyzing " + i + "/" + size);
-			if (!accept(oneRevision)) {
-				continue;
-			}
+			log.info("\n***********\nAnalyzing " + i + "/" + size);
+//			System.out.println("\n***********\nAnalyzing " + i + "/" + size);
 
-			RevisionResult resultAllAnalyzed = new RevisionResult(oneRevision);
-			for (Analyzer analyzer : analyzers) {
+            if(i > size - max_nb_commit_analyze) {
+                if (!(accept(oneRevision))) {
+                    continue;
+                }
 
-				AnalysisResult resultAnalyzer = analyzer.analyze(oneRevision, resultAllAnalyzed);
-				resultAllAnalyzed.put(analyzer.getClass().getSimpleName(), resultAnalyzer);
-				if (resultAnalyzer == null || !resultAnalyzer.sucessful())
-					break;
-			}
 
-			processEndRevision(oneRevision, resultAllAnalyzed);
+                RevisionResult resultAllAnalyzed = new RevisionResult(oneRevision);
+                for (Analyzer analyzer : analyzers) {
+
+                    AnalysisResult resultAnalyzer = analyzer.analyze(oneRevision, resultAllAnalyzed);
+                    resultAllAnalyzed.put(analyzer.getClass().getSimpleName(), resultAnalyzer);
+                    if (resultAnalyzer == null || !resultAnalyzer.sucessful())
+                        break;
+                }
+
+                processEndRevision(oneRevision, resultAllAnalyzed);
+            }
 
 			i++;
 			if (i > ComingProperties.getPropertyInteger("maxrevision"))

@@ -77,6 +77,12 @@ public class MainComingTest {
 	}
 
 	@Test
+	public void testNothing() {
+		// calling with no argument should not crash
+		ComingMain.main(new String[] {});
+	}
+
+	@Test
 	public void testListEntities() {
 
 		ComingMain.main(new String[] { "-showentities" });
@@ -92,6 +98,22 @@ public class MainComingTest {
 	public void testMineBinaryOperatorMain() {
 		ComingMain.main(
 				new String[] { "-location", "repogit4testv0", "-entitytype", "BinaryOperator", "-action", "INS" });
+	}
+
+	@Test
+	public void testFeaturesMain() {
+		File output = new File(ComingProperties.getProperty("output")+"/features_fe76517014e580ddcb40ac04ea824d54ba741c8b.json");
+
+		// clean test data
+		output.delete();
+
+		assertFalse(output.exists());
+		// the features mode does not crash
+		FinalResult r = new ComingMain().run(
+				new String[] { "-mode", "features", "-location", "repogit4testv0"});
+
+		// the JSON file has been created
+		assertTrue(output.exists());
 	}
 
     @Test
@@ -110,6 +132,7 @@ public class MainComingTest {
 
         assertNotNull(result);
     }
+
 
 	@SuppressWarnings("unchecked")
 	@Test
@@ -136,6 +159,35 @@ public class MainComingTest {
 		assertTrue(hasRootOp);
 
 	}
+
+
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testOrderOutputwithOptionNcount() throws Exception {
+        ComingMain cm = new ComingMain();
+        Object result = cm.run(new String[] { "-location", "repogit4testv0", "-hunkanalysis", "true" ,"-parameters","max_nb_commit_analyze:10"});
+        assertNotNull(result);
+        assertTrue(result instanceof CommitFinalResult);
+        CommitFinalResult cfres = (CommitFinalResult) result;
+        Map<Commit, RevisionResult> commits = cfres.getAllResults();
+
+        // we have only ten commits
+        assertEquals(10, commits.size());
+
+        List<String> commitsInOrder = new ArrayList<>();
+        for (String commit : this.commitsId) {
+            commitsInOrder.add(commit);
+        }
+
+        int currentIndex = commits.size()-10+3;
+        for (Commit commit : commits.keySet()) {
+
+            assertEquals(currentIndex, commitsInOrder.indexOf(commit.getName()));
+            currentIndex++;
+        }
+
+    }
 
 	@SuppressWarnings("unchecked")
 	@Test
