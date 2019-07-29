@@ -32,7 +32,7 @@ elif [ "$TRAVIS_BRANCH" != "$BRANCH" ]; then
   # getting the previous version on Maven Central
 #  PREVIOUS_MAVEN_CENTRAL_VERSION=`curl "http://search.maven.org/solrsearch/select?q=a:gumtree-spoon-ast-diff+g:fr.inria.gforge.spoon.labs&rows=20&wt=json" | jq -r .response.docs[0].latestVersion | egrep -o "[0-9]+$"`
    PREVIOUS_MAVEN_CENTRAL_VERSION=0
-	
+
   # and incrementing it
   mvn versions:set -DnewVersion=1.$((PREVIOUS_MAVEN_CENTRAL_VERSION+1))
   echo "Starting deployment using maven deploy ..."
