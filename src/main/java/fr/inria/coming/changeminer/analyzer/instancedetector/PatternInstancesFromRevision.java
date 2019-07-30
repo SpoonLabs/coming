@@ -35,15 +35,15 @@ public class PatternInstancesFromRevision extends AnalysisResult<IRevision> {
 		this.infoPerDiff = instances;
 	}
 
-	@Override
-	public String toString() {
-		// return "PatternInstancesFromRevision [instances=" + instances + "]";
-		String r = "";
-		for (PatternInstancesFromDiff patternInstancesFromDiff : infoPerDiff) {
-			r += "\n" + patternInstancesFromDiff.toString();
-		}
-
-		return r;
-	}
+//	@Override
+//	public String toString() {
+//		// return "PatternInstancesFromRevision [instances=" + instances + "]";
+//		String r = "";
+//		for (PatternInstancesFromDiff patternInstancesFromDiff : infoPerDiff) {
+//			r += "\n" + patternInstancesFromDiff.toString();
+//		}
+//
+//		return r;
+//	}
 
 }

@@ -63,7 +63,6 @@ public class PatternInstancesFromDiff extends AnalysisResult<IRevision> {
 			String resultString = "\n----For Diff:" + diffString + "\n: number instances found: " + instances.size();
 			for (ChangePatternInstance instance : instances) {
 				resultString += "\n" + instance.toString();
-
 			}
             log.info(resultString += "\n----");
 //			return resultString += "\n----";
