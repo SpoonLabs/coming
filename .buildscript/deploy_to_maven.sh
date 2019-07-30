@@ -25,7 +25,7 @@ elif [ "$TRAVIS_BRANCH" != "$BRANCH" ]; then
 
   # made with "travis encrypt-file codesigning.asc -r SpoonLabs/coming --add"
   openssl version
-  openssl aes-256-cbc -K $encrypted_a263e63e6aa6_key -iv $encrypted_a263e63e6aa6_iv -in  ./.buildscript/codesigning.asc.enc -out codesigning.asc -d -md md5
+  openssl aes-256-cbc -K $encrypted_a263e63e6aa6_key -iv $encrypted_a263e63e6aa6_iv -in  ./.buildscript/codesigning.asc.enc -out codesigning.asc -d
   echo "Before gpg"
   gpg2 --fast-import codesigning.asc
   echo "After gpg"
