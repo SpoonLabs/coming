@@ -5,7 +5,6 @@ import java.util.List;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.entities.AnalysisResult;
 
-
 /**
  * 
  * @author Matias Martinez
