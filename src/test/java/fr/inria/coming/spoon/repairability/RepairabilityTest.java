@@ -25,6 +25,11 @@ public class RepairabilityTest {
     }
 
     @Test
+    public void testRepairabilityInterfacediff() throws Exception {
+        TestUtills.runRepairabilitydiff("ALL");
+    }
+
+    @Test
     public void testOneInstancePerRevision() throws Exception {
 
         FinalResult result = TestUtills.runRepairability("ALL", "/repairability_test_files/mixed/");
