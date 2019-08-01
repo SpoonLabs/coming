@@ -1,6 +1,7 @@
 package fr.inria.coming.changeminer.analyzer.commitAnalyzer;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import com.github.difflib.DiffUtils;
+import com.github.difflib.patch.Patch;
 import org.apache.log4j.Logger;
 
 import fr.inria.coming.changeminer.analyzer.DiffEngineFacade;
@@ -66,9 +69,21 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 			String rightName = fileFromRevision.getName();
 
 			Diff diff = compare(left, right, leftName, rightName);
+            Patch<String> patch = null;
+            System.out.println("patch................................................................................");
 			if (diff != null) {
 				diffOfFiles.put(fileFromRevision.getName(), diff);
+                System.out.println("length");
+                System.out.println(Arrays.asList(left.split("\n").length));
+
+                try {
+                    patch = DiffUtils.diff(Arrays.asList(left.split("\n")), Arrays.asList(right.split("\n")));
+                } catch (com.github.difflib.algorithm.DiffException e) {
+                    e.printStackTrace();
+                }
 			}
+
+			System.out.println(patch.getDeltas());
 		}
 
 		return new DiffResult<IRevision, Diff>(revision, diffOfFiles);
