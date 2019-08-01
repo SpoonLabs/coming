@@ -72,6 +72,7 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
             String rightName = fileFromRevision.getName();
             System.out.println("In fine grain analyzer...............................................................");
 
+
 //            System.out.println(leftName);
 //            System.out.println(rightName);
 
