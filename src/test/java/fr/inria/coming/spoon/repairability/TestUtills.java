@@ -44,4 +44,26 @@ public class TestUtills {
         assertNotNull(result);
         return result;
     }
+
+
+    public static FinalResult runRepairabilitydiff(String toolName) throws Exception {
+        ComingMain cm = new ComingMain();
+
+        FinalResult result = cm.run(
+                new String[]{"-mode",
+                        "repairability",
+                        "-repairtool",
+                        toolName,
+                        "-location",
+                        " ./repogit4testv0/",
+                        "-output",
+                        "./out",
+                        "-filter",
+                        "maxfiles",
+                        "-parameters",
+                        "max_files_per_commit:1"});
+
+        assertNotNull(result);
+        return result;
+    }
 }
