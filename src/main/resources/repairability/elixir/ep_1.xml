@@ -1,0 +1,6 @@
+<pattern name="any_statement_deep">
+
+    <entity id="1" type="TypeReference" />
+    <action entityId="1" type="UPD"/>
+
+</pattern>
