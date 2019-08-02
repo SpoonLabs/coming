@@ -13,7 +13,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import com.github.difflib.DiffUtils;
+import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.patch.Patch;
+import com.github.difflib.text.DiffRow;
+import com.github.difflib.text.DiffRowGenerator;
 import org.apache.log4j.Logger;
 
 import fr.inria.coming.changeminer.analyzer.DiffEngineFacade;
@@ -69,21 +72,46 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 			String rightName = fileFromRevision.getName();
 
 			Diff diff = compare(left, right, leftName, rightName);
-            Patch<String> patch = null;
-            System.out.println("patch................................................................................");
-			if (diff != null) {
-				diffOfFiles.put(fileFromRevision.getName(), diff);
-                System.out.println("length");
-                System.out.println(Arrays.asList(left.split("\n").length));
 
-                try {
-                    patch = DiffUtils.diff(Arrays.asList(left.split("\n")), Arrays.asList(right.split("\n")));
-                } catch (com.github.difflib.algorithm.DiffException e) {
-                    e.printStackTrace();
-                }
+			DiffRowGenerator generator = DiffRowGenerator.create()
+					.showInlineDiffs(true)
+					.inlineDiffByWord(true)
+					.oldTag(f -> "~")
+					.newTag(f -> "**")
+					.build();
+
+			List<DiffRow> rows = null;
+			try {
+				rows = generator.generateDiffRows(
+						Arrays.asList(left.split("\n")),
+						Arrays.asList(right.split("\n")));
+			} catch (DiffException e) {
+				e.printStackTrace();
 			}
 
-			System.out.println(patch.getDeltas());
+			System.out.println("|original|new|");
+			System.out.println("|--------|---|");
+			for (DiffRow row : rows) {
+				System.out.println("|" + row.getOldLine() + "|" + row.getNewLine() + "|");
+			}
+			break;
+
+//			Patch<String> patch = null;
+//            System.out.println("patch................................................................................");
+//			if (diff != null) {
+//				diffOfFiles.put(fileFromRevision.getName(), diff);
+//                System.out.println("length");
+//                System.out.println(Arrays.asList(left.split("\n").length));
+
+//                try {
+//                    patch = DiffUtils.diff(Arrays.asList(left.split("\n")), Arrays.asList(right.split("\n")));
+//                } catch (com.github.difflib.algorithm.DiffException e) {
+//                    e.printStackTrace();
+//                }
+
+//			}
+
+//			System.out.println(patch.getDeltas());
 		}
 
 		return new DiffResult<IRevision, Diff>(revision, diffOfFiles);
