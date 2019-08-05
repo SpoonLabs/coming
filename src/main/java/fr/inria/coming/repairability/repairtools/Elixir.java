@@ -27,13 +27,15 @@ import java.util.List;
  * <p>
  * I added two pattern files which checks for a variable being inserted or updated (1-4) and another one to check for insertion of return. (5-9)
  */
-public class elixir extends AbstractRepairTool {
+public class Elixir extends AbstractRepairTool {
 
     private static final String[] patternFileNames = {
             "ep_1.xml",
             "ep_2.xml",
             "ep_3.xml",
-            "ep_4.xml"
+            "ep_4.xml",
+            "ep_5.xml",
+            "ep_6.xml"
     };
 
     /**

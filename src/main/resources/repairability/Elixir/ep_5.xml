@@ -1,4 +1,4 @@
-<pattern name="any_statement_deep">
+<pattern name="update_invocation">
 
     <entity id="1" type="Invocation" />
     <action entityId="1" type="UPD"/>

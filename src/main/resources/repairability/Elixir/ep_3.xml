@@ -1,4 +1,4 @@
-<pattern name="any_statement_deep">
+<pattern name="if_null_check">
 
     <entity id="1" type="If"/>
 

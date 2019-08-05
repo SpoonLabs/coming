@@ -1,4 +1,4 @@
-<pattern name="any_statement_deep">
+<pattern name="update_return">
 
     <entity id="1" type="Return" />
     <entity id="2" type="VariableRead" />
