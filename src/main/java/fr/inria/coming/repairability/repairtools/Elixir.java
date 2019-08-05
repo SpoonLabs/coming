@@ -39,7 +39,7 @@ public class Elixir extends AbstractRepairTool {
     };
 
     /**
-     * Encodes the search space of JMutRepair
+     * Encodes the search space of Elixir
      *
      * @return a List of ChangePatternSpecifications that are supposed to be mined by PatternInstanceAnalyzer
      */
