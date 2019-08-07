@@ -7,8 +7,10 @@
 	<artifactId>coming</artifactId>
 	<!-- DO NOT CHANGE THIS VERSION, VERSION NUMBER IS AUTOMATICALLY HANDLED 
 		IN .buildscript/deploy_to_maven.sh -->
-	<version>SNAPSHOT</version>
-
+	<version>1</version>
+        <description>Coming</description>
+        <url>https://github.com/Spirals-Team/coming</url>
+        
 	<packaging>jar</packaging>
 	<name>coming-parent</name>
 	<properties>
