@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.text.DiffRow;
@@ -75,24 +76,34 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 			}
 
 			DiffRowGenerator generator = DiffRowGenerator.create()
-					.showInlineDiffs(true)
-					.inlineDiffByWord(true)
-					.oldTag(f -> "~")
-					.newTag(f -> "**")
+					.showInlineDiffs(false)
+					.inlineDiffByWord(false)
+					.ignoreWhiteSpaces(true)
 					.build();
+
 			List<DiffRow> rows = null;
 			try {
 				rows = generator.generateDiffRows(
-						Arrays.asList("This is a test senctence.", "This is the second line.", "And here is the finish."),
-						Arrays.asList("This is a test for diffutils.", "This is the second line."));
+						Arrays.stream(fileFromRevision.getPreviousVersion().split("\n")).collect(Collectors.toList()),
+						Arrays.stream(fileFromRevision.getNextVersion().split("\n")).collect(Collectors.toList()));
 			} catch (DiffException e) {
 				e.printStackTrace();
 			}
 
-			System.out.println("|original|new|");
-			System.out.println("|--------|---|");
+			System.out.println("Diff of the revision");
 			for (DiffRow row : rows) {
-				System.out.println("|" + row.getOldLine() + "|" + row.getNewLine() + "|");
+				switch (row.getTag()) {
+					case INSERT:
+						System.out.println("+ " + row.getNewLine());
+						break;
+					case DELETE:
+						System.out.println("- " + row.getOldLine());
+						break;
+					case CHANGE:
+						System.out.println("- " + row.getOldLine());
+						System.out.println("+ " + row.getNewLine());
+						break;
+				}
 			}
 		}
 
