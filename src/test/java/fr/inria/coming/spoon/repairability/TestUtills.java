@@ -44,4 +44,27 @@ public class TestUtills {
         assertNotNull(result);
         return result;
     }
+
+    public static FinalResult runRepairabilityPrint(String toolName, String inputFiles) throws Exception {
+        ComingMain cm = new ComingMain();
+
+        FinalResult result = cm.run(
+                new String[]{"-mode",
+                        "repairability",
+                        "-repairtool",
+                        toolName,
+                        "-input",
+                        "git",
+                        "-output",
+                        "./out",
+                        "-filter",
+                        "maxfiles",
+                        "-parameters",
+                        "max_files_per_commit:1",
+                        "-location",
+                        TestUtills.class.getResource(inputFiles).getFile()});
+
+        assertNotNull(result);
+        return result;
+    }
 }
