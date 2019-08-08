@@ -11,6 +11,26 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+
+ Elixir fixes programs by doing 8 things:
+
+ 1.loosening or tightening variable types => patter file ep_1
+ 2.changing the return statement => patter file ep_2
+ 3.adding if (variable != null) => patter file ep_3
+ 4.array index in bound check => patter file ep_4
+ 5.chnage of a boolean operator  => patter file ep_5
+ 6.loosening or tightening boolean expressions => patter file ep_6,7
+ 7.changing method invocations => patter file ep_8
+ 8.inserting the method invocation => patter file ep_9
+
+
+
+
+
+ */
+
 public class Elixir extends AbstractRepairTool {
 
     private static final String[] patternFileNames = {
