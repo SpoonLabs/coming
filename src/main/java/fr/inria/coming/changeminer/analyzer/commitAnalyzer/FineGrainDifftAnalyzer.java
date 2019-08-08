@@ -1,6 +1,7 @@
 package fr.inria.coming.changeminer.analyzer.commitAnalyzer;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +11,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
+import com.github.difflib.algorithm.DiffException;
+import com.github.difflib.text.DiffRow;
+import com.github.difflib.text.DiffRowGenerator;
 import org.apache.log4j.Logger;
 
 import fr.inria.coming.changeminer.analyzer.DiffEngineFacade;
@@ -68,6 +73,37 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 			Diff diff = compare(left, right, leftName, rightName);
 			if (diff != null) {
 				diffOfFiles.put(fileFromRevision.getName(), diff);
+			}
+
+			DiffRowGenerator generator = DiffRowGenerator.create()
+					.showInlineDiffs(false)
+					.inlineDiffByWord(false)
+					.ignoreWhiteSpaces(true)
+					.build();
+
+			List<DiffRow> rows = null;
+			try {
+				rows = generator.generateDiffRows(
+						Arrays.stream(fileFromRevision.getPreviousVersion().split("\n")).collect(Collectors.toList()),
+						Arrays.stream(fileFromRevision.getNextVersion().split("\n")).collect(Collectors.toList()));
+			} catch (DiffException e) {
+				e.printStackTrace();
+			}
+
+			System.out.println("Diff of the revision");
+			for (DiffRow row : rows) {
+				switch (row.getTag()) {
+					case INSERT:
+						System.out.println("+ " + row.getNewLine());
+						break;
+					case DELETE:
+						System.out.println("- " + row.getOldLine());
+						break;
+					case CHANGE:
+						System.out.println("- " + row.getOldLine());
+						System.out.println("+ " + row.getNewLine());
+						break;
+				}
 			}
 		}
 
