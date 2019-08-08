@@ -7,6 +7,7 @@ import fr.inria.prophet4j.utility.Option.FeatureOption;
 import fr.inria.prophet4j.utility.Option.PatchOption;
 import fr.inria.prophet4j.utility.Option.LearnerOption;
 import fr.inria.prophet4j.utility.Structure;
+import fr.inria.prophet4j.utility.Support;
 
 import java.io.File;
 import java.util.List;
@@ -25,6 +26,9 @@ public class P4J {
 
         this.codeDiffer = new CodeDiffer(false, option);
         this.parameterVector = new Structure.ParameterVector(option.featureOption);
+
+        String parameterFilePath = Support.getFilePath(Support.DirType.PARAMETER_DIR, option) + "ParameterVector";
+        this.parameterVector.load(parameterFilePath);
     }
 
     public double computeOverfittingScore(File buggyFile, File patchedFile) {
@@ -32,6 +36,6 @@ public class P4J {
         if (featureMatrices.size() == 1) {
             return featureMatrices.get(0).score(parameterVector);
         }
-        return 0;
+        return Double.POSITIVE_INFINITY;
     }
 }
