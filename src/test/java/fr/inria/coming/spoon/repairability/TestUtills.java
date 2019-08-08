@@ -62,7 +62,7 @@ public class TestUtills {
                         "-parameters",
                         "max_files_per_commit:1",
                         "-location",
-                        TestUtills.class.getResource(inputFiles).getFile()});
+                        inputFiles});
 
         assertNotNull(result);
         return result;

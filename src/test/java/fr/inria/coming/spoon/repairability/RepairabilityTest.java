@@ -26,7 +26,7 @@ public class RepairabilityTest {
 
     @Test
     public void testDiffResults() throws Exception {
-        TestUtills.runRepairabilityPrint("ALL", "/dataset/commons-lang/");
+        TestUtills.runRepairabilityPrint("ALL", "repogit4testv0");
     }
 
     @Test
