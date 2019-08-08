@@ -12,4 +12,10 @@ public class Elixir {
         TestUtills.numberOfInstances(result, 8, 7);
     }
 
+
+    @Test
+    public void elixirTestonDatasetReal() throws Exception {
+        FinalResult result = TestUtills.runRepairability("Elixir", "/repairability_test_files/elixir_data/");
+        TestUtills.numberOfInstances(result, 4, 4);
+    }
 }
