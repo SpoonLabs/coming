@@ -24,12 +24,8 @@ import java.util.List;
  6.loosening or tightening boolean expressions => patter file ep_6,7
  7.changing method invocations => patter file ep_8
  8.inserting the method invocation => patter file ep_9
-
-
-
-
-
  */
+
 
 public class Elixir extends AbstractRepairTool {
 
