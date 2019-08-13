@@ -1,10 +1,12 @@
 package fr.inria.coming.codefeatures;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.github.difflib.text.DiffRow;
 import org.apache.log4j.Logger;
 
 import com.google.gson.JsonArray;
@@ -96,14 +98,15 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 		JsonObject root = new JsonObject();
 		root.addProperty("id", revision.getName());
 		root.add("files", filesArray);
-		return new FeaturesResult(revision, root);
+
+		return (new FeaturesResult(revision, root));
 
 	}
 
 	public void putCodeFromHunk(RevisionResult previousResults, Object nameFile, JsonObject file) {
 		AnalysisResult resultsHunk = previousResults.get(HunkDifftAnalyzer.class.getSimpleName());
 		if (resultsHunk != null) {
-			DiffResult<Commit, HunkDiff> hunkresults = (DiffResult<Commit, HunkDiff>) resultsHunk;
+			DiffResult<Commit, HunkDiff,DiffRow> hunkresults = (DiffResult<Commit, HunkDiff,DiffRow>) resultsHunk;
 			HunkDiff hunks = hunkresults.getDiffOfFiles().get(nameFile);
 			if (hunks != null && hunks.getHunkpairs() != null)
 				if (hunks.getHunkpairs().size() == 1) {

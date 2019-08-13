@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.github.difflib.text.DiffRow;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -248,7 +249,7 @@ public class DiffCasesTest {
 
 		Commit c1 = commits.keySet().stream()
 				.filter(e -> e.getName().equals("4120ab0c714911a9c9f26b591cb3222eaf57d127")).findFirst().get();
-		DiffResult<Commit, Diff> diff1 = (DiffResult<Commit, Diff>) commits.get(c1)
+		DiffResult<Commit, Diff,DiffRow> diff1 = (DiffResult<Commit, Diff,DiffRow>) commits.get(c1)
 				.getResultFromClass(FineGrainDifftAnalyzer.class);
 
 		assertEquals(1, diff1.getAll().size());

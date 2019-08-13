@@ -2,6 +2,7 @@ package fr.inria.coming.changeminer.analyzer.instancedetector;
 
 import java.util.List;
 
+import com.github.difflib.text.DiffRow;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.entities.AnalysisResult;
 import gumtree.spoon.diff.Diff;
@@ -11,7 +12,7 @@ import gumtree.spoon.diff.Diff;
  * @author Matias Martinez
  *
  */
-public class PatternInstancesFromDiff extends AnalysisResult<IRevision> {
+public class PatternInstancesFromDiff extends AnalysisResult<IRevision,DiffRow> {
 
 	protected List<ChangePatternInstance> instances = null;
 	protected Diff diff = null;

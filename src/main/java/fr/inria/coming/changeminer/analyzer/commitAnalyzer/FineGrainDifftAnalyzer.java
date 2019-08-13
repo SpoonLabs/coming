@@ -1,10 +1,7 @@
 package fr.inria.coming.changeminer.analyzer.commitAnalyzer;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -16,19 +13,21 @@ import java.util.stream.Collectors;
 import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.text.DiffRow;
 import com.github.difflib.text.DiffRowGenerator;
+import fr.inria.coming.core.entities.AnalysisResult;
 import org.apache.log4j.Logger;
 
 import fr.inria.coming.changeminer.analyzer.DiffEngineFacade;
 import fr.inria.coming.changeminer.entity.GranuralityType;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.engine.Analyzer;
-import fr.inria.coming.core.entities.AnalysisResult;
 import fr.inria.coming.core.entities.DiffResult;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.core.entities.interfaces.IRevisionPair;
 import fr.inria.coming.main.ComingProperties;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
+
+import static java.lang.String.valueOf;
 
 /**
  * Commit analyzer: It searches fine grain changes.
@@ -54,11 +53,14 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 	 * Analyze a commit finding instances of changes return a Map<FileCommit, List>
 	 */
 	@SuppressWarnings("rawtypes")
-	public AnalysisResult<IRevision> analyze(IRevision revision) {
+	public AnalysisResult analyze(IRevision revision) {
 
 		List<IRevisionPair> javaFiles = revision.getChildren();
 
 		Map<String, Diff> diffOfFiles = new HashMap<>();
+
+		List<DiffRow> rows = null;
+
 
 		log.info("\n*****\nCommit: " + revision.getName());
 
@@ -81,7 +83,6 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 					.ignoreWhiteSpaces(true)
 					.build();
 
-			List<DiffRow> rows = null;
 			try {
 				rows = generator.generateDiffRows(
 						Arrays.stream(fileFromRevision.getPreviousVersion().split("\n")).collect(Collectors.toList()),
@@ -94,20 +95,21 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 			for (DiffRow row : rows) {
 				switch (row.getTag()) {
 					case INSERT:
-						System.out.println("+ " + row.getNewLine());
+						System.out.println("+ " + valueOf(row.getNewLine()));
 						break;
 					case DELETE:
-						System.out.println("- " + row.getOldLine());
+						System.out.println("- " + valueOf(row.getOldLine()));
 						break;
 					case CHANGE:
-						System.out.println("- " + row.getOldLine());
-						System.out.println("+ " + row.getNewLine());
+						System.out.println("- " + valueOf(row.getOldLine()));
+						System.out.println("+ " + valueOf(row.getNewLine()));
 						break;
 				}
 			}
+
 		}
 
-		return new DiffResult<IRevision, Diff>(revision, diffOfFiles);
+		return (new DiffResult<IRevision, Diff,DiffRow>(revision, diffOfFiles,rows));
 	}
 
 	@Override

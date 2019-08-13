@@ -14,9 +14,10 @@ import java.util.Map;
  *
  * @param <T>
  */
-public class DiffResult<T, R> extends AnalysisResult<T> {
+public class DiffResult<T, R,K> extends AnalysisResult<T,K> {
 
 	static Logger log = Logger.getLogger(FineGrainDifftAnalyzer.class.getName());
+
 
 	/**
 	 * Filename
@@ -26,6 +27,12 @@ public class DiffResult<T, R> extends AnalysisResult<T> {
 	public DiffResult(T analyzed, Map<String, R> diffOfFiles) {
 		super(analyzed);
 		this.diffOfFiles = diffOfFiles;
+	}
+
+	public DiffResult(T analyzed, Map<String, R> diffOfFiles,List<K> row_list) {
+		super(analyzed);
+		this.diffOfFiles = diffOfFiles;
+		this.row_list=row_list;
 	}
 
 	public Map<String, R> getDiffOfFiles() {

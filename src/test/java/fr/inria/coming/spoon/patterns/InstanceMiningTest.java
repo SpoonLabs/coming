@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.github.difflib.text.DiffRow;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -157,7 +158,7 @@ public class InstanceMiningTest {
 		System.out.println("FinalResults: \n" + finalResult);
 		for (Commit commit : commitResult.getAllResults().keySet()) {
 
-			DiffResult<Commit, Diff> diffs = (DiffResult<Commit, Diff>) commitResult.getAllResults().get(commit)
+			DiffResult<Commit, Diff,DiffRow> diffs = (DiffResult<Commit, Diff,DiffRow>) commitResult.getAllResults().get(commit)
 					.getResultFromClass(FineGrainDifftAnalyzer.class);
 			assertNotNull(diffs);
 			// firsts commits, no changes, file introduction

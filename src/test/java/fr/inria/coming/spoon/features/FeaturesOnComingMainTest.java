@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.List;
 
+import com.github.difflib.text.DiffRow;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -81,7 +82,7 @@ public class FeaturesOnComingMainTest {
 			AnalysisResult hunkResult = resultofCommit.get(HunkDifftAnalyzer.class.getSimpleName());
 
 			assert (hunkResult instanceof DiffResult);
-			DiffResult<Commit, HunkDiff> hunkresults = (DiffResult<Commit, HunkDiff>) hunkResult;
+			DiffResult<Commit, HunkDiff,DiffRow> hunkresults = (DiffResult<Commit, HunkDiff,DiffRow>) hunkResult;
 
 			assertNotNull(hunkresults);
 

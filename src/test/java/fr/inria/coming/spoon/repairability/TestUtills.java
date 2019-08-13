@@ -57,10 +57,6 @@ public class TestUtills {
                         "git",
                         "-output",
                         "./out",
-                        "-filter",
-                        "maxfiles",
-                        "-parameters",
-                        "max_files_per_commit:1",
                         "-location",
                         inputFiles});
 

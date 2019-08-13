@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.github.difflib.text.DiffRow;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -146,7 +147,7 @@ public class MainComingTest {
 
 		Commit c1 = commits.keySet().stream()
 				.filter(e -> e.getName().equals("4120ab0c714911a9c9f26b591cb3222eaf57d127")).findFirst().get();
-		DiffResult<Commit, Diff> diff1 = (DiffResult<Commit, Diff>) commits.get(c1)
+		DiffResult<Commit, Diff,DiffRow> diff1 = (DiffResult<Commit, Diff,DiffRow>) commits.get(c1)
 				.getResultFromClass(FineGrainDifftAnalyzer.class);
 
 		assertTrue(diff1.getAll().size() > 0);
@@ -328,7 +329,7 @@ public class MainComingTest {
 	public void assertCommit(Map<Commit, RevisionResult> commits, int nrHunks, String commitId) {
 		Commit c1 = commits.keySet().stream().filter(e -> e.getName().equals(commitId)).findFirst().get();
 
-		DiffResult<Commit, HunkDiff> diff1 = (DiffResult<Commit, HunkDiff>) commits.get(c1)
+		DiffResult<Commit, HunkDiff,DiffRow> diff1 = (DiffResult<Commit, HunkDiff,DiffRow>) commits.get(c1)
 				.getResultFromClass(HunkDifftAnalyzer.class);
 
 		assertNotNull(diff1);
@@ -703,7 +704,7 @@ public class MainComingTest {
 
 		IRevision revMath73 = revisionsAnalyzed.keySet().stream().filter(e -> e.getName().equals("Math_73")).findFirst()
 				.get();
-		DiffResult<IRevision, Diff> diff1 = (DiffResult<IRevision, Diff>) revisionsAnalyzed.get(revMath73)
+		DiffResult<IRevision, Diff,DiffRow> diff1 = (DiffResult<IRevision, Diff,DiffRow>) revisionsAnalyzed.get(revMath73)
 				.getResultFromClass(FineGrainDifftAnalyzer.class);
 
 		assertTrue(diff1.getAll().size() > 0);
@@ -713,7 +714,7 @@ public class MainComingTest {
 
 		IRevision revMath70 = revisionsAnalyzed.keySet().stream().filter(e -> e.getName().equals("Math_70")).findFirst()
 				.get();
-		DiffResult<IRevision, Diff> diffm70 = (DiffResult<IRevision, Diff>) revisionsAnalyzed.get(revMath70)
+		DiffResult<IRevision, Diff,DiffRow> diffm70 = (DiffResult<IRevision, Diff,DiffRow>) revisionsAnalyzed.get(revMath70)
 				.getResultFromClass(FineGrainDifftAnalyzer.class);
 
 		assertTrue(diffm70.getAll().size() > 0);
@@ -740,7 +741,7 @@ public class MainComingTest {
 
 		IRevision rev1000098 = revisionsAnalyzed.keySet().stream().filter(e -> e.getName().equals("1000098"))
 				.findFirst().get();
-		DiffResult<IRevision, Diff> diffrev1000098 = (DiffResult<IRevision, Diff>) revisionsAnalyzed.get(rev1000098)
+		DiffResult<IRevision, Diff,DiffRow> diffrev1000098 = (DiffResult<IRevision, Diff,DiffRow>) revisionsAnalyzed.get(rev1000098)
 				.getResultFromClass(FineGrainDifftAnalyzer.class);
 
 		assertTrue(diffrev1000098.getAll().size() > 0);
@@ -753,7 +754,7 @@ public class MainComingTest {
 		//
 		IRevision rev1000021 = revisionsAnalyzed.keySet().stream().filter(e -> e.getName().equals("1000021"))
 				.findFirst().get();
-		DiffResult<IRevision, Diff> diffrev1000021 = (DiffResult<IRevision, Diff>) revisionsAnalyzed.get(rev1000021)
+		DiffResult<IRevision, Diff,DiffRow> diffrev1000021 = (DiffResult<IRevision, Diff,DiffRow>) revisionsAnalyzed.get(rev1000021)
 				.getResultFromClass(FineGrainDifftAnalyzer.class);
 
 		assertTrue(diffrev1000021.getAll().size() > 0);
@@ -766,7 +767,7 @@ public class MainComingTest {
 
 	}
 
-	public boolean hasChange(DiffResult<IRevision, Diff> diff1) {
+	public boolean hasChange(DiffResult<IRevision, Diff,DiffRow> diff1) {
 		boolean hasRootOp = false;
 		// Assert one diff with +1 root op.
 		for (Diff diff : diff1.getAll()) {

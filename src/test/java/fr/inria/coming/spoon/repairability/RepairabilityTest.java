@@ -37,10 +37,7 @@ public class RepairabilityTest {
             RevisionResult rr = entry.getValue();
             PatternInstancesFromRevision instances = (PatternInstancesFromRevision) rr.getResultFromClass(RepairabilityAnalyzer.class);
             List<DiffRow> row_list = instances.getRow_list();
-        }
-
-
-        }
+        } }
 
     @Test
     public void testOneInstancePerRevision() throws Exception {

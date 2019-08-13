@@ -3,6 +3,7 @@ package fr.inria.coming.codefeatures.sec;
 import java.util.List;
 import java.util.Map;
 
+import com.github.difflib.text.DiffRow;
 import com.github.gumtreediff.tree.ITree;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -86,7 +87,7 @@ public class SecAnalysis {
 		return subChanges;
 	}
 
-	public static JsonObject computeJSonOfRev(IRevision rev, DiffResult<IRevision, Diff> result,
+	public static JsonObject computeJSonOfRev(IRevision rev, DiffResult<IRevision, Diff,DiffRow> result,
 			Map<String, VulInstance> vtypes) {
 
 		JsonObject rootRevision = new JsonObject();
