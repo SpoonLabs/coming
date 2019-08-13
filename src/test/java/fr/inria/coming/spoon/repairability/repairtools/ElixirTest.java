@@ -20,8 +20,14 @@ public class ElixirTest {
     }
 
     @Test
-    public void elixirTestonDatasetFalse() throws Exception {
+    public void elixirTestonDatasetFalse1() throws Exception {
         FinalResult result = TestUtills.runRepairability("Elixir", "/repairability_test_files/JGenProgPostiveTest/");
         TestUtills.numberOfInstances(result, 1, 0);
+    }
+
+    @Test
+    public void elixirTestonDatasetFalse2() throws Exception {
+        FinalResult result = TestUtills.runRepairability("Elixir", "/repairability_test_files/NopolTypes/");
+        TestUtills.numberOfInstances(result, 3, 0);
     }
 }
