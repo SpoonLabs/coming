@@ -3,12 +3,14 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.github.spoonlabs.coming</groupId>
+	<groupId>com.github.spoonlabs</groupId>
 	<artifactId>coming</artifactId>
 	<!-- DO NOT CHANGE THIS VERSION, VERSION NUMBER IS AUTOMATICALLY HANDLED 
 		IN .buildscript/deploy_to_maven.sh -->
-	<version>SNAPSHOT</version>
-
+	<version>0-SNAPSHOT</version>
+        <description>Coming</description>
+        <url>https://github.com/Spirals-Team/coming</url>
+        
 	<packaging>jar</packaging>
 	<name>coming-parent</name>
 	<properties>
@@ -238,7 +240,18 @@
 			<id>release</id>
 			<build>
 				<plugins>
-					<!-- Source -->
+                                    <plugin>
+                                        <groupId>org.sonatype.plugins</groupId>
+                                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                                        <version>1.6.2</version>
+                                        <extensions>true</extensions>
+                                        <configuration>
+                                            <serverId>ossrh</serverId>
+                                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                                        </configuration>
+                                    </plugin>
+                                    <!-- Source -->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-source-plugin</artifactId>
@@ -275,7 +288,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.6</version>
+						<version>1.5</version>
 						<executions>
 							<execution>
 								<id>sign-artifacts</id>
