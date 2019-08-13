@@ -1,5 +1,6 @@
 package fr.inria.coming.spoon.repairability;
 
+import com.github.difflib.text.DiffRow;
 import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
 import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstancesFromDiff;
 import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstancesFromRevision;
@@ -11,11 +12,13 @@ import org.junit.Test;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class RepairabilityTest {
 
@@ -26,8 +29,18 @@ public class RepairabilityTest {
 
     @Test
     public void testDiffResults() throws Exception {
-        TestUtills.runRepairabilityPrint("ALL", "repogit4testv0");
-    }
+        FinalResult result = TestUtills.runRepairabilityPrint("ALL", "repogit4testv0");
+        Map<IRevision, RevisionResult> revisionsMap = result.getAllResults();
+        assertEquals(13, revisionsMap.keySet().size());
+
+        for (Map.Entry<IRevision, RevisionResult> entry : revisionsMap.entrySet()) {
+            RevisionResult rr = entry.getValue();
+            PatternInstancesFromRevision instances = (PatternInstancesFromRevision) rr.getResultFromClass(RepairabilityAnalyzer.class);
+            List<DiffRow> row_list = instances.getRow_list();
+        }
+
+
+        }
 
     @Test
     public void testOneInstancePerRevision() throws Exception {
