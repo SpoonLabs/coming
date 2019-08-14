@@ -36,6 +36,7 @@ public class Arja extends AbstractRepairTool {
         return patterns;
     }
 
+
     @Override
     public boolean filter(ChangePatternInstance instance, IRevision revision) {
 //        Operation anyOperation = instance.getActions().get(0);
