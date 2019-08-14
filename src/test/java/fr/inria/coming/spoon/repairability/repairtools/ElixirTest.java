@@ -16,7 +16,7 @@ public class ElixirTest {
     @Test
     public void elixirTestonDatasetReal() throws Exception {
         FinalResult result = TestUtills.runRepairability("Elixir", "/repairability_test_files/elixir_data/");
-        TestUtills.numberOfInstances(result, 4, 4);
+        TestUtills.numberOfInstances(result, 3, 3);
     }
 
     @Test
