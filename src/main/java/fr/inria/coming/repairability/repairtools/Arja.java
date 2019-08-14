@@ -23,8 +23,8 @@ import java.util.List;
 public class Arja extends AbstractRepairTool {
 
     private static final String[] patternFileNames = {
-            "any_statement_s.xml",
-            "any_statement_d.xml"
+            "any_statement_s.xml"
+//            "any_statement_d.xml"
     };
 
     @Override
