@@ -71,16 +71,16 @@ public class Arja extends AbstractRepairTool {
 
         String patternType = instance.getPattern().getName().split(File.pathSeparator)[1];
 
-        int numArgtargetMethod=0;
-
+//        int numArgtargetMethod=0;
 //        String targetmethodName=element.toString().split("\\(")[0];
 //        numArgtargetMethod= element.toString().split("\\(")[1].split(",").length;
 
         CtClass ctClass = Launcher.parseClass(previousVersionString);
-        List<CtMethod> ctMethods = ctClass.getElements(new TypeFilter<>(CtMethod.class));
-        List<CtInvocation> ctInvocations = element.getElements(new TypeFilter<>(CtInvocation.class));
+        List<CtMethod> ctMethods = ctClass.getElements(new TypeFilter<>(CtMethod.class));//source file methods
+        List<CtInvocation> ctInvocations = element.getElements(new TypeFilter<>(CtInvocation.class));//our invocation
 
         for(CtInvocation ctInvocation : ctInvocations) {
+            res=true;
             String methodName = ctInvocation.getShortRepresentation();
             List<CtTypeReference> typeReferences = ctInvocation.getActualTypeArguments();
 
@@ -91,7 +91,6 @@ public class Arja extends AbstractRepairTool {
 
             for ( CtMethod ctMethod: ctMethods){
                 if(ctMethod.getSimpleName().equals(methodName)){
-                    res=true;
                     List<CtTypeParameter> ctTypeParameters = ctMethod.getFormalCtTypeParameters();
 
                     if(ctTypeParameterst.size()==ctTypeParameters.size()){
