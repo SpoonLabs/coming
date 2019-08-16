@@ -28,7 +28,7 @@ public abstract class RevisionNavigationExperiment<R extends IRevision> {
 
 	protected RevisionOrder<R> navigationStrategy = null;
 	protected List<Analyzer> analyzers = new ArrayList<>();
-	protected List<IFilter> filters = null;
+	protected List<IFilter> filters = new ArrayList<>();
 	protected List<IOutput> outputProcessors = new ArrayList<>();
 	protected IntermediateResultProcessorCallback intermediateCallback = null;
 
@@ -108,8 +108,7 @@ public abstract class RevisionNavigationExperiment<R extends IRevision> {
 
 			R oneRevision = iterator.next();
 
-			log.info("\n***********\nAnalyzing " + i + "/" + size);
-//			System.out.println("\n***********\nAnalyzing " + i + "/" + size);
+			log.info("\n***********\nAnalyzing " + i + "/" + size + " " + oneRevision.getName());
 
 			if (i > size - max_nb_commit_analyze) {
 				if (!(accept(oneRevision))) {

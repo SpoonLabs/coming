@@ -2,7 +2,6 @@ package fr.inria.coming.main;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.cli.BasicParser;
@@ -11,8 +10,6 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.UnrecognizedOptionException;
 import org.apache.log4j.Logger;
 
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
@@ -117,7 +114,7 @@ public class ComingMain {
 				.build());
 	}
 
-	public static void main(String[] args){
+	public static void main(String[] args) {
 		ComingMain cmain = new ComingMain();
 		cmain.run(args);
 	}
@@ -223,7 +220,14 @@ public class ComingMain {
 	}
 
 	private void loadFilters() {
-		navigatorEngine.setFilters(createFilters());
+		List<IFilter> newFilters = createFilters();
+		if (newFilters != null && !newFilters.isEmpty()) {
+			if (navigatorEngine.getFilters() == null)
+				navigatorEngine.setFilters(newFilters);
+			else {
+				navigatorEngine.getFilters().addAll(newFilters);
+			}
+		}
 	}
 
 	private void loadOutput() {
@@ -470,7 +474,6 @@ public class ComingMain {
 		formater.setWidth(500);
 		formater.printHelp("Main", options);
 		logm.info("More options and default values at 'configuration.properties' file");
-//		System.out.println("More options and default values at 'configuration.properties' file");
 
 	}
 
