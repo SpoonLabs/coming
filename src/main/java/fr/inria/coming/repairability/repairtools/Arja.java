@@ -124,7 +124,7 @@ public class Arja extends AbstractRepairTool {
 //                    System.out.println("bo "+boT.getShortRepresentation());
 //                    System.out.println("ctMethod.getSimpleName() "+boS.getShortRepresentation());
 
-                    if((boS.getLeftHandOperand().equals(boT.getLeftHandOperand())) &&  (boS.getRightHandOperand().equals(boT.getRightHandOperand()))){
+                    if((boS.getLeftHandOperand().getTypeCasts().equals(boT.getLeftHandOperand().getTypeCasts())) &&  (boS.getRightHandOperand().getTypeCasts().equals(boT.getRightHandOperand().getTypeCasts()))){
                          res=true;
 //                         System.out.println("left hand op S "+boS.getLeftHandOperand());
 //                         System.out.println("left hand op T "+boT.getLeftHandOperand());
@@ -134,11 +134,9 @@ public class Arja extends AbstractRepairTool {
                     }
                 }
             }
-
         }
 
         return res;
-
     }
 
 }
