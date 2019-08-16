@@ -199,7 +199,7 @@ public class StringUtils {
      * @since 3.0 Changed signature from isNotEmpty(String) to isNotEmpty(CharSequence)
      */
     public static boolean isNotEmpty(CharSequence cs) {
-        return !StringUtils.isEmpty(cs);
+        return !repairability_test_files.arjafalseneg.arja4.four.StringUtils.isEmpty(cs);
     }
 
     /**
@@ -249,7 +249,7 @@ public class StringUtils {
      * @since 3.0 Changed signature from isNotBlank(String) to isNotBlank(CharSequence)
      */
     public static boolean isNotBlank(CharSequence cs) {
-        return !StringUtils.isBlank(cs);
+        return !repairability_test_files.arjafalseneg.arja4.four.StringUtils.isBlank(cs);
     }
 
     // Trim
@@ -5563,10 +5563,10 @@ public class StringUtils {
      * @param defaultStr  the default CharSequence to return
      *  if the input is whitespace, empty ("") or {@code null}, may be null
      * @return the passed in CharSequence, or the default
-     * @see StringUtils#defaultString(String, String)
+     * @see repairability_test_files.arjafalseneg.arja4.four.StringUtils#defaultString(String, String)
      */
     public static <T extends CharSequence> T defaultIfBlank(T str, T defaultStr) {
-        return StringUtils.isBlank(str) ? defaultStr : str;
+        return repairability_test_files.arjafalseneg.arja4.four.StringUtils.isBlank(str) ? defaultStr : str;
     }
 
     /**
@@ -5584,10 +5584,10 @@ public class StringUtils {
      * @param defaultStr  the default CharSequence to return
      *  if the input is empty ("") or {@code null}, may be null
      * @return the passed in CharSequence, or the default
-     * @see StringUtils#defaultString(String, String)
+     * @see repairability_test_files.arjafalseneg.arja4.four.StringUtils#defaultString(String, String)
      */
     public static <T extends CharSequence> T defaultIfEmpty(T str, T defaultStr) {
-        return StringUtils.isEmpty(str) ? defaultStr : str;
+        return repairability_test_files.arjafalseneg.arja4.four.StringUtils.isEmpty(str) ? defaultStr : str;
     }
 
     // Reversing
@@ -6401,7 +6401,7 @@ public class StringUtils {
         }
         for (int i = 0; i < searchStrings.length; i++) {
             CharSequence searchString = searchStrings[i];
-            if (StringUtils.startsWith(string, searchString)) {
+            if (repairability_test_files.arjafalseneg.arja4.four.StringUtils.startsWith(string, searchString)) {
                 return true;
             }
         }
@@ -6559,7 +6559,7 @@ public class StringUtils {
         }
         for (int i = 0; i < searchStrings.length; i++) {
             CharSequence searchString = searchStrings[i];
-            if (StringUtils.endsWith(string, searchString)) {
+            if (repairability_test_files.arjafalseneg.arja4.four.StringUtils.endsWith(string, searchString)) {
                 return true;
             }
         }

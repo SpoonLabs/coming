@@ -53,7 +53,7 @@
  *
  */
 
-package org.jfree.chart.plot;
+package repairability_test_files.arjafalseneg1.arja3.three;
 
 import java.awt.Color;
 import java.awt.Font;
