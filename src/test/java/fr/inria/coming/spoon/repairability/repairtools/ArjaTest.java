@@ -20,4 +20,5 @@ public class ArjaTest {
 //        FinalResult result = TestUtills.runRepairability("Arja", "/repairability_test_files/arja_test");
 //        TestUtills.numberOfInstances(result, 1, 1);
 //    }
+
 }
