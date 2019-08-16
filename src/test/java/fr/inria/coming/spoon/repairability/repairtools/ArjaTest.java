@@ -13,11 +13,4 @@ public class ArjaTest {
         FinalResult result = TestUtills.runRepairability("Arja", "/repairability_test_files/arja");
         TestUtills.numberOfInstances(result, 11, 10);
     }
-
-
-//    @Test
-//    public void testArjapart() throws Exception {
-//        FinalResult result = TestUtills.runRepairability("Arja", "/repairability_test_files/arja_test");
-//        TestUtills.numberOfInstances(result, 1, 1);
-//    }
 }
