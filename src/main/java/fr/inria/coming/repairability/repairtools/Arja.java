@@ -11,6 +11,7 @@ import spoon.pattern.Match;
 import spoon.pattern.Pattern;
 import spoon.pattern.PatternBuilder;
 import spoon.reflect.CtModel;
+import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.*;
 import spoon.reflect.path.CtRole;
@@ -71,15 +72,17 @@ public class Arja extends AbstractRepairTool {
 
         String patternType = instance.getPattern().getName().split(File.pathSeparator)[1];
 
-//        int numArgtargetMethod=0;
-//        String targetmethodName=element.toString().split("\\(")[0];
-//        numArgtargetMethod= element.toString().split("\\(")[1].split(",").length;
+        //invocations
 
         CtClass ctClass = Launcher.parseClass(previousVersionString);
         List<CtMethod> ctMethods = ctClass.getElements(new TypeFilter<>(CtMethod.class));//source file methods
         List<CtInvocation> ctInvocations = element.getElements(new TypeFilter<>(CtInvocation.class));//our invocation
+        List<CtBinaryOperator> ctBo = element.getElements(new TypeFilter<>(CtBinaryOperator.class));//our methods
 
         for(CtInvocation ctInvocation : ctInvocations) {
+            System.out.println("ctInvocation "+ctInvocation.getShortRepresentation());
+
+//            System.out.println("ctInvocation "+ctInvocation);
             res=true;
             String methodName = ctInvocation.getShortRepresentation();
             List<CtTypeReference> typeReferences = ctInvocation.getActualTypeArguments();
@@ -90,7 +93,10 @@ public class Arja extends AbstractRepairTool {
             }
 
             for ( CtMethod ctMethod: ctMethods){
-                if(ctMethod.getSimpleName().equals(methodName)){
+                if(ctMethod.getShortRepresentation().equals(methodName)){
+                    System.out.println("ctInvocation "+ctInvocation.getShortRepresentation());
+                    System.out.println("ctMethod.getSimpleName() "+ctMethod.getSimpleName());
+
                     List<CtTypeParameter> ctTypeParameters = ctMethod.getFormalCtTypeParameters();
 
                     if(ctTypeParameterst.size()==ctTypeParameters.size()){
@@ -103,6 +109,22 @@ public class Arja extends AbstractRepairTool {
                         }}
                 }
             }
+        }
+
+        // Binary operators
+        for(CtBinaryOperator bo : ctBo) {
+
+            res=true;
+            String methodName = bo.getShortRepresentation();
+
+            for ( CtMethod ctMethod: ctMethods){
+                if(ctMethod.getShortRepresentation().equals(methodName)){
+                    System.out.println("bo "+bo.getShortRepresentation());
+                    System.out.println("ctMethod.getSimpleName() "+ctMethod.getShortRepresentation());
+
+                }
+            }
+
         }
 
         return res;
