@@ -92,7 +92,7 @@ public class Arja extends AbstractRepairTool {
             }
 
             for ( CtMethod ctMethod: ctMethods){
-                if(ctMethod.getShortRepresentation().equals(methodName)){
+//                if(ctMethod.getShortRepresentation().equals(methodName)){
                     System.out.println("ctInvocation "+ctInvocation.getShortRepresentation());
                     System.out.println("ctMethod.getSimpleName() "+ctMethod.getSimpleName());
 
@@ -106,7 +106,7 @@ public class Arja extends AbstractRepairTool {
                             else
                                 res=false;
                         }}
-                }
+//                }
             }
         }
 
