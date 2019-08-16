@@ -23,7 +23,7 @@ public class JGenProgTest {
     @Test
     public void testJGenProgonArjaData() throws Exception {
         FinalResult result = TestUtills.runRepairability("JGenProg", "/repairability_test_files/arja");
-        TestUtills.numberOfInstances(result, 10, 6);
+        TestUtills.numberOfInstances(result, 11, 7);
     }
 
 }
