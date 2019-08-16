@@ -11,9 +11,12 @@ import spoon.pattern.Match;
 import spoon.pattern.Pattern;
 import spoon.pattern.PatternBuilder;
 import spoon.reflect.CtModel;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtType;
+import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.declaration.*;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -63,12 +66,67 @@ public class JGenProg extends AbstractRepairTool {
 
         // see if the inserted statement occurs in the previous version of the file
         String previousVersionString = (String) revision.getChildren().get(0).getPreviousVersion();
-        return previousVersionString.contains(element.toString());
+        boolean res=previousVersionString.contains(element.toString());
 
 
 
+        CtClass ctClass = Launcher.parseClass(previousVersionString);
+        List<CtMethod> ctMethods = ctClass.getElements(new TypeFilter<>(CtMethod.class));//source file methods
+        List<CtInvocation> ctInvocations = element.getElements(new TypeFilter<>(CtInvocation.class));//our invocation
+
+        for(CtInvocation ctInvocation : ctInvocations) {
+//            System.out.println("ctInvocation "+ctInvocation.getShortRepresentation());
+//            System.out.println("ctInvocation "+ctInvocation);
+            res=true;
+            String methodName = ctInvocation.getShortRepresentation();
+            List<Object> arguments = ctInvocation.getArguments();
+
+            for ( CtMethod ctMethod: ctMethods){
+                if(ctMethod.getShortRepresentation().equals(methodName)){
+//                    System.out.println("ctInvocation "+ctInvocation.getShortRepresentation());
+//                    System.out.println("ctMethod.getSimpleName() "+ctMethod.getSimpleName());
+
+                    List ctTypeParameters = ctMethod.getParameters();
+
+                    if(arguments.size()==ctTypeParameters.size()){
+                        for(int i=0;i<ctTypeParameters.size();i++){
+                            if(arguments.get(i).equals(ctTypeParameters.get(i))){
+                                continue;
+                            }
+                            else
+                                res=false;
+                        }}
+                }
+            }
+        }
+
+        // Binary operators
+        List<CtBinaryOperator> ctBoTarget = element.getElements(new TypeFilter<>(CtBinaryOperator.class));//our methods
+        List<CtBinaryOperator> ctBoSource = ctClass.getElements(new TypeFilter<>(CtBinaryOperator.class));//source file BO's
 
 
+        for(CtBinaryOperator boT : ctBoTarget) {
+
+            String methodName = boT.getShortRepresentation();
+
+            for ( CtBinaryOperator boS: ctBoSource){
+                if(boS.getShortRepresentation().equals(methodName)){
+//                    System.out.println("bo "+boT.getShortRepresentation());
+//                    System.out.println("ctMethod.getSimpleName() "+boS.getShortRepresentation());
+
+                    if((boS.getLeftHandOperand().equals(boT.getLeftHandOperand())) &&  (boS.getRightHandOperand().equals(boT.getRightHandOperand()))){
+                        res=true;
+//                         System.out.println("left hand op S "+boS.getLeftHandOperand());
+//                         System.out.println("left hand op T "+boT.getLeftHandOperand());
+//
+//                         System.out.println("right hand op S " +boS.getRightHandOperand());
+//                         System.out.println("right hand op T " +boT.getRightHandOperand());
+                    }
+                }
+            }
+        }
+
+        return res;
     }
 
 

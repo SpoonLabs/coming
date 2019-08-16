@@ -130,7 +130,7 @@ public class Arja extends AbstractRepairTool {
 //                         System.out.println("left hand op T "+boT.getLeftHandOperand());
 //
 //                         System.out.println("right hand op S " +boS.getRightHandOperand());
-//                        System.out.println("right hand op T " +boT.getRightHandOperand());
+//                         System.out.println("right hand op T " +boT.getRightHandOperand());
                     }
                 }
             }
