@@ -77,7 +77,6 @@ public class Arja extends AbstractRepairTool {
         CtClass ctClass = Launcher.parseClass(previousVersionString);
         List<CtMethod> ctMethods = ctClass.getElements(new TypeFilter<>(CtMethod.class));//source file methods
         List<CtInvocation> ctInvocations = element.getElements(new TypeFilter<>(CtInvocation.class));//our invocation
-        List<CtBinaryOperator> ctBo = element.getElements(new TypeFilter<>(CtBinaryOperator.class));//our methods
 
         for(CtInvocation ctInvocation : ctInvocations) {
             System.out.println("ctInvocation "+ctInvocation.getShortRepresentation());
@@ -112,16 +111,21 @@ public class Arja extends AbstractRepairTool {
         }
 
         // Binary operators
-        for(CtBinaryOperator bo : ctBo) {
+        List<CtBinaryOperator> ctBoTarget = element.getElements(new TypeFilter<>(CtBinaryOperator.class));//our methods
+        List<CtBinaryOperator> ctBoSource = ctClass.getElements(new TypeFilter<>(CtBinaryOperator.class));//source file BO's
 
-            res=true;
-            String methodName = bo.getShortRepresentation();
 
-            for ( CtMethod ctMethod: ctMethods){
-                if(ctMethod.getShortRepresentation().equals(methodName)){
-                    System.out.println("bo "+bo.getShortRepresentation());
-                    System.out.println("ctMethod.getSimpleName() "+ctMethod.getShortRepresentation());
+        for(CtBinaryOperator boT : ctBoTarget) {
 
+            String methodName = boT.getShortRepresentation();
+
+            for ( CtBinaryOperator boS: ctBoSource){
+                if(boS.getShortRepresentation().equals(methodName)){
+                    System.out.println("bo "+boT.getShortRepresentation());
+                    System.out.println("ctMethod.getSimpleName() "+boS.getShortRepresentation());
+
+                    if((boS.getLeftHandOperand().equals(boT.getLeftHandOperand())) &&  (boS.getRightHandOperand().equals(boT.getRightHandOperand())))
+                         res=true;
                 }
             }
 
