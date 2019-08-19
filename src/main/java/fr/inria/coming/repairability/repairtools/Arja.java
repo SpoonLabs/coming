@@ -122,8 +122,8 @@ public class Arja extends AbstractRepairTool {
             for ( CtBinaryOperator boS: ctBoSource){
                 if(boS.getShortRepresentation().equals(methodName)){
                         if(previousVersionString.contains(boT.getRightHandOperand().toString()) && previousVersionString.contains(boT.getLeftHandOperand().toString())){
-                            System.out.println("S R "+boS.getRightHandOperand());
-                            System.out.println("S L " +boS.getLeftHandOperand());
+                            System.out.println("S R " + boS.getRightHandOperand());
+                            System.out.println("S L " + boS.getLeftHandOperand());
                             res=true;
                         }
                 }
