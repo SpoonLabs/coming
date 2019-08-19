@@ -32,6 +32,7 @@ public class Arja extends AbstractRepairTool {
             "any_statement_s.xml",
             "any_statement_d.xml"
     };
+    private boolean res1=false;
 
     @Override
     protected List<ChangePatternSpecification> readPatterns() {
@@ -80,35 +81,38 @@ public class Arja extends AbstractRepairTool {
         List<CtInvocation> ctInvocationssSourcefile = ctClass.getElements(new TypeFilter<>(CtInvocation.class));//source file invocations
         List<CtInvocation> ctInvocations = element.getElements(new TypeFilter<>(CtInvocation.class));//our invocation
 
-//        for(CtInvocation ctInvocation : ctInvocations) {
-//            String ourmethodName = ctInvocation.getShortRepresentation();
-//            List<CtTypeReference> ourTypeReferences = ctInvocation.getActualTypeArguments();
-//
-//            List<CtTypeParameter> ctTypeParameterstarget = new ArrayList<>();
-//            for(CtTypeReference ctTypeReference : ourTypeReferences) {
-//                ctTypeParameterstarget.add(ctTypeReference.getTypeParameterDeclaration());
-//            }
-//
-//            for (CtMethod ctMethod: ctMethodsSourcefile){
-//                if(ctMethod.getShortRepresentation().equals(ourmethodName)){
-//                    List<CtTypeParameter> ctTypeParameters = ctMethod.getFormalCtTypeParameters();
-//                    res=true;
-//                }
-//            }
-//
-//            for (CtInvocation ctinvoc: ctInvocationssSourcefile){
-//
-//                    List<CtTypeParameter> ctTypeParameters = ctinvoc.getActualTypeArguments();
-//                    if(ctTypeParameterstarget.size()==ctTypeParameters.size()){
-//                        for(int i=0;i<ctTypeParameters.size();i++){
-//                            if(ctTypeParameterstarget.get(i).equals(ctTypeParameters.get(i))){
-//                                continue;
-//                            }
-//                            else
-//                                res=false;
-//                        }}
-//            }
-//        }
+        for(CtInvocation ctInvocation : ctInvocations) {
+            String ourmethodName = ctInvocation.getShortRepresentation();
+            List<CtTypeReference> ourTypeReferences = ctInvocation.getActualTypeArguments();
+
+            List<CtTypeParameter> ctTypeParameterstarget = new ArrayList<>();
+            for(CtTypeReference ctTypeReference : ourTypeReferences) {
+                ctTypeParameterstarget.add(ctTypeReference.getTypeParameterDeclaration());
+            }
+
+
+
+            for (CtMethod ctMethod: ctMethodsSourcefile){
+                if(ctMethod.getShortRepresentation().equals(ourmethodName)){
+                    List<CtTypeParameter> ctTypeParameters = ctMethod.getFormalCtTypeParameters();
+                    res1=true;
+                }
+            }
+
+            for (CtInvocation ctinvoc: ctInvocationssSourcefile){
+
+                    List<CtTypeParameter> ctTypeParameters = ctinvoc.getActualTypeArguments();
+                    if(ctTypeParameterstarget.size()==ctTypeParameters.size()){
+                        for(int i=0;i<ctTypeParameters.size();i++){
+                            if(ctTypeParameterstarget.get(i).equals(ctTypeParameters.get(i))){
+                                res=res1;
+                                continue;
+                            }
+                            else
+                                res=false;
+                        }}
+            }
+        }
 
         // Binary operators
 
@@ -121,9 +125,20 @@ public class Arja extends AbstractRepairTool {
 
             for ( CtBinaryOperator boS: ctBoSource){
                 if(boS.getShortRepresentation().equals(methodName)){
+//                        System.out.println("S R " + boS.getRightHandOperand());
+//                        System.out.println("S L " + boS.getLeftHandOperand());
+//                        System.out.println("T R " + boT.getRightHandOperand());
+//                        System.out.println("T L " + boT.getLeftHandOperand());
+
                         if(previousVersionString.contains(boT.getRightHandOperand().toString()) && previousVersionString.contains(boT.getLeftHandOperand().toString())){
-                            System.out.println("S R " + boS.getRightHandOperand());
-                            System.out.println("S L " + boS.getLeftHandOperand());
+//                            System.out.println("S R " + boS.getRightHandOperand());
+//                            System.out.println("S L " + boS.getLeftHandOperand());
+//                            System.out.println("T R " + boT.getRightHandOperand());
+//                            System.out.println("T L " + boT.getLeftHandOperand());
+                            res=true;
+                        }
+
+                        if(boS.getRightHandOperand().equals(boT.getRightHandOperand()) && boS.getLeftHandOperand().equals(boT.getLeftHandOperand())){
                             res=true;
                         }
                 }
