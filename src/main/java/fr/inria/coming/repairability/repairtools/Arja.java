@@ -73,40 +73,38 @@ public class Arja extends AbstractRepairTool {
         String patternType = instance.getPattern().getName().split(File.pathSeparator)[1];
 
         //invocations
-
         CtClass ctClass = Launcher.parseClass(previousVersionString);
-        List<CtMethod> ctMethods = ctClass.getElements(new TypeFilter<>(CtMethod.class));//source file methods
+        List<CtMethod> ctMethodsSourcefile = ctClass.getElements(new TypeFilter<>(CtMethod.class));//source file methods
+        List<CtInvocation> ctInvocationssSourcefile = ctClass.getElements(new TypeFilter<>(CtInvocation.class));//source file invocations
         List<CtInvocation> ctInvocations = element.getElements(new TypeFilter<>(CtInvocation.class));//our invocation
 
         for(CtInvocation ctInvocation : ctInvocations) {
-            System.out.println("ctInvocation "+ctInvocation.getShortRepresentation());
+            String ourmethodName = ctInvocation.getShortRepresentation();
+            List<CtTypeReference> ourTypeReferences = ctInvocation.getActualTypeArguments();
 
-//            System.out.println("ctInvocation "+ctInvocation);
-            res=true;
-            String methodName = ctInvocation.getShortRepresentation();
-            List<CtTypeReference> typeReferences = ctInvocation.getActualTypeArguments();
-
-            List<CtTypeParameter> ctTypeParameterst = new ArrayList<>();
-            for(CtTypeReference ctTypeReference : typeReferences) {
-                ctTypeParameterst.add(ctTypeReference.getTypeParameterDeclaration());
+            List<CtTypeParameter> ctTypeParameterstarget = new ArrayList<>();
+            for(CtTypeReference ctTypeReference : ourTypeReferences) {
+                ctTypeParameterstarget.add(ctTypeReference.getTypeParameterDeclaration());
             }
 
-            for ( CtMethod ctMethod: ctMethods){
-//                if(ctMethod.getShortRepresentation().equals(methodName)){
-                    System.out.println("ctInvocation "+ctInvocation.getShortRepresentation());
-                    System.out.println("ctMethod.getSimpleName() "+ctMethod.getSimpleName());
-
+            for (CtMethod ctMethod: ctMethodsSourcefile){
+                if(ctMethod.getShortRepresentation().equals(ourmethodName)){
                     List<CtTypeParameter> ctTypeParameters = ctMethod.getFormalCtTypeParameters();
+                    res=true;
+                }
+            }
 
-                    if(ctTypeParameterst.size()==ctTypeParameters.size()){
+            for (CtInvocation ctinvoc: ctInvocationssSourcefile){
+
+                    List<CtTypeParameter> ctTypeParameters = ctinvoc.getActualTypeArguments();
+                    if(ctTypeParameterstarget.size()==ctTypeParameters.size()){
                         for(int i=0;i<ctTypeParameters.size();i++){
-                            if(ctTypeParameters.get(i).equals(ctTypeParameters.get(i))){
+                            if(ctTypeParameterstarget.get(i).equals(ctTypeParameters.get(i))){
                                 continue;
                             }
                             else
                                 res=false;
                         }}
-//                }
             }
         }
 
