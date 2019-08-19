@@ -70,22 +70,17 @@ public class JGenProg extends AbstractRepairTool {
         boolean ans=previousVersionString.contains(element.toString());
 
         CtClass ctClass = Launcher.parseClass(previousVersionString);
-        List<CtMethod> ctMethods = ctClass.getElements(new TypeFilter<>(CtMethod.class));//source file methods
+        List<CtInvocation> ctInvocationsSource = ctClass.getElements(new TypeFilter<>(CtInvocation.class));//source file methods
         List<CtInvocation> ctInvocations = element.getElements(new TypeFilter<>(CtInvocation.class));//our invocation
 
         for(CtInvocation ctInvocation : ctInvocations) {
-//            System.out.println("ctInvocation "+ctInvocation.getShortRepresentation());
-//            System.out.println("ctInvocation "+ctInvocation);
 
             String methodName = ctInvocation.getShortRepresentation();
             List<Object> arguments = ctInvocation.getArguments();
 
-            for ( CtMethod ctMethod: ctMethods){
-                if(ctMethod.getShortRepresentation().equals(methodName)){
-//                    System.out.println("ctInvocation "+ctInvocation.getShortRepresentation());
-//                    System.out.println("ctMethod.getSimpleName() "+ctMethod.getSimpleName());
-
-                    List ctTypeParameters = ctMethod.getParameters();
+            for ( CtInvocation ctInvocSource: ctInvocationsSource){
+                if(ctInvocSource.getShortRepresentation().equals(methodName)){
+                    List ctTypeParameters = ctInvocSource.getActualTypeArguments();
 
                     if(arguments.size()==ctTypeParameters.size()){
                         for(int i=0;i<ctTypeParameters.size();i++){
@@ -110,16 +105,8 @@ public class JGenProg extends AbstractRepairTool {
 
             for ( CtBinaryOperator boS: ctBoSource){
                 if(boS.getShortRepresentation().equals(methodName)){
-//                    System.out.println("bo "+boT.getShortRepresentation());
-//                    System.out.println("ctMethod.getSimpleName() "+boS.getShortRepresentation());
-
                     if((boS.getLeftHandOperand().equals(boT.getLeftHandOperand())) &&  (boS.getRightHandOperand().equals(boT.getRightHandOperand()))){
                         res=true;
-//                         System.out.println("left hand op S "+boS.getLeftHandOperand());
-//                         System.out.println("left hand op T "+boT.getLeftHandOperand());
-//
-//                         System.out.println("right hand op S " +boS.getRightHandOperand());
-//                         System.out.println("right hand op T " +boT.getRightHandOperand());
                     }
                 }
             }
@@ -127,7 +114,6 @@ public class JGenProg extends AbstractRepairTool {
 
         return ans|| res;
     }
-
 
 //    private boolean isElementInStringAst(String mainFile, CtElement element) {
 //
