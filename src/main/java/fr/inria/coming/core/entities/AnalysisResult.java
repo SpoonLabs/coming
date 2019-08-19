@@ -8,19 +8,9 @@ import java.util.List;
  * @author Matias Martinez
  *
  */
-public class AnalysisResult<T,K> {
+public class AnalysisResult<T> {
 
 	protected T analyzed;
-
-	public List<K> getRow_list() {
-		return row_list;
-	}
-
-	public void setRow_list(List<K> row_list) {
-		this.row_list = row_list;
-	}
-
-	public List<K> row_list;
 
     public AnalysisResult(T analyzed) {
 		this.analyzed = analyzed;

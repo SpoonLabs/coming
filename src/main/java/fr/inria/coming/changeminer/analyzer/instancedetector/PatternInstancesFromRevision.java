@@ -11,12 +11,13 @@ import fr.inria.coming.core.entities.AnalysisResult;
  * @author Matias Martinez
  *
  */
-public class PatternInstancesFromRevision extends AnalysisResult<IRevision,DiffRow> {
+public class PatternInstancesFromRevision extends AnalysisResult<IRevision> {
 
 	/**
 	 * Stores the information of the Diff.
 	 */
 	protected List<PatternInstancesFromDiff> infoPerDiff = null;
+	List<DiffRow> row_list = null;
 
 	public PatternInstancesFromRevision(IRevision analyzed) {
 		super(analyzed);
@@ -32,6 +33,14 @@ public class PatternInstancesFromRevision extends AnalysisResult<IRevision,DiffR
 		super(analyzed);
 		this.infoPerDiff = instances;
 		this.row_list=rowList;
+	}
+
+	public List<DiffRow> getRow_list() {
+		return row_list;
+	}
+
+	public void setRow_list(List<DiffRow> row_list) {
+		this.row_list = row_list;
 	}
 
 	public List<PatternInstancesFromDiff> getInfoPerDiff() {

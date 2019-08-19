@@ -14,10 +14,10 @@ import java.util.Map;
  *
  * @param <T>
  */
-public class DiffResult<T, R,K> extends AnalysisResult<T,K> {
+public class DiffResult<T, R,K> extends AnalysisResult<T> {
 
 	static Logger log = Logger.getLogger(FineGrainDifftAnalyzer.class.getName());
-
+	public List<K> row_list;
 
 	/**
 	 * Filename
@@ -33,6 +33,14 @@ public class DiffResult<T, R,K> extends AnalysisResult<T,K> {
 		super(analyzed);
 		this.diffOfFiles = diffOfFiles;
 		this.row_list=row_list;
+	}
+
+	public List<K> getRow_list() {
+		return row_list;
+	}
+
+	public void setRow_list(List<K> row_list) {
+		this.row_list = row_list;
 	}
 
 	public Map<String, R> getDiffOfFiles() {

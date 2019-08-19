@@ -91,21 +91,21 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 				e.printStackTrace();
 			}
 
-			System.out.println("Diff of the revision");
-			for (DiffRow row : rows) {
-				switch (row.getTag()) {
-					case INSERT:
-						System.out.println("+ " + valueOf(row.getNewLine()));
-						break;
-					case DELETE:
-						System.out.println("- " + valueOf(row.getOldLine()));
-						break;
-					case CHANGE:
-						System.out.println("- " + valueOf(row.getOldLine()));
-						System.out.println("+ " + valueOf(row.getNewLine()));
-						break;
-				}
-			}
+//			System.out.println("Diff of the revision");
+//			for (DiffRow row : rows) {
+//				switch (row.getTag()) {
+//					case INSERT:
+//						System.out.println("+ " + valueOf(row.getNewLine()));
+//						break;
+//					case DELETE:
+//						System.out.println("- " + valueOf(row.getOldLine()));
+//						break;
+//					case CHANGE:
+//						System.out.println("- " + valueOf(row.getOldLine()));
+//						System.out.println("+ " + valueOf(row.getNewLine()));
+//						break;
+//				}
+//			}
 
 		}
 

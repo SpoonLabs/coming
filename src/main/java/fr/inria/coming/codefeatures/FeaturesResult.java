@@ -11,7 +11,7 @@ import fr.inria.coming.core.entities.AnalysisResult;
  * @author Matias Martinez
  *
  */
-public class FeaturesResult extends AnalysisResult<IRevision,DiffRow> {
+public class FeaturesResult extends AnalysisResult<IRevision> {
 
 	JsonElement features = null;
 

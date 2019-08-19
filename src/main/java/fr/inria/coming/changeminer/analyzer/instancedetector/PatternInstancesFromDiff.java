@@ -12,7 +12,7 @@ import gumtree.spoon.diff.Diff;
  * @author Matias Martinez
  *
  */
-public class PatternInstancesFromDiff extends AnalysisResult<IRevision,DiffRow> {
+public class PatternInstancesFromDiff extends AnalysisResult<IRevision> {
 
 	protected List<ChangePatternInstance> instances = null;
 	protected Diff diff = null;
