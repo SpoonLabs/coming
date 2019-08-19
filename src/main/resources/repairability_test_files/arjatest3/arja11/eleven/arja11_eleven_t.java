@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.commons.math.linear;
+package repairability_test_files.arjatest3.arja11.eleven;
 
 import org.apache.commons.math.MathRuntimeException;
 
@@ -132,6 +132,10 @@ public class CholeskyDecompositionImpl implements CholeskyDecomposition {
         for (int i = 0; i < order; ++i) {
 
             final double[] ltI = lTData[i];
+        	if (lTData[i][i] < absolutePositivityThreshold) {
+        		throw new NotPositiveDefiniteMatrixException();
+        	}
+            
 
             // check diagonal element
 

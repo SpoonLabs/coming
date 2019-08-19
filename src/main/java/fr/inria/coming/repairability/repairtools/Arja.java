@@ -15,6 +15,7 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.*;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 
@@ -22,6 +23,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class Arja extends AbstractRepairTool {
@@ -78,63 +80,55 @@ public class Arja extends AbstractRepairTool {
         List<CtInvocation> ctInvocationssSourcefile = ctClass.getElements(new TypeFilter<>(CtInvocation.class));//source file invocations
         List<CtInvocation> ctInvocations = element.getElements(new TypeFilter<>(CtInvocation.class));//our invocation
 
-        for(CtInvocation ctInvocation : ctInvocations) {
-            String ourmethodName = ctInvocation.getShortRepresentation();
-            List<CtTypeReference> ourTypeReferences = ctInvocation.getActualTypeArguments();
-
-            List<CtTypeParameter> ctTypeParameterstarget = new ArrayList<>();
-            for(CtTypeReference ctTypeReference : ourTypeReferences) {
-                ctTypeParameterstarget.add(ctTypeReference.getTypeParameterDeclaration());
-            }
-
-            for (CtMethod ctMethod: ctMethodsSourcefile){
-                if(ctMethod.getShortRepresentation().equals(ourmethodName)){
-                    List<CtTypeParameter> ctTypeParameters = ctMethod.getFormalCtTypeParameters();
-                    res=true;
-                }
-            }
-
-            for (CtInvocation ctinvoc: ctInvocationssSourcefile){
-
-                    List<CtTypeParameter> ctTypeParameters = ctinvoc.getActualTypeArguments();
-                    if(ctTypeParameterstarget.size()==ctTypeParameters.size()){
-                        for(int i=0;i<ctTypeParameters.size();i++){
-                            if(ctTypeParameterstarget.get(i).equals(ctTypeParameters.get(i))){
-                                continue;
-                            }
-                            else
-                                res=false;
-                        }}
-            }
-        }
+//        for(CtInvocation ctInvocation : ctInvocations) {
+//            String ourmethodName = ctInvocation.getShortRepresentation();
+//            List<CtTypeReference> ourTypeReferences = ctInvocation.getActualTypeArguments();
+//
+//            List<CtTypeParameter> ctTypeParameterstarget = new ArrayList<>();
+//            for(CtTypeReference ctTypeReference : ourTypeReferences) {
+//                ctTypeParameterstarget.add(ctTypeReference.getTypeParameterDeclaration());
+//            }
+//
+//            for (CtMethod ctMethod: ctMethodsSourcefile){
+//                if(ctMethod.getShortRepresentation().equals(ourmethodName)){
+//                    List<CtTypeParameter> ctTypeParameters = ctMethod.getFormalCtTypeParameters();
+//                    res=true;
+//                }
+//            }
+//
+//            for (CtInvocation ctinvoc: ctInvocationssSourcefile){
+//
+//                    List<CtTypeParameter> ctTypeParameters = ctinvoc.getActualTypeArguments();
+//                    if(ctTypeParameterstarget.size()==ctTypeParameters.size()){
+//                        for(int i=0;i<ctTypeParameters.size();i++){
+//                            if(ctTypeParameterstarget.get(i).equals(ctTypeParameters.get(i))){
+//                                continue;
+//                            }
+//                            else
+//                                res=false;
+//                        }}
+//            }
+//        }
 
         // Binary operators
+
         List<CtBinaryOperator> ctBoTarget = element.getElements(new TypeFilter<>(CtBinaryOperator.class));//our methods
         List<CtBinaryOperator> ctBoSource = ctClass.getElements(new TypeFilter<>(CtBinaryOperator.class));//source file BO's
 
 
         for(CtBinaryOperator boT : ctBoTarget) {
-
             String methodName = boT.getShortRepresentation();
 
             for ( CtBinaryOperator boS: ctBoSource){
                 if(boS.getShortRepresentation().equals(methodName)){
-//                    System.out.println("bo "+boT.getShortRepresentation());
-//                    System.out.println("ctMethod.getSimpleName() "+boS.getShortRepresentation());
-
-                    if((boS.getLeftHandOperand().getTypeCasts().equals(boT.getLeftHandOperand().getTypeCasts())) &&  (boS.getRightHandOperand().getTypeCasts().equals(boT.getRightHandOperand().getTypeCasts()))){
-                         res=true;
-//                         System.out.println("left hand op S "+boS.getLeftHandOperand());
-//                         System.out.println("left hand op T "+boT.getLeftHandOperand());
-//
-//                         System.out.println("right hand op S " +boS.getRightHandOperand());
-//                         System.out.println("right hand op T " +boT.getRightHandOperand());
-                    }
+                        if(previousVersionString.contains(boT.getRightHandOperand().toString()) && previousVersionString.contains(boT.getLeftHandOperand().toString())){
+                            System.out.println("S R "+boS.getRightHandOperand());
+                            System.out.println("S L " +boS.getLeftHandOperand());
+                            res=true;
+                        }
                 }
             }
         }
-
         return res;
     }
-
 }
