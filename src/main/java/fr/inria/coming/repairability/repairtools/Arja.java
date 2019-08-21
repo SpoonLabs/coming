@@ -128,8 +128,8 @@ public class Arja extends AbstractRepairTool {
                 if(boS.getShortRepresentation().equals(methodName)){
 //                        System.out.println("S R " + boS.getRightHandOperand());
 //                        System.out.println("S L " + boS.getLeftHandOperand());
-                        System.out.println("T R " + boT.getRightHandOperand());
-                        System.out.println("T L " + boT.getLeftHandOperand());
+//                        System.out.println("T R " + boT.getRightHandOperand());
+//                        System.out.println("T L " + boT.getLeftHandOperand());
 
                         if(previousVersionString.contains(boT.getRightHandOperand().toString()) && previousVersionString.contains(boT.getLeftHandOperand().toString())){
 //                            System.out.println("S R " + boS.getRightHandOperand());
