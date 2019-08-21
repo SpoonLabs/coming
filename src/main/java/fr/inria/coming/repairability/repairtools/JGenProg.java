@@ -75,17 +75,17 @@ public class JGenProg extends AbstractRepairTool {
 
         for(CtInvocation ctInvocation : ctInvocations) {
 
-            String methodName = ctInvocation.getShortRepresentation();
+            String methodName = ctInvocation.getExecutable().getSimpleName();
             List<Object> arguments = ctInvocation.getArguments();
+//            System.out.println("arguments " + arguments);
 
             for ( CtInvocation ctInvocSource: ctInvocationsSource){
-                if(ctInvocSource.getShortRepresentation().equals(methodName)){
-                    List ctTypeParameters = ctInvocSource.getActualTypeArguments();
-
+                if(ctInvocSource.getExecutable().getSimpleName().equals(methodName)){
+                    List ctTypeParameters = ctInvocSource.getArguments();
                     if(arguments.size()==ctTypeParameters.size()){
-                        if(arguments.size()==0)
+                        if(arguments.size()==0){
                             res=true;
-                        else
+                        }else
                             for(int i=0;i<ctTypeParameters.size();i++){
                                 if(arguments.get(i).equals(ctTypeParameters.get(i))){
                                     res=true;

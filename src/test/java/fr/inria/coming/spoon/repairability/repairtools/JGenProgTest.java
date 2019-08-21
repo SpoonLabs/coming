@@ -32,12 +32,6 @@ public class JGenProgTest {
 //        TestUtills.numberOfInstances(result, 1, 1);
 //    }
 //
-//    @Test
-//    public void falseneg1() throws Exception {
-//        FinalResult result = TestUtills.runRepairability("JGenProg", "/repairability_test_files/arjafalseneg1/");
-//        TestUtills.numberOfInstances(result, 1, 1);
-//    }
-//
 //
 //    @Test
 //    public void falsepos() throws Exception {
