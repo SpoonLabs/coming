@@ -22,6 +22,7 @@ public class ArjaTest {
 //        TestUtills.numberOfInstances(result, 1, 1);
 //    }
 
+
     @Test
     // it returns that the number of arguments in  setdataset(dataset) is zero, but is actually 1.
     public void testArja2() throws Exception {
