@@ -89,10 +89,11 @@ public class JGenProg extends AbstractRepairTool {
                             for(int i=0;i<ctTypeParameters.size();i++){
                                 if(arguments.get(i).equals(ctTypeParameters.get(i))){
                                     res=true;
-                                    continue;
                                 }
-                                else
+                                else{
                                     res=false;
+                                    break;
+                                }
                             }}
                 }
             }
