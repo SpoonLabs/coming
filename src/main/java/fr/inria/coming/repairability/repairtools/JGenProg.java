@@ -83,14 +83,17 @@ public class JGenProg extends AbstractRepairTool {
                     List ctTypeParameters = ctInvocSource.getActualTypeArguments();
 
                     if(arguments.size()==ctTypeParameters.size()){
-                        for(int i=0;i<ctTypeParameters.size();i++){
-                            if(arguments.get(i).equals(ctTypeParameters.get(i))){
-                                res=true;
-                                continue;
-                            }
-                            else
-                                res=false;
-                        }}
+                        if(arguments.size()==0)
+                            res=true;
+                        else
+                            for(int i=0;i<ctTypeParameters.size();i++){
+                                if(arguments.get(i).equals(ctTypeParameters.get(i))){
+                                    res=true;
+                                    continue;
+                                }
+                                else
+                                    res=false;
+                            }}
                 }
             }
         }
