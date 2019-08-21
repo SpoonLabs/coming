@@ -84,12 +84,13 @@ public class Arja extends AbstractRepairTool {
         for(CtInvocation ctInvocation : ctInvocations) {
 
             String ourmethodName = ctInvocation.getExecutable().getSimpleName();//.getShortRepresentation();
-            List<CtTypeReference> ourTypeReferences = ctInvocation.getActualTypeArguments();
+            List<CtTypeParameter> ctTypeParameterstarget = ctInvocation.getActualTypeArguments();
 
-            List<CtTypeParameter> ctTypeParameterstarget = new ArrayList<>();
-            for(CtTypeReference ctTypeReference : ourTypeReferences) {
-                ctTypeParameterstarget.add(ctTypeReference.getTypeParameterDeclaration());
-            }
+//            List<CtTypeParameter> ctTypeParameterstarget = new ArrayList<>();
+//            for(CtTypeReference ctTypeReference : ourTypeReferences) {
+//                ctTypeParameterstarget.add(ctTypeReference.getTypeParameterDeclaration());
+//            }
+
             for (CtMethod ctMethod: ctMethodsSourcefile){
                 if(ctMethod.getSimpleName().equals(ourmethodName)){
                     res1=true;
