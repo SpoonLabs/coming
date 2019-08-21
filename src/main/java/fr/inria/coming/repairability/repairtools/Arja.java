@@ -12,6 +12,7 @@ import spoon.pattern.Pattern;
 import spoon.pattern.PatternBuilder;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.*;
 import spoon.reflect.path.CtRole;
@@ -33,6 +34,7 @@ public class Arja extends AbstractRepairTool {
             "any_statement_d.xml"
     };
     private boolean res1=false;
+    private boolean res=false;
 
     @Override
     protected List<ChangePatternSpecification> readPatterns() {
@@ -71,8 +73,6 @@ public class Arja extends AbstractRepairTool {
 
         // see if the inserted statement occurs in the previous version of the file
         String previousVersionString = (String) revision.getChildren().get(0).getPreviousVersion();
-        boolean res=previousVersionString.contains(element.toString());
-
         String patternType = instance.getPattern().getName().split(File.pathSeparator)[1];
 
         //invocations
@@ -82,7 +82,8 @@ public class Arja extends AbstractRepairTool {
         List<CtInvocation> ctInvocations = element.getElements(new TypeFilter<>(CtInvocation.class));//our invocation
 
         for(CtInvocation ctInvocation : ctInvocations) {
-            String ourmethodName = ctInvocation.getShortRepresentation();
+
+            String ourmethodName = ctInvocation.getExecutable().getSimpleName();//.getShortRepresentation();
             List<CtTypeReference> ourTypeReferences = ctInvocation.getActualTypeArguments();
 
             List<CtTypeParameter> ctTypeParameterstarget = new ArrayList<>();
@@ -90,27 +91,27 @@ public class Arja extends AbstractRepairTool {
                 ctTypeParameterstarget.add(ctTypeReference.getTypeParameterDeclaration());
             }
 
-
-
             for (CtMethod ctMethod: ctMethodsSourcefile){
-                if(ctMethod.getShortRepresentation().equals(ourmethodName)){
-                    List<CtTypeParameter> ctTypeParameters = ctMethod.getFormalCtTypeParameters();
+                if(ctMethod.getSimpleName().equals(ourmethodName)){
                     res1=true;
                 }
             }
 
             for (CtInvocation ctinvoc: ctInvocationssSourcefile){
-
                     List<CtTypeParameter> ctTypeParameters = ctinvoc.getActualTypeArguments();
                     if(ctTypeParameterstarget.size()==ctTypeParameters.size()){
-                        for(int i=0;i<ctTypeParameters.size();i++){
-                            if(ctTypeParameterstarget.get(i).equals(ctTypeParameters.get(i))){
-                                res=res1;
-                                continue;
+                        if(ctTypeParameterstarget.size()==0)
+                            res=true;
+                        else
+                            for(int i=0;i<ctTypeParameters.size();i++){
+                                if(ctTypeParameterstarget.get(i).equals(ctTypeParameters.get(i))){
+                                    res=res1;
+                                    continue;
+                                }
+                                else
+                                    res=false;
                             }
-                            else
-                                res=false;
-                        }}
+                        }
             }
         }
 
@@ -127,8 +128,8 @@ public class Arja extends AbstractRepairTool {
                 if(boS.getShortRepresentation().equals(methodName)){
 //                        System.out.println("S R " + boS.getRightHandOperand());
 //                        System.out.println("S L " + boS.getLeftHandOperand());
-//                        System.out.println("T R " + boT.getRightHandOperand());
-//                        System.out.println("T L " + boT.getLeftHandOperand());
+                        System.out.println("T R " + boT.getRightHandOperand());
+                        System.out.println("T L " + boT.getLeftHandOperand());
 
                         if(previousVersionString.contains(boT.getRightHandOperand().toString()) && previousVersionString.contains(boT.getLeftHandOperand().toString())){
 //                            System.out.println("S R " + boS.getRightHandOperand());
@@ -144,6 +145,22 @@ public class Arja extends AbstractRepairTool {
                 }
             }
         }
+
+
+        List<CtElement> ctelement = element.getElements(new TypeFilter<>(CtElement.class));//our elements
+        List<CtElement> ctelementsource = ctClass.getElements(new TypeFilter<>(CtElement.class));//source file elements
+
+        for(CtElement elementS:ctelementsource){
+            if(ctelement.get(0).equals(elementS)){
+                res=true;
+            }
+        }
+
+        List<CtConstructorCall> ctconst = element.getElements(new TypeFilter<>(CtConstructorCall.class));//our elements
+
+        res=res||previousVersionString.contains(element.toString());
+
+
         return res;
     }
 }
