@@ -90,7 +90,6 @@ public class Arja extends AbstractRepairTool {
             for(CtTypeReference ctTypeReference : ourTypeReferences) {
                 ctTypeParameterstarget.add(ctTypeReference.getTypeParameterDeclaration());
             }
-
             for (CtMethod ctMethod: ctMethodsSourcefile){
                 if(ctMethod.getSimpleName().equals(ourmethodName)){
                     res1=true;
@@ -106,10 +105,13 @@ public class Arja extends AbstractRepairTool {
                             for(int i=0;i<ctTypeParameters.size();i++){
                                 if(ctTypeParameterstarget.get(i).equals(ctTypeParameters.get(i))){
                                     res=res1;
-                                    continue;
                                 }
-                                else
+                                else{
                                     res=false;
+                                    System.out.println("about to break");
+                                    break;
+                                }
+
                             }
                         }
             }
