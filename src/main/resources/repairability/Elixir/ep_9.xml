@@ -1,0 +1,9 @@
+<pattern name="check_length">
+
+    <entity id="1" type="Conditional" />
+    <action entityId="1" type="INS"/>
+
+    <entity id="2" type="Binary Operator" />
+    <parent parentId="1" distance="1"/>
+
+</pattern>
