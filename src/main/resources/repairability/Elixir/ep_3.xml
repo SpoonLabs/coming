@@ -1,0 +1,13 @@
+<pattern name="if_null_check">
+
+    <entity id="1" type="If"/>
+
+    <entity id="2" type="BinaryOperator" role="condition" />
+        <parent parentId="1" distance="1"/>
+    <entity id="3" type="*"  value="null"/>
+        <parent parentId="2" distance="1"/>
+
+    <action entityId="1" type="INS"/>
+    <action entityId="3" type="INS"/>
+
+</pattern>
