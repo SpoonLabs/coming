@@ -14,7 +14,7 @@ public class ArjaTest {
         TestUtills.numberOfInstances(result, 7, 7);
     }
 
-   failing test case
+//    failing test case
 //     the added sentence is inside a bigger element so is not detected
    @Test
    public void testArjafailing() throws Exception {
