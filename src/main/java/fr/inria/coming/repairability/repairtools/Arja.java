@@ -27,6 +27,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * 
+ Arja tries to correct the code by inserting statements that are in the source file either in a 
+ direct approach or a type matching approach.
+ 
+ Direct Approach:
+ the extracted variable/Method with the same name and compatible types exists in the variable/Method scope.
+ 
+ statement  or the invocation exists in the source code with compatible types. (Read more about this on
+ https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=8485732)
+ 
+ *
+ */
+
 public class Arja extends AbstractRepairTool {
 
     private static final String[] patternFileNames = {
@@ -86,7 +100,6 @@ public class Arja extends AbstractRepairTool {
             String ourmethodName = ctInvocation.getExecutable().getSimpleName();//.getShortRepresentation();
             List<CtTypeParameter> ctTypeParameterstarget = ctInvocation.getActualTypeArguments();
 
-
             for (CtMethod ctMethod: ctMethodsSourcefile){
                 if(ctMethod.getSimpleName().equals(ourmethodName)){
                     res1=true;
@@ -125,8 +138,7 @@ public class Arja extends AbstractRepairTool {
 
             for ( CtBinaryOperator boS: ctBoSource){
                 if(boS.getShortRepresentation().equals(methodName)){
-
-                        if(previousVersionString.contains(boT.getRightHandOperand().toString()) && previousVersionString.contains(boT.getLeftHandOperand().toString())){
+                        if(previousVersionString.contains(boT.getRightHandOperand().toString()) && previousVersionString.contains(boT.getLeftHandOperand().toString())){                    
                             res=true;
                         }
 
