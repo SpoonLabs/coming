@@ -21,22 +21,16 @@ public class JGenProgTest {
     }
 
     @Test
-    public void GenProgonArja() throws Exception {
+    public void GenProgonArjadata() throws Exception {
         FinalResult result = TestUtills.runRepairability("JGenProg", "/repairability_test_files/arja/");
         TestUtills.numberOfInstances(result, 8, 7);
     }
 
-//    @Test
-//    public void falseneg() throws Exception {
-//        FinalResult result = TestUtills.runRepairability("JGenProg", "/repairability_test_files/arjafalseneg/");
-//        TestUtills.numberOfInstances(result, 1, 1);
-//    }
-//
-//
-//    @Test
-//    public void falsepos() throws Exception {
-//        FinalResult result = TestUtills.runRepairability("JGenProg", "/repairability_test_files/arjafalsepos/");
-//        TestUtills.numberOfInstances(result, 1, 0);
-//    }
+
+    @Test
+    public void falsepos() throws Exception {
+        FinalResult result = TestUtills.runRepairability("JGenProg", "/repairability_test_files/arjafalsepos/");
+        TestUtills.numberOfInstances(result, 1, 1);
+    }
 
 }
