@@ -64,12 +64,10 @@ public class PatternInstancesFromDiff extends AnalysisResult<IRevision> {
 			for (ChangePatternInstance instance : instances) {
 				resultString += "\n" + instance.toString();
 			}
-            log.info(resultString += "\n----");
-//			return resultString += "\n----";
+			return resultString += "\n----";
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		log.info("--Diff ex--");
 		return "--Diff ex--";
 	}
 
