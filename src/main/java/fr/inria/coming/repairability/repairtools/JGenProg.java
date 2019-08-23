@@ -118,54 +118,5 @@ public class JGenProg extends AbstractRepairTool {
 
         return ans|| res;
     }
-
-//    private boolean isElementInStringAst(String mainFile, CtElement element) {
-//
-//        boolean matchFound = false;
-//
-//        try {
-//            try (PrintWriter out = new PrintWriter("/tmp/" + "tmp_prev_file" + ".java")) {
-//                out.println(mainFile);
-//            } catch (FileNotFoundException e) {
-//                e.printStackTrace();
-//                System.exit(1);
-//            }
-//
-//            // get CtModel of previousString or the mail file
-//            Launcher launcher = new Launcher();
-//            launcher.addInputResource("/tmp/" + "tmp_prev_file" + ".java");
-//            launcher.buildModel();
-//            CtModel model = launcher.getModel();
-//
-//
-//        /*
-//        TODO: This pattern is not built properly
-//        Error in Pattern properties. Note: It's a silent failure.
-//        > "Method threw 'java.lang.StringIndexOutOfBoundsException' exception. Cannot evaluate spoon.pattern.internal.node.ListOfNodes.toString()"
-//        Maybe because of the changes to the spoon object when it went through coming or gt.
-//         */
-//            Pattern pattern = PatternBuilder.create(element).build();
-//
-//            //System.out.println(pattern); // THIS THROWS AN EXCEPTION NOW: java.lang.StringIndexOutOfBoundsException: String index out of range: -1
-//
-//            List<Match> matches = new ArrayList<>();
-//            for (CtType<?> ctType : model.getAllTypes()) {
-//                matches.addAll(pattern.getMatches(ctType));
-//            }
-//
-//            System.out.println("\n\nMATCHES START\n\n");
-//            for (Match m : matches) {
-//                System.err.println("matches with: " + m.toString());
-//            }
-//            System.out.println("\n\nMATCHES END\n\n");
-//
-//            matchFound = matches.size() > 0;
-//
-//        } catch (SpoonException ignored) {
-//
-//        }
-//
-//        return matchFound;
-//    }
 }
 
