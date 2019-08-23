@@ -41,7 +41,7 @@ public class ArjaTest {
 //     because the left/right  hand operators can not be distinguished correctly
    public void testArjafailing4() throws Exception {
        FinalResult result = TestUtills.runRepairability("Arja", "/repairability_test_files/arjatest4");
-       TestUtills.numberOfInstances(result, 1, 0);
+       TestUtills.numberOfInstances(result, 1, 1);
    }
 
 }
