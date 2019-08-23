@@ -86,10 +86,6 @@ public class Arja extends AbstractRepairTool {
             String ourmethodName = ctInvocation.getExecutable().getSimpleName();//.getShortRepresentation();
             List<CtTypeParameter> ctTypeParameterstarget = ctInvocation.getActualTypeArguments();
 
-//            List<CtTypeParameter> ctTypeParameterstarget = new ArrayList<>();
-//            for(CtTypeReference ctTypeReference : ourTypeReferences) {
-//                ctTypeParameterstarget.add(ctTypeReference.getTypeParameterDeclaration());
-//            }
 
             for (CtMethod ctMethod: ctMethodsSourcefile){
                 if(ctMethod.getSimpleName().equals(ourmethodName)){
@@ -129,16 +125,8 @@ public class Arja extends AbstractRepairTool {
 
             for ( CtBinaryOperator boS: ctBoSource){
                 if(boS.getShortRepresentation().equals(methodName)){
-//                        System.out.println("S R " + boS.getRightHandOperand());
-//                        System.out.println("S L " + boS.getLeftHandOperand());
-//                        System.out.println("T R " + boT.getRightHandOperand());
-//                        System.out.println("T L " + boT.getLeftHandOperand());
 
                         if(previousVersionString.contains(boT.getRightHandOperand().toString()) && previousVersionString.contains(boT.getLeftHandOperand().toString())){
-//                            System.out.println("S R " + boS.getRightHandOperand());
-//                            System.out.println("S L " + boS.getLeftHandOperand());
-//                            System.out.println("T R " + boT.getRightHandOperand());
-//                            System.out.println("T L " + boT.getLeftHandOperand());
                             res=true;
                         }
 
