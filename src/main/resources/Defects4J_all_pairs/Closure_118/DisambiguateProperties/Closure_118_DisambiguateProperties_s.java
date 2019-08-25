@@ -529,9 +529,11 @@ class DisambiguateProperties<T> implements CompilerPass {
           return;
         }
 
-        errors.add(
-            t.toString() + " at " + error.sourceName + ":" + error.lineNumber);
-      }
+        log.err(" at " + error.sourceName + ":" + error.lineNumber)
+
+//        errors.add(
+//            t.toString() + " at " + error.sourceName + ":" + error.lineNumber);
+//      }
     }
 
     /**
