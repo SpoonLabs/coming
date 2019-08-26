@@ -11,7 +11,7 @@ public class ArjaTest {
     @Test
     public void testArja() throws Exception {
         FinalResult result = TestUtills.runRepairability("Arja", "/repairability_test_files/arja");
-        TestUtills.numberOfInstances(result, 7, 7);
+        TestUtills.numberOfInstances(result, 8, 8);
     }
 
 //    failing test case
