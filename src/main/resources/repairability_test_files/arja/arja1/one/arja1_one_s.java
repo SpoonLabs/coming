@@ -88,7 +88,6 @@
  *
  */
 
-
 package org.jfree.data.time;
 
 import java.io.Serializable;

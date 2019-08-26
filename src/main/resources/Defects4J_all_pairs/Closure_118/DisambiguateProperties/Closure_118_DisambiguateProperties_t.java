@@ -531,9 +531,10 @@ class DisambiguateProperties<T> implements CompilerPass {
         if (errors.size() > MAX_INVALDIATION_WARNINGS_PER_PROPERTY) {
           return;
         }
+        log.err(" at " + error.sourceName + ":" + error.lineNumber)
 
-        errors.add(
-            t.toString() + " at " + error.sourceName + ":" + error.lineNumber);
+//        errors.add(
+//            t.toString() + " at " + error.sourceName + ":" + error.lineNumber);
       }
     }
 
