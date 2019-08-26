@@ -50,6 +50,8 @@ public class JSONRepairabilityOutput extends JSonPatternInstanceOutput {
                     repair.addProperty("pattern-name", (instancePattern.getPattern().getName()));
                     repair.addProperty("Unified_Diff_of-files:","Starts Below...");
 
+//            System.out.println("result.getRow_list()");
+//            System.out.println(result.getRow_list());
 			for (DiffRow row : result.getRow_list()) {
 				switch (row.getTag()) {
 					case INSERT:
