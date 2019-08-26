@@ -106,7 +106,7 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 	public void putCodeFromHunk(RevisionResult previousResults, Object nameFile, JsonObject file) {
 		AnalysisResult resultsHunk = previousResults.get(HunkDifftAnalyzer.class.getSimpleName());
 		if (resultsHunk != null) {
-			DiffResult<Commit, HunkDiff,DiffRow> hunkresults = (DiffResult<Commit, HunkDiff,DiffRow>) resultsHunk;
+			DiffResult<Commit, HunkDiff> hunkresults = (DiffResult<Commit, HunkDiff>) resultsHunk;
 			HunkDiff hunks = hunkresults.getDiffOfFiles().get(nameFile);
 			if (hunks != null && hunks.getHunkpairs() != null)
 				if (hunks.getHunkpairs().size() == 1) {

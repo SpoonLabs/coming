@@ -87,7 +87,7 @@ public class SecAnalysis {
 		return subChanges;
 	}
 
-	public static JsonObject computeJSonOfRev(IRevision rev, DiffResult<IRevision, Diff,DiffRow> result,
+	public static JsonObject computeJSonOfRev(IRevision rev, DiffResult<IRevision, Diff> result,
 			Map<String, VulInstance> vtypes) {
 
 		JsonObject rootRevision = new JsonObject();

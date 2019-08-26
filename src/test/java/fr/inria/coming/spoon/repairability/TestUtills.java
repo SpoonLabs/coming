@@ -45,7 +45,7 @@ public class TestUtills {
         return result;
     }
 
-    public static FinalResult runRepairabilityPrint(String toolName, String inputFiles) throws Exception {
+    public static FinalResult runRepairabilityGit(String toolName, String inputFiles) throws Exception {
         ComingMain cm = new ComingMain();
 
         FinalResult result = cm.run(

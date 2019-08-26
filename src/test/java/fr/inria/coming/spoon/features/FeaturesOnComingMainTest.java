@@ -82,7 +82,7 @@ public class FeaturesOnComingMainTest {
 			AnalysisResult hunkResult = resultofCommit.get(HunkDifftAnalyzer.class.getSimpleName());
 
 			assert (hunkResult instanceof DiffResult);
-			DiffResult<Commit, HunkDiff,DiffRow> hunkresults = (DiffResult<Commit, HunkDiff,DiffRow>) hunkResult;
+			DiffResult<Commit, HunkDiff> hunkresults = (DiffResult<Commit, HunkDiff>) hunkResult;
 
 			assertNotNull(hunkresults);
 

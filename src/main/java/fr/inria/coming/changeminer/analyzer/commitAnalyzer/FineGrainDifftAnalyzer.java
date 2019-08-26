@@ -109,7 +109,7 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 
 		}
 
-		return (new DiffResult<IRevision, Diff,DiffRow>(revision, diffOfFiles,rows));
+		return (new DiffResult<IRevision, Diff>(revision, diffOfFiles,rows));
 	}
 
 	@Override

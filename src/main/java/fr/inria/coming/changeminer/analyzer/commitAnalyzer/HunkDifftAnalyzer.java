@@ -64,7 +64,7 @@ public class HunkDifftAnalyzer implements Analyzer<IRevision> {
 		// TODO: refactor
 		List<DiffRow> rows = null;
 
-		return (new DiffResult<IRevision, HunkDiff,DiffRow>(revision, diffOfFiles,rows));
+		return (new DiffResult<IRevision, HunkDiff>(revision, diffOfFiles,rows));
 	}
 
 	@Override

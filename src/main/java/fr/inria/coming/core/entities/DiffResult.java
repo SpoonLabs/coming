@@ -1,5 +1,6 @@
 package fr.inria.coming.core.entities;
 
+import com.github.difflib.text.DiffRow;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
 import org.apache.log4j.Logger;
 
@@ -14,10 +15,10 @@ import java.util.Map;
  *
  * @param <T>
  */
-public class DiffResult<T, R,K> extends AnalysisResult<T> {
+public class DiffResult<T, R> extends AnalysisResult<T> {
 
 	static Logger log = Logger.getLogger(FineGrainDifftAnalyzer.class.getName());
-	public List<K> row_list;
+	public List<DiffRow> row_list;
 
 	/**
 	 * Filename
@@ -29,17 +30,17 @@ public class DiffResult<T, R,K> extends AnalysisResult<T> {
 		this.diffOfFiles = diffOfFiles;
 	}
 
-	public DiffResult(T analyzed, Map<String, R> diffOfFiles,List<K> row_list) {
+	public DiffResult(T analyzed, Map<String, R> diffOfFiles,List<DiffRow> row_list) {
 		super(analyzed);
 		this.diffOfFiles = diffOfFiles;
 		this.row_list=row_list;
 	}
 
-	public List<K> getRow_list() {
+	public List<DiffRow> getRow_list() {
 		return row_list;
 	}
 
-	public void setRow_list(List<K> row_list) {
+	public void setRow_list(List<DiffRow> row_list) {
 		this.row_list = row_list;
 	}
 

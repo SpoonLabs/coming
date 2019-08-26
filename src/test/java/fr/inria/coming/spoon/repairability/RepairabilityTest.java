@@ -29,7 +29,7 @@ public class RepairabilityTest {
 
     @Test
     public void testDiffResults() throws Exception {
-        FinalResult result = TestUtills.runRepairabilityPrint("ALL", "repogit4testv0");
+        FinalResult result = TestUtills.runRepairabilityGit("ALL", "repogit4testv0");
         Map<IRevision, RevisionResult> revisionsMap = result.getAllResults();
         assertEquals(13, revisionsMap.keySet().size());
 
