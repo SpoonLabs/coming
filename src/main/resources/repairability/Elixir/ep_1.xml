@@ -1,0 +1,6 @@
+<pattern name="update_typre_ref">
+
+    <entity id="1" type="TypeReference" />
+    <action entityId="1" type="UPD"/>
+
+</pattern>

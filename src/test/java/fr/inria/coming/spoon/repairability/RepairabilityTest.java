@@ -25,6 +25,7 @@ public class RepairabilityTest {
         TestUtills.runRepairability("JMutRepair", "/repairability_test_files/one/");
     }
 
+
     @Test
     public void testDiffResults() throws Exception {
         int count=0;

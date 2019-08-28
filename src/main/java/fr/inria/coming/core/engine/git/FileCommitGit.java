@@ -41,22 +41,26 @@ public class FileCommitGit implements FileCommit {
 
 	@Override
 	public String getFileName() {
+		return extractFileName(this.nextFileName);
+	}
+
+	public String extractFileName(String completeFileName) {
 		if (ComingProperties.getPropertyBoolean("file_complete_name")) {
-			return this.nextFileName;
+			return completeFileName;
 		} else {
-			int idx = this.nextFileName.lastIndexOf(File.separator);
-			return this.nextFileName.substring(idx + 1);
+			int idx = completeFileName.lastIndexOf(File.separator);
+			return completeFileName.substring(idx + 1);
 		}
 	}
 
 	@Override
 	public String getPreviousFileName() {
-		return this.previousFileName;
+		return extractFileName(this.previousFileName);
 	}
 
 	@Override
 	public String getNextFileName() {
-		return this.nextFileName;
+		return extractFileName(this.nextFileName);
 	}
 
 	@Override
@@ -91,5 +95,25 @@ public class FileCommitGit implements FileCommit {
 	public String getPreviousName() {
 
 		return getPreviousFileName();
+	}
+
+	public void setPreviousFileName(String previousFileName) {
+		this.previousFileName = previousFileName;
+	}
+
+	public void setNextFileName(String nextFileName) {
+		this.nextFileName = nextFileName;
+	}
+
+	public void setPreviousVersion(String previousVersion) {
+		this.previousVersion = previousVersion;
+	}
+
+	public void setNextVersion(String nextVersion) {
+		this.nextVersion = nextVersion;
+	}
+
+	public void setPreviousCommitName(String previousCommitName) {
+		this.previousCommitName = previousCommitName;
 	}
 }

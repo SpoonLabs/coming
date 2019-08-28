@@ -39,7 +39,7 @@ public class JSONRepairabilityOutput extends JSonPatternInstanceOutput {
 
                 log.info("\n--------\ncommit with instance:\n " + revisionIdentifier);
 //                System.out.println("\n--------\ncommit with instance:\n " + revisionIdentifier);
-                log.info(pi.getInstances());
+//                log.info(pi.getInstances());
 //                System.out.println(pi.getInstances());
 
                 JsonArray repair_tools = new JsonArray();
