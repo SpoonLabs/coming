@@ -1,20 +1,18 @@
 package fr.inria.coming.changeminer.analyzer.commitAnalyzer;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.github.difflib.text.DiffRow;
+import fr.inria.coming.core.entities.*;
 import org.apache.log4j.Logger;
 import org.eclipse.compare.rangedifferencer.RangeDifference;
 
 import fr.inria.coming.changeminer.entity.GranuralityType;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.engine.Analyzer;
-import fr.inria.coming.core.entities.AnalysisResult;
-import fr.inria.coming.core.entities.DiffResult;
-import fr.inria.coming.core.entities.HunkDiff;
-import fr.inria.coming.core.entities.HunkPair;
-import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.core.entities.interfaces.IRevisionPair;
 import fr.inria.coming.core.filter.diff.syntcomparison.Fragmentable;
 import fr.inria.coming.core.filter.diff.syntcomparison.FragmentableComparator;
@@ -47,7 +45,7 @@ public class HunkDifftAnalyzer implements Analyzer<IRevision> {
 	 * Analyze a commit finding instances of changes return a Map<FileCommit, List>
 	 */
 	@SuppressWarnings("rawtypes")
-	public AnalysisResult<IRevision> analyze(IRevision revision) {
+	public AnalysisResult analyze(IRevision revision) {
 
 		List<IRevisionPair> javaFiles = revision.getChildren();
 
@@ -64,7 +62,9 @@ public class HunkDifftAnalyzer implements Analyzer<IRevision> {
 			}
 		}
 		// TODO: refactor
-		return new DiffResult<IRevision, HunkDiff>(revision, diffOfFiles);
+		List<DiffRow> rows = null;
+
+		return (new DiffResult<IRevision, HunkDiff>(revision, diffOfFiles,rows));
 	}
 
 	@Override

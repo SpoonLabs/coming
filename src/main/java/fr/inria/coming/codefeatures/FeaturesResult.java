@@ -1,5 +1,6 @@
 package fr.inria.coming.codefeatures;
 
+import com.github.difflib.text.DiffRow;
 import com.google.gson.JsonElement;
 
 import fr.inria.coming.changeminer.entity.IRevision;
