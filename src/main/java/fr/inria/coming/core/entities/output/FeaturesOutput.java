@@ -13,6 +13,8 @@ import com.google.gson.JsonParser;
 import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.codefeatures.FeatureAnalyzer;
 import fr.inria.coming.codefeatures.FeaturesResult;
+import fr.inria.coming.codefeatures.P4JFeatureAnalyzer;
+import fr.inria.coming.core.entities.AnalysisResult;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.core.entities.interfaces.IOutput;
 import fr.inria.coming.main.ComingProperties;
@@ -39,12 +41,12 @@ public class FeaturesOutput implements IOutput {
 				continue;
 
 			FeaturesResult result = (FeaturesResult) rv.getResultFromClass(FeatureAnalyzer.class);
-			save(result);
+			save(result,"");
 		}
 
 	}
 
-	public JsonElement save(FeaturesResult result) {
+	public JsonElement save(FeaturesResult result, String featureType) {
 		JsonElement file = result.getFeatures();
 
 		FileWriter fw;
@@ -54,7 +56,7 @@ public class FeaturesOutput implements IOutput {
 			File fout = new File(ComingProperties.getProperty("output"));
 			fout.mkdirs();
 
-			String fileName = fout.getAbsolutePath() + File.separator + "features_" + result.getAnalyzed().getName()
+			String fileName = fout.getAbsolutePath() + File.separator +featureType +"features_" + result.getAnalyzed().getName()
 					+ ".json";
 			fw = new FileWriter(fileName);
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -73,8 +75,16 @@ public class FeaturesOutput implements IOutput {
 
 	@Override
 	public void generateRevisionOutput(RevisionResult resultAllAnalyzed) {
-		FeaturesResult result = (FeaturesResult) resultAllAnalyzed.getResultFromClass(FeatureAnalyzer.class);
-		save(result);
+		FeaturesResult result = null;
+		//For Prophet4J features
+		if (resultAllAnalyzed.containsKey("P4JFeatureAnalyzer")) {
+			result = (FeaturesResult) resultAllAnalyzed.getResultFromClass(P4JFeatureAnalyzer.class);
+			save(result,"P4J");
+		}else {
+			result = (FeaturesResult) resultAllAnalyzed.getResultFromClass(FeatureAnalyzer.class);
+			save(result,"S4R");
+		}
+		
 	}
 
 }

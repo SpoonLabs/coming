@@ -52,6 +52,7 @@ mvn exec:java -Dexec.mainClass=fr.inria.coming.main.ComingMain
  -location <path>                                                     analyse the content in 'path'
  -message <arg>                                                       comming message
  -mode <mineinstance | diff | features>                               the mode of execution of the analysis
+ -featuretype < S4R | P4J >                                           choose the feature analysis type if the mode is feature
  -output <path>                                                       dump the output of the analysis in the given path
  -outputprocessor <classname>                                         output processors for result
  -parameters <arg>                                                    Parameters, divided by :

@@ -116,5 +116,9 @@ public class FileDiff implements IRevision {
 	public String toString() {
 		return "FileDiff [diffFolder=" + diffFolder + "]";
 	}
+	
+	public String getFolder() {
+		return diffFolder+"";
+	}
 
 }
