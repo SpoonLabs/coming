@@ -21,7 +21,6 @@ import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyze
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.engine.Analyzer;
 import fr.inria.coming.core.entities.AnalysisResult;
-import fr.inria.coming.core.entities.DiffResult;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.prophet4j.feature.FeatureCross;
 import fr.inria.prophet4j.feature.extended.ExtendedFeatureCross;
@@ -51,8 +50,6 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 	public AnalysisResult analyze(IRevision revision, RevisionResult previousResults) {
 
 		AnalysisResult resultFromDiffAnalysis = previousResults.getResultFromClass(FineGrainDifftAnalyzer.class);
-		DiffResult diffResut = (DiffResult) resultFromDiffAnalysis;
-		String filename =   diffResut.getDiffOfFiles().keySet().iterator().next().toString();		
 
 		if (resultFromDiffAnalysis == null) {
 			System.err.println("Error Diff must be executed before");
@@ -73,16 +70,12 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 		//Get feature vector
 		JsonObject jsonfile = genVectorsCSV(option,target,featureMatrix);
 		
-		JsonArray filesArray = new JsonArray();		
-		JsonObject file = new JsonObject();
-		JsonArray changesArray = new JsonArray();
-		changesArray.add(jsonfile);	
-		file.addProperty("file_name", filename);
-		file.add("features", changesArray);
-		filesArray.add(file);
+		
+		JsonArray filesArray = new JsonArray();
+		filesArray.add(jsonfile);		
 		JsonObject root = new JsonObject();
 		root.addProperty("id", revision.getName());
-		root.add("files", filesArray);
+		root.add("features", filesArray);
 
 		return (new FeaturesResult(revision, root));
 
