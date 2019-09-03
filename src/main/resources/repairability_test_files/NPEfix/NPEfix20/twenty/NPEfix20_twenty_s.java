@@ -206,12 +206,10 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
 //            return new BSPTree<Euclidean3D>(Boolean.FALSE);
 //        }
 
-        if ((xMin >= xMax - tolerance) || (yMin >= yMax - tolerance) || (zMin >= zMax - tolerance)) {
+        if ((xMin >= xMax - tolerance) || (yMin >= yMax - tolerance)) {
             // too thin box, build an empty polygons set
             return new BSPTree<Euclidean3D>(Boolean.FALSE);
         }
-
-
 
         final Plane pxMin = new Plane(new Vector3D(xMin, 0,    0),   Vector3D.MINUS_I, tolerance);
         final Plane pxMax = new Plane(new Vector3D(xMax, 0,    0),   Vector3D.PLUS_I,  tolerance);

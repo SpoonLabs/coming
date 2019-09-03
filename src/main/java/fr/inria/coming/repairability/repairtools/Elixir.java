@@ -6,8 +6,11 @@ import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
 import gumtree.spoon.diff.operations.Operation;
 import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
 
 import java.io.File;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +43,8 @@ public class Elixir extends AbstractRepairTool {
             "ep_8.xml",
             "ep_9.xml"
     };
+    private boolean check=false;
+    private IRevision myrev;
 
     /**
      * Encodes the search space of Elixir
@@ -67,6 +72,7 @@ public class Elixir extends AbstractRepairTool {
 
         String patternType = patternInstance.getPattern().getName().split(File.pathSeparator)[1];
         if (patternType.startsWith("ep_4")) {
+
 
             Operation upd = patternInstance.getActions().get(0);
             CtBinaryOperator src = (CtBinaryOperator) upd.getSrcNode();

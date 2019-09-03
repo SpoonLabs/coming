@@ -1,6 +1,13 @@
 <pattern name="replacement3">
-    <entity id="1" type="Return" role="Statement"/>
-    <action entityId="1" type="INS"/>
+
+    <entity id="1" type="Block" />
+
+    <entity id="2" type="Return" role="Statement">
+        <parent parentId="1" distance="1"/>
+    </entity>
+
+    <action entityId="2" type="INS"/>
+    <action entityId="1" type="UNCHANGED"/>
 
 </pattern>
 
