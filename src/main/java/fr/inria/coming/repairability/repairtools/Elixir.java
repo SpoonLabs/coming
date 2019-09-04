@@ -43,8 +43,6 @@ public class Elixir extends AbstractRepairTool {
             "ep_8.xml",
             "ep_9.xml"
     };
-    private boolean check=false;
-    private IRevision myrev;
 
     /**
      * Encodes the search space of Elixir
