@@ -5,7 +5,7 @@
     <entity id="2" type="BinaryOperator" role="condition" >
         <parent parentId="1" distance="1000"/>
     </entity>
-    <entity id="3" type="*" role="LeftOperand" value="null">
+    <entity id="3" type="*" role="RightOperand" value="null">
         <parent parentId="2" distance="1"/>
     </entity>
 
