@@ -29,7 +29,6 @@ import java.util.List;
  8.inserting the method invocation => patter file ep_9
  */
 
-
 public class Elixir extends AbstractRepairTool {
 
     private static final String[] patternFileNames = {
@@ -41,7 +40,8 @@ public class Elixir extends AbstractRepairTool {
             "ep_6.xml",
             "ep_7.xml",
             "ep_8.xml",
-            "ep_9.xml"
+            "ep_9.xml",
+            "ep_10.xml"
     };
 
     /**
