@@ -182,6 +182,7 @@ public class MainComingTest {
             commitsInOrder.add(commit);
         }
 
+
         int currentIndex = commits.size()-10+3;
         for (Commit commit : commits.keySet()) {
 
