@@ -19,7 +19,9 @@ before_install:
 install: true
 
 # this is where all tests are executed
-script: mvn test
+script:
+- mvn test
+- find . -name "*.json"
 
 after_success:
 - ".buildscript/deploy_to_maven.sh"

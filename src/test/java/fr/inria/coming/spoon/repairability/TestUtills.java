@@ -39,7 +39,9 @@ public class TestUtills {
                         "-input",
                         "files",
                         "-location",
-                        TestUtills.class.getResource(inputFiles).getFile()});
+                        TestUtills.class.getResource(inputFiles).getFile(),
+                        "-output",
+                        "./out"});
 
         assertNotNull(result);
         return result;
