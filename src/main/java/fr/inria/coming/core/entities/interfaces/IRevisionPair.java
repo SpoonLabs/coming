@@ -16,4 +16,12 @@ public interface IRevisionPair<T> {
 
 	public String getPreviousName();
 
+	public void setPreviousVersion(T previousContent);
+
+	public void setNextVersion(T content);
+
+	public void setName(String name);
+
+	public void setPreviousName(String previousName);
+
 }

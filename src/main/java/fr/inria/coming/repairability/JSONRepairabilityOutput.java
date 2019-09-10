@@ -1,5 +1,6 @@
 package fr.inria.coming.repairability;
 
+import com.github.difflib.text.DiffRow;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
@@ -38,7 +39,7 @@ public class JSONRepairabilityOutput extends JSonPatternInstanceOutput {
 
                 log.info("\n--------\ncommit with instance:\n " + revisionIdentifier);
 //                System.out.println("\n--------\ncommit with instance:\n " + revisionIdentifier);
-                log.info(pi.getInstances());
+//                log.info(pi.getInstances());
 //                System.out.println(pi.getInstances());
 
                 JsonArray repair_tools = new JsonArray();
@@ -47,6 +48,28 @@ public class JSONRepairabilityOutput extends JSonPatternInstanceOutput {
                     JsonObject repair = new JsonObject();
                     repair.addProperty("tool-name", (instancePattern.getPattern().getName().split(File.pathSeparator)[0]));
                     repair.addProperty("pattern-name", (instancePattern.getPattern().getName()));
+                    repair.addProperty("Unified_Diff_of-files:","Starts Below...");
+
+//            System.out.println("result.getRow_list()");
+//            System.out.println(result.getRow_list());
+			for (DiffRow row : result.getRow_list()) {
+				switch (row.getTag()) {
+					case INSERT:
+                        repair.addProperty("INSERT:",row.getNewLine());
+						break;
+					case DELETE:
+                        repair.addProperty("DELETE:",row.getOldLine());
+						break;
+					case CHANGE:
+                        repair.addProperty("CHANGE_old:",row.getOldLine());
+                        repair.addProperty("CHANGE_new:",row.getNewLine());
+						break;
+				}
+			}
+
+
+
+
 
                     JsonArray ops = new JsonArray();
 

@@ -70,9 +70,9 @@ public class PatternInstanceAnalyzer implements Analyzer {
 
 		}
 
-		PatternInstancesFromRevision revisionResult = new PatternInstancesFromRevision(input, instancesAll);
+		PatternInstancesFromRevision revisionResult = new PatternInstancesFromRevision(input, instancesAll,diffResut.getRow_list());
 
-		return revisionResult;
+		return (revisionResult);
 	}
 
 	public List<ChangePatternSpecification> getPatternsToMine() {

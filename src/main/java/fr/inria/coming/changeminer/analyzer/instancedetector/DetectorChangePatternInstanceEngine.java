@@ -168,7 +168,6 @@ public class DetectorChangePatternInstanceEngine {
 			instancesAllCombinations.addAll(temp);
 		}
 		return instancesAllCombinations;
-
 	}
 
 	/**
