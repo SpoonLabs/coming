@@ -104,7 +104,7 @@ public class MainComingTest {
 
 	@Test
 	public void testFeaturesMain() {
-		File output = new File("./out/features_fe76517014e580ddcb40ac04ea824d54ba741c8b.json");
+		File output = new File(ComingProperties.getProperty("output")+"/features_fe76517014e580ddcb40ac04ea824d54ba741c8b.json");
 
 		// clean test data
 		output.delete();
