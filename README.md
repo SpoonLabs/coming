@@ -25,7 +25,7 @@ Please install a JDK 1.8 and configure Maven or your IDE to use it.
 Tests:
 
 ```
-unzip ./src/main/resources/repogit4testv0.zip
+git clone https://github.com/SpoonLabs/repogit4testv0
 mvn test
 ```
 
