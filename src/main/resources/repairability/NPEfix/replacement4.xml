@@ -1,7 +1,6 @@
 <pattern name="replacement4">
     <entity id="1" type="Assignment" />
     <action entityId="1" type="MOV"/>
-
 </pattern>
 
 

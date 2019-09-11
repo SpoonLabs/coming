@@ -1,10 +1,8 @@
-<pattern name="replacement6">
-    <entity id="1" type="FieldRead"/>
-    <action entityId="1" type="INS"/>
+<pattern name="replacement3">
 
-    <entity id="2" type="*"/>
-    <action entityId="2" type="DEL"/>
+    <entity id="2" type="BinaryOperator" role="*"/>
+
+    <action entityId="2" type="INS"/>
 
 </pattern>
-
 

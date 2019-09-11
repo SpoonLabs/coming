@@ -1,7 +1,0 @@
-<pattern name="replacement11">
-    <entity id="1" type="Literal"/>
-    <action entityId="1" type="UPD"/>
-
-</pattern>
-
-

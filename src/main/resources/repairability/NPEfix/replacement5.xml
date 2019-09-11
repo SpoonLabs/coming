@@ -1,7 +1,8 @@
-<pattern name="replacement5">
-    <entity id="1" type="VariableRead" />
-    <action entityId="1" type="UPD"/>
+<pattern name="replacement3">
+
+    <entity id="2" type="Return" role="Statement"/>
+
+    <action entityId="2" type="UPD"/>
 
 </pattern>
-
 

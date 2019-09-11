@@ -1,10 +1,8 @@
-<pattern name="replacement7">
-    <entity id="1" type="FieldRead"/>
-    <action entityId="1" type="MOV"/>
+<pattern name="replacement3">
 
-    <entity id="2" type="*"/>
-    <action entityId="2" type="DEL"/>
+    <entity id="1" type="Invocation" role="*"/>
+
+    <action entityId="1" type="INS"/>
 
 </pattern>
-
 
