@@ -27,7 +27,6 @@ public class JSonPatternInstanceOutput implements IOutput {
 	@Override
 	public void generateFinalOutput(FinalResult finalResult) {
 
-		System.out.println("JSON output Final Results");
 		JsonObject root = new JsonObject();
 		JsonArray instances = new JsonArray();
 		root.add("instances", instances);
@@ -58,7 +57,6 @@ public class JSonPatternInstanceOutput implements IOutput {
 
 			fw.flush();
 			fw.close();
-			System.out.println("Output saved in " + fout.getAbsolutePath());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -77,8 +75,6 @@ public class JSonPatternInstanceOutput implements IOutput {
 		for (PatternInstancesFromDiff pi : result.getInfoPerDiff()) {
 			if (pi.getInstances().size() > 0) {
 
-				System.out.println("\n--------\ncommit with instance:\n " + revisionIdentifier);
-				System.out.println(pi.getInstances());
 				for (ChangePatternInstance instancePattern : pi.getInstances()) {
 
 					JsonObject instance = new JsonObject();
@@ -160,7 +156,6 @@ public class JSonPatternInstanceOutput implements IOutput {
 
 	@Override
 	public void generateRevisionOutput(RevisionResult resultRevision) {
-		System.out.println("JSON output Final Results");
 		JsonObject root = new JsonObject();
 		JsonArray instances = new JsonArray();
 		root.add("instances", instances);

@@ -235,6 +235,12 @@ public class CommitGit implements Commit {
 		return getName();
 	}
 
+	@Override
+	public String getFolder() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
 
 class MyTreeFilter extends TreeFilter {

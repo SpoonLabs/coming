@@ -1,10 +1,12 @@
 package fr.inria.coming.codefeatures;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.github.difflib.text.DiffRow;
 import org.apache.log4j.Logger;
 
 import com.google.gson.JsonArray;
@@ -96,7 +98,8 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 		JsonObject root = new JsonObject();
 		root.addProperty("id", revision.getName());
 		root.add("files", filesArray);
-		return new FeaturesResult(revision, root);
+
+		return (new FeaturesResult(revision, root));
 
 	}
 

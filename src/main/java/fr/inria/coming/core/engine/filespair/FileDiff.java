@@ -60,4 +60,10 @@ public class FileDiff implements IRevision {
         return "FileDiff [left=" + left.getName() + ", right=" + right.getName() + "]";
     }
 
+	@Override
+	public String getFolder() {
+		return "";
+	}
+    
+    
 }

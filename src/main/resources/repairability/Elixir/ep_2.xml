@@ -1,8 +1,9 @@
 <pattern name="update_return">
 
-    <entity id="1" type="Return" />
+    <entity id="1" type="Return">
     <entity id="2" type="VariableRead" />
         <parent parentId="1" distance="1"/>
+    </entity>
 
     <action entityId="2" type="UPD"/>
 

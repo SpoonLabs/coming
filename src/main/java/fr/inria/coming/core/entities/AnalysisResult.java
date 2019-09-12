@@ -1,5 +1,7 @@
 package fr.inria.coming.core.entities;
 
+import java.util.List;
+
 /**
  * Store the results from the analysis of one revision
  * 
@@ -10,7 +12,7 @@ public class AnalysisResult<T> {
 
 	protected T analyzed;
 
-	public AnalysisResult(T analyzed) {
+    public AnalysisResult(T analyzed) {
 		this.analyzed = analyzed;
 	};
 

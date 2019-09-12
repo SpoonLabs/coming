@@ -40,4 +40,28 @@ public class FilePair implements IRevisionPair<String> {
 		return name;
 	}
 
+	@Override
+	public void setPreviousVersion(String previousContent) {
+		this.previousVersion = previousContent;
+
+	}
+
+	@Override
+	public void setNextVersion(String content) {
+		this.postVersion = content;
+
+	}
+
+	@Override
+	public void setName(String name) {
+		this.name = name;
+
+	}
+
+	@Override
+	public void setPreviousName(String previousName) {
+		// TODO: maybe we would add a second field for the previous name
+
+	}
+
 }

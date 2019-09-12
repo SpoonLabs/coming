@@ -116,4 +116,16 @@ public class FileCommitGit implements FileCommit {
 	public void setPreviousCommitName(String previousCommitName) {
 		this.previousCommitName = previousCommitName;
 	}
+
+	@Override
+	public void setName(String name) {
+		this.nextFileName = name;
+
+	}
+
+	@Override
+	public void setPreviousName(String previousName) {
+		this.previousFileName = previousName;
+
+	}
 }

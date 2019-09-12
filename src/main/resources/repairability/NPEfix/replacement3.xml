@@ -1,6 +1,8 @@
 <pattern name="replacement3">
-    <entity id="1" type="Return" role="Statement"/>
-    <action entityId="1" type="INS"/>
+
+    <entity id="2" type="Return" role="Statement"/>
+
+    <action entityId="2" type="INS"/>
 
 </pattern>
 
