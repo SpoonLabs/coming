@@ -10,26 +10,13 @@ import org.junit.Test;
 public class JGenProgTest {
     @Test
     public void testJGenProgNegative() throws Exception {
-        FinalResult result = TestUtills.runRepairability("JGenProg", "/repairability_test_files/JGenProgTest");
-        TestUtills.numberOfInstances(result, 1, 0);
+        FinalResult result = TestUtills.runRepairability("JGenProg", "/gen/MathACS");
+//        TestUtills.numberOfInstances(result, 1, 0);
     }
 
     @Test
     public void testJGenProgPositive() throws Exception {
         FinalResult result = TestUtills.runRepairability("JGenProg", "/repairability_test_files/JGenProgPostiveTest");
-        TestUtills.numberOfInstances(result, 1, 1);
-    }
-
-    @Test
-    public void GenProgonArjadata() throws Exception {
-        FinalResult result = TestUtills.runRepairability("JGenProg", "/repairability_test_files/arja/");
-        TestUtills.numberOfInstances(result, 8, 7);
-    }
-
-
-    @Test
-    public void falsepos() throws Exception {
-        FinalResult result = TestUtills.runRepairability("JGenProg", "/repairability_test_files/arjafalsepos/");
         TestUtills.numberOfInstances(result, 1, 1);
     }
 
