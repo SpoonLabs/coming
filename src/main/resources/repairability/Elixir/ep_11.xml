@@ -1,0 +1,20 @@
+<pattern name="loose_type1">
+
+    <entity id="1" type="If" />
+
+    <entity id="2" type="Binary Operator" >
+        <parent parentId="1" distance="1"/>
+    </entity>
+
+    <entity id="3" type="*" role="RightOperand" >
+        <parent parentId="2" distance="1"/>
+    </entity>
+
+    <entity id="4" type="*" role="LeftOperand" >
+        <parent parentId="2" distance="1"/>
+    </entity>
+
+    <action entityId="4" type="UPD"/>
+
+
+</pattern>

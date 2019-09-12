@@ -36,6 +36,8 @@ public class TestUtills {
                         "repairability",
                         "-repairtool",
                         toolName,
+                        "--output",
+                        "./out",
                         "-input",
                         "files",
                         "-location",
