@@ -15,6 +15,4 @@
     </entity>
 
     <action entityId="3" type="UPD"/>
-
-
 </pattern>

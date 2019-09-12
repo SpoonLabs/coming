@@ -2,7 +2,6 @@ package fr.inria.coming.main;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.cli.BasicParser;
@@ -11,8 +10,6 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.UnrecognizedOptionException;
 import org.apache.log4j.Logger;
 
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
@@ -27,6 +24,7 @@ import fr.inria.coming.changeminer.entity.EntityTypeSpoon;
 import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
 import fr.inria.coming.codefeatures.FeatureAnalyzer;
+import fr.inria.coming.codefeatures.P4JFeatureAnalyzer;
 import fr.inria.coming.core.engine.Analyzer;
 import fr.inria.coming.core.engine.RevisionNavigationExperiment;
 import fr.inria.coming.core.engine.callback.IntermediateResultProcessorCallback;
@@ -67,6 +65,9 @@ public class ComingMain {
 
 		options.addOption(Option.builder("mode").argName("mineinstance | diff | features").hasArg()
 				.desc("the mode of execution of the analysis").build());
+		
+		options.addOption(Option.builder("featuretype").argName("S4R | P4J").hasArg()
+				.desc("the type of feature extraction").build());
 
 		options.addOption(Option.builder("input").argName("git(default) | files | filespair | repairability").hasArg()
 				.desc("format of the content present in the given -path. git implies that the path is a git repository. files implies the path contains .patch files ")
@@ -115,9 +116,15 @@ public class ComingMain {
 				"If -mode=repairability, this option specifies which repair tools should we consider in our analysis. "
 						+ "Can be a list separated by " + File.pathSeparator)
 				.build());
+		
+	// feature module parameter
+		options.addOption(Option.builder("featuretype").argName("S4R | P4J").hasArg().desc(
+				"If -mode=features, this option specifies which feature extraction types should we consider in our analysis. "
+						+ "Can be a list separated by " + File.pathSeparator)
+				.build());
 	}
 
-	public static void main(String[] args){
+	public static void main(String[] args) {
 		ComingMain cmain = new ComingMain();
 		cmain.run(args);
 	}
@@ -208,12 +215,14 @@ public class ComingMain {
 		}
 
 		String mode = ComingProperties.getProperty("mode");
+		String featureType = ComingProperties.getProperty("featuretype");
 		String input = ComingProperties.getProperty("input");
+
 
 		// CONFIGURATION:
 		loadInput(input);
 
-		loadModelAnalyzers(mode);
+		loadModelAnalyzers(mode,featureType);
 
 		loadFilters();
 
@@ -223,7 +232,14 @@ public class ComingMain {
 	}
 
 	private void loadFilters() {
-		navigatorEngine.setFilters(createFilters());
+		List<IFilter> newFilters = createFilters();
+		if (newFilters != null && !newFilters.isEmpty()) {
+			if (navigatorEngine.getFilters() == null)
+				navigatorEngine.setFilters(newFilters);
+			else {
+				navigatorEngine.getFilters().addAll(newFilters);
+			}
+		}
 	}
 
 	private void loadOutput() {
@@ -248,7 +264,7 @@ public class ComingMain {
 		}
 	}
 
-	private void loadModelAnalyzers(String modes) {
+	private void loadModelAnalyzers(String modes, String featureType) {
 
 		String[] modesp = modes.split(":");
 
@@ -276,8 +292,17 @@ public class ComingMain {
 
 			} else if ("features".equals(mode)) {
 				navigatorEngine.getAnalyzers().clear();
+				
 				navigatorEngine.getAnalyzers().add(new FineGrainDifftAnalyzer());
+			
+				if ("P4J".equals(featureType)) {
+				//for P4J:
+				navigatorEngine.getAnalyzers().add(new P4JFeatureAnalyzer());	
+				} else {
+				//for S4R or by default
 				navigatorEngine.getAnalyzers().add(new FeatureAnalyzer());
+				}
+				
 
 				navigatorEngine.getOutputProcessors().add(new FeaturesOutput());
 
@@ -470,7 +495,6 @@ public class ComingMain {
 		formater.setWidth(500);
 		formater.printHelp("Main", options);
 		logm.info("More options and default values at 'configuration.properties' file");
-//		System.out.println("More options and default values at 'configuration.properties' file");
 
 	}
 

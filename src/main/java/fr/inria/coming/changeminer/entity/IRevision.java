@@ -14,4 +14,6 @@ public interface IRevision {
 	public List<IRevisionPair> getChildren();
 
 	public String getName();
+	
+	public String getFolder();
 }

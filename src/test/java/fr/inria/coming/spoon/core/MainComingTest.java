@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.github.difflib.text.DiffRow;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -82,6 +83,7 @@ public class MainComingTest {
 		ComingMain.main(new String[] {});
 	}
 
+
 	@Test
 	public void testListEntities() {
 
@@ -102,7 +104,7 @@ public class MainComingTest {
 
 	@Test
 	public void testFeaturesMain() {
-		File output = new File(ComingProperties.getProperty("output")+"/features_fe76517014e580ddcb40ac04ea824d54ba741c8b.json");
+		File output = new File("./coming_results/features_fe76517014e580ddcb40ac04ea824d54ba741c8b.json");
 
 		// clean test data
 		output.delete();
@@ -179,6 +181,7 @@ public class MainComingTest {
         for (String commit : this.commitsId) {
             commitsInOrder.add(commit);
         }
+
 
         int currentIndex = commits.size()-10+3;
         for (Commit commit : commits.keySet()) {

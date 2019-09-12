@@ -1,5 +1,6 @@
 package fr.inria.coming.core.engine.git;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,15 +27,26 @@ import fr.inria.coming.core.entities.interfaces.Commit;
 import fr.inria.coming.core.entities.interfaces.FileCommit;
 import fr.inria.coming.core.entities.interfaces.IRevisionPair;
 import fr.inria.coming.core.entities.interfaces.RepositoryP;
+import fr.inria.coming.main.ComingProperties;
 
 public class CommitGit implements Commit {
 
 	private RepositoryP repo;
 	private RevCommit revCommit;
+	static public String[] extensionToConsider = new String[] { ".java" };
+
+	static {
+		String extension_to_consider = ComingProperties.getProperty("extensions_to_consider");
+
+		if (extension_to_consider != null) {
+			extensionToConsider = extension_to_consider.split(File.pathSeparator);
+		}
+	}
 
 	public CommitGit(RepositoryP repository, RevCommit revCmt) {
 		this.repo = repository;
 		this.revCommit = revCmt;
+
 	}
 
 	@Override
@@ -122,14 +134,25 @@ public class CommitGit implements Commit {
 	@Override
 	public List<FileCommit> getJavaFileCommits() {
 		List<FileCommit> files = getFileCommits();
+		return filter(files, ".java");
+	}
+
+	public List<FileCommit> filter(List<FileCommit> files, String extension) {
 		List<FileCommit> javaFiles = new ArrayList<FileCommit>();
 
 		for (FileCommit fileCommit : files) {
-			if (fileCommit.getFileName().endsWith(".java"))
+			if (fileCommit.getFileName().endsWith(extension))
 				javaFiles.add(fileCommit);
 		}
 
 		return javaFiles;
+	}
+
+	@Override
+	public List<FileCommit> getFileCommits(String extension) {
+		List<FileCommit> files = getFileCommits();
+		return filter(files, extension);
+
 	}
 
 	@Override
@@ -192,14 +215,32 @@ public class CommitGit implements Commit {
 
 	@Override
 	public List<IRevisionPair> getChildren() {
-		List<IRevisionPair> li = new ArrayList<>(this.getJavaFileCommits());
-		return li;
+		if (extensionToConsider == null || extensionToConsider.length == 0) {
+			List<IRevisionPair> li = new ArrayList<>(this.getJavaFileCommits());
+			return li;
+		} else {
+
+			List<IRevisionPair> li = new ArrayList<>();
+			for (String ext : extensionToConsider) {
+				li.addAll(this.getFileCommits(ext));
+			}
+
+			return li;
+		}
+
 	}
 
 	@Override
 	public String toString() {
 		return getName();
 	}
+
+	@Override
+	public String getFolder() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
 
 class MyTreeFilter extends TreeFilter {

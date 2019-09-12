@@ -46,4 +46,21 @@ public class TestUtills {
         assertNotNull(result);
         return result;
     }
+
+    public static FinalResult runRepairabilityGit(String toolName, String inputFiles) throws Exception {
+        ComingMain cm = new ComingMain();
+
+        FinalResult result = cm.run(
+                new String[]{"-mode",
+                        "repairability",
+                        "-repairtool",
+                        toolName,
+                        "-input",
+                        "git",
+                        "-location",
+                        inputFiles});
+
+        assertNotNull(result);
+        return result;
+    }
 }

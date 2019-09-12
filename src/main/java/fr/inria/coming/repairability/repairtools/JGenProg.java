@@ -11,9 +11,12 @@ import spoon.pattern.Match;
 import spoon.pattern.Pattern;
 import spoon.pattern.PatternBuilder;
 import spoon.reflect.CtModel;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtType;
+import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.declaration.*;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -26,6 +29,7 @@ public class JGenProg extends AbstractRepairTool {
             "any_statement_s.xml",
             "any_statement_d.xml"
     };
+    private boolean res=false;
 
     @Override
     protected List<ChangePatternSpecification> readPatterns() {
@@ -63,56 +67,56 @@ public class JGenProg extends AbstractRepairTool {
 
         // see if the inserted statement occurs in the previous version of the file
         String previousVersionString = (String) revision.getChildren().get(0).getPreviousVersion();
-        return previousVersionString.contains(element.toString());
-    }
+        boolean ans=previousVersionString.contains(element.toString());
 
+        CtClass ctClass = Launcher.parseClass(previousVersionString);
+        List<CtInvocation> ctInvocationsSource = ctClass.getElements(new TypeFilter<>(CtInvocation.class));//source file methods
+        List<CtInvocation> ctInvocations = element.getElements(new TypeFilter<>(CtInvocation.class));//our invocation
 
-    private boolean isElementInStringAst(String mainFile, CtElement element) {
+        for(CtInvocation ctInvocation : ctInvocations) {
 
-        boolean matchFound = false;
+            String methodName = ctInvocation.getExecutable().getSimpleName();
+            List<Object> arguments = ctInvocation.getArguments();
+//            System.out.println("arguments " + arguments);
 
-        try {
-            try (PrintWriter out = new PrintWriter("/tmp/" + "tmp_prev_file" + ".java")) {
-                out.println(mainFile);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                System.exit(1);
+            for ( CtInvocation ctInvocSource: ctInvocationsSource){
+                if(ctInvocSource.getExecutable().getSimpleName().equals(methodName)){
+                    List ctTypeParameters = ctInvocSource.getArguments();
+                    if(arguments.size()==ctTypeParameters.size()){
+                        if(arguments.size()==0){
+                            res=true;
+                        }else
+                            for(int i=0;i<ctTypeParameters.size();i++){
+                                if(arguments.get(i).equals(ctTypeParameters.get(i))){
+                                    res=true;
+                                }
+                                else{
+                                    res=false;
+                                    break;
+                                }
+                            }}
+                }
             }
-
-            // get CtModel of previousString or the mail file
-            Launcher launcher = new Launcher();
-            launcher.addInputResource("/tmp/" + "tmp_prev_file" + ".java");
-            launcher.buildModel();
-            CtModel model = launcher.getModel();
-
-
-        /*
-        TODO: This pattern is not built properly
-        Error in Pattern properties. Note: It's a silent failure.
-        > "Method threw 'java.lang.StringIndexOutOfBoundsException' exception. Cannot evaluate spoon.pattern.internal.node.ListOfNodes.toString()"
-        Maybe because of the changes to the spoon object when it went through coming or gt.
-         */
-            Pattern pattern = PatternBuilder.create(element).build();
-
-            //System.out.println(pattern); // THIS THROWS AN EXCEPTION NOW: java.lang.StringIndexOutOfBoundsException: String index out of range: -1
-
-            List<Match> matches = new ArrayList<>();
-            for (CtType<?> ctType : model.getAllTypes()) {
-                matches.addAll(pattern.getMatches(ctType));
-            }
-
-            System.out.println("\n\nMATCHES START\n\n");
-            for (Match m : matches) {
-                System.err.println("matches with: " + m.toString());
-            }
-            System.out.println("\n\nMATCHES END\n\n");
-
-            matchFound = matches.size() > 0;
-
-        } catch (SpoonException ignored) {
-
         }
 
-        return matchFound;
+        // Binary operators
+        List<CtBinaryOperator> ctBoTarget = element.getElements(new TypeFilter<>(CtBinaryOperator.class));//our methods
+        List<CtBinaryOperator> ctBoSource = ctClass.getElements(new TypeFilter<>(CtBinaryOperator.class));//source file BO's
+
+        for(CtBinaryOperator boT : ctBoTarget) {
+
+            String methodName = boT.getShortRepresentation();
+
+            for ( CtBinaryOperator boS: ctBoSource){
+                if(boS.getShortRepresentation().equals(methodName)){
+                    if((boS.getLeftHandOperand().equals(boT.getLeftHandOperand())) &&  (boS.getRightHandOperand().equals(boT.getRightHandOperand()))){
+                        res=true;
+                    }
+                }
+            }
+        }
+
+        return ans|| res;
     }
 }
+

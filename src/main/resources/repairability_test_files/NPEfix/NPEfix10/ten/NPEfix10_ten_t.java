@@ -55,16 +55,6 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
     /** Build a polyhedrons set from a BSP tree.
      * <p>The leaf nodes of the BSP tree <em>must</em> have a
      * {@code Boolean} attribute representing the inside status of
-     * <p>
-     * This constructor is aimed at expert use, as building the tree may
-     * be a difficult taks. It is not intended for general use and for
-     * performances reasons does not check thoroughly its input, as this would
-     * require walking the full tree each time. Failing to provide a tree with
-     * the proper attributes, <em>will</em> therefore generate problems like
-     * {@link NullPointerException} or {@link ClassCastException} only later on.
-     * This limitation is known and explains why this constructor is for expert
-     * use only. The caller does have the responsibility to provided correct arguments.
-     * </p>
      * the corresponding cell (true for inside cells, false for outside
      * cells). In order to avoid building too many small objects, it is
      * recommended to use the predefined constants

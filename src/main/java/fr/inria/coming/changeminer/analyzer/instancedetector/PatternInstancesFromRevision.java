@@ -2,6 +2,7 @@ package fr.inria.coming.changeminer.analyzer.instancedetector;
 
 import java.util.List;
 
+import com.github.difflib.text.DiffRow;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.entities.AnalysisResult;
 
@@ -16,6 +17,7 @@ public class PatternInstancesFromRevision extends AnalysisResult<IRevision> {
 	 * Stores the information of the Diff.
 	 */
 	protected List<PatternInstancesFromDiff> infoPerDiff = null;
+	List<DiffRow> row_list = null;
 
 	public PatternInstancesFromRevision(IRevision analyzed) {
 		super(analyzed);
@@ -25,6 +27,20 @@ public class PatternInstancesFromRevision extends AnalysisResult<IRevision> {
 	public PatternInstancesFromRevision(IRevision analyzed, List<PatternInstancesFromDiff> instances) {
 		super(analyzed);
 		this.infoPerDiff = instances;
+	}
+
+	public PatternInstancesFromRevision(IRevision analyzed, List<PatternInstancesFromDiff> instances, List<DiffRow> rowList) {
+		super(analyzed);
+		this.infoPerDiff = instances;
+		this.row_list=rowList;
+	}
+
+	public List<DiffRow> getRow_list() {
+		return row_list;
+	}
+
+	public void setRow_list(List<DiffRow> row_list) {
+		this.row_list = row_list;
 	}
 
 	public List<PatternInstancesFromDiff> getInfoPerDiff() {

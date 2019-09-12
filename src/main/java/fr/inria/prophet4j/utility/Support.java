@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.StringJoiner;
 
 public class Support {
-    public static final String PROPHET4J_DIR = "src/main/resources/prophet4j/";
+    public static final String PROPHET4J_DIR = Support.class.getClassLoader().getResource("").getPath() + "prophet4j/";
 
     public enum DirType {
         // buggy files & patched files by human

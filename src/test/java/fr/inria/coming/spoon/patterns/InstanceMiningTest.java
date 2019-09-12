@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.github.difflib.text.DiffRow;
 import org.junit.Assert;
 import org.junit.Test;
 

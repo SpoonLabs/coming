@@ -32,7 +32,7 @@ public class GITRepositoryInspector extends RevisionNavigationExperiment<Commit>
 	}
 
 	@Override
-	protected FinalResult processEnd() {
+	public FinalResult processEnd() {
 		super.processEnd();
 		return this.allResults;
 	}
