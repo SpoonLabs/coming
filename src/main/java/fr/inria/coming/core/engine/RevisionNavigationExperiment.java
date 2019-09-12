@@ -119,17 +119,21 @@ public abstract class RevisionNavigationExperiment<R extends IRevision> {
 				for (Analyzer analyzer : analyzers) {
 
 					AnalysisResult resultAnalyzer = analyzer.analyze(oneRevision, resultAllAnalyzed);
-					resultAllAnalyzed.put(analyzer.getClass().getSimpleName(), resultAnalyzer);
-					if (resultAnalyzer == null || !resultAnalyzer.sucessful())
-						break;
+					resultAllAnalyzed.put(analyzer.key(), resultAnalyzer);
+					if (resultAnalyzer == null || !resultAnalyzer.sucessful()) {
+						log.debug(String.format("The result of the analyzer %s  was not sucessful",
+								analyzer.getClass().getSimpleName()));
+					}
 				}
 
 				processEndRevision(oneRevision, resultAllAnalyzed);
 			}
 
 			i++;
-			if (i > ComingProperties.getPropertyInteger("maxrevision"))
+			if (i > ComingProperties.getPropertyInteger("maxrevision")) {
+				log.info("Stoping at revision " + i);
 				break;
+			}
 		}
 
 		return processEnd();

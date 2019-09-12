@@ -2,7 +2,9 @@ package fr.inria.coming.changeminer.analyzer.instancedetector;
 
 import java.util.List;
 
+import com.github.difflib.text.DiffRow;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
+
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.entities.AnalysisResult;
 import gumtree.spoon.diff.Diff;
@@ -64,9 +66,9 @@ public class PatternInstancesFromDiff extends AnalysisResult<IRevision> {
 			for (ChangePatternInstance instance : instances) {
 				resultString += "\n" + instance.toString();
 			}
-			return resultString += "\n----";
+			return resultString;
 		} catch (Exception e) {
-			e.printStackTrace();
+			if (!(e instanceof RuntimeException)) throw new RuntimeException(e);
 		}
 		return "--Diff ex--";
 	}

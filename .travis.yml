@@ -13,13 +13,15 @@ cache:
 before_install:
 - sed -i -e 's|https://nexus.codehaus.org/snapshots/|https://oss.sonatype.org/content/repositories/codehaus-snapshots/|g'
   ~/.m2/settings.xml
-- unzip ./src/main/resources/repogit4testv0.zip
+- git clone https://github.com/SpoonLabs/repogit4testv0
 
 # in Java/Maven mvn takes care of the dependencies
 install: true
 
 # this is where all tests are executed
-script: mvn test
+script:
+- mvn test
+- find . -name "*.json"
 
 after_success:
 - ".buildscript/deploy_to_maven.sh"

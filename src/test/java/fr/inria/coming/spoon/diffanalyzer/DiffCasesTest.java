@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.github.difflib.text.DiffRow;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
