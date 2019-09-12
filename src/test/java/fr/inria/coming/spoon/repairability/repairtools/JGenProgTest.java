@@ -10,8 +10,8 @@ import org.junit.Test;
 public class JGenProgTest {
     @Test
     public void testJGenProgNegative() throws Exception {
-        FinalResult result = TestUtills.runRepairability("JGenProg", "/gen/MathACS");
-//        TestUtills.numberOfInstances(result, 1, 0);
+        FinalResult result = TestUtills.runRepairability("JGenProg", "/repairability_test_files/JGenProgTest");
+        TestUtills.numberOfInstances(result, 1, 0);
     }
 
     @Test
