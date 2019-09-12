@@ -8,6 +8,4 @@
 
     <action entityId="2" type="DEL"/>
     <action entityId="1" type="UNCHANGED"/>
-
-
 </pattern>

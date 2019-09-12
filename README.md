@@ -25,7 +25,7 @@ Please install a JDK 1.8 and configure Maven or your IDE to use it.
 Tests:
 
 ```
-unzip ./src/main/resources/repogit4testv0.zip
+git clone https://github.com/SpoonLabs/repogit4testv0
 mvn test
 ```
 
@@ -52,6 +52,7 @@ mvn exec:java -Dexec.mainClass=fr.inria.coming.main.ComingMain
  -location <path>                                                     analyse the content in 'path'
  -message <arg>                                                       comming message
  -mode <mineinstance | diff | features>                               the mode of execution of the analysis
+ -featuretype < S4R | P4J >                                           choose the feature analysis type if the mode is feature
  -output <path>                                                       dump the output of the analysis in the given path
  -outputprocessor <classname>                                         output processors for result
  -parameters <arg>                                                    Parameters, divided by :

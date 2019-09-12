@@ -15,6 +15,8 @@ public interface Commit extends IRevision {
 
 	public List<FileCommit> getJavaFileCommits();
 
+	public List<FileCommit> getFileCommits(String extension);
+
 	/**
 	 * Get the name of the commit (SHA-1)
 	 * 

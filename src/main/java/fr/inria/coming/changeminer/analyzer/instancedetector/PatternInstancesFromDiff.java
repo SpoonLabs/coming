@@ -2,9 +2,13 @@ package fr.inria.coming.changeminer.analyzer.instancedetector;
 
 import java.util.List;
 
+import com.github.difflib.text.DiffRow;
+import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
+
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.entities.AnalysisResult;
 import gumtree.spoon.diff.Diff;
+import org.apache.log4j.Logger;
 
 /**
  * 
@@ -16,6 +20,8 @@ public class PatternInstancesFromDiff extends AnalysisResult<IRevision> {
 	protected List<ChangePatternInstance> instances = null;
 	protected Diff diff = null;
 	protected String location = null;
+
+    Logger log = Logger.getLogger(this.getClass().getName());
 
 	public PatternInstancesFromDiff(IRevision analyzed) {
 		super(analyzed);
@@ -35,11 +41,13 @@ public class PatternInstancesFromDiff extends AnalysisResult<IRevision> {
 		this.location = location;
 	}
 
+
 	@Override
 	public String toString() {
 		try {
 			if (diff == null) {
-				System.err.println("Diff null");
+			    log.error("Diff null");
+//				System.err.println("Diff null");
 				return "--Diff null--";
 			}
 			String diffString = "";
@@ -48,7 +56,8 @@ public class PatternInstancesFromDiff extends AnalysisResult<IRevision> {
 				diffString = diff.toString();
 
 			} catch (Exception e) {
-				System.err.println("Error when printing diff result: " + e.getMessage());
+                log.error("Error when printing diff result: " + e.getMessage());
+//				System.err.println("Error when printing diff result: " + e.getMessage());
 
 				e.printStackTrace();
 				diffString = "wrong diff";
@@ -57,9 +66,9 @@ public class PatternInstancesFromDiff extends AnalysisResult<IRevision> {
 			for (ChangePatternInstance instance : instances) {
 				resultString += "\n" + instance.toString();
 			}
-			return resultString += "\n----";
+			return resultString;
 		} catch (Exception e) {
-			e.printStackTrace();
+			if (!(e instanceof RuntimeException)) throw new RuntimeException(e);
 		}
 		return "--Diff ex--";
 	}

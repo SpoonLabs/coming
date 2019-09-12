@@ -3,6 +3,7 @@ package fr.inria.coming.codefeatures.sec;
 import java.util.List;
 import java.util.Map;
 
+import com.github.difflib.text.DiffRow;
 import com.github.gumtreediff.tree.ITree;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
