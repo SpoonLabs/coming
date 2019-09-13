@@ -21,11 +21,6 @@ public interface Analyzer<T extends IRevision> {
 	 */
 	public AnalysisResult analyze(T input, RevisionResult previousResults);
 
-	/**
-	 * Returns the Key (identfier) of the Analyzer. By default is the class name.
-	 * 
-	 * @return
-	 */
 	public default String key() {
 		return this.getClass().getSimpleName();
 	}
