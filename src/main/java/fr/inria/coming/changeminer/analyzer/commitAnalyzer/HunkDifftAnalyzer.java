@@ -50,6 +50,7 @@ public class HunkDifftAnalyzer implements Analyzer<IRevision> {
 		List<IRevisionPair> javaFiles = revision.getChildren();
 
 		Map<String, HunkDiff> diffOfFiles = new HashMap<>();
+		System.out.println("\n*****\nCommit: " + revision.getName());
 
 		for (IRevisionPair<String> fileFromRevision : javaFiles) {
 
@@ -92,6 +93,7 @@ public class HunkDifftAnalyzer implements Analyzer<IRevision> {
 					continue;
 
 				for (int i = diffInfo.ancestorStart(); i < diffInfo.ancestorEnd(); i++) {
+					// System.out.println(diffInfo);
 					left += fPreviousVersion.getFragment(i) + "\n";
 				}
 
