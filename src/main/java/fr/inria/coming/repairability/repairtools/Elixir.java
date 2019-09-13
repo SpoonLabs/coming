@@ -39,9 +39,7 @@ public class Elixir extends AbstractRepairTool {
             "ep_5.xml",
             "ep_6.xml",
             "ep_7.xml",
-            "ep_8.xml",
-            "ep_9.xml",
-            "ep_10.xml"
+            "ep_8.xml"
     };
 
     /**
