@@ -1,18 +1,9 @@
 <pattern name="check_length">
 
-    <entity id="1" type="If" />
+    <entity id="1" type="Conditional" />
+    <action entityId="1" type="INS"/>
 
-    <entity id="2" type="Binary Operator">
-        <parent parentId="1" distance="1"/>
-    </entity>
-
-    <entity id="3" type="Literal" role="RightOperand">
-        <parent parentId="2" distance="1"/>
-    </entity>
-    <entity id="4" type="VariableRead" role="LeftOperand">
-        <parent parentId="2" distance="1"/>
-    </entity>
-
-    <action entityId="1" type="INS"/>;
+    <entity id="2" type="Binary Operator" />
+    <parent parentId="1" distance="1"/>
 
 </pattern>
