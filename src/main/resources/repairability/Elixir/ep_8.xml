@@ -1,13 +1,6 @@
 <pattern name="tight_be">
 
-    <entity id="1" type="If" />
-
-    <entity id="2" type="BinaryOperator">
-        <parent parentId="1" distance="1"/>
-    </entity>
-
-
-    <action entityId="2" type="INS"/>
-    <action entityId="1" type="UNCHANGED"/>
+    <entity id="1" type="BinaryOperator" />
+    <action entityId="1" type="INS"/>
 
 </pattern>
