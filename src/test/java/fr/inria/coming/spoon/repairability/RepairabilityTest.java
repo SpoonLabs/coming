@@ -21,8 +21,9 @@ import static org.junit.Assert.*;
 public class RepairabilityTest {
    
    @Test
-   public void testRepairabilityInterface() throws Exception {
+    public void testRepairabilityInterface() throws Exception {
         TestUtills.runRepairability("JMutRepair", "/repairability_test_files/one/");
+    }
 
     @Test
     public void testDiffResults() throws Exception {
