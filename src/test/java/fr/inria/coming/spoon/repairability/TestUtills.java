@@ -55,6 +55,8 @@ public class TestUtills {
                         toolName,
                         "-input",
                         "git",
+                        "-output",
+                        "./out",
                         "-location",
                         inputFiles});
 
