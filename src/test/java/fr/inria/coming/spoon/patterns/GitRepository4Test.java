@@ -24,6 +24,39 @@ import net.lingala.zip4j.core.ZipFile;
  */
 public abstract class GitRepository4Test {
 
+	protected static String repoPath;
+	protected Path temp;
+
+	public String getRepoName() {
+		return "/repogit4testv0.zip";
+	}
+
+	@Before
+	public void setUpGitRepo4Test() {
+		try {
+
+			URL resource = getClass().getResource(getRepoName());
+			File fl = new File(resource.getFile());
+
+			ZipFile zipFile = new ZipFile(fl.getAbsolutePath());
+
+			temp = Files.createTempDirectory("tempRepo4Test");
+			temp.toFile().deleteOnExit();
+			zipFile.extractAll(temp.toString());
+
+			repoPath = temp.toString() + File.separator + "repogit4testv0";
+
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@After
+	public void end() throws IOException {
+		FileUtils.deleteDirectory(temp.toFile());
+
+	}
+
 	public static Commit getCommit(Map<Commit, List<Operation>> instancesFound, String commit) {
 		for (Commit c : instancesFound.keySet()) {
 			if (c.getName().equals(commit)) {
