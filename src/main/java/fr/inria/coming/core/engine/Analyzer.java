@@ -21,8 +21,4 @@ public interface Analyzer<T extends IRevision> {
 	 */
 	public AnalysisResult analyze(T input, RevisionResult previousResults);
 
-	public default String key() {
-		return this.getClass().getSimpleName();
-	}
-
 }
