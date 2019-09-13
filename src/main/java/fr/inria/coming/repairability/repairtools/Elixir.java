@@ -39,7 +39,8 @@ public class Elixir extends AbstractRepairTool {
             "ep_5.xml",
             "ep_6.xml",
             "ep_7.xml",
-            "ep_8.xml"
+            "ep_8.xml",
+            "ep_9.xml" 
     };
 
     /**
@@ -68,7 +69,6 @@ public class Elixir extends AbstractRepairTool {
 
         String patternType = patternInstance.getPattern().getName().split(File.pathSeparator)[1];
         if (patternType.startsWith("ep_4")) {
-
 
             Operation upd = patternInstance.getActions().get(0);
             CtBinaryOperator src = (CtBinaryOperator) upd.getSrcNode();
