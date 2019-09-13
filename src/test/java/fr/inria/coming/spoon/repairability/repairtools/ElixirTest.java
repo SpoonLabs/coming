@@ -24,6 +24,7 @@ public class ElixirTest {
         TestUtills.numberOfInstances(result, 1, 0);
     }
 
+    
     @Test
     public void elixirTestonDatasetFalse2() throws Exception {
         FinalResult result = TestUtills.runRepairability("Elixir", "/repairability_test_files/NopolTypes/");
