@@ -66,9 +66,9 @@ public class PatternInstancesFromDiff extends AnalysisResult<IRevision> {
 			for (ChangePatternInstance instance : instances) {
 				resultString += "\n" + instance.toString();
 			}
-			return resultString;
+			return resultString += "\n----";
 		} catch (Exception e) {
-			if (!(e instanceof RuntimeException)) throw new RuntimeException(e);
+			e.printStackTrace();
 		}
 		return "--Diff ex--";
 	}
