@@ -20,15 +20,8 @@ import static org.junit.Assert.*;
 
 public class RepairabilityTest {
 
-    @Test
-    public void testelixir_data() throws Exception {
-        FinalResult result = TestUtills.runRepairability("ALL", "/repairability_test_files/elixir_data");
-    }
-
-    @Test
-    public void testNPEfixdata() throws Exception {
-        FinalResult result = TestUtills.runRepairability("ALL", "/repairability_test_files/NPEfix");
-    }
+   public void testRepairabilityInterface() throws Exception {
+        TestUtills.runRepairability("JMutRepair", "/repairability_test_files/one/");
 
     @Test
     public void testDiffResults() throws Exception {
