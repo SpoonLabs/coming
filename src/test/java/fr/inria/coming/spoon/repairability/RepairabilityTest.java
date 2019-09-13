@@ -19,13 +19,13 @@ import java.util.Set;
 import static org.junit.Assert.*;
 
 public class RepairabilityTest {
-   
-  @Test
+
+    @Test
     public void testRepairabilityInterface() throws Exception {
         TestUtills.runRepairability("JMutRepair", "/repairability_test_files/one/");
     }
 
-   
+
     @Test
     public void testDiffResults() throws Exception {
         int count=0;
