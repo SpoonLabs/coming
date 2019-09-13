@@ -1,5 +1,6 @@
 package fr.inria.prophet4j.learner;
 
+import com.google.common.io.Files;
 import fr.inria.prophet4j.utility.CodeDiffer;
 import fr.inria.prophet4j.utility.Structure.Sample;
 import fr.inria.prophet4j.utility.Structure.FeatureMatrix;
@@ -34,8 +35,37 @@ public class RepairEvaluator {
         this.parameterVector.load(parameterFilePath);
     }
 
+    // example : Map<"Patch3", Map<buggy file, patched file>>
+    public Map<String, Map<File, File>> loadPFiles(String dataPath) throws NullPointerException {
+        Map<String, Map<File, File>> catalogs = new HashMap<>();
+        for (File file : new File(dataPath).listFiles((dir, name) -> !name.startsWith("."))) {
+            // patchInfo
+            String pathName = file.getName();
+            File buggyFile = null;
+            File patchedFile = null;
+            for (File tmpFile : Files.fileTraverser().breadthFirst(file)) {
+                if (tmpFile.getName().endsWith("_s.java")) {
+                    buggyFile = tmpFile;
+                } else if (tmpFile.getName().endsWith("_t.java")) {
+                    patchedFile = tmpFile;
+                }
+            }
+            if (buggyFile != null && patchedFile != null) {
+                Map<File, File> catalog = new HashMap<>();
+                catalog.put(buggyFile, patchedFile);
+
+                if (!catalogs.containsKey(pathName)) {
+                    catalogs.put(pathName, catalog);
+                } else {
+                    catalogs.get(pathName).putAll(catalog);
+                }
+            }
+        }
+        return catalogs;
+    }
+
     // example : Map<"Chart3", Map<buggy file, patched file>>
-    public Map<String, Map<File, File>> loadFiles(String dataPath) throws NullPointerException {
+    public Map<String, Map<File, File>> loadDFiles(String dataPath) throws NullPointerException {
         Map<String, Map<File, File>> catalogs = new HashMap<>();
         for (File file : new File(dataPath).listFiles((dir, name) -> !name.startsWith("."))) {
             String[] info = file.getName().split("-");
@@ -70,7 +100,7 @@ public class RepairEvaluator {
 
     // for D_HUMAN
     // example : Map<"Chart3", Map<buggy file, patched file>>
-    private Map<String, Map<File, File>> loadFiles(String dataPath, String auxPath) throws NullPointerException {
+    private Map<String, Map<File, File>> loadDFiles(String dataPath, String auxPath) throws NullPointerException {
         Map<String, Map<File, File>> catalogs = new HashMap<>();
         for (File file : new File(auxPath).listFiles((dir, name) -> !name.startsWith("."))) {
             String[] info = file.getName().split("-");
@@ -167,9 +197,10 @@ public class RepairEvaluator {
     }
 
     public void run() {
-        run(RankingOption.D_CORRECT, RankingOption.D_INCORRECT);
+//        run(RankingOption.D_CORRECT, RankingOption.D_INCORRECT);
 //        run(RankingOption.D_HUMAN, RankingOption.D_CORRECT);
-        run(RankingOption.D_HUMAN, RankingOption.D_INCORRECT);
+//        run(RankingOption.D_HUMAN, RankingOption.D_INCORRECT);
+        run(RankingOption.P_CORRECT, RankingOption.P_INCORRECT);
     }
 
     public void run(RankingOption foreOption, RankingOption backOption) {
@@ -178,13 +209,27 @@ public class RepairEvaluator {
         String backFilePath = Support.getFilePath4Ranking(this.option, backOption, false);
 
         Map<String, Map<File, File>> foreFiles;
-        if (foreOption == RankingOption.D_HUMAN) {
-            foreFiles = loadFiles(foreFilePath, backFilePath);
-        } else {
-            foreFiles = loadFiles(foreFilePath);
+        Map<String, Map<File, File>> backFiles;
+        switch (foreOption) {
+            case D_HUMAN:
+                foreFiles = loadDFiles(foreFilePath, backFilePath);
+                break;
+            case D_CORRECT:
+            case D_INCORRECT:
+                foreFiles = loadDFiles(foreFilePath);
+                break;
+            default: // P_CORRECT or P_INCORRECT
+                foreFiles = loadPFiles(foreFilePath);
         }
         assert backOption != RankingOption.D_HUMAN;
-        Map<String, Map<File, File>> backFiles = loadFiles(backFilePath);
+        switch (backOption) {
+            case D_CORRECT:
+            case D_INCORRECT:
+                backFiles = loadDFiles(backFilePath);
+                break;
+            default: // P_CORRECT or P_INCORRECT
+                backFiles = loadPFiles(backFilePath);
+        }
         // we want the interaction-set of both keySets
         Set<String> foreKeys = foreFiles.keySet();
         Set<String> backKeys = backFiles.keySet();

@@ -34,9 +34,11 @@ public class Tool {
     private void genWeightsCSV() {
         String filePath = Support.getFilePath(Support.DirType.PARAMETER_DIR, option);
         String inputFilePath = filePath + "ParameterVector";
+//        System.out.println("inputFilePath" + inputFilePath);
         String[] tmp = Support.getFilePath(Support.DirType.FEATURE_DIR, option).split("/");
         String prefix = tmp[tmp.length - 1];
         String outputFilePath = filePath + prefix + "feature-weights.csv";
+//        System.out.println("outputFilePath" + outputFilePath);
 
         ParameterVector parameterVector = new ParameterVector(option.featureOption);
         parameterVector.load(inputFilePath);
@@ -77,9 +79,11 @@ public class Tool {
     public void genVectorsCSV(RankingOption rankingOption) {
         String filePath = Support.getFilePath(Support.DirType.PARAMETER_DIR, option);
         String inputFilePath = filePath + "ParameterVector";
+//        System.out.println("inputFilePath" + inputFilePath);
         String[] tmp = Support.getFilePath(Support.DirType.FEATURE_DIR, option).split("/");
         String prefix = tmp[tmp.length - 1] + "[" + rankingOption.name().toLowerCase() + "]";
         String outputFilePath = filePath + prefix + "feature-vectors.csv";
+//        System.out.println("outputFilePath" + outputFilePath);
 
         ParameterVector parameterVector = new ParameterVector(option.featureOption);
         parameterVector.load(inputFilePath);
@@ -109,7 +113,12 @@ public class Tool {
         String rankingFilePath = Support.getFilePath4Ranking(this.option, rankingOption, false);
 
         RepairEvaluator repairEvaluator = new RepairEvaluator(option);
-        Map<String, Map<File, File>> rankingFiles = repairEvaluator.loadFiles(rankingFilePath);
+        Map<String, Map<File, File>> rankingFiles;
+        if (rankingOption == RankingOption.P_CORRECT || rankingOption == RankingOption.P_INCORRECT) {
+            rankingFiles = repairEvaluator.loadPFiles(rankingFilePath);
+        } else {
+            rankingFiles = repairEvaluator.loadDFiles(rankingFilePath);
+        }
 
         List<List<String>> valueLists = new ArrayList<>();
         CodeDiffer codeDiffer = new CodeDiffer(false, option);
@@ -159,12 +168,17 @@ public class Tool {
 
         option.featureOption = FeatureOption.ORIGINAL;
         tool.genWeightsCSV();
-        tool.genVectorsCSV(RankingOption.D_CORRECT);
-        tool.genVectorsCSV(RankingOption.D_INCORRECT);
+        tool.genVectorsCSV(RankingOption.P_CORRECT);
+        tool.genVectorsCSV(RankingOption.P_INCORRECT);
 
-        option.featureOption = FeatureOption.EXTENDED;
-        tool.genWeightsCSV();
-        tool.genVectorsCSV(RankingOption.D_CORRECT);
-        tool.genVectorsCSV(RankingOption.D_INCORRECT);
+//        option.featureOption = FeatureOption.ORIGINAL;
+//        tool.genWeightsCSV();
+//        tool.genVectorsCSV(RankingOption.D_CORRECT);
+//        tool.genVectorsCSV(RankingOption.D_INCORRECT);
+
+//        option.featureOption = FeatureOption.EXTENDED;
+//        tool.genWeightsCSV();
+//        tool.genVectorsCSV(RankingOption.D_CORRECT);
+//        tool.genVectorsCSV(RankingOption.D_INCORRECT);
     }
 }

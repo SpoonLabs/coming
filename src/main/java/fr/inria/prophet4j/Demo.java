@@ -54,12 +54,12 @@ public class Demo {
     }
 
     private static void runDemo(Option option) {
-        option.dataOption = DataOption.SANER;
-        option.patchOption = PatchOption.SPR;
+        option.dataOption = DataOption.BUG_DOT_JAR_MINUS_MATH;
+        option.patchOption = PatchOption.BUG_DOT_JAR_MINUS_MATH;
         option.featureOption = FeatureOption.ORIGINAL;
         run(option);
-        option.featureOption = FeatureOption.EXTENDED;
-        run(option);
+//        option.featureOption = FeatureOption.EXTENDED;
+//        run(option);
     }
 
     private static void runODS1(Option option) {
@@ -88,14 +88,13 @@ public class Demo {
     public static void main(String[] args) {
         try {
             Option option = new Option();
-//            runDemo(option);
+            runDemo(option);
 //            runODS1(option);
 //            runODS2(option);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    // last time to sync zhongxingyu/coming is in July
     // if necessary, config Java VM: -Xms1024m -Xmx16384m
     // one idea: using distributed representation instead of crossing features
 }

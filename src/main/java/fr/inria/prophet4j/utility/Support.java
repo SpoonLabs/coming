@@ -71,6 +71,12 @@ public class Support {
             case D_INCORRECT:
                 filePath += "D_incorrect/";
                 break;
+            case P_CORRECT:
+                filePath += "P_correct/";
+                break;
+            case P_INCORRECT:
+                filePath += "P_incorrect/";
+                break;
         }
         return filePath;
     }

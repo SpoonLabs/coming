@@ -57,6 +57,8 @@ public class Option {
         D_HUMAN,
         D_CORRECT,
         D_INCORRECT,
+        P_CORRECT,
+        P_INCORRECT,
     }
 
     @Override
