@@ -6,11 +6,8 @@ import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
 import gumtree.spoon.diff.operations.Operation;
 import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.path.CtRole;
 
 import java.io.File;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
