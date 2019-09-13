@@ -110,4 +110,5 @@ public class HunkDifftAnalyzer implements Analyzer<IRevision> {
 
 		return ranges;
 	}
+
 }
