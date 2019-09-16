@@ -5,9 +5,10 @@
     <entity id="2" type="BinaryOperator" role="condition" >
         <parent parentId="1" distance="1"/>
     </entity>
-    <entity id="3" type="*" role="RightOperand" value="null">
+
+    <entity id="3" type="*"  value="null">
         <parent parentId="2" distance="1"/>
-    </entity>
+    </entity>>
 
     <action entityId="1" type="INS"/>
     <action entityId="3" type="INS"/>

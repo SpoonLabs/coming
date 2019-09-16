@@ -41,7 +41,8 @@ public class Elixir extends AbstractRepairTool {
             "ep_7.xml",
             "ep_8.xml",
             "ep_9.xml",
-            "ep_10.xml"
+            "ep_10.xml",
+            "ep_11.xml"
     };
 
     /**
@@ -70,8 +71,6 @@ public class Elixir extends AbstractRepairTool {
 
         String patternType = patternInstance.getPattern().getName().split(File.pathSeparator)[1];
         if (patternType.startsWith("ep_4")) {
-
-
             Operation upd = patternInstance.getActions().get(0);
             CtBinaryOperator src = (CtBinaryOperator) upd.getSrcNode();
             CtBinaryOperator dst = (CtBinaryOperator) upd.getDstNode();
@@ -80,6 +79,26 @@ public class Elixir extends AbstractRepairTool {
                     && src.getRightHandOperand().equals(dst.getRightHandOperand());
         }
 
+
+        if (patternType.startsWith("ep_10")) {
+
+            Operation upd = patternInstance.getActions().get(0);
+            CtBinaryOperator src = (CtBinaryOperator) upd.getSrcNode();
+            CtBinaryOperator dst = (CtBinaryOperator) upd.getDstNode();
+
+            return dst.getRightHandOperand().equals(true) || dst.getRightHandOperand().equals(false);
+        }
+
+
+
+        if (patternType.startsWith("ep_11")) {
+
+            Operation upd = patternInstance.getActions().get(0);
+            CtBinaryOperator src = (CtBinaryOperator) upd.getSrcNode();
+            CtBinaryOperator dst = (CtBinaryOperator) upd.getDstNode();
+
+            return dst.getLeftHandOperand().equals(true) || dst.getLeftHandOperand().equals(false);
+        }
         return true;
     }
 }

@@ -9,7 +9,7 @@ public class ElixirTest {
     @Test
     public void elixirTest() throws Exception {
         FinalResult result = TestUtills.runRepairability("Elixir", "/repairability_test_files/Elixir/");
-        TestUtills.numberOfInstances(result, 7, 7);
+        TestUtills.numberOfInstances(result, 8, 8);
     }
 
     @Test

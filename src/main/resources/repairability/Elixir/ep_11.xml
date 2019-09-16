@@ -1,4 +1,4 @@
-<pattern name="loose_type2">
+<pattern name="loose_type1">
 
     <entity id="1" type="If" />
 
@@ -14,5 +14,7 @@
         <parent parentId="2" distance="1"/>
     </entity>
 
-    <action entityId="3" type="UPD"/>
+    <action entityId="4" type="UPD"/>
+
+
 </pattern>
