@@ -69,55 +69,6 @@ public class JGenProg extends AbstractRepairTool {
         String previousVersionString = (String) revision.getChildren().get(0).getPreviousVersion();
         boolean ans=previousVersionString.contains(element.toString());
 
-//        CtClass ctClass = Launcher.parseClass(previousVersionString);
-//        List<CtInvocation> ctInvocationsSource = ctClass.getElements(new TypeFilter<>(CtInvocation.class));//source file methods
-//        List<CtInvocation> ctInvocations = element.getElements(new TypeFilter<>(CtInvocation.class));//our invocation
-//
-//        for(CtInvocation ctInvocation : ctInvocations) {
-//
-//            String methodName = ctInvocation.getExecutable().getSimpleName();
-//            List<Object> arguments = ctInvocation.getArguments();
-////            System.out.println("arguments " + arguments);
-//
-//            for ( CtInvocation ctInvocSource: ctInvocationsSource){
-//                if(ctInvocSource.getExecutable().getSimpleName().equals(methodName)){
-//                    List ctTypeParameters = ctInvocSource.getArguments();
-//                    if(arguments.size()==ctTypeParameters.size()){
-//                        if(arguments.size()==0){
-//                            res=true;
-//                        }else
-//                            for(int i=0;i<ctTypeParameters.size();i++){
-//                                if(arguments.get(i).equals(ctTypeParameters.get(i))){
-//                                    res=true;
-//                                }
-//                                else{
-//                                    res=false;
-//                                    break;
-//                                }
-//                            }}
-//                }
-//            }
-//        }
-//
-//        // Binary operators
-//        List<CtBinaryOperator> ctBoTarget = element.getElements(new TypeFilter<>(CtBinaryOperator.class));//our methods
-//        List<CtBinaryOperator> ctBoSource = ctClass.getElements(new TypeFilter<>(CtBinaryOperator.class));//source file BO's
-//
-//        for(CtBinaryOperator boT : ctBoTarget) {
-//
-//            String methodName = boT.getShortRepresentation();
-//
-//            for ( CtBinaryOperator boS: ctBoSource){
-//                if(boS.getShortRepresentation().equals(methodName)){
-//                    if((boS.getLeftHandOperand().equals(boT.getLeftHandOperand())) &&  (boS.getRightHandOperand().equals(boT.getRightHandOperand()))){
-//                        res=true;
-//                    }
-//                }
-//            }
-//        }
-//
-//        return ans|| res;
-
         return ans;
     }
 }
