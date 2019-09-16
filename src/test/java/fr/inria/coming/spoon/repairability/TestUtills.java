@@ -38,8 +38,6 @@ public class TestUtills {
                         toolName,
                         "-input",
                         "files",
-                        "--output",
-                        "./out",
                         "-location",
                         TestUtills.class.getResource(inputFiles).getFile()});
 
