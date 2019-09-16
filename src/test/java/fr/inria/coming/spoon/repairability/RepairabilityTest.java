@@ -61,7 +61,6 @@ public class RepairabilityTest {
         }
     }
 
-
     @Test
     public void testOneInstancePerRevision() throws Exception {
 
