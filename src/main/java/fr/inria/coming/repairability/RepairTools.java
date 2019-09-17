@@ -58,7 +58,10 @@ public class RepairTools extends AbstractRepairTool {
         toolsToBeConsidered = new ArrayList<>();
 
         // input checks and loading class objects for the specified repair tools
-        if (repairToolArg == null && repairToolArg.equals("") || repairToolArg.equals("ALL")) {
+        if (repairToolArg == null) {
+            // consider default/ALL Case
+            toolsToBeConsidered = getRepairToolsInstance(Arrays.asList(supportedTools));
+        } else if (repairToolArg.equals("") || repairToolArg.equals("ALL")) {
             // consider default/ALL Case
             toolsToBeConsidered = getRepairToolsInstance(Arrays.asList(supportedTools));
         } else {
@@ -87,6 +90,7 @@ public class RepairTools extends AbstractRepairTool {
 
     /**
      * We don't wanna modify anything in patterns (like pattern names) in this particular case. Therefore, we override it.
+     *
      * @return
      */
     @Override
