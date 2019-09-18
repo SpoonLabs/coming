@@ -20,7 +20,7 @@ public class ComingProperties {
 		InputStream propFile;
 		try {
 			properties = new Properties();
-			propFile = ComingProperties.class.getClassLoader().getResourceAsStream("configuration.properties");
+			propFile = ComingProperties.class.getClassLoader().getResourceAsStream("config-coming.properties");
 
 			properties.load(propFile);
 		} catch (Exception e) {

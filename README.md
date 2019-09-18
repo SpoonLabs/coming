@@ -65,7 +65,7 @@ mvn exec:java -Dexec.mainClass=fr.inria.coming.main.ComingMain
  -showentities                                                        show all entities
 ```
 
-**Parameters** Most of the properties are configured in file "configuration.properties"
+**Parameters** Most of the properties are configured in file `config-coming.properties`
 
 One can change any of those properties from the command line by using   `-parameters`
 
