@@ -71,7 +71,7 @@ public abstract class AbstractRepairTool {
 
     public String getPathFromResources(String name) {
         String rootInputFile = "/repairability/" + this.getClass().getSimpleName() + "/" + name;
-        String outFile = "/tmp/" + this.getClass().getSimpleName() + name;
+        String outFilePath = null;
         try {
             // read the file into buffer
             InputStream inputStream = this.getClass().getResourceAsStream(rootInputFile);
@@ -80,13 +80,15 @@ public abstract class AbstractRepairTool {
             inputStream.close();
 
             // make a tmp file
-            OutputStream outStream = new FileOutputStream(outFile);
+            File outFile = File.createTempFile("tmp-" + this.getClass().getSimpleName() + name, null);
+            outFilePath = outFile.getPath();
+            OutputStream outStream = new FileOutputStream(outFilePath);
             outStream.write(buffer);
             outStream.close();
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
-        return outFile;
+        return outFilePath;
     }
 }
