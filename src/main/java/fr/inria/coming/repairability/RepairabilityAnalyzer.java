@@ -8,7 +8,10 @@ import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.engine.Analyzer;
 import fr.inria.coming.core.entities.AnalysisResult;
 import fr.inria.coming.core.entities.RevisionResult;
+import fr.inria.coming.main.ComingProperties;
 import fr.inria.coming.repairability.repairtools.AbstractRepairTool;
+import gumtree.spoon.diff.Diff;
+import gumtree.spoon.diff.operations.Operation;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -63,10 +66,14 @@ public class RepairabilityAnalyzer implements Analyzer {
                 if (tool.filter(instancePattern, input)) {
                     // if filter is passed add it too patternInstanceList
 
-                    if (!toolsSeen.contains(toolName)) {
-                        //add instance of single repair tool only once
-                        patternInstanceList.add(instancePattern);
-                        toolsSeen.add(toolName);
+                    if (!toolsSeen.contains(toolName)
+                            || ComingProperties.getPropertyBoolean("include_all_instances_for_each_tool")) {
+                        if(!ComingProperties.getPropertyBoolean("exclude_repair_patterns_not_covering_the_whole_diff")
+                                || coversTheWholeDiff(instancePattern, instancesPerDiff.getDiff())) {
+                            //add instance of single repair tool only once
+                            patternInstanceList.add(instancePattern);
+                            toolsSeen.add(toolName);
+                        }
                     }
                 }
             }
@@ -80,5 +87,20 @@ public class RepairabilityAnalyzer implements Analyzer {
         PatternInstancesFromRevision finalResult = new PatternInstancesFromRevision(input, allInstances,result.getRow_list());
 
         return finalResult;
+    }
+
+    private boolean coversTheWholeDiff(ChangePatternInstance instancePattern, Diff diff) {
+        for(Operation diffOperation : diff.getAllOperations()){
+            boolean foundOp = false;
+            for(Operation instanceOperation : instancePattern.getActions()){
+                if(diffOperation.toString().equals(instanceOperation.toString())){
+                    foundOp = true;
+                    break;
+                }
+            }
+            if(!foundOp)
+                return false;
+        }
+        return true;
     }
 }

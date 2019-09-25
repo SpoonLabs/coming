@@ -1,6 +1,7 @@
 package fr.inria.coming.changeminer.analyzer.instancedetector;
 
 import java.util.List;
+import java.util.Set;
 
 import fr.inria.coming.changeminer.analyzer.patternspecification.PatternAction;
 import fr.inria.coming.utils.MapList;
