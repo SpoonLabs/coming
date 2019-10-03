@@ -11,14 +11,16 @@ This is the [sample file](https://github.com/SpoonLabs/coming/blob/master/src/te
 
 P4J features
 =========
-
+    
+    Pos = 3 (POS_C -current line-, POS_F -former lines-, POS_L -latter lines-)
+    
     AtomFeatureNum   = 30   => 33 (30 + 4 - 1)
     RepairFeatureNum = 5    => 5
     ValueFeatureNum  = 12   => 10 (12 - 2)
     
     RepairFeatureNum     = RepairFeatureNum                      = 5    => 5
-    GlobalFeatureNum     = 3 * AtomFeatureNum * RepairFeatureNum = 450  => 495
-    VarCrossFeatureNum   = 3 * AtomFeatureNum * AtomFeatureNum   = 2700 => 3267
+    GlobalFeatureNum     = Pos * AtomFeatureNum * RepairFeatureNum = 450  => 495
+    VarCrossFeatureNum   = Pos * AtomFeatureNum * AtomFeatureNum   = 2700 => 3267
     ValueCrossFeatureNum = AtomFeatureNum * ValueFeatureNum      = 360  => 330
     SumNum  = 4097
 
