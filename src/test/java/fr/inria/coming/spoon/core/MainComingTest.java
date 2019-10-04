@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.difflib.text.DiffRow;
+import fr.inria.coming.spoon.repairability.TestUtills;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -103,16 +104,21 @@ public class MainComingTest {
 	}
 
 	@Test
-	public void testFeaturesMain() {
+	public void testFeaturesMain() throws Exception {
 		File output = new File("./coming_results/features_fe76517014e580ddcb40ac04ea824d54ba741c8b.json");
 
 		// clean test data
 		output.delete();
 
 		assertFalse(output.exists());
-		// the features mode does not crash
-		FinalResult r = new ComingMain().run(
-				new String[] { "-mode", "features", "-location", "repogit4testv0"});
+
+		FinalResult result =
+				TestUtills.runRepairabilityWithParameters
+						(
+								"ALL",
+								"/pairsICSE15/",
+								"include_all_instances_for_each_tool:true"
+						);
 
 		// the JSON file has been created
 		assertTrue(output.exists());

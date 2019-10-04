@@ -1,0 +1,39 @@
+{
+  "instances": [
+    {
+      "revision": "covered",
+      "repairability": [
+        {
+          "tool-name": "Elixir",
+          "pattern-name": "Elixir;update_typre_ref",
+          "Unified_Diff_of-files:": "Starts Below...",
+          "INSERT:": "import javarepl.expressions.Type;",
+          "instance_detail": [
+            {
+              "pattern_action": "UPD",
+              "pattern_entity": {
+                "entity_type": "TypeReference",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "UPD",
+                "src_type": "TypeReference",
+                "dst_type": "TypeReference",
+                "src": "javarepl.Type",
+                "dst": "javarepl.expressions.Type",
+                "src_parent_type": "Parameter",
+                "dst_parent_type": "Parameter",
+                "src_parent": "javarepl.Type expression",
+                "dst_parent": "javarepl.expressions.Type expression"
+              },
+              "line": 204,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\covered"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -83,6 +83,7 @@ public class RepairabilityAnalyzer implements Analyzer {
             }
 
             // modify this PatternInstancesFromDiff to contain only filtered elements
+            // FIXME: this also changes PatternInstanceAnalyzer result
             instancesPerDiff.setInstances(patternInstanceList);
 
             allInstances.add(instancesPerDiff);
@@ -94,10 +95,10 @@ public class RepairabilityAnalyzer implements Analyzer {
     }
 
     private boolean coversTheWholeDiff(ChangePatternInstance instancePattern, Diff diff) {
-        for(Operation diffOperation : diff.getAllOperations()){
+        for(Operation diffOperation : diff.getRootOperations()){
             boolean foundOp = false;
             for(Operation instanceOperation : instancePattern.getActions()){
-                if(diffOperation.toString().equals(instanceOperation.toString())){
+                if(diffOperation.equals(instanceOperation)){
                     foundOp = true;
                     break;
                 }

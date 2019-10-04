@@ -7,6 +7,7 @@ import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.main.ComingMain;
 import fr.inria.coming.repairability.RepairabilityAnalyzer;
 
+import java.net.URLDecoder;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -39,7 +40,31 @@ public class TestUtills {
                         "-input",
                         "files",
                         "-location",
-                        TestUtills.class.getResource(inputFiles).getFile()});
+                        URLDecoder.decode(TestUtills.class.getResource(inputFiles).getFile(), "UTF-8")});
+
+        assertNotNull(result);
+        return result;
+    }
+
+    public static FinalResult runRepairabilityWithParameters
+            (
+                    String toolName,
+                    String inputFiles,
+                    String parameters // ex. "include_all_instances_for_each_tool:true:X:false:Y:true"
+            ) throws Exception {
+        ComingMain cm = new ComingMain();
+
+        FinalResult result = cm.run(
+                new String[]{"-mode",
+                        "repairability",
+                        "-repairtool",
+                        toolName,
+                        "-input",
+                        "files",
+                        "-parameters",
+                        parameters,
+                        "-location",
+                        URLDecoder.decode(TestUtills.class.getResource(inputFiles).getFile(), "UTF-8")});
 
         assertNotNull(result);
         return result;
