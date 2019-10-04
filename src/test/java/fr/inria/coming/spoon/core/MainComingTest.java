@@ -112,13 +112,8 @@ public class MainComingTest {
 
 		assertFalse(output.exists());
 
-		FinalResult result =
-				TestUtills.runRepairabilityWithParameters
-						(
-								"ALL",
-								"/pairsICSE15/",
-								"include_all_instances_for_each_tool:true"
-						);
+		FinalResult r = new ComingMain().run(
+				new String[] { "-mode", "features", "-location", "repogit4testv0"});
 
 		// the JSON file has been created
 		assertTrue(output.exists());
