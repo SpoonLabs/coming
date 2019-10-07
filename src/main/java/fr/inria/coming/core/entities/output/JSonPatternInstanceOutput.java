@@ -20,7 +20,9 @@ import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.core.entities.interfaces.IOutput;
 import fr.inria.coming.main.ComingProperties;
+import fr.inria.coming.repairability.models.InstanceStats;
 import gumtree.spoon.diff.operations.Operation;
+import org.json.simple.JSONObject;
 
 public class JSonPatternInstanceOutput implements IOutput {
 
@@ -147,6 +149,15 @@ public class JSonPatternInstanceOutput implements IOutput {
 				(operation.getDstNode() != null) ? operation.getDstNode().getParent().toString() : "null");
 
 		return op;
+	}
+
+	public static JsonObject getJSONFromInstanceStats(InstanceStats stats){
+		JsonObject is = new JsonObject();
+		is.addProperty("number_of_src_entities", stats.getNumberOfSrcEntities());
+		is.addProperty("number_of_dst_entities", stats.getNumberOfDstEntities());
+		is.addProperty("src_entity_types", stats.getSrcEntityTypes().toString());
+		is.addProperty("dst_entity_types", stats.getDstEntityTypes().toString());
+		return is;
 	}
 
 	private static String clean(String simpleName) {

@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -199,5 +200,10 @@ public class RepairabilityTest {
             }
         }
         return hasRepetitiveToolUseForSingleRevision;
+    }
+
+    @Test
+    public void testNullPointerException() throws UnsupportedEncodingException {
+        FinalResult result = TestUtills.runRepairabilityWithoutException("ALL", "/repairability_test_files/other");
     }
 }

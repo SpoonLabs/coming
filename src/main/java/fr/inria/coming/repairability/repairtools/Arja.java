@@ -28,17 +28,14 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * 
- Arja tries to correct the code by inserting statements that are in the source file either in a 
- direct approach or a type matching approach.
- 
- Direct Approach:
- the extracted variable/Method with the same name and compatible types exists in the variable/Method scope.
- 
- statement  or the invocation exists in the source code with compatible types. (Read more about this on
- https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=8485732)
- 
- *
+ * Arja tries to correct the code by inserting statements that are in the source file either in a
+ * direct approach or a type matching approach.
+ * <p>
+ * Direct Approach:
+ * the extracted variable/Method with the same name and compatible types exists in the variable/Method scope.
+ * <p>
+ * statement  or the invocation exists in the source code with compatible types. (Read more about this on
+ * https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=8485732)
  */
 
 public class Arja extends AbstractRepairTool {
@@ -47,8 +44,8 @@ public class Arja extends AbstractRepairTool {
             "any_statement_s.xml",
             "any_statement_d.xml"
     };
-    private boolean res1=false;
-    private boolean res=false;
+    private boolean res1 = false;
+    private boolean res = false;
 
     @Override
     protected List<ChangePatternSpecification> readPatterns() {
@@ -95,35 +92,34 @@ public class Arja extends AbstractRepairTool {
         List<CtInvocation> ctInvocationssSourcefile = ctClass.getElements(new TypeFilter<>(CtInvocation.class));//source file invocations
         List<CtInvocation> ctInvocations = element.getElements(new TypeFilter<>(CtInvocation.class));//our invocation
 
-        for(CtInvocation ctInvocation : ctInvocations) {
+        for (CtInvocation ctInvocation : ctInvocations) {
 
             String ourmethodName = ctInvocation.getExecutable().getSimpleName();//.getShortRepresentation();
             List<CtTypeParameter> ctTypeParameterstarget = ctInvocation.getActualTypeArguments();
 
-            for (CtMethod ctMethod: ctMethodsSourcefile){
-                if(ctMethod.getSimpleName().equals(ourmethodName)){
-                    res1=true;
+            for (CtMethod ctMethod : ctMethodsSourcefile) {
+                if (ctMethod.getSimpleName().equals(ourmethodName)) {
+                    res1 = true;
                 }
             }
 
-            for (CtInvocation ctinvoc: ctInvocationssSourcefile){
-                    List<CtTypeParameter> ctTypeParameters = ctinvoc.getActualTypeArguments();
-                    if(ctTypeParameterstarget.size()==ctTypeParameters.size()){
-                        if(ctTypeParameterstarget.size()==0)
-                            res=true;
-                        else
-                            for(int i=0;i<ctTypeParameters.size();i++){
-                                if(ctTypeParameterstarget.get(i).equals(ctTypeParameters.get(i))){
-                                    res=res1;
-                                }
-                                else{
-                                    res=false;
-                                    System.out.println("about to break");
-                                    break;
-                                }
-
+            for (CtInvocation ctinvoc : ctInvocationssSourcefile) {
+                List<CtTypeParameter> ctTypeParameters = ctinvoc.getActualTypeArguments();
+                if (ctTypeParameterstarget.size() == ctTypeParameters.size()) {
+                    if (ctTypeParameterstarget.size() == 0)
+                        res = true;
+                    else
+                        for (int i = 0; i < ctTypeParameters.size(); i++) {
+                            if (ctTypeParameterstarget.get(i).equals(ctTypeParameters.get(i))) {
+                                res = res1;
+                            } else {
+                                res = false;
+                                System.out.println("about to break");
+                                break;
                             }
+
                         }
+                }
             }
         }
 
@@ -133,18 +129,18 @@ public class Arja extends AbstractRepairTool {
         List<CtBinaryOperator> ctBoSource = ctClass.getElements(new TypeFilter<>(CtBinaryOperator.class));//source file BO's
 
 
-        for(CtBinaryOperator boT : ctBoTarget) {
+        for (CtBinaryOperator boT : ctBoTarget) {
             String methodName = boT.getShortRepresentation();
 
-            for ( CtBinaryOperator boS: ctBoSource){
-                if(boS.getShortRepresentation().equals(methodName)){
-                        if(previousVersionString.contains(boT.getRightHandOperand().toString()) && previousVersionString.contains(boT.getLeftHandOperand().toString())){                    
-                            res=true;
-                        }
+            for (CtBinaryOperator boS : ctBoSource) {
+                if (boS.getShortRepresentation().equals(methodName)) {
+                    if (previousVersionString.contains(boT.getRightHandOperand().toString()) && previousVersionString.contains(boT.getLeftHandOperand().toString())) {
+                        res = true;
+                    }
 
-                        if(boS.getRightHandOperand().equals(boT.getRightHandOperand()) && boS.getLeftHandOperand().equals(boT.getLeftHandOperand())){
-                            res=true;
-                        }
+                    if (boS.getRightHandOperand().equals(boT.getRightHandOperand()) && boS.getLeftHandOperand().equals(boT.getLeftHandOperand())) {
+                        res = true;
+                    }
                 }
             }
         }
@@ -153,15 +149,15 @@ public class Arja extends AbstractRepairTool {
         List<CtElement> ctelement = element.getElements(new TypeFilter<>(CtElement.class));//our elements
         List<CtElement> ctelementsource = ctClass.getElements(new TypeFilter<>(CtElement.class));//source file elements
 
-        for(CtElement elementS:ctelementsource){
-            if(ctelement.get(0).equals(elementS)){
-                res=true;
+        for (CtElement elementS : ctelementsource) {
+            if (ctelement.get(0).equals(elementS)) {
+                res = true;
             }
         }
 
         List<CtConstructorCall> ctconst = element.getElements(new TypeFilter<>(CtConstructorCall.class));//our elements
 
-        res=res||previousVersionString.contains(element.toString());
+        res = res || previousVersionString.contains(element.toString());
 
 
         return res;

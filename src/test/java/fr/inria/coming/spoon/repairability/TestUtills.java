@@ -7,6 +7,7 @@ import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.main.ComingMain;
 import fr.inria.coming.repairability.RepairabilityAnalyzer;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Map;
 
@@ -30,6 +31,24 @@ public class TestUtills {
 
 
     public static FinalResult runRepairability(String toolName, String inputFiles) throws Exception {
+        ComingMain cm = new ComingMain();
+
+        FinalResult result = cm.run(
+                new String[]{"-mode",
+                        "repairability",
+                        "-repairtool",
+                        toolName,
+                        "-input",
+                        "files",
+                        "-location",
+                        URLDecoder.decode(TestUtills.class.getResource(inputFiles).getFile(), "UTF-8")});
+
+        assertNotNull(result);
+        return result;
+    }
+
+    public static FinalResult runRepairabilityWithoutException(String toolName, String inputFiles)
+            throws UnsupportedEncodingException {
         ComingMain cm = new ComingMain();
 
         FinalResult result = cm.run(

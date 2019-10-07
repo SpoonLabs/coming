@@ -12,6 +12,9 @@ import fr.inria.coming.changeminer.analyzer.patternspecification.PatternAction;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.core.entities.output.JSonPatternInstanceOutput;
 import fr.inria.coming.main.ComingProperties;
+import fr.inria.coming.repairability.models.InstanceStats;
+import fr.inria.coming.utils.GumtreeHelper;
+import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
 import org.apache.log4j.Logger;
 
@@ -29,23 +32,24 @@ public class JSONRepairabilityOutput extends JSonPatternInstanceOutput {
         }
 
         PatternInstancesFromRevision result = null;
-        if(ComingProperties.getPropertyBoolean("print_only_repair_results")) {
+        if (ComingProperties.getPropertyBoolean("print_only_repair_results")) {
             result = (PatternInstancesFromRevision) revisionResult.getResultFromClass(RepairabilityAnalyzer.class);
-        }
-        else {
+        } else {
             result = (PatternInstancesFromRevision) revisionResult.getResultFromClass(PatternInstanceAnalyzer.class);
         }
         for (PatternInstancesFromDiff pi : result.getInfoPerDiff()) {
             if (pi.getInstances().size() > 0) {
+
+                Diff diff = pi.getDiff();
 
                 JsonObject instance = new JsonObject();
 
                 instance.addProperty("revision", revisionIdentifier.toString());
 
                 log.info("\n--------\ncommit with instance:\n " + revisionIdentifier);
-//                System.out.println("\n--------\ncommit with instance:\n " + revisionIdentifier);
-//                log.info(pi.getInstances());
-//                System.out.println(pi.getInstances());
+//              System.out.println("\n--------\ncommit with instance:\n " + revisionIdentifier);
+//              log.info(pi.getInstances());
+//              System.out.println(pi.getInstances());
 
                 JsonArray repair_tools = new JsonArray();
                 for (ChangePatternInstance instancePattern : pi.getInstances()) {
@@ -53,28 +57,24 @@ public class JSONRepairabilityOutput extends JSonPatternInstanceOutput {
                     JsonObject repair = new JsonObject();
                     repair.addProperty("tool-name", (instancePattern.getPattern().getName().split(File.pathSeparator)[0]));
                     repair.addProperty("pattern-name", (instancePattern.getPattern().getName()));
-                    repair.addProperty("Unified_Diff_of-files:","Starts Below...");
+                    repair.addProperty("Unified_Diff_of-files:", "Starts Below...");
 
-//            System.out.println("result.getRow_list()");
-//            System.out.println(result.getRow_list());
-			for (DiffRow row : result.getRow_list()) {
-				switch (row.getTag()) {
-					case INSERT:
-                        repair.addProperty("INSERT:",row.getNewLine());
-						break;
-					case DELETE:
-                        repair.addProperty("DELETE:",row.getOldLine());
-						break;
-					case CHANGE:
-                        repair.addProperty("CHANGE_old:",row.getOldLine());
-                        repair.addProperty("CHANGE_new:",row.getNewLine());
-						break;
-				}
-			}
-
-
-
-
+//                  System.out.println("result.getRow_list()");
+//                  System.out.println(result.getRow_list());
+                    for (DiffRow row : result.getRow_list()) {
+                        switch (row.getTag()) {
+                            case INSERT:
+                                repair.addProperty("INSERT:", row.getNewLine());
+                                break;
+                            case DELETE:
+                                repair.addProperty("DELETE:", row.getOldLine());
+                                break;
+                            case CHANGE:
+                                repair.addProperty("CHANGE_old:", row.getOldLine());
+                                repair.addProperty("CHANGE_new:", row.getNewLine());
+                                break;
+                        }
+                    }
 
                     JsonArray ops = new JsonArray();
 
@@ -98,6 +98,11 @@ public class JSONRepairabilityOutput extends JSonPatternInstanceOutput {
                                 }
                             }
                         }
+
+                        if(isRootOperation(op, diff)){
+                            InstanceStats instanceStats = GumtreeHelper.getStats(op);
+                            opjson.add("stats", getJSONFromInstanceStats(instanceStats));
+                        }
                         ops.add(opjson);
                     }
 
@@ -110,5 +115,14 @@ public class JSONRepairabilityOutput extends JSonPatternInstanceOutput {
 
             }
         }
+    }
+
+    private boolean isRootOperation(Operation op, Diff diff) {
+        for(Operation diffOp : diff.getRootOperations()){
+            if(diffOp.getAction().equals(op.getAction())){
+                return true;
+            }
+        }
+        return false;
     }
 }

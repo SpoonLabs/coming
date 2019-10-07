@@ -29,7 +29,13 @@
                 "dst_parent": "javarepl.expressions.Type expression"
               },
               "line": 204,
-              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\covered"
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\covered",
+              "stats": {
+                "number_of_src_entities": 2,
+                "number_of_dst_entities": 2,
+                "src_entity_types": "[javarepl.Type]",
+                "dst_entity_types": "[javarepl.expressions.Type]"
+              }
             }
           ]
         }
