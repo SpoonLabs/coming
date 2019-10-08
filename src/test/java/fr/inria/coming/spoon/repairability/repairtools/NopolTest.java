@@ -2,7 +2,7 @@ package fr.inria.coming.spoon.repairability.repairtools;
 
 
 import fr.inria.coming.changeminer.entity.FinalResult;
-import fr.inria.coming.spoon.repairability.TestUtills;
+import fr.inria.coming.spoon.repairability.RepairabilityTestUtills;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -28,38 +28,38 @@ public class NopolTest {
 
     @Ignore
     public void testNopolTruePositive1() throws Exception {
-        FinalResult result = TestUtills.runRepairability("Nopol", "/repairability_test_files/NopolTest");
-        TestUtills.numberOfInstances(result, 9, 9);
+        FinalResult result = RepairabilityTestUtills.runRepairability("Nopol", "/repairability_test_files/NopolTest");
+        RepairabilityTestUtills.numberOfInstances(result, 9, 9);
     }
 
     @Ignore
     public void testNopolTruePositive2() throws Exception {
-        FinalResult result = TestUtills.runRepairability("Nopol", "/repairability_test_files/jMutRepairTest");
-        TestUtills.numberOfInstances(result, 4, 4);
+        FinalResult result = RepairabilityTestUtills.runRepairability("Nopol", "/repairability_test_files/jMutRepairTest");
+        RepairabilityTestUtills.numberOfInstances(result, 4, 4);
     }
 
     @Test
     public void testNopolTypesInsShallow() throws Exception {
-        FinalResult result = TestUtills.runRepairability("Nopol", "/repairability_test_files/NopolTypes/if_ins_shallow");
-        TestUtills.numberOfInstances(result, 1, 1);
+        FinalResult result = RepairabilityTestUtills.runRepairability("Nopol", "/repairability_test_files/NopolTypes/if_ins_shallow");
+        RepairabilityTestUtills.numberOfInstances(result, 1, 1);
     }
 
     @Test
     public void testNopolTypesInsDeep() throws Exception {
-        FinalResult result = TestUtills.runRepairability("Nopol", "/repairability_test_files/NopolTypes/if_ins_deep");
-        TestUtills.numberOfInstances(result, 1, 1);
+        FinalResult result = RepairabilityTestUtills.runRepairability("Nopol", "/repairability_test_files/NopolTypes/if_ins_deep");
+        RepairabilityTestUtills.numberOfInstances(result, 1, 1);
     }
 
     @Test
     public void testNopolTypesUpdShallow() throws Exception {
-        FinalResult result = TestUtills.runRepairability("Nopol", "/repairability_test_files/jMutRepairBinaryTypes/ss/");
-        TestUtills.numberOfInstances(result, 1, 1);
+        FinalResult result = RepairabilityTestUtills.runRepairability("Nopol", "/repairability_test_files/jMutRepairBinaryTypes/ss/");
+        RepairabilityTestUtills.numberOfInstances(result, 1, 1);
     }
 
     @Test
     public void testNopolTypesUpdDeep() throws Exception {
-        FinalResult result = TestUtills.runRepairability("Nopol", "/repairability_test_files/NopolTypes/if_upd_deep");
-        TestUtills.numberOfInstances(result, 1, 1);
+        FinalResult result = RepairabilityTestUtills.runRepairability("Nopol", "/repairability_test_files/NopolTypes/if_upd_deep");
+        RepairabilityTestUtills.numberOfInstances(result, 1, 1);
     }
 
 

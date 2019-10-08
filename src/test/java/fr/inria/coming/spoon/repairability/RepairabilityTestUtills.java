@@ -14,7 +14,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class TestUtills {
+public class RepairabilityTestUtills {
     public static void numberOfInstances(FinalResult result, int totalInputs, int foundInstances) {
         Map<IRevision, RevisionResult> revisionsMap = result.getAllResults();
         assertEquals(totalInputs, revisionsMap.keySet().size());
@@ -41,7 +41,7 @@ public class TestUtills {
                         "-input",
                         "files",
                         "-location",
-                        URLDecoder.decode(TestUtills.class.getResource(inputFiles).getFile(), "UTF-8")});
+                        URLDecoder.decode(RepairabilityTestUtills.class.getResource(inputFiles).getFile(), "UTF-8")});
 
         assertNotNull(result);
         return result;
@@ -59,7 +59,7 @@ public class TestUtills {
                         "-input",
                         "files",
                         "-location",
-                        URLDecoder.decode(TestUtills.class.getResource(inputFiles).getFile(), "UTF-8")});
+                        URLDecoder.decode(RepairabilityTestUtills.class.getResource(inputFiles).getFile(), "UTF-8")});
 
         assertNotNull(result);
         return result;
@@ -83,7 +83,7 @@ public class TestUtills {
                         "-parameters",
                         parameters,
                         "-location",
-                        URLDecoder.decode(TestUtills.class.getResource(inputFiles).getFile(), "UTF-8")});
+                        URLDecoder.decode(RepairabilityTestUtills.class.getResource(inputFiles).getFile(), "UTF-8")});
 
         assertNotNull(result);
         return result;

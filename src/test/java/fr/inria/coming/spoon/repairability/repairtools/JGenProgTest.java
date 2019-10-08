@@ -1,7 +1,7 @@
 package fr.inria.coming.spoon.repairability.repairtools;
 
 import fr.inria.coming.changeminer.entity.FinalResult;
-import fr.inria.coming.spoon.repairability.TestUtills;
+import fr.inria.coming.spoon.repairability.RepairabilityTestUtills;
 import org.junit.Test;
 
 /**
@@ -10,14 +10,14 @@ import org.junit.Test;
 public class JGenProgTest {
     @Test
     public void testJGenProgNegative() throws Exception {
-        FinalResult result = TestUtills.runRepairability("JGenProg", "/repairability_test_files/JGenProgTest");
-        TestUtills.numberOfInstances(result, 1, 0);
+        FinalResult result = RepairabilityTestUtills.runRepairability("JGenProg", "/repairability_test_files/JGenProgTest");
+        RepairabilityTestUtills.numberOfInstances(result, 1, 0);
     }
 
     @Test
     public void testJGenProgPositive() throws Exception {
-        FinalResult result = TestUtills.runRepairability("JGenProg", "/repairability_test_files/JGenProgPostiveTest");
-        TestUtills.numberOfInstances(result, 1, 1);
+        FinalResult result = RepairabilityTestUtills.runRepairability("JGenProg", "/repairability_test_files/JGenProgPostiveTest");
+        RepairabilityTestUtills.numberOfInstances(result, 1, 1);
     }
 
 }
