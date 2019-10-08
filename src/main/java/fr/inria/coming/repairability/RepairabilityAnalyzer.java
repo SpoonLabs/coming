@@ -8,7 +8,10 @@ import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.engine.Analyzer;
 import fr.inria.coming.core.entities.AnalysisResult;
 import fr.inria.coming.core.entities.RevisionResult;
+import fr.inria.coming.main.ComingProperties;
 import fr.inria.coming.repairability.repairtools.AbstractRepairTool;
+import gumtree.spoon.diff.Diff;
+import gumtree.spoon.diff.operations.Operation;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -63,15 +66,24 @@ public class RepairabilityAnalyzer implements Analyzer {
                 if (tool.filter(instancePattern, input)) {
                     // if filter is passed add it too patternInstanceList
 
-                    if (!toolsSeen.contains(toolName)) {
-                        //add instance of single repair tool only once
-                        patternInstanceList.add(instancePattern);
-                        toolsSeen.add(toolName);
+                    if (!toolsSeen.contains(toolName)
+                            || ComingProperties.getPropertyBoolean("include_all_instances_for_each_tool")) {
+                        /* ignore if the tool has been seen before and
+                           the "include_all_instances_for_each_tool" is not used */
+                        if(!ComingProperties.getPropertyBoolean("exclude_repair_patterns_not_covering_the_whole_diff")
+                                || coversTheWholeDiff(instancePattern, instancesPerDiff.getDiff())) {
+                            /* ignore if the found instances do not cover the whole diff and
+                                "exclude_repair_patterns_not_covering_the_whole_diff" is used
+                             */
+                            patternInstanceList.add(instancePattern);
+                            toolsSeen.add(toolName);
+                        }
                     }
                 }
             }
 
             // modify this PatternInstancesFromDiff to contain only filtered elements
+            // FIXME: this also changes PatternInstanceAnalyzer result
             instancesPerDiff.setInstances(patternInstanceList);
 
             allInstances.add(instancesPerDiff);
@@ -80,5 +92,20 @@ public class RepairabilityAnalyzer implements Analyzer {
         PatternInstancesFromRevision finalResult = new PatternInstancesFromRevision(input, allInstances,result.getRow_list());
 
         return finalResult;
+    }
+
+    private boolean coversTheWholeDiff(ChangePatternInstance instancePattern, Diff diff) {
+        for(Operation diffOperation : diff.getRootOperations()){
+            boolean foundOp = false;
+            for(Operation instanceOperation : instancePattern.getActions()){
+                if(diffOperation.equals(instanceOperation)){
+                    foundOp = true;
+                    break;
+                }
+            }
+            if(!foundOp)
+                return false;
+        }
+        return true;
     }
 }

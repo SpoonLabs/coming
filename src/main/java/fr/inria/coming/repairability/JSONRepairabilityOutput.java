@@ -11,6 +11,7 @@ import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstancesFro
 import fr.inria.coming.changeminer.analyzer.patternspecification.PatternAction;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.core.entities.output.JSonPatternInstanceOutput;
+import fr.inria.coming.main.ComingProperties;
 import gumtree.spoon.diff.operations.Operation;
 import org.apache.log4j.Logger;
 
@@ -27,9 +28,13 @@ public class JSONRepairabilityOutput extends JSonPatternInstanceOutput {
             revisionIdentifier = revisionResult.getRelatedRevision().getName();
         }
 
-        PatternInstancesFromRevision result = (PatternInstancesFromRevision) revisionResult
-                .getResultFromClass(PatternInstanceAnalyzer.class);
-
+        PatternInstancesFromRevision result = null;
+        if(ComingProperties.getPropertyBoolean("print_only_repair_results")) {
+            result = (PatternInstancesFromRevision) revisionResult.getResultFromClass(RepairabilityAnalyzer.class);
+        }
+        else {
+            result = (PatternInstancesFromRevision) revisionResult.getResultFromClass(PatternInstanceAnalyzer.class);
+        }
         for (PatternInstancesFromDiff pi : result.getInfoPerDiff()) {
             if (pi.getInstances().size() > 0) {
 
