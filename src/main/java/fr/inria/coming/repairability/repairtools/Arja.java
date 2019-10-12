@@ -56,7 +56,6 @@ public class Arja extends AbstractRepairTool {
         return patterns;
     }
 
-
     @Override
     public boolean filter(ChangePatternInstance instance, IRevision revision) {
         try { // FIXME: exception should not be thrown

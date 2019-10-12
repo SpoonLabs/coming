@@ -209,13 +209,14 @@ public class RepairabilityTest {
     @Test
     public void testNullPointerException() throws Exception {
         File s = TestUtils.getInstance().getFile("repairability_test_files/other/" +
-                "ReactDrawerLayoutManager_1d0b39/ReactDrawerLayoutManager_1d0b39_s.java");
+                "react_native_1d0b39/ReactDrawerLayoutManager_1d0b39_s.java");
         File t = TestUtils.getInstance().getFile("repairability_test_files/other/" +
-                "ReactDrawerLayoutManager_1d0b39/ReactDrawerLayoutManager_1d0b39_t.java");
+                "react_native_1d0b39/ReactDrawerLayoutManager_1d0b39_t.java");
         FineGrainDifftAnalyzer r = new FineGrainDifftAnalyzer();
         Diff diffOut = r.getDiff(s, t);
         for(Operation op : diffOut.getAllOperations()){
             Assert.assertTrue(op.getSrcNode().getElements(null).size() > 0);
         }
     }
+
 }
