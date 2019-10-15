@@ -47,15 +47,15 @@ public class Demo {
         try {
             new Demo(option).extract();
             new Demo(option).learn();
-            new Demo(option).evaluate();
+//            new Demo(option).evaluate();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private static void runDemo(Option option) {
-        option.dataOption = DataOption.BUG_DOT_JAR_MINUS_MATH;
-        option.patchOption = PatchOption.BUG_DOT_JAR_MINUS_MATH;
+        option.dataOption = DataOption.CLOSURE;
+        option.patchOption = PatchOption.SPR;
         option.featureOption = FeatureOption.ORIGINAL;
         run(option);
 //        option.featureOption = FeatureOption.EXTENDED;

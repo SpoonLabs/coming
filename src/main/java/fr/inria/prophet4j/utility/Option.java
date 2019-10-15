@@ -14,6 +14,7 @@ public class Option {
         BEARS,
         BUG_DOT_JAR_MINUS_MATH, // BUG_DOT_JAR without Math (-16)
         QUIX_BUGS,
+        CLOSURE,
     }
 
     public enum PatchOption {
