@@ -45,9 +45,9 @@ public class Demo {
 
     private static void run(Option option) {
         try {
-            new Demo(option).extract();
-            new Demo(option).learn();
-//            new Demo(option).evaluate();
+//            new Demo(option).extract();
+//            new Demo(option).learn();
+            new Demo(option).evaluate();
         } catch (Exception e) {
             e.printStackTrace();
         }
