@@ -1,6 +1,6 @@
 <pattern name="expression_replacement">
 
-    <entity id="1" type="Expression" />
+    <entity id="1" type="*" />
     <action entityId="1" type="UPD"/>
 
 </pattern>

@@ -22,7 +22,8 @@ public class RepairabilityTestUtills {
         int counter = 0;
         for (Map.Entry<IRevision, RevisionResult> entry : revisionsMap.entrySet()) {
             RevisionResult rr = entry.getValue();
-            PatternInstancesFromRevision instances = (PatternInstancesFromRevision) rr.getResultFromClass(RepairabilityAnalyzer.class);
+            PatternInstancesFromRevision instances =
+                    (PatternInstancesFromRevision) rr.getResultFromClass(RepairabilityAnalyzer.class);
             counter += instances.getInfoPerDiff().stream().mapToInt(v -> v.getInstances().size()).sum();
         }
 

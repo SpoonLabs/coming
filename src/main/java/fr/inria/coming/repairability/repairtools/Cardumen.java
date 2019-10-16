@@ -4,15 +4,17 @@ import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstan
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
+import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.visitor.filter.TypeFilter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Cardumen fixes bugs by replacing expressions with template-based generated expressions.
@@ -54,31 +56,52 @@ public class Cardumen extends AbstractRepairTool {
      */
     @Override
     public boolean filter(ChangePatternInstance instance, IRevision revision) {
-        try {
+        try { // FIXME: should not throw an exception
             Operation anyOperation = instance.getActions().get(0);
             CtElement srcNode = anyOperation.getSrcNode(), dstNode = anyOperation.getDstNode();
-            List<CtElement> allDstElements = dstNode.getElements(null);
 
-            CtElement srcRootNode = getRootNode(srcNode);
+            if(!(srcNode instanceof CtExpression) || !(dstNode instanceof CtExpression))
+                return false;
+
+            CtElement srcRootNode = getPathToRootNode(srcNode).get(0);
             List<CtElement> allSrcElements = srcRootNode.getElements(null);
+            Set<String> srcVariables = new HashSet<>();
+
+            for(int i = 0; i < allSrcElements.size(); i++){
+                CtElement srcElement = allSrcElements.get(i);
+                if (srcElement instanceof CtVariableRead) {
+                    srcVariables.add(srcElement.toString());
+                }
+            }
+
+            List<CtElement> allDstElements = dstNode.getElements(null);
+            String dstNodeAsString = dstNode.toString();
+            // the following for-loop replaces variable names in dstNodeAsString with their type name
+            for(int i = 0; i < allDstElements.size(); i++){
+                CtElement dstElement = allDstElements.get(i);
+                if (dstElement instanceof CtVariableRead) {
+                    if(!srcVariables.contains(dstElement.toString()))
+                        // A variable is used that does not exist in SRC is used in the patch
+                        // FIXME: We should also make sure than the variable is in the current scope
+                        return false;
+                    String variableType = ((CtVariableRead) dstElement).getType().toString();
+                    dstNodeAsString = dstNodeAsString.replace(dstElement.toString(), "#" + variableType + "#");
+                }
+            }
 
             for (int i = 0; i < allSrcElements.size() - allDstElements.size() + 1; i++) {
-                boolean haveSameTemplate = true;
+                String srcAsString = allSrcElements.get(i).toString();
+                if(srcAsString.contains("Precision.equals")){
+                    System.out.println();
+                }
                 for (int j = 0; j < allDstElements.size(); j++) {
                     CtElement srcElement = allSrcElements.get(i + j);
-                    CtElement dstElement = allDstElements.get(j);
-                    if (!srcElement.getClass().getSimpleName().equals(dstElement.getClass().getSimpleName())) {
-                        haveSameTemplate = false;
-                        break;
-                    }
-                    if (srcElement instanceof CtVariable) {
-                        if (!((CtVariable) srcElement).getSimpleName().equals(((CtVariable) dstElement).getSimpleName())) {
-                            haveSameTemplate = false;
-                            break;
-                        }
+                    if (srcElement instanceof CtVariableRead) {
+                        String variableType = ((CtVariableRead) srcElement).getType().toString();
+                        srcAsString = srcAsString.replace(srcElement.toString(), "#" + variableType + "#");
                     }
                 }
-                if (haveSameTemplate)
+                if (srcAsString.equals(dstNodeAsString))
                     return true;
             }
             return false;
@@ -87,11 +110,32 @@ public class Cardumen extends AbstractRepairTool {
         }
     }
 
-    private CtElement getRootNode(CtElement element) {
+    @Override
+    public boolean coversTheWholeDiff(ChangePatternInstance instancePattern, Diff diff) {
+        CtElement instanceSrcNode = instancePattern.getActions().get(0).getSrcNode();
+        for(Operation diffOperation : diff.getRootOperations()){
+            boolean found = false;
+            List<CtElement> pathToDiffRoot = getPathToRootNode(diffOperation.getSrcNode());
+            for(CtElement item : pathToDiffRoot){
+                if(item == instanceSrcNode)
+                    found = true;
+            }
+            if(!found)
+                return false;
+        }
+        return true;
+    }
+
+    private List<CtElement> getPathToRootNode(CtElement element) {
         CtElement par = element.getParent();
-        if (par == null || element == par)
-            return element;
-        return getRootNode(element);
+        if (par == null || par instanceof CtPackage || element == par) {
+            List<CtElement> res = new ArrayList<>();
+            res.add(element);
+            return res;
+        }
+        List<CtElement> pathToParent = getPathToRootNode(par);
+        pathToParent.add(element);
+        return pathToParent;
     }
 
 }

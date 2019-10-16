@@ -71,7 +71,7 @@ public class RepairabilityAnalyzer implements Analyzer {
                         /* ignore if the tool has been seen before and
                            "include_all_instances_for_each_tool" is not set to true */
                         if(!ComingProperties.getPropertyBoolean("exclude_repair_patterns_not_covering_the_whole_diff")
-                                || coversTheWholeDiff(instancePattern, instancesPerDiff.getDiff())) {
+                                || tool.coversTheWholeDiff(instancePattern, instancesPerDiff.getDiff())) {
                             /* ignore if the found instances do not cover the whole diff and
                                 "exclude_repair_patterns_not_covering_the_whole_diff" is set to true
                              */
@@ -92,20 +92,5 @@ public class RepairabilityAnalyzer implements Analyzer {
         PatternInstancesFromRevision finalResult = new PatternInstancesFromRevision(input, allInstances,result.getRow_list());
 
         return finalResult;
-    }
-
-    private boolean coversTheWholeDiff(ChangePatternInstance instancePattern, Diff diff) {
-        for(Operation diffOperation : diff.getRootOperations()){
-            boolean foundOp = false;
-            for(Operation instanceOperation : instancePattern.getActions()){
-                if(diffOperation.equals(instanceOperation)){
-                    foundOp = true;
-                    break;
-                }
-            }
-            if(!foundOp)
-                return false;
-        }
-        return true;
     }
 }
