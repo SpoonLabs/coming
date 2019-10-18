@@ -1,3 +1,51 @@
 {
-  "instances": []
+  "instances": [
+    {
+      "revision": "shallow_shallow",
+      "repairability": [
+        {
+          "tool-name": "Nopol",
+          "pattern-name": "Nopol;if_condition_upd_shallow",
+          "Unified_Diff_of-files:": "Starts Below...",
+          "CHANGE_old:": "        if (a \u0026gt; b) {\r",
+          "CHANGE_new:": "        if (a \u0026lt; b) {\r",
+          "instance_detail": [
+            {
+              "pattern_action": "ANY",
+              "pattern_entity": {
+                "entity_type": "*",
+                "entity_new value": "*",
+                "entity_role": "condition",
+                "entity_parent": {
+                  "entity_type": "If",
+                  "entity_new value": "*",
+                  "entity_role": "*",
+                  "entity_parent": "null"
+                }
+              },
+              "concrete_change": {
+                "operator": "UPD",
+                "src_type": "BinaryOperator",
+                "dst_type": "BinaryOperator",
+                "src": "a \u003e b",
+                "dst": "a \u003c b",
+                "src_parent_type": "If",
+                "dst_parent_type": "If",
+                "src_parent": "if (a \u003e b) {\r\n    java.lang.System.out.println(\"#shallow shallow\");\r\n}",
+                "dst_parent": "if (a \u003c b) {\r\n    java.lang.System.out.println(\"#shallow shallow\");\r\n}"
+              },
+              "line": 11,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\shallow_shallow",
+              "stats": {
+                "number_of_src_entities": 8,
+                "number_of_dst_entities": 8,
+                "src_entity_types": "[int, boolean]",
+                "dst_entity_types": "[int, boolean]"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import fr.inria.coming.utils.GumtreeHelper;
 import org.apache.log4j.Logger;
 
 import com.github.gumtreediff.actions.model.Action;
@@ -458,7 +459,9 @@ public class DetectorChangePatternInstanceEngine {
             String patternEntityValue = (matchnewvalue) ? parentEntity.getNewValue() : parentEntity.getOldValue();
             if ( // type of element
                     ("*".equals(parentEntity.getEntityType())
-                            || (typeOfNode != null && typeOfNode.equals(parentEntity.getEntityType())))
+//                            || (typeOfNode != null && typeOfNode.equals(parentEntity.getEntityType())))
+                            || (typeOfNode != null &&
+                                    GumtreeHelper.getInstance().isAChildOf(typeOfNode, parentEntity.getEntityType())))
                             ///
                             &&
                             // value of element
