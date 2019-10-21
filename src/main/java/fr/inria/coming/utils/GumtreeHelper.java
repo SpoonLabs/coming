@@ -137,4 +137,18 @@ public class GumtreeHelper {
     public void setChildrenToParents(Map<String, Set<String>> childrenToParents) {
         this.childrenToParents = childrenToParents;
     }
+
+    /**
+     * The label of a CtElement is the simple name of the class without the CT
+     * prefix.
+     *
+     * @param element
+     * @return
+     */
+    public static String getNodeLabelFromCtElement(CtElement element) {
+        String typeFromCt = element.getClass().getSimpleName();
+        if (typeFromCt.trim().isEmpty())
+            return typeFromCt;
+        return typeFromCt.substring(2, typeFromCt.length() - 4);
+    }
 }

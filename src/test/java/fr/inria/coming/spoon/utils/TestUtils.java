@@ -18,7 +18,7 @@ public class TestUtils {
 
     public File getFile(String name) throws UnsupportedEncodingException {
         ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(URLDecoder.decode(classLoader.getResource(name).getFile(), "UTF-8"));
+        File file = new File(URLDecoder.decode(classLoader.getResource(name).getPath(), "UTF-8"));
         return file;
     }
 }

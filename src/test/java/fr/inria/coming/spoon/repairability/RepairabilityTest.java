@@ -20,7 +20,6 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -32,18 +31,18 @@ public class RepairabilityTest {
 
     @Test
     public void testelixir_data() throws Exception {
-        FinalResult result = RepairabilityTestUtills.runRepairability("ALL", "/repairability_test_files/elixir_data");
+        FinalResult result = RepairabilityTestUtils.runRepairability("ALL", "/repairability_test_files/elixir_data");
     }
 
     @Test
     public void testNPEfixdata() throws Exception {
-        FinalResult result = RepairabilityTestUtills.runRepairability("ALL", "/repairability_test_files/NPEfix");
+        FinalResult result = RepairabilityTestUtils.runRepairability("ALL", "/repairability_test_files/NPEfix");
     }
 
     @Test
     public void testDiffResults() throws Exception {
         int count = 0;
-        FinalResult result = RepairabilityTestUtills.runRepairabilityGit("ALL", "repogit4testv0");
+        FinalResult result = RepairabilityTestUtils.runRepairabilityGit("ALL", "repogit4testv0");
         Map<IRevision, RevisionResult> revisionsMap = result.getAllResults();
         assertEquals(13, revisionsMap.keySet().size());
 
@@ -74,7 +73,7 @@ public class RepairabilityTest {
     @Test
     public void testOneInstancePerRevision() throws Exception {
 
-        FinalResult result = RepairabilityTestUtills.runRepairability("ALL", "/repairability_test_files/mixed/");
+        FinalResult result = RepairabilityTestUtils.runRepairability("ALL", "/repairability_test_files/mixed/");
 
         Map<IRevision, RevisionResult> revisionsMap = result.getAllResults();
         assertEquals(2, revisionsMap.keySet().size());
@@ -98,7 +97,7 @@ public class RepairabilityTest {
     @Test
     public void testExcludeNotFullyCoveringInstances() throws Exception {
         FinalResult result =
-                RepairabilityTestUtills.runRepairabilityWithParameters
+                RepairabilityTestUtils.runRepairabilityWithParameters
                         (
                                 "ALL",
                                 "/repairability_test_files/exclude_not_covering/",
@@ -126,7 +125,7 @@ public class RepairabilityTest {
     @Test
     public void testCheckIncludeAllInstancesParameter() throws Exception {
         FinalResult result =
-                RepairabilityTestUtills.runRepairabilityWithParameters
+                RepairabilityTestUtils.runRepairabilityWithParameters
                         (
                                 "ALL",
                                 "/pairsICSE15/", // has repetitive tool use for single revision
@@ -136,7 +135,7 @@ public class RepairabilityTest {
         assertTrue(hasRepetitiveToolUseForSingleRevision);
 
         result =
-                RepairabilityTestUtills.runRepairabilityWithParameters
+                RepairabilityTestUtils.runRepairabilityWithParameters
                         (
                                 "ALL",
                                 "/pairsICSE15/",
@@ -146,7 +145,7 @@ public class RepairabilityTest {
         assertFalse(hasRepetitiveToolUseForSingleRevision);
 
         result =
-                RepairabilityTestUtills.runRepairability
+                RepairabilityTestUtils.runRepairability
                         (
                                 "ALL",
                                 "/pairsICSE15/"
@@ -162,7 +161,7 @@ public class RepairabilityTest {
         output.delete();
         assertFalse(output.exists());
 
-        FinalResult r = RepairabilityTestUtills.runRepairabilityWithParameters
+        FinalResult r = RepairabilityTestUtils.runRepairabilityWithParameters
                 (
                         "ALL",
                         "/repairability_test_files/exclude_not_covering/",

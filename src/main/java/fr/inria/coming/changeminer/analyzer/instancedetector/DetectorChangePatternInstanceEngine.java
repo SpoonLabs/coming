@@ -450,7 +450,7 @@ public class DetectorChangePatternInstanceEngine {
         int i_levels = 1;
         // Scale the parent hierarchy and check types.
         while (currentNodeFromAction != null && i_levels <= parentLevel) {
-            String typeOfNode = getNodeLabelFromCtElement(currentNodeFromAction);
+            String typeOfNode = GumtreeHelper.getNodeLabelFromCtElement(currentNodeFromAction);
             String valueOfNode = currentNodeFromAction.toString();
             String roleInParent = (currentNodeFromAction.getRoleInParent() != null)
                     ? currentNodeFromAction.getRoleInParent().toString().toLowerCase()
@@ -509,20 +509,6 @@ public class DetectorChangePatternInstanceEngine {
 
     public String getTypeLabel(PatternAction patternAction) {
         return patternAction.getAffectedEntity().getEntityType();
-    }
-
-    /**
-     * The label of a CtElement is the simple name of the class without the CT
-     * prefix.
-     *
-     * @param element
-     * @return
-     */
-    public String getNodeLabelFromCtElement(CtElement element) {
-        String typeFromCt = element.getClass().getSimpleName();
-        if (typeFromCt.trim().isEmpty())
-            return typeFromCt;
-        return typeFromCt.substring(2, typeFromCt.length() - 4);
     }
 
 }
