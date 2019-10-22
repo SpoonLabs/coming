@@ -149,6 +149,6 @@ public class GumtreeHelper {
         String typeFromCt = element.getClass().getSimpleName();
         if (typeFromCt.trim().isEmpty())
             return typeFromCt;
-        return typeFromCt.substring(2, typeFromCt.length() - 4);
+        return typeFromCt.substring(2, typeFromCt.endsWith("Impl") ? typeFromCt.length() - 4 : typeFromCt.length());
     }
 }

@@ -114,9 +114,9 @@ public class RepairabilityTest {
 
             // for each revision
             for (PatternInstancesFromDiff v : instances.getInfoPerDiff()) {
-                if(v.getLocation().equals("covered")) // for the covered sample
+                if (v.getLocation().equals("covered")) // for the covered sample
                     assertTrue(v.getInstances().size() > 0);
-                else if(v.getLocation().equals("not_covered")) // for the not covered sample
+                else if (v.getLocation().equals("not_covered")) // for the not covered sample
                     assertTrue(v.getInstances().size() == 0);
             }
         }
@@ -179,7 +179,6 @@ public class RepairabilityTest {
     }
 
 
-
     private boolean checkIncludingRepetitiveToolUseForSingleRevision(FinalResult result) {
         Map<IRevision, RevisionResult> revisionsMap = result.getAllResults();
         boolean hasRepetitiveToolUseForSingleRevision = false;
@@ -213,7 +212,7 @@ public class RepairabilityTest {
                 "react_native_1d0b39/ReactDrawerLayoutManager_1d0b39_t.java");
         FineGrainDifftAnalyzer r = new FineGrainDifftAnalyzer();
         Diff diffOut = r.getDiff(s, t);
-        for(Operation op : diffOut.getAllOperations()){
+        for (Operation op : diffOut.getAllOperations()) {
             Assert.assertTrue(op.getSrcNode().getElements(null).size() > 0);
         }
     }

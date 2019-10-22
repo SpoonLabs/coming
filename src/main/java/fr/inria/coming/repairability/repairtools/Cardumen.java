@@ -55,63 +55,59 @@ public class Cardumen extends AbstractRepairTool {
      */
     @Override
     public boolean filter(ChangePatternInstance instance, IRevision revision) {
-        try { // FIXME: should not throw an exception
-            Operation anyOperation = instance.getActions().get(0);
-            CtElement srcNode = anyOperation.getSrcNode(), dstNode = anyOperation.getDstNode();
+        Operation anyOperation = instance.getActions().get(0);
+        CtElement srcNode = anyOperation.getSrcNode(), dstNode = anyOperation.getDstNode();
 
-            CtElement srcRootNode = getPathToRootNode(srcNode).get(0);
-            List<CtElement> allSrcElements = srcRootNode.getElements(null);
-            Set<String> srcVariablesAndLiterals = new HashSet<>();
+        CtElement srcRootNode = getPathToRootNode(srcNode).get(0);
+        List<CtElement> allSrcElements = srcRootNode.getElements(null);
+        Set<String> srcVariablesAndLiterals = new HashSet<>();
 
-            for (int i = 0; i < allSrcElements.size(); i++) {
-                CtElement srcElement = allSrcElements.get(i);
-                if (srcElement instanceof CtVariableAccess || srcElement instanceof CtLiteral) {
-                    srcVariablesAndLiterals.add(cleanedName(srcElement));
-                }
+        for (int i = 0; i < allSrcElements.size(); i++) {
+            CtElement srcElement = allSrcElements.get(i);
+            if (srcElement instanceof CtVariableAccess || srcElement instanceof CtLiteral) {
+                srcVariablesAndLiterals.add(cleanedName(srcElement));
             }
+        }
 
-            List<CtElement> allDstElements = dstNode.getElements(null);
-            String dstNodeAsString = dstNode.toString();
-            // the following for-loop replaces variable names/literals in dstNodeAsString with their type name
-            for (int i = 0; i < allDstElements.size(); i++) {
-                CtElement dstElement = allDstElements.get(i);
-                if (dstElement instanceof CtVariableAccess || dstElement instanceof CtLiteral) {
-                    if (!srcVariablesAndLiterals.contains(cleanedName(dstElement)))
-                        // A variable/literal is used that does not exist in SRC
-                        // FIXME: We should also make sure than the variable/literal is in the current scope
-                        return false;
-                    String variableOrLiteralType = getType(dstElement);
-                    dstNodeAsString = replaceElement(dstNodeAsString, dstElement.toString(),
+        List<CtElement> allDstElements = dstNode.getElements(null);
+        String dstNodeAsString = dstNode.toString();
+        // the following for-loop replaces variable names/literals in dstNodeAsString with their type name
+        for (int i = 0; i < allDstElements.size(); i++) {
+            CtElement dstElement = allDstElements.get(i);
+            if (dstElement instanceof CtVariableAccess || dstElement instanceof CtLiteral) {
+                if (!srcVariablesAndLiterals.contains(cleanedName(dstElement)))
+                    // A variable/literal is used that does not exist in SRC
+                    // FIXME: We should also make sure than the variable/literal is in the current scope
+                    return false;
+                String variableOrLiteralType = getType(dstElement);
+                dstNodeAsString = replaceElement(dstNodeAsString, dstElement.toString(),
+                        "#" + variableOrLiteralType + "#");
+            }
+        }
+
+        for (int i = 0; i < allSrcElements.size() - allDstElements.size() + 1; i++) {
+            CtElement currentSrcElement = allSrcElements.get(i);
+            String typeOfCurrentSrcElement = GumtreeHelper.getNodeLabelFromCtElement(currentSrcElement);
+            if (!GumtreeHelper.getInstance().isAChildOf(typeOfCurrentSrcElement, "Expression")) {
+                continue;
+            }
+            String srcAsString = currentSrcElement.toString();
+            Set<CtElement> elementsInSubtree = new HashSet<>();
+            elementsInSubtree.add(currentSrcElement);
+            for (int j = 0; j == 0 || elementsInSubtree.contains(allSrcElements.get(i + j).getParent()); j++) {
+                CtElement srcElement = allSrcElements.get(i + j);
+                elementsInSubtree.add(srcElement);
+                if (srcElement instanceof CtLiteral || srcElement instanceof CtVariableAccess) {
+                    String variableOrLiteralType = getType(srcElement);
+                    srcAsString = replaceElement(srcAsString, srcElement.toString(),
                             "#" + variableOrLiteralType + "#");
                 }
             }
-
-            for (int i = 0; i < allSrcElements.size() - allDstElements.size() + 1; i++) {
-                CtElement currentSrcElement = allSrcElements.get(i);
-                String typeOfCurrentSrcElement = GumtreeHelper.getNodeLabelFromCtElement(currentSrcElement);
-                if (!GumtreeHelper.getInstance().isAChildOf(typeOfCurrentSrcElement, "Expression")) {
-                    continue;
-                }
-                String srcAsString = currentSrcElement.toString();
-                Set<CtElement> elementsInSubtree = new HashSet<>();
-                elementsInSubtree.add(currentSrcElement);
-                for (int j = 0; j == 0 || elementsInSubtree.contains(allSrcElements.get(i + j).getParent()); j++) {
-                    CtElement srcElement = allSrcElements.get(i + j);
-                    elementsInSubtree.add(srcElement);
-                    if (srcElement instanceof CtLiteral || srcElement instanceof CtVariableAccess) {
-                        String variableOrLiteralType = getType(srcElement);
-                        srcAsString = replaceElement(srcAsString, srcElement.toString(),
-                                "#" + variableOrLiteralType + "#");
-                    }
-                }
-                if (areTheSameTemplates(srcAsString, dstNodeAsString))
-                    // the template of the dst-node is found in the src
-                    return true;
-            }
-            return false;
-        } catch (Exception e) {
-            return false;
+            if (areTheSameTemplates(srcAsString, dstNodeAsString))
+                // the template of the dst-node is found in the src
+                return true;
         }
+        return false;
     }
 
     private String replaceElement(String source, String element, String target) {
@@ -161,7 +157,7 @@ public class Cardumen extends AbstractRepairTool {
     }
 
     private String cleanedName(String elementName) {
-        while(elementName.startsWith("(") && elementName.endsWith(")")) {
+        while (elementName.startsWith("(") && elementName.endsWith(")")) {
             elementName = elementName.substring(1, elementName.length() - 1);
         }
         if (elementName.startsWith("this.")) {

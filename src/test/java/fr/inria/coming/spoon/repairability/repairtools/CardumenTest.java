@@ -94,7 +94,7 @@ public class CardumenTest {
 
         assertEquals(undetectedInstances.size(), 49);
         /* legitimate causes for undetectedInstances:
-        1- ingredient is extracted from a different scope (not from the same file).
+        1- ingredient (variable or literal) is extracted from a different scope (not from the same file).
         2- template is extracted from from a different scope (not from the same file).
         */
     }
