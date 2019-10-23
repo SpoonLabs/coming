@@ -95,7 +95,7 @@ public class Cardumen extends AbstractRepairTool {
             Set<CtElement> elementsInSubtree = new HashSet<>();
             elementsInSubtree.add(currentSrcElement);
             for (int j = 0; j == 0 ||
-                    (i + j >= allSrcElements.size() && elementsInSubtree.contains(allSrcElements.get(i + j).getParent()))
+                    (i + j < allSrcElements.size() && elementsInSubtree.contains(allSrcElements.get(i + j).getParent()))
                     ; j++) {
                 CtElement srcElement = allSrcElements.get(i + j);
                 elementsInSubtree.add(srcElement);

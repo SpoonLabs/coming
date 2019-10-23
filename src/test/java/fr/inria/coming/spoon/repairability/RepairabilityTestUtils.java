@@ -19,21 +19,21 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class RepairabilityTestUtils {
-    public static void checkNumberOfInstances(FinalResult result, int totalInputs, int foundInstances) {
+    public static void checkNumberOfRepairInstances(FinalResult result, int totalInputs, int foundInstances) {
         Map<IRevision, RevisionResult> revisionsMap = result.getAllResults();
         assertEquals(totalInputs, revisionsMap.keySet().size());
 
-        int counter = countNumberOfInstances(revisionsMap);
+        int counter = countNumberOfInstances(revisionsMap, RepairabilityAnalyzer.class);
 
         assertEquals(foundInstances, counter);
     }
 
-    public static int countNumberOfInstances(Map<IRevision, RevisionResult> revisionsMap) {
+    public static int countNumberOfInstances(Map<IRevision, RevisionResult> revisionsMap, Class analyzer) {
         int counter = 0;
         for (Map.Entry<IRevision, RevisionResult> entry : revisionsMap.entrySet()) {
             RevisionResult rr = entry.getValue();
             PatternInstancesFromRevision instances =
-                    (PatternInstancesFromRevision) rr.getResultFromClass(RepairabilityAnalyzer.class);
+                    (PatternInstancesFromRevision) rr.getResultFromClass(analyzer);
             counter += instances.getInfoPerDiff().stream().mapToInt(v -> v.getInstances().size()).sum();
         }
         return counter;

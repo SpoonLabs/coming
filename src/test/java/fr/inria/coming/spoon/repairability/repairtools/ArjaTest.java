@@ -11,7 +11,7 @@ public class ArjaTest {
     @Test
     public void testArja() throws Exception {
         FinalResult result = RepairabilityTestUtils.runRepairability("Arja", "/repairability_test_files/arja");
-        RepairabilityTestUtils.checkNumberOfInstances(result, 8, 8);
+        RepairabilityTestUtils.checkNumberOfRepairInstances(result, 8, 8);
     }
 
 //    failing test case
@@ -19,7 +19,7 @@ public class ArjaTest {
    @Test
    public void testArjafailing() throws Exception {
        FinalResult result = RepairabilityTestUtils.runRepairability("Arja", "/repairability_test_files/arja_test");
-       RepairabilityTestUtils.checkNumberOfInstances(result, 1, 0);
+       RepairabilityTestUtils.checkNumberOfRepairInstances(result, 1, 0);
    }
 
 
@@ -27,21 +27,21 @@ public class ArjaTest {
     // it returns that the number of arguments in  setdataset(dataset) is zero, but is actually 1.
     public void testArja2() throws Exception {
         FinalResult result = RepairabilityTestUtils.runRepairability("Arja", "/repairability_test_files/arja_test2");
-        RepairabilityTestUtils.checkNumberOfInstances(result, 1, 1);
+        RepairabilityTestUtils.checkNumberOfRepairInstances(result, 1, 1);
     }
 
 
     @Test
     public void testArja3() throws Exception {
         FinalResult result = RepairabilityTestUtils.runRepairability("Arja", "/repairability_test_files/arjatest3");
-        RepairabilityTestUtils.checkNumberOfInstances(result, 1, 1);
+        RepairabilityTestUtils.checkNumberOfRepairInstances(result, 1, 1);
     }
 
    @Test
 //     because the left/right  hand operators can not be distinguished correctly
    public void testArjafailing4() throws Exception {
        FinalResult result = RepairabilityTestUtils.runRepairability("Arja", "/repairability_test_files/arjatest4");
-       RepairabilityTestUtils.checkNumberOfInstances(result, 1, 1);
+       RepairabilityTestUtils.checkNumberOfRepairInstances(result, 1, 1);
    }
 
 }

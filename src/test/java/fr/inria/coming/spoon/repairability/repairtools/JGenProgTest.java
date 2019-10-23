@@ -11,13 +11,13 @@ public class JGenProgTest {
     @Test
     public void testJGenProgNegative() throws Exception {
         FinalResult result = RepairabilityTestUtils.runRepairability("JGenProg", "/repairability_test_files/JGenProgTest");
-        RepairabilityTestUtils.checkNumberOfInstances(result, 1, 0);
+        RepairabilityTestUtils.checkNumberOfRepairInstances(result, 1, 0);
     }
 
     @Test
     public void testJGenProgPositive() throws Exception {
         FinalResult result = RepairabilityTestUtils.runRepairability("JGenProg", "/repairability_test_files/JGenProgPostiveTest");
-        RepairabilityTestUtils.checkNumberOfInstances(result, 1, 1);
+        RepairabilityTestUtils.checkNumberOfRepairInstances(result, 1, 1);
     }
 
 }

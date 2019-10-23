@@ -29,37 +29,37 @@ public class NopolTest {
     @Ignore
     public void testNopolTruePositive1() throws Exception {
         FinalResult result = RepairabilityTestUtils.runRepairability("Nopol", "/repairability_test_files/NopolTest");
-        RepairabilityTestUtils.checkNumberOfInstances(result, 9, 9);
+        RepairabilityTestUtils.checkNumberOfRepairInstances(result, 9, 9);
     }
 
     @Ignore
     public void testNopolTruePositive2() throws Exception {
         FinalResult result = RepairabilityTestUtils.runRepairability("Nopol", "/repairability_test_files/jMutRepairTest");
-        RepairabilityTestUtils.checkNumberOfInstances(result, 4, 4);
+        RepairabilityTestUtils.checkNumberOfRepairInstances(result, 4, 4);
     }
 
     @Test
     public void testNopolTypesInsShallow() throws Exception {
         FinalResult result = RepairabilityTestUtils.runRepairability("Nopol", "/repairability_test_files/NopolTypes/if_ins_shallow");
-        RepairabilityTestUtils.checkNumberOfInstances(result, 1, 1);
+        RepairabilityTestUtils.checkNumberOfRepairInstances(result, 1, 1);
     }
 
     @Test
     public void testNopolTypesInsDeep() throws Exception {
         FinalResult result = RepairabilityTestUtils.runRepairability("Nopol", "/repairability_test_files/NopolTypes/if_ins_deep");
-        RepairabilityTestUtils.checkNumberOfInstances(result, 1, 1);
+        RepairabilityTestUtils.checkNumberOfRepairInstances(result, 1, 1);
     }
 
     @Test
     public void testNopolTypesUpdShallow() throws Exception {
         FinalResult result = RepairabilityTestUtils.runRepairability("Nopol", "/repairability_test_files/jMutRepairBinaryTypes/ss/");
-        RepairabilityTestUtils.checkNumberOfInstances(result, 1, 1);
+        RepairabilityTestUtils.checkNumberOfRepairInstances(result, 1, 1);
     }
 
     @Test
     public void testNopolTypesUpdDeep() throws Exception {
         FinalResult result = RepairabilityTestUtils.runRepairability("Nopol", "/repairability_test_files/NopolTypes/if_upd_deep");
-        RepairabilityTestUtils.checkNumberOfInstances(result, 1, 1);
+        RepairabilityTestUtils.checkNumberOfRepairInstances(result, 1, 1);
     }
 
 

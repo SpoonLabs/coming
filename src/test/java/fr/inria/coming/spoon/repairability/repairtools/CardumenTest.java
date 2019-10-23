@@ -1,6 +1,7 @@
 package fr.inria.coming.spoon.repairability.repairtools;
 
 import fr.inria.coming.changeminer.entity.FinalResult;
+import fr.inria.coming.repairability.RepairabilityAnalyzer;
 import fr.inria.coming.spoon.repairability.RepairabilityTestUtils;
 import org.junit.Test;
 
@@ -24,7 +25,7 @@ public class CardumenTest {
                                 "/repairability_test_files/cardumen/cardumen1",
                                 "exclude_repair_patterns_not_covering_the_whole_diff:true"
                         );
-        RepairabilityTestUtils.checkNumberOfInstances(result, 1, 1);
+        RepairabilityTestUtils.checkNumberOfRepairInstances(result, 1, 1);
     }
 
     @Test
@@ -36,7 +37,7 @@ public class CardumenTest {
                                 "/repairability_test_files/cardumen/cardumen2",
                                 "exclude_repair_patterns_not_covering_the_whole_diff:true"
                         );
-        RepairabilityTestUtils.checkNumberOfInstances(result, 1, 0);
+        RepairabilityTestUtils.checkNumberOfRepairInstances(result, 1, 0);
     }
 
     @Test
@@ -48,7 +49,7 @@ public class CardumenTest {
                                 "/repairability_test_files/cardumen/cardumen2",
                                 "include_all_instances_for_each_tool:true"
                         );
-        RepairabilityTestUtils.checkNumberOfInstances(result, 1, 4);
+        RepairabilityTestUtils.checkNumberOfRepairInstances(result, 1, 4);
     }
 
     @Test
@@ -79,7 +80,8 @@ public class CardumenTest {
                 continue;
             }
 
-            int numberOfInstances = RepairabilityTestUtils.countNumberOfInstances(result.getAllResults());
+            int numberOfInstances = RepairabilityTestUtils.countNumberOfInstances(
+                    result.getAllResults(), RepairabilityAnalyzer.class);
 
             if (numberOfInstances > 1) {
                 overDetectedInstances.add(file.getName());
