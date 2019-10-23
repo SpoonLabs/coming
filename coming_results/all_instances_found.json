@@ -1,14 +1,14 @@
 {
   "instances": [
     {
-      "revision": "cardumen",
+      "revision": "Cardumen",
       "repairability": [
         {
           "tool-name": "Cardumen",
           "pattern-name": "Cardumen;expression_replacement",
           "Unified_Diff_of-files:": "Starts Below...",
-          "CHANGE_old:": "                    minRatioPositions.add(i);\r",
-          "CHANGE_new:": "                    Precision.equals(entry, 0.0, maxUlps);\r",
+          "CHANGE_old:": "        ++count;\r",
+          "CHANGE_new:": "        --index;\r",
           "instance_detail": [
             {
               "pattern_action": "UPD",
@@ -20,59 +20,22 @@
               },
               "concrete_change": {
                 "operator": "UPD",
-                "src_type": "Invocation",
-                "dst_type": "Invocation",
-                "src": "minRatioPositions.add(i)",
-                "dst": "org.apache.commons.math3.util.Precision.equals(entry, 0.0, maxUlps)",
+                "src_type": "UnaryOperator",
+                "dst_type": "UnaryOperator",
+                "src": "++(count)",
+                "dst": "--index",
                 "src_parent_type": "Block",
                 "dst_parent_type": "Block",
-                "src_parent": "{\r\n    minRatioPositions.add(i);\r\n}",
-                "dst_parent": "{\r\n    org.apache.commons.math3.util.Precision.equals(entry, 0.0, maxUlps);\r\n}"
+                "src_parent": "{\r\n    keys[index] \u003d 0;\r\n    states[index] \u003d org.apache.commons.math.util.OpenIntToDoubleHashMap.REMOVED;\r\n    final double previous \u003d values[index];\r\n    values[index] \u003d missingEntries;\r\n    --(size);\r\n    ++(count);\r\n    return previous;\r\n}",
+                "dst_parent": "{\r\n    keys[index] \u003d 0;\r\n    states[index] \u003d org.apache.commons.math.util.OpenIntToDoubleHashMap.REMOVED;\r\n    final double previous \u003d values[index];\r\n    values[index] \u003d missingEntries;\r\n    --(size);\r\n    --index;\r\n    return previous;\r\n}"
               },
-              "line": 104,
-              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\one",
+              "line": 399,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\00284",
               "stats": {
-                "number_of_src_entities": 16,
-                "number_of_dst_entities": 26,
-                "src_entity_types": "[java.lang.Integer, int, java.util.List\u003cjava.lang.Integer\u003e, java.util.List]",
-                "dst_entity_types": "[org.apache.commons.math3.util.Precision, double, org.apache.commons.math3.optimization.linear.SimplexSolver]"
-              }
-            }
-          ]
-        },
-        {
-          "tool-name": "Cardumen",
-          "pattern-name": "Cardumen;expression_replacement",
-          "Unified_Diff_of-files:": "Starts Below...",
-          "CHANGE_old:": "                    minRatioPositions.add(i);\r",
-          "CHANGE_new:": "                    Precision.equals(entry, 0.0, maxUlps);\r",
-          "instance_detail": [
-            {
-              "pattern_action": "UPD",
-              "pattern_entity": {
-                "entity_type": "Expression",
-                "entity_new value": "*",
-                "entity_role": "*",
-                "entity_parent": "null"
-              },
-              "concrete_change": {
-                "operator": "UPD",
-                "src_type": "VariableRead",
-                "dst_type": "VariableRead",
-                "src": "minRatioPositions",
-                "dst": "entry",
-                "src_parent_type": "Invocation",
-                "dst_parent_type": "Invocation",
-                "src_parent": "minRatioPositions.add(i)",
-                "dst_parent": "org.apache.commons.math3.util.Precision.equals(entry, 0.0, maxUlps)"
-              },
-              "line": 104,
-              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\one",
-              "stats": {
-                "number_of_src_entities": 6,
-                "number_of_dst_entities": 3,
-                "src_entity_types": "[java.lang.Integer, java.util.List\u003cjava.lang.Integer\u003e]",
-                "dst_entity_types": "[double]"
+                "number_of_src_entities": 13,
+                "number_of_dst_entities": 5,
+                "src_entity_types": "[int, org.apache.commons.math.util.OpenIntToDoubleHashMap]",
+                "dst_entity_types": "[int]"
               }
             }
           ]

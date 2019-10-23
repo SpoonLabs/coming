@@ -8,10 +8,14 @@ import fr.inria.coming.core.entities.DiffResult;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.main.ComingMain;
 import fr.inria.coming.repairability.RepairabilityAnalyzer;
+import fr.inria.coming.spoon.repairability.checkers.DiffResultChecker;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
 
+import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -39,23 +43,6 @@ public class RepairabilityTestUtils {
         return counter;
     }
 
-    public static int countRootOperationsExcludingType(FinalResult finalResult, String excludedType){
-        Map<IRevision, RevisionResult> revisionsMap = finalResult.getAllResults();
-
-        int counter = 0;
-        for (Map.Entry<IRevision, RevisionResult> entry : revisionsMap.entrySet()) {
-            RevisionResult rr = entry.getValue();
-            DiffResult result =
-                    (DiffResult) rr.getResultFromClass(FineGrainDifftAnalyzer.class);
-            for(Object diffOfFile : result.getDiffOfFiles().entrySet()){
-                Diff diff = ((Map.Entry<String, Diff>) diffOfFile).getValue();
-                List<Operation> rootOps = diff.getRootOperations();
-                counter += rootOps.stream().filter(op -> !op.getAction().getName().equals(excludedType)).count();
-            }
-        }
-
-        return counter;
-    }
 
     public static FinalResult runRepairability(String toolName, String inputFiles) throws Exception {
         ComingMain cm = new ComingMain();
@@ -113,5 +100,52 @@ public class RepairabilityTestUtils {
 
         assertNotNull(result);
         return result;
+    }
+
+    public static void checkGroundTruthPatches(Class toolTestClass, DiffResultChecker diffResultChecker) throws Exception {
+        String toolName = toolTestClass.getSimpleName().replace("Test", "");
+        String groundTruthPatchesPathInResources = "/repairability_test_files/ground_truth/" + toolName;
+        String groundTruthPatchesBasePath =
+                URLDecoder.decode(RepairabilityTestUtils.class.getResource
+                        (groundTruthPatchesPathInResources).getFile(), "UTF-8");
+
+        List<String> detectedInstances = new ArrayList<>(),
+                undetectedInstances = new ArrayList<>(),
+                overDetectedInstances = new ArrayList<>(); // diffs with more than one detected instances
+
+        File[] files = new File(groundTruthPatchesBasePath).listFiles();
+        for (File file : files) {
+            FinalResult result =
+                    RepairabilityTestUtils.runRepairabilityWithParameters
+                            (
+                                    toolName,
+                                    groundTruthPatchesPathInResources + File.separator + file.getName(),
+                                    "include_all_instances_for_each_tool:true:exclude_repair_patterns_not_covering_the_whole_diff:true"
+                            );
+
+            if (!diffResultChecker.isDiffResultCorrect(result)) {
+                // Gumtree did not work correctly
+                continue;
+            }
+
+            int numberOfRepairInstances = RepairabilityTestUtils.countNumberOfInstances(
+                    result.getAllResults(), RepairabilityAnalyzer.class);
+
+            if (numberOfRepairInstances > 1) {
+                overDetectedInstances.add(file.getName());
+            } else if (numberOfRepairInstances < 1) {
+                undetectedInstances.add(file.getName());
+            } else {
+                detectedInstances.add(file.getName());
+            }
+        }
+
+        assertEquals(overDetectedInstances.size(), 0);
+
+        assertEquals(undetectedInstances.size(), 49);
+        /* legitimate causes for undetectedInstances:
+        1- ingredient (variable or literal) is extracted from a different scope (not from the same file).
+        2- template is extracted from from a different scope (not from the same file).
+        */
     }
 }
