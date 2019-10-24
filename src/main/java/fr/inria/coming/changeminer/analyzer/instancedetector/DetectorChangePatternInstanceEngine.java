@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import fr.inria.coming.utils.GumtreeHelper;
+import fr.inria.coming.utils.EntityTypesInfoResolver;
 import org.apache.log4j.Logger;
 
 import com.github.gumtreediff.actions.model.Action;
@@ -450,7 +450,7 @@ public class DetectorChangePatternInstanceEngine {
         int i_levels = 1;
         // Scale the parent hierarchy and check types.
         while (currentNodeFromAction != null && i_levels <= parentLevel) {
-            String typeOfNode = GumtreeHelper.getNodeLabelFromCtElement(currentNodeFromAction);
+            String typeOfNode = EntityTypesInfoResolver.getNodeLabelFromCtElement(currentNodeFromAction);
             String valueOfNode = currentNodeFromAction.toString();
             String roleInParent = (currentNodeFromAction.getRoleInParent() != null)
                     ? currentNodeFromAction.getRoleInParent().toString().toLowerCase()
@@ -461,7 +461,7 @@ public class DetectorChangePatternInstanceEngine {
                     ("*".equals(parentEntity.getEntityType())
 //                            || (typeOfNode != null && typeOfNode.equals(parentEntity.getEntityType())))
                             || (typeOfNode != null &&
-                                    GumtreeHelper.getInstance().isAChildOf(typeOfNode, parentEntity.getEntityType())))
+                                    EntityTypesInfoResolver.getInstance().isAChildOf(typeOfNode, parentEntity.getEntityType())))
                             ///
                             &&
                             // value of element

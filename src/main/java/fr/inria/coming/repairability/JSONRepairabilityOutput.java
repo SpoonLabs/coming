@@ -13,7 +13,6 @@ import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.core.entities.output.JSonPatternInstanceOutput;
 import fr.inria.coming.main.ComingProperties;
 import fr.inria.coming.repairability.models.InstanceStats;
-import fr.inria.coming.utils.GumtreeHelper;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
 import org.apache.log4j.Logger;
@@ -100,7 +99,7 @@ public class JSONRepairabilityOutput extends JSonPatternInstanceOutput {
                         }
 
                         if(isRootOperation(op, diff)){
-                            InstanceStats instanceStats = GumtreeHelper.getStats(op);
+                            InstanceStats instanceStats = getOperationStats(op);
                             opjson.add("stats", getJSONFromInstanceStats(instanceStats));
                         }
                         ops.add(opjson);
@@ -124,5 +123,18 @@ public class JSONRepairabilityOutput extends JSonPatternInstanceOutput {
             }
         }
         return false;
+    }
+
+    private InstanceStats getOperationStats(Operation operation) {
+        InstanceStats stats = new InstanceStats();
+        if (operation.getSrcNode() != null) {
+            stats.setSrcEntityTypes(operation.getSrcNode().getReferencedTypes());
+            stats.setNumberOfSrcEntities(operation.getSrcNode().getElements(null).size());
+        }
+        if (operation.getDstNode() != null) {
+            stats.setDstEntityTypes(operation.getDstNode().getReferencedTypes());
+            stats.setNumberOfDstEntities(operation.getDstNode().getElements(null).size());
+        }
+        return stats;
     }
 }

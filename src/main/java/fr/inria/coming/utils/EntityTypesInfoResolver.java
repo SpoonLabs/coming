@@ -1,7 +1,5 @@
 package fr.inria.coming.utils;
 
-import fr.inria.coming.repairability.models.InstanceStats;
-import gumtree.spoon.diff.operations.Operation;
 import org.reflections.Reflections;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
@@ -14,35 +12,34 @@ import java.util.*;
 /**
  * Created by khesoem on 10/4/2019.
  */
-public class GumtreeHelper {
-    private static GumtreeHelper _instance = null;
+public class EntityTypesInfoResolver {
+    private static EntityTypesInfoResolver _instance = null;
     private static final String CLASSES_HIERARCHY_PATH = "src/main/resources/gumtree-inheritance-relations.txt";
 
-    private Map<String, Set<String>> childrenToParents;
+    private Map<String, Set<String>> childrenToParentsRelationsBetweenEntityTypes;
 
-    public static GumtreeHelper getInstance(){
-        if(_instance == null)
-            _instance = new GumtreeHelper();
+    public static EntityTypesInfoResolver getInstance() {
+        if (_instance == null)
+            _instance = new EntityTypesInfoResolver();
         return _instance;
     }
 
-    public GumtreeHelper(){
-        loadClassToParents();
+    public EntityTypesInfoResolver() {
+        loadChildrenToParentsRelationsBetweenEntityTypes();
     }
 
-    private void loadClassToParents() {
-        childrenToParents = new HashMap<>();
-
+    private void loadChildrenToParentsRelationsBetweenEntityTypes() {
+        childrenToParentsRelationsBetweenEntityTypes = new HashMap<>();
         try {
             Scanner sc = new Scanner(new File(CLASSES_HIERARCHY_PATH));
 
-            while(sc.hasNextLine()){
+            while (sc.hasNextLine()) {
                 String line = sc.nextLine();
                 String[] parts = line.split(":");
 
                 String child = parts[0];
                 String[] parents = parts[1].split(" ");
-                childrenToParents.put(child, new HashSet<>(Arrays.asList(parents)));
+                childrenToParentsRelationsBetweenEntityTypes.put(child, new HashSet<>(Arrays.asList(parents)));
             }
 
             sc.close();
@@ -51,11 +48,11 @@ public class GumtreeHelper {
         }
     }
 
-    // says whether parent is an ancestor of or equal to child.
-    public boolean isAChildOf(String child, String parent){
-        if(!childrenToParents.containsKey(child))
+    // checks whether parent is an ancestor of or equal to child.
+    public boolean isAChildOf(String childEntityTypeName, String parentEntityTypeName) {
+        if (!childrenToParentsRelationsBetweenEntityTypes.containsKey(childEntityTypeName))
             return false;
-        return childrenToParents.get(child).contains(parent);
+        return childrenToParentsRelationsBetweenEntityTypes.get(childEntityTypeName).contains(parentEntityTypeName);
     }
 
 //    public static void main(String[] args) throws UnsupportedEncodingException, FileNotFoundException {
@@ -87,8 +84,8 @@ public class GumtreeHelper {
 
         // initializing childrenToParents
         Set<Class> toBeIgnored = new HashSet<>();
-        for(Class clazz : allClasses){
-            if(!clazz.getSimpleName().startsWith("Ct")) {
+        for (Class clazz : allClasses) {
+            if (!clazz.getSimpleName().startsWith("Ct")) {
                 toBeIgnored.add(clazz);
                 continue;
             }
@@ -96,11 +93,11 @@ public class GumtreeHelper {
         }
         allClasses.removeAll(toBeIgnored);
 
-        for(Class clazz : allClasses){
+        for (Class clazz : allClasses) {
             String currentClassName = clazz.getSimpleName().substring(2);
             Set<Class<? extends CtElement>> childrenOfCurrentClass = reflections.getSubTypesOf(clazz);
-            for(Class childOfCurrentClass : childrenOfCurrentClass){
-                if(!childOfCurrentClass.getSimpleName().startsWith("Ct"))
+            for (Class childOfCurrentClass : childrenOfCurrentClass) {
+                if (!childOfCurrentClass.getSimpleName().startsWith("Ct"))
                     continue;
                 String currentChildName = childOfCurrentClass.getSimpleName().substring(2);
                 childrenToParents.get(currentChildName).add(currentClassName);
@@ -108,11 +105,11 @@ public class GumtreeHelper {
             childrenToParents.get(currentClassName).add(currentClassName); // each class is considered as an ancestor of itself
         }
 
-        for(Map.Entry<String, Set> childToParents : childrenToParents.entrySet()){
+        for (Map.Entry<String, Set> childToParents : childrenToParents.entrySet()) {
             String className = childToParents.getKey();
             pw.print(className + ":");
             Set<String> parents = childToParents.getValue();
-            for(String parent : parents){
+            for (String parent : parents) {
                 pw.print(" " + parent);
             }
             pw.print("\n");
@@ -120,35 +117,6 @@ public class GumtreeHelper {
         }
 
         pw.close();
-    }
-
-    public static InstanceStats getStats(Operation operation) {
-        InstanceStats stats = new InstanceStats();
-        if(operation.getSrcNode() != null) {
-            stats.setSrcEntityTypes(operation.getSrcNode().getReferencedTypes());
-            try { // FIXME: exception should not be thrown
-                stats.setNumberOfSrcEntities(operation.getSrcNode().getElements(null).size());
-            }catch (Exception e){
-//                e.printStackTrace();
-            }
-        }
-        if(operation.getDstNode() != null) {
-            stats.setDstEntityTypes(operation.getDstNode().getReferencedTypes());
-            try { // FIXME: exception should not be thrown
-                stats.setNumberOfDstEntities(operation.getDstNode().getElements(null).size());
-            }catch (Exception e){
-//                e.printStackTrace();
-            }
-        }
-        return stats;
-    }
-
-    public Map<String, Set<String>> getChildrenToParents() {
-        return childrenToParents;
-    }
-
-    public void setChildrenToParents(Map<String, Set<String>> childrenToParents) {
-        this.childrenToParents = childrenToParents;
     }
 
     /**
