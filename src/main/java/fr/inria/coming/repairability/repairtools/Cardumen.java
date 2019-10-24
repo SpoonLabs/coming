@@ -4,7 +4,7 @@ import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstan
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
-import fr.inria.coming.utils.GumtreeHelper;
+import fr.inria.coming.utils.EntityTypesInfoResolver;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
 import spoon.reflect.code.*;
@@ -87,8 +87,8 @@ public class Cardumen extends AbstractRepairTool {
 
         for (int i = 0; i < allSrcElements.size() - allDstElements.size() + 1; i++) {
             CtElement currentSrcElement = allSrcElements.get(i);
-            String typeOfCurrentSrcElement = GumtreeHelper.getNodeLabelFromCtElement(currentSrcElement);
-            if (!GumtreeHelper.getInstance().isAChildOf(typeOfCurrentSrcElement, "Expression")) {
+            String typeOfCurrentSrcElement = EntityTypesInfoResolver.getNodeLabelFromCtElement(currentSrcElement);
+            if (!EntityTypesInfoResolver.getInstance().isAChildOf(typeOfCurrentSrcElement, "Expression")) {
                 continue;
             }
             String srcAsString = currentSrcElement.toString();
