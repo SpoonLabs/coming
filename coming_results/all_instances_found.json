@@ -1,41 +1,46 @@
 {
   "instances": [
     {
-      "revision": "Cardumen",
+      "revision": "patch1-Math-70-JGenProg2015",
       "repairability": [
         {
-          "tool-name": "Cardumen",
-          "pattern-name": "Cardumen;expression_replacement",
+          "tool-name": "JGenProg",
+          "pattern-name": "JGenProg;any_statement_deep",
           "Unified_Diff_of-files:": "Starts Below...",
-          "CHANGE_old:": "        ++count;\r",
-          "CHANGE_new:": "        --index;\r",
+          "CHANGE_old:": "        return solve(min, max);\r",
+          "CHANGE_new:": "        return solve(f, min, max);\r",
           "instance_detail": [
             {
-              "pattern_action": "UPD",
+              "pattern_action": "ANY",
               "pattern_entity": {
-                "entity_type": "Expression",
+                "entity_type": "*",
                 "entity_new value": "*",
                 "entity_role": "*",
-                "entity_parent": "null"
+                "entity_parent": {
+                  "entity_type": "*",
+                  "entity_new value": "*",
+                  "entity_role": "Statement",
+                  "entity_parent": "null"
+                }
               },
               "concrete_change": {
-                "operator": "UPD",
-                "src_type": "UnaryOperator",
-                "dst_type": "UnaryOperator",
-                "src": "++(count)",
-                "dst": "--index",
-                "src_parent_type": "Block",
-                "dst_parent_type": "Block",
-                "src_parent": "{\r\n    keys[index] \u003d 0;\r\n    states[index] \u003d org.apache.commons.math.util.OpenIntToDoubleHashMap.REMOVED;\r\n    final double previous \u003d values[index];\r\n    values[index] \u003d missingEntries;\r\n    --(size);\r\n    ++(count);\r\n    return previous;\r\n}",
-                "dst_parent": "{\r\n    keys[index] \u003d 0;\r\n    states[index] \u003d org.apache.commons.math.util.OpenIntToDoubleHashMap.REMOVED;\r\n    final double previous \u003d values[index];\r\n    values[index] \u003d missingEntries;\r\n    --(size);\r\n    --index;\r\n    return previous;\r\n}"
+                "operator": "INS",
+                "src_type": "VariableRead",
+                "dst_type": "null",
+                "src": "f",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "solve(f, min, max)",
+                "dst_parent": "null"
               },
-              "line": 399,
-              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\00284",
+              "line": 72,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\patch1-Math-70-JGenProg2015",
               "stats": {
-                "number_of_src_entities": 13,
-                "number_of_dst_entities": 5,
-                "src_entity_types": "[int, org.apache.commons.math.util.OpenIntToDoubleHashMap]",
-                "dst_entity_types": "[int]"
+                "number_of_src_entities": 4,
+                "number_of_dst_entities": -1,
+                "src_entity_types": "[org.apache.commons.math.analysis.UnivariateRealFunction]",
+                "dst_entity_types": "[]"
               }
             }
           ]

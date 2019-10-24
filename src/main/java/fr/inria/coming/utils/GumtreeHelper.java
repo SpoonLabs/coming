@@ -4,6 +4,7 @@ import fr.inria.coming.repairability.models.InstanceStats;
 import gumtree.spoon.diff.operations.Operation;
 import org.reflections.Reflections;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtPackage;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -62,6 +63,18 @@ public class GumtreeHelper {
 //        String inheritanceRelationsFilePath = CLASSES_HIERARCHY_PATH;
 //        extractAndSaveCtElementsHierarchyModel(inheritanceRelationsFilePath);
 //    }
+
+    public static List<CtElement> getPathToRootNode(CtElement element) {
+        CtElement par = element.getParent();
+        if (par == null || par instanceof CtPackage || element == par) {
+            List<CtElement> res = new ArrayList<>();
+            res.add(element);
+            return res;
+        }
+        List<CtElement> pathToParent = getPathToRootNode(par);
+        pathToParent.add(element);
+        return pathToParent;
+    }
 
     private static void extractAndSaveCtElementsHierarchyModel(String outputPath) throws FileNotFoundException {
         PrintWriter pw = new PrintWriter(new File(outputPath));

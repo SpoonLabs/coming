@@ -4,7 +4,9 @@ import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstan
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
+import fr.inria.coming.utils.GumtreeHelper;
 import gumtree.spoon.diff.operations.*;
+import org.apache.commons.lang3.StringUtils;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.pattern.Match;
@@ -66,8 +68,11 @@ public class JGenProg extends AbstractRepairTool {
         }
 
         // see if the inserted statement occurs in the previous version of the file
-        String previousVersionString = (String) revision.getChildren().get(0).getPreviousVersion();
-        boolean ans=previousVersionString.contains(element.toString());
+        List<CtElement> srcRootNode = GumtreeHelper.getPathToRootNode(anyOperation.getSrcNode());
+        String srcVersionString = srcRootNode.get(0).toString();
+
+        // inserted/updated statement should exist in the change line and another location of the code
+        boolean ans = StringUtils.countMatches(srcVersionString, element.toString()) > 1;
 
         return ans;
     }

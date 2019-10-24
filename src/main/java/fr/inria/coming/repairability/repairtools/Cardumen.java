@@ -58,7 +58,7 @@ public class Cardumen extends AbstractRepairTool {
         Operation anyOperation = instance.getActions().get(0);
         CtElement srcNode = anyOperation.getSrcNode(), dstNode = anyOperation.getDstNode();
 
-        CtElement srcRootNode = getPathToRootNode(srcNode).get(0);
+        CtElement srcRootNode = GumtreeHelper.getPathToRootNode(srcNode).get(0);
         List<CtElement> allSrcElements = srcRootNode.getElements(null);
         Set<String> srcVariablesAndLiterals = new HashSet<>();
 
@@ -180,7 +180,7 @@ public class Cardumen extends AbstractRepairTool {
         CtElement instanceSrcNode = instancePattern.getActions().get(0).getSrcNode();
         for (Operation diffOperation : diff.getRootOperations()) {
             boolean found = false;
-            List<CtElement> pathToDiffRoot = getPathToRootNode(diffOperation.getSrcNode());
+            List<CtElement> pathToDiffRoot = GumtreeHelper.getPathToRootNode(diffOperation.getSrcNode());
             for (CtElement item : pathToDiffRoot) {
                 if (item == instanceSrcNode)
                     found = true;
@@ -189,18 +189,6 @@ public class Cardumen extends AbstractRepairTool {
                 return false;
         }
         return true;
-    }
-
-    private List<CtElement> getPathToRootNode(CtElement element) {
-        CtElement par = element.getParent();
-        if (par == null || par instanceof CtPackage || element == par) {
-            List<CtElement> res = new ArrayList<>();
-            res.add(element);
-            return res;
-        }
-        List<CtElement> pathToParent = getPathToRootNode(par);
-        pathToParent.add(element);
-        return pathToParent;
     }
 
 }
