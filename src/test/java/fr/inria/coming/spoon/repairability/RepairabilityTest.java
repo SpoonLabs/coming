@@ -158,7 +158,8 @@ public class RepairabilityTest {
     public void testJSONRepairabilityOutputPrintModeParameter() throws Exception {
         File output = new File("./coming_results/all_instances_found.json");
         // clean test data
-        output.delete();
+        if(output.exists())
+            output.delete();
         assertFalse(output.exists());
 
         FinalResult r = RepairabilityTestUtils.runRepairabilityWithParameters
