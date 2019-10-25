@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import fr.inria.coming.utils.EntityTypesInfoResolver;
 import org.apache.log4j.Logger;
 
 import com.github.gumtreediff.actions.model.Action;
@@ -449,7 +450,7 @@ public class DetectorChangePatternInstanceEngine {
         int i_levels = 1;
         // Scale the parent hierarchy and check types.
         while (currentNodeFromAction != null && i_levels <= parentLevel) {
-            String typeOfNode = getNodeLabelFromCtElement(currentNodeFromAction);
+            String typeOfNode = EntityTypesInfoResolver.getNodeLabelFromCtElement(currentNodeFromAction);
             String valueOfNode = currentNodeFromAction.toString();
             String roleInParent = (currentNodeFromAction.getRoleInParent() != null)
                     ? currentNodeFromAction.getRoleInParent().toString().toLowerCase()
@@ -458,7 +459,9 @@ public class DetectorChangePatternInstanceEngine {
             String patternEntityValue = (matchnewvalue) ? parentEntity.getNewValue() : parentEntity.getOldValue();
             if ( // type of element
                     ("*".equals(parentEntity.getEntityType())
-                            || (typeOfNode != null && typeOfNode.equals(parentEntity.getEntityType())))
+//                            || (typeOfNode != null && typeOfNode.equals(parentEntity.getEntityType())))
+                            || (typeOfNode != null &&
+                                    EntityTypesInfoResolver.getInstance().isAChildOf(typeOfNode, parentEntity.getEntityType())))
                             ///
                             &&
                             // value of element
@@ -506,20 +509,6 @@ public class DetectorChangePatternInstanceEngine {
 
     public String getTypeLabel(PatternAction patternAction) {
         return patternAction.getAffectedEntity().getEntityType();
-    }
-
-    /**
-     * The label of a CtElement is the simple name of the class without the CT
-     * prefix.
-     *
-     * @param element
-     * @return
-     */
-    public String getNodeLabelFromCtElement(CtElement element) {
-        String typeFromCt = element.getClass().getSimpleName();
-        if (typeFromCt.trim().isEmpty())
-            return typeFromCt;
-        return typeFromCt.substring(2, typeFromCt.length() - 4);
     }
 
 }

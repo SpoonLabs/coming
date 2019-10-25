@@ -28,7 +28,8 @@ public class RepairTools extends AbstractRepairTool {
             "JGenProg",
             "NPEfix",
             "Arja",
-            "Elixir"
+            "Elixir",
+            "Cardumen"
     };
 
     /**

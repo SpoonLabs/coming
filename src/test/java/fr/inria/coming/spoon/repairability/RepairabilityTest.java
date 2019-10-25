@@ -1,6 +1,7 @@
 package fr.inria.coming.spoon.repairability;
 
 import com.github.difflib.text.DiffRow;
+import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
 import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
 import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstancesFromDiff;
 import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstancesFromRevision;
@@ -9,9 +10,13 @@ import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.main.ComingMain;
 import fr.inria.coming.repairability.RepairabilityAnalyzer;
+import fr.inria.coming.spoon.utils.TestUtils;
+import gumtree.spoon.diff.Diff;
+import gumtree.spoon.diff.operations.Operation;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
@@ -27,18 +32,18 @@ public class RepairabilityTest {
 
     @Test
     public void testelixir_data() throws Exception {
-        FinalResult result = TestUtills.runRepairability("ALL", "/repairability_test_files/elixir_data");
+        FinalResult result = RepairabilityTestUtils.runRepairability("ALL", "/repairability_test_files/elixir_data");
     }
 
     @Test
     public void testNPEfixdata() throws Exception {
-        FinalResult result = TestUtills.runRepairability("ALL", "/repairability_test_files/NPEfix");
+        FinalResult result = RepairabilityTestUtils.runRepairability("ALL", "/repairability_test_files/NPEfix");
     }
 
     @Test
     public void testDiffResults() throws Exception {
         int count = 0;
-        FinalResult result = TestUtills.runRepairabilityGit("ALL", "repogit4testv0");
+        FinalResult result = RepairabilityTestUtils.runRepairabilityGit("ALL", "repogit4testv0");
         Map<IRevision, RevisionResult> revisionsMap = result.getAllResults();
         assertEquals(13, revisionsMap.keySet().size());
 
@@ -69,7 +74,7 @@ public class RepairabilityTest {
     @Test
     public void testOneInstancePerRevision() throws Exception {
 
-        FinalResult result = TestUtills.runRepairability("ALL", "/repairability_test_files/mixed/");
+        FinalResult result = RepairabilityTestUtils.runRepairability("ALL", "/repairability_test_files/mixed/");
 
         Map<IRevision, RevisionResult> revisionsMap = result.getAllResults();
         assertEquals(2, revisionsMap.keySet().size());
@@ -93,7 +98,7 @@ public class RepairabilityTest {
     @Test
     public void testExcludeNotFullyCoveringInstances() throws Exception {
         FinalResult result =
-                TestUtills.runRepairabilityWithParameters
+                RepairabilityTestUtils.runRepairabilityWithParameters
                         (
                                 "ALL",
                                 "/repairability_test_files/exclude_not_covering/",
@@ -110,9 +115,9 @@ public class RepairabilityTest {
 
             // for each revision
             for (PatternInstancesFromDiff v : instances.getInfoPerDiff()) {
-                if(v.getLocation().equals("covered")) // for the covered sample
+                if (v.getLocation().equals("covered")) // for the covered sample
                     assertTrue(v.getInstances().size() > 0);
-                else if(v.getLocation().equals("not_covered")) // for the not covered sample
+                else if (v.getLocation().equals("not_covered")) // for the not covered sample
                     assertTrue(v.getInstances().size() == 0);
             }
         }
@@ -121,7 +126,7 @@ public class RepairabilityTest {
     @Test
     public void testCheckIncludeAllInstancesParameter() throws Exception {
         FinalResult result =
-                TestUtills.runRepairabilityWithParameters
+                RepairabilityTestUtils.runRepairabilityWithParameters
                         (
                                 "ALL",
                                 "/pairsICSE15/", // has repetitive tool use for single revision
@@ -131,7 +136,7 @@ public class RepairabilityTest {
         assertTrue(hasRepetitiveToolUseForSingleRevision);
 
         result =
-                TestUtills.runRepairabilityWithParameters
+                RepairabilityTestUtils.runRepairabilityWithParameters
                         (
                                 "ALL",
                                 "/pairsICSE15/",
@@ -141,7 +146,7 @@ public class RepairabilityTest {
         assertFalse(hasRepetitiveToolUseForSingleRevision);
 
         result =
-                TestUtills.runRepairability
+                RepairabilityTestUtils.runRepairability
                         (
                                 "ALL",
                                 "/pairsICSE15/"
@@ -154,10 +159,11 @@ public class RepairabilityTest {
     public void testJSONRepairabilityOutputPrintModeParameter() throws Exception {
         File output = new File("./coming_results/all_instances_found.json");
         // clean test data
-        output.delete();
+        if(output.exists())
+            output.delete();
         assertFalse(output.exists());
 
-        FinalResult r = TestUtills.runRepairabilityWithParameters
+        FinalResult r = RepairabilityTestUtils.runRepairabilityWithParameters
                 (
                         "ALL",
                         "/repairability_test_files/exclude_not_covering/",
@@ -173,7 +179,6 @@ public class RepairabilityTest {
         // if it was PatternInstanceAnalyzer output, it would also include some instances for not_covered
         assertEquals(ja.size(), 1);
     }
-
 
 
     private boolean checkIncludingRepetitiveToolUseForSingleRevision(FinalResult result) {
@@ -199,5 +204,18 @@ public class RepairabilityTest {
             }
         }
         return hasRepetitiveToolUseForSingleRevision;
+    }
+
+    @Test
+    public void testNullPointerException() throws Exception {
+        File s = TestUtils.getInstance().getFile("repairability_test_files/other/" +
+                "react_native_1d0b39/ReactDrawerLayoutManager_1d0b39_s.java");
+        File t = TestUtils.getInstance().getFile("repairability_test_files/other/" +
+                "react_native_1d0b39/ReactDrawerLayoutManager_1d0b39_t.java");
+        FineGrainDifftAnalyzer r = new FineGrainDifftAnalyzer();
+        Diff diffOut = r.getDiff(s, t);
+        for (Operation op : diffOut.getAllOperations()) {
+            Assert.assertTrue(op.getSrcNode().getElements(null).size() > 0);
+        }
     }
 }

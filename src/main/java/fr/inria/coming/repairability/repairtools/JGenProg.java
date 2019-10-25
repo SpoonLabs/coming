@@ -50,7 +50,7 @@ public class JGenProg extends AbstractRepairTool {
         } else if (anyOperation instanceof UpdateOperation) {
             element = anyOperation.getDstNode(); // See why are using DstNode: https://github.com/SpoonLabs/coming/issues/72#issuecomment-508123273
         } else if (anyOperation instanceof DeleteOperation) {
-            // ASSUMPTION ONLY A STATEMENT CAN BE DELETED
+            // ASSUMPTION: ONLY A STATEMENT CAN BE DELETED
             return anyOperation.getSrcNode().getRoleInParent() == CtRole.STATEMENT;
         } else if (anyOperation instanceof MoveOperation) {
             // based on move never occurs actually based on the analysis of our dataset but it may occur when in case of swaps(as described in the paper)

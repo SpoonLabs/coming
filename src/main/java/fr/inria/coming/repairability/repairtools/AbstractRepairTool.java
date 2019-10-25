@@ -3,6 +3,8 @@ package fr.inria.coming.repairability.repairtools;
 import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.entity.IRevision;
+import gumtree.spoon.diff.Diff;
+import gumtree.spoon.diff.operations.Operation;
 
 import java.io.*;
 import java.util.List;
@@ -90,5 +92,20 @@ public abstract class AbstractRepairTool {
             System.exit(1);
         }
         return outFilePath;
+    }
+
+    public boolean coversTheWholeDiff(ChangePatternInstance instancePattern, Diff diff) {
+        for(Operation diffOperation : diff.getRootOperations()){
+            boolean foundOp = false;
+            for(Operation instanceOperation : instancePattern.getActions()){
+                if(diffOperation.equals(instanceOperation)){
+                    foundOp = true;
+                    break;
+                }
+            }
+            if(!foundOp)
+                return false;
+        }
+        return true;
     }
 }

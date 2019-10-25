@@ -77,7 +77,7 @@
 		<dependency>
 			<groupId>fr.inria.gforge.spoon.labs </groupId>
 			<artifactId>gumtree-spoon-ast-diff</artifactId>
-			<version>1.20</version>
+			<version>1.21</version>
 		</dependency>
 
 		<dependency>
@@ -153,6 +153,12 @@
             <artifactId>java-diff-utils</artifactId>
             <version>4.0</version>
         </dependency>
+
+		<dependency>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>0.9.11</version>
+		</dependency>
 
 	</dependencies>
 

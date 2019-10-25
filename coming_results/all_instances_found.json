@@ -1,35 +1,153 @@
 {
   "instances": [
     {
-      "revision": "covered",
+      "revision": "cardumen",
       "repairability": [
         {
-          "tool-name": "Elixir",
-          "pattern-name": "Elixir;update_typre_ref",
+          "tool-name": "Cardumen",
+          "pattern-name": "Cardumen;expression_replacement",
           "Unified_Diff_of-files:": "Starts Below...",
-          "INSERT:": "import javarepl.expressions.Type;",
+          "CHANGE_old:": "                    minRatioPositions.add(i);\r",
+          "CHANGE_new:": "                    Precision.equals(entry, 0.0, maxUlps);\r",
           "instance_detail": [
             {
               "pattern_action": "UPD",
               "pattern_entity": {
-                "entity_type": "TypeReference",
+                "entity_type": "Expression",
                 "entity_new value": "*",
                 "entity_role": "*",
                 "entity_parent": "null"
               },
               "concrete_change": {
                 "operator": "UPD",
-                "src_type": "TypeReference",
-                "dst_type": "TypeReference",
-                "src": "javarepl.Type",
-                "dst": "javarepl.expressions.Type",
-                "src_parent_type": "Parameter",
-                "dst_parent_type": "Parameter",
-                "src_parent": "javarepl.Type expression",
-                "dst_parent": "javarepl.expressions.Type expression"
+                "src_type": "Invocation",
+                "dst_type": "Invocation",
+                "src": "minRatioPositions.add(i)",
+                "dst": "org.apache.commons.math3.util.Precision.equals(entry, 0.0, maxUlps)",
+                "src_parent_type": "Block",
+                "dst_parent_type": "Block",
+                "src_parent": "{\r\n    minRatioPositions.add(i);\r\n}",
+                "dst_parent": "{\r\n    org.apache.commons.math3.util.Precision.equals(entry, 0.0, maxUlps);\r\n}"
               },
-              "line": 204,
-              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\covered"
+              "line": 104,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two",
+              "stats": {
+                "number_of_src_entities": 16,
+                "number_of_dst_entities": 26,
+                "src_entity_types": "[java.lang.Integer, int, java.util.List\u003cjava.lang.Integer\u003e, java.util.List]",
+                "dst_entity_types": "[org.apache.commons.math3.util.Precision, double, org.apache.commons.math3.optimization.linear.SimplexSolver]"
+              }
+            }
+          ]
+        },
+        {
+          "tool-name": "Cardumen",
+          "pattern-name": "Cardumen;expression_replacement",
+          "Unified_Diff_of-files:": "Starts Below...",
+          "CHANGE_old:": "                    minRatioPositions.add(i);\r",
+          "CHANGE_new:": "                    Precision.equals(entry, 0.0, maxUlps);\r",
+          "instance_detail": [
+            {
+              "pattern_action": "UPD",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "UPD",
+                "src_type": "VariableRead",
+                "dst_type": "VariableRead",
+                "src": "minRatioPositions",
+                "dst": "entry",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "Invocation",
+                "src_parent": "minRatioPositions.add(i)",
+                "dst_parent": "org.apache.commons.math3.util.Precision.equals(entry, 0.0, maxUlps)"
+              },
+              "line": 104,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two",
+              "stats": {
+                "number_of_src_entities": 6,
+                "number_of_dst_entities": 3,
+                "src_entity_types": "[java.lang.Integer, java.util.List\u003cjava.lang.Integer\u003e]",
+                "dst_entity_types": "[double]"
+              }
+            }
+          ]
+        },
+        {
+          "tool-name": "Cardumen",
+          "pattern-name": "Cardumen;expression_replacement",
+          "Unified_Diff_of-files:": "Starts Below...",
+          "CHANGE_old:": "                    minRatioPositions.add(i);\r",
+          "CHANGE_new:": "                    Precision.equals(entry, 0.0, maxUlps);\r",
+          "instance_detail": [
+            {
+              "pattern_action": "UPD",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "UPD",
+                "src_type": "Invocation",
+                "dst_type": "Invocation",
+                "src": "minRatioPositions.add(i)",
+                "dst": "org.apache.commons.math3.util.Precision.equals(entry, 0.0, maxUlps)",
+                "src_parent_type": "Block",
+                "dst_parent_type": "Block",
+                "src_parent": "{\r\n    minRatio \u003d ratio;\r\n    minRatioPositions \u003d new java.util.ArrayList\u003cjava.lang.Integer\u003e();\r\n    minRatioPositions.add(i);\r\n}",
+                "dst_parent": "{\r\n    minRatio \u003d ratio;\r\n    minRatioPositions \u003d new java.util.ArrayList\u003cjava.lang.Integer\u003e();\r\n    org.apache.commons.math3.util.Precision.equals(entry, 0.0, maxUlps);\r\n}"
+              },
+              "line": 108,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two",
+              "stats": {
+                "number_of_src_entities": 16,
+                "number_of_dst_entities": 26,
+                "src_entity_types": "[java.lang.Integer, int, java.util.List\u003cjava.lang.Integer\u003e, java.util.List]",
+                "dst_entity_types": "[org.apache.commons.math3.util.Precision, double, org.apache.commons.math3.optimization.linear.SimplexSolver]"
+              }
+            }
+          ]
+        },
+        {
+          "tool-name": "Cardumen",
+          "pattern-name": "Cardumen;expression_replacement",
+          "Unified_Diff_of-files:": "Starts Below...",
+          "CHANGE_old:": "                    minRatioPositions.add(i);\r",
+          "CHANGE_new:": "                    Precision.equals(entry, 0.0, maxUlps);\r",
+          "instance_detail": [
+            {
+              "pattern_action": "UPD",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "UPD",
+                "src_type": "VariableRead",
+                "dst_type": "VariableRead",
+                "src": "minRatioPositions",
+                "dst": "entry",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "Invocation",
+                "src_parent": "minRatioPositions.add(i)",
+                "dst_parent": "org.apache.commons.math3.util.Precision.equals(entry, 0.0, maxUlps)"
+              },
+              "line": 108,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two",
+              "stats": {
+                "number_of_src_entities": 6,
+                "number_of_dst_entities": 3,
+                "src_entity_types": "[java.lang.Integer, java.util.List\u003cjava.lang.Integer\u003e]",
+                "dst_entity_types": "[double]"
+              }
             }
           ]
         }

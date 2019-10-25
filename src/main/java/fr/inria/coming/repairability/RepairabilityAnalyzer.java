@@ -69,11 +69,11 @@ public class RepairabilityAnalyzer implements Analyzer {
                     if (!toolsSeen.contains(toolName)
                             || ComingProperties.getPropertyBoolean("include_all_instances_for_each_tool")) {
                         /* ignore if the tool has been seen before and
-                           the "include_all_instances_for_each_tool" is not used */
+                           "include_all_instances_for_each_tool" is not set to true */
                         if(!ComingProperties.getPropertyBoolean("exclude_repair_patterns_not_covering_the_whole_diff")
-                                || coversTheWholeDiff(instancePattern, instancesPerDiff.getDiff())) {
+                                || tool.coversTheWholeDiff(instancePattern, instancesPerDiff.getDiff())) {
                             /* ignore if the found instances do not cover the whole diff and
-                                "exclude_repair_patterns_not_covering_the_whole_diff" is used
+                                "exclude_repair_patterns_not_covering_the_whole_diff" is set to true
                              */
                             patternInstanceList.add(instancePattern);
                             toolsSeen.add(toolName);
