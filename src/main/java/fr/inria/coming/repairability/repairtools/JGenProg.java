@@ -4,7 +4,8 @@ import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstan
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
-import fr.inria.coming.utils.GumtreeHelper;
+import fr.inria.coming.utils.CtEntityType;
+import fr.inria.coming.utils.EntityTypesInfoResolver;
 import gumtree.spoon.diff.operations.*;
 import org.apache.commons.lang3.StringUtils;
 import spoon.Launcher;
@@ -53,7 +54,8 @@ public class JGenProg extends AbstractRepairTool {
             element = anyOperation.getDstNode(); // See why are using DstNode: https://github.com/SpoonLabs/coming/issues/72#issuecomment-508123273
         } else if (anyOperation instanceof DeleteOperation) {
             // ASSUMPTION: ONLY A STATEMENT CAN BE DELETED
-            return anyOperation.getSrcNode().getRoleInParent() == CtRole.STATEMENT;
+            return EntityTypesInfoResolver.getInstance().isAChildOf(EntityTypesInfoResolver.getNodeLabelFromCtElement(anyOperation.getSrcNode()),
+                    CtEntityType.STATEMENT.toString()) || anyOperation.getSrcNode().getRoleInParent() == CtRole.STATEMENT;
         } else if (anyOperation instanceof MoveOperation) {
             // based on move never occurs actually based on the analysis of our dataset but it may occur when in case of swaps(as described in the paper)
             // TODO : improve this
@@ -68,11 +70,25 @@ public class JGenProg extends AbstractRepairTool {
         }
 
         // see if the inserted statement occurs in the previous version of the file
-        List<CtElement> srcRootNode = GumtreeHelper.getPathToRootNode(anyOperation.getSrcNode());
-        String srcVersionString = srcRootNode.get(0).toString();
+        // FIXME: getPathToRootNode & getOperatoinStats & getLabel... functions should be moved to a separate class
+        List<CtElement> srcRootNode = EntityTypesInfoResolver.getPathToRootNode(anyOperation.getSrcNode());
+        List<CtElement> allSrcElements = srcRootNode.get(0).getElements(null);
 
-        // inserted/updated statement should exist in the change line and another location of the code
-        boolean ans = StringUtils.countMatches(srcVersionString, element.toString()) > 1;
+        int numberOfElementOccurencesInSrc = 0;
+
+        String elementStr = element.toString();
+        for(CtElement srcElement : allSrcElements){
+            String srcElementStr = srcElement.toString();
+            if(srcElementStr.equals(elementStr))
+                numberOfElementOccurencesInSrc++;
+            else if(srcElementStr.replace(elementStr, "").trim().equals(elementStr.trim()))
+                // for when a block is inserted inside itself: see patch1-Math-56-JGenProg2017
+                numberOfElementOccurencesInSrc++;
+        }
+
+        // inserted statement should exist in the changed line and another location of the code
+        boolean ans = (anyOperation instanceof InsertOperation && numberOfElementOccurencesInSrc > 1)
+                || (anyOperation instanceof UpdateOperation && numberOfElementOccurencesInSrc > 0);
 
         return ans;
     }

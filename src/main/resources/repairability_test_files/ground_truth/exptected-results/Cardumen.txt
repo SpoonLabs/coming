@@ -105,4 +105,4 @@ undetected:
 53 = "patch5-Math-88-Cardumen"=>template out of scope
 54 = "patch5-Math-97-Cardumen"=>template out of scope
 55 = "patch5-Time-4-Cardumen"=>template out of scope
-56 = "patch6-Math-49-Cardumen"=>
+56 = "patch6-Math-49-Cardumen"=>solved

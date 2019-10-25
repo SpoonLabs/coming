@@ -58,13 +58,13 @@ public class CardumenTest {
 
     @Test
     public void testGroundTruthCreatedPatches() throws Exception {
-        RepairabilityTestUtils.checkGroundTruthPatches(getClass(), new DiffResultChecker() {
+        RepairabilityTestUtils.checkGroundTruthPatches(getClass(), "Cardumen", new DiffResultChecker() {
             @Override
             public boolean isDiffResultCorrect(FinalResult result) {
                 // Gumtree detected 'del' or 'ins' operations instead of 'upd'.
                 return TestUtils.countRootOperationsExcludingType(result, "UPD") == 0;
             }
-        });
+        }, 49, 0, 176);
     }
 
 }

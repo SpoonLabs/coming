@@ -1,0 +1,146 @@
+detected:
+0 = "patch1-Chart-15-JGenProg2017"
+1 = "patch1-Chart-25-JGenProg2017"
+2 = "patch1-Chart-26-JGenProg2017"
+3 = "patch1-Chart-3-JGenProg2017"
+4 = "patch1-Chart-7-JGenProg2017"
+5 = "patch1-Closure-21-JGenProg2017"
+6 = "patch1-Closure-59-JGenProg2017"
+7 = "patch1-Lang-10-JGenProg2017"
+8 = "patch1-Lang-22-JGenProg2017"
+9 = "patch1-Lang-24-JGenProg2017"
+10 = "patch1-Lang-39-JGenProg2017"
+11 = "patch1-Math-2-JGenProg2017"
+12 = "patch1-Math-28-JGenProg2017"
+13 = "patch1-Math-32-JGenProg2017"
+14 = "patch1-Math-49-JGenProg2017"
+15 = "patch1-Math-5-JGenProg2017"
+16 = "patch1-Math-50-JGenProg2017"
+17 = "patch1-Math-53-JGenProg2017"
+18 = "patch1-Math-7-JGenProg2017"
+19 = "patch1-Math-8-JGenProg2017"
+20 = "patch1-Math-80-JGenProg2017"
+21 = "patch1-Math-81-JGenProg2017"
+22 = "patch1-Math-82-JGenProg2017"
+23 = "patch1-Math-85-JGenProg2017"
+24 = "patch2-Chart-1-JGenProg2017"
+25 = "patch2-Chart-25-JGenProg2017"
+26 = "patch2-Chart-26-JGenProg2017"
+27 = "patch2-Chart-3-JGenProg2017"
+28 = "patch2-Chart-7-JGenProg2017"
+29 = "patch2-Closure-22-JGenProg2017"
+30 = "patch2-Lang-22-JGenProg2017"
+31 = "patch2-Lang-27-JGenProg2017"
+32 = "patch2-Math-2-JGenProg2017"
+33 = "patch2-Math-49-JGenProg2017"
+34 = "patch2-Math-53-JGenProg2017"
+35 = "patch2-Math-70-JGenProg2017"
+36 = "patch2-Math-8-JGenProg2017"
+37 = "patch2-Math-80-JGenProg2017"
+38 = "patch2-Math-84-JGenProg2017"
+39 = "patch3-Chart-1-JGenProg2017"
+40 = "patch3-Chart-26-JGenProg2017"
+41 = "patch3-Chart-3-JGenProg2017"
+42 = "patch3-Lang-7-JGenProg2017"
+43 = "patch3-Math-20-JGenProg2017"
+44 = "patch3-Math-40-JGenProg2017"
+45 = "patch3-Math-78-JGenProg2017"
+46 = "patch3-Math-80-JGenProg2017"
+47 = "patch3-Math-85-JGenProg2017"
+48 = "patch3-Time-11-JGenProg2017"
+49 = "patch4-Chart-1-JGenProg2017"
+50 = "patch4-Chart-25-JGenProg2017"
+51 = "patch4-Chart-3-JGenProg2017"
+52 = "patch4-Closure-22-JGenProg2017"
+53 = "patch4-Math-81-JGenProg2017"
+54 = "patch4-Time-11-JGenProg2017"
+55 = "patch5-Chart-25-JGenProg2017"
+56 = "patch5-Chart-3-JGenProg2017"
+57 = "patch5-Math-20-JGenProg2017"
+58 = "patch5-Math-80-JGenProg2017"
+
+undetected:
+0 = "patch1-Chart-1-JGenProg2017"=>ingredient out of scope
+1 = "patch1-Chart-12-JGenProg2017"=>ingredient out of scope
+2 = "patch1-Chart-13-JGenProg2017"=>gumtree found 7 operations instead of one insert operation
+3 = "patch1-Chart-19-JGenProg2017"=>ingredient out of scope
+4 = "patch1-Chart-5-JGenProg2017"=>gumtree found too many operatoins
+5 = "patch1-Closure-22-JGenProg2017"=>gumtree problem: because the patched version ast contains an empty block instead of continue
+6 = "patch1-Lang-27-JGenProg2017"=>gumtree problem (could be used to explain what is wrong with it)
+7 = "patch1-Lang-7-JGenProg2017"=>gumtree problem (why an ins and a del instead of one upd?)
+8 = "patch1-Math-20-JGenProg2017"=>gumtree
+9 = "patch1-Math-39-JGenProg2017"=>ingredient out of scope
+10 = "patch1-Math-40-JGenProg2017"=>ingredient out of scope
+11 = "patch1-Math-56-JGenProg2017"=>gumtree bug?
+12 = "patch1-Math-70-JGenProg2017"=>gumtree
+13 = "patch1-Math-73-JGenProg2017"=>ingredient
+14 = "patch1-Math-74-JGenProg2017"=>ingredient
+15 = "patch1-Math-78-JGenProg2017"=>ingredient
+16 = "patch1-Math-84-JGenProg2017"=>ingredient
+17 = "patch1-Math-95-JGenProg2017"=>gumtree: same as 7
+18 = "patch1-Time-11-JGenProg2017"=>ingredient
+19 = "patch1-Time-4-JGenProg2017"=>ingredient
+20 = "patch2-Chart-13-JGenProg2017"=>gumtree
+21 = "patch2-Chart-15-JGenProg2017"=>gumtree: why?
+22 = "patch2-Chart-5-JGenProg2017"=>gumtree: is it possible to optimize the number of rootOps instead of allOps?
+23 = "patch2-Closure-21-JGenProg2017"=>same as 5
+24 = "patch2-Lang-39-JGenProg2017"=>gumtree
+25 = "patch2-Lang-7-JGenProg2017"=>ingredient
+26 = "patch2-Math-20-JGenProg2017"=>gumtree
+27 = "patch2-Math-28-JGenProg2017"=>gumtree
+28 = "patch2-Math-32-JGenProg2017"=>gumtree
+29 = "patch2-Math-40-JGenProg2017"
+30 = "patch2-Math-50-JGenProg2017"
+31 = "patch2-Math-73-JGenProg2017"
+32 = "patch2-Math-74-JGenProg2017"
+33 = "patch2-Math-78-JGenProg2017"
+34 = "patch2-Math-81-JGenProg2017"
+35 = "patch2-Math-85-JGenProg2017"
+36 = "patch2-Math-95-JGenProg2017"
+37 = "patch2-Time-11-JGenProg2017"
+38 = "patch2-Time-4-JGenProg2017"
+39 = "patch3-Chart-13-JGenProg2017"
+40 = "patch3-Chart-15-JGenProg2017"
+41 = "patch3-Chart-25-JGenProg2017"
+42 = "patch3-Closure-22-JGenProg2017"
+43 = "patch3-Lang-22-JGenProg2017"
+44 = "patch3-Lang-39-JGenProg2017"
+45 = "patch3-Math-2-JGenProg2017"
+46 = "patch3-Math-28-JGenProg2017"
+47 = "patch3-Math-50-JGenProg2017"
+48 = "patch3-Math-73-JGenProg2017"
+49 = "patch3-Math-74-JGenProg2017"
+50 = "patch3-Math-81-JGenProg2017"
+51 = "patch3-Math-95-JGenProg2017"
+52 = "patch3-Time-4-JGenProg2017"
+53 = "patch4-Chart-13-JGenProg2017"
+54 = "patch4-Chart-15-JGenProg2017"
+55 = "patch4-Chart-26-JGenProg2017"
+56 = "patch4-Lang-7-JGenProg2017"
+57 = "patch4-Math-2-JGenProg2017"
+58 = "patch4-Math-20-JGenProg2017"
+59 = "patch4-Math-28-JGenProg2017"
+60 = "patch4-Math-49-JGenProg2017"
+61 = "patch4-Math-50-JGenProg2017"
+62 = "patch4-Math-73-JGenProg2017"
+63 = "patch4-Math-74-JGenProg2017"
+64 = "patch4-Math-78-JGenProg2017"
+65 = "patch4-Math-80-JGenProg2017"
+66 = "patch4-Math-85-JGenProg2017"
+67 = "patch4-Math-95-JGenProg2017"
+68 = "patch4-Time-4-JGenProg2017"
+69 = "patch5-Chart-1-JGenProg2017"
+70 = "patch5-Chart-13-JGenProg2017"
+71 = "patch5-Chart-26-JGenProg2017"
+72 = "patch5-Lang-7-JGenProg2017"
+73 = "patch5-Math-2-JGenProg2017"
+74 = "patch5-Math-49-JGenProg2017"
+75 = "patch5-Math-50-JGenProg2017"
+76 = "patch5-Math-73-JGenProg2017"
+77 = "patch5-Math-74-JGenProg2017"
+78 = "patch5-Math-78-JGenProg2017"
+79 = "patch5-Math-81-JGenProg2017"
+80 = "patch5-Math-85-JGenProg2017"
+81 = "patch5-Math-95-JGenProg2017"
+82 = "patch5-Time-11-JGenProg2017"
+83 = "patch5-Time-4-JGenProg2017"

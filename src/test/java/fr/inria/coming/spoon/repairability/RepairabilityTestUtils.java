@@ -1,6 +1,8 @@
 package fr.inria.coming.spoon.repairability;
 
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
+import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
+import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstancesFromDiff;
 import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstancesFromRevision;
 import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.changeminer.entity.IRevision;
@@ -16,6 +18,7 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +46,26 @@ public class RepairabilityTestUtils {
         return counter;
     }
 
+    public static int countNumberOfUniqueInstances(Map<IRevision, RevisionResult> revisionsMap, Class analyzer) {
+        List<ChangePatternInstance> allUniqueInstances = new ArrayList<>();
+        for (Map.Entry<IRevision, RevisionResult> entry : revisionsMap.entrySet()) {
+            RevisionResult rr = entry.getValue();
+            PatternInstancesFromRevision instances =
+                    (PatternInstancesFromRevision) rr.getResultFromClass(analyzer);
+            for (PatternInstancesFromDiff info : instances.getInfoPerDiff()) {
+                for (ChangePatternInstance instance : info.getInstances()) {
+                    boolean alreadyAdded = false;
+                    for (ChangePatternInstance addedInstance : allUniqueInstances) {
+                        if (new HashSet(instance.getActions()).equals(new HashSet(addedInstance.getActions())))
+                            alreadyAdded = true;
+                    }
+                    if (!alreadyAdded)
+                        allUniqueInstances.add(instance);
+                }
+            }
+        }
+        return allUniqueInstances.size();
+    }
 
     public static FinalResult runRepairability(String toolName, String inputFiles) throws Exception {
         ComingMain cm = new ComingMain();
@@ -102,19 +125,29 @@ public class RepairabilityTestUtils {
         return result;
     }
 
-    public static void checkGroundTruthPatches(Class toolTestClass, DiffResultChecker diffResultChecker) throws Exception {
-        String toolName = toolTestClass.getSimpleName().replace("Test", "");
-        String groundTruthPatchesPathInResources = "/repairability_test_files/ground_truth/" + toolName;
+    public static void checkGroundTruthPatches
+            (
+                    Class testClass,
+                    String patchesFolder,
+                    DiffResultChecker diffResultChecker,
+                    int expectedUndetected,
+                    int expectedOverDetected,
+                    int expectedGumtreeUndetected) throws Exception {
+        String toolName = testClass.getSimpleName().replace("Test", "");
+        String groundTruthPatchesPathInResources = "/repairability_test_files/ground_truth/" + patchesFolder;
         String groundTruthPatchesBasePath =
                 URLDecoder.decode(RepairabilityTestUtils.class.getResource
                         (groundTruthPatchesPathInResources).getFile(), "UTF-8");
 
-        List<String> detectedInstances = new ArrayList<>(),
+        List<String> gumtreeUndetected = new ArrayList<>(),
+                detectedInstances = new ArrayList<>(),
                 undetectedInstances = new ArrayList<>(),
                 overDetectedInstances = new ArrayList<>(); // diffs with more than one detected instances
 
         File[] files = new File(groundTruthPatchesBasePath).listFiles();
         for (File file : files) {
+            if(!file.getName().contains("patch2-Math-40"))
+                continue;
             FinalResult result =
                     RepairabilityTestUtils.runRepairabilityWithParameters
                             (
@@ -124,25 +157,29 @@ public class RepairabilityTestUtils {
                             );
 
             if (!diffResultChecker.isDiffResultCorrect(result)) {
-                // Gumtree did not work correctly
-                continue;
-            }
+                /* we are sure that Gumtree did not work as we wanted; however, some of such cases might be
+                   included in undetectedInstances */
+                gumtreeUndetected.add(file.getName());
+            }else {
 
-            int numberOfRepairInstances = RepairabilityTestUtils.countNumberOfInstances(
-                    result.getAllResults(), RepairabilityAnalyzer.class);
+                int numberOfRepairInstances = RepairabilityTestUtils.countNumberOfUniqueInstances(
+                        result.getAllResults(), RepairabilityAnalyzer.class);
 
-            if (numberOfRepairInstances > 1) {
-                overDetectedInstances.add(file.getName());
-            } else if (numberOfRepairInstances < 1) {
-                undetectedInstances.add(file.getName());
-            } else {
-                detectedInstances.add(file.getName());
+                if (numberOfRepairInstances > 1) {
+                    overDetectedInstances.add(file.getName());
+                } else if (numberOfRepairInstances < 1) {
+                    undetectedInstances.add(file.getName());
+                } else {
+                    detectedInstances.add(file.getName());
+                }
             }
         }
 
-        assertEquals(overDetectedInstances.size(), 0);
+        assertEquals(gumtreeUndetected.size(), expectedGumtreeUndetected);
 
-        assertEquals(undetectedInstances.size(), 49);
+        assertEquals(overDetectedInstances.size(), expectedOverDetected);
+
+        assertEquals(undetectedInstances.size(), expectedUndetected);
         /* legitimate causes for undetectedInstances:
         1- ingredient (variable or literal) is extracted from a different scope (not from the same file).
         2- template is extracted from from a different scope (not from the same file).
