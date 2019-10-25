@@ -25,50 +25,49 @@ import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.visitor.filter.LineFilter;
 
 public class CodeElementInfo {
-	
+
 	public CtElement element;
-	
+
 	public Cntx<Object> context;
-	
+
 	public List<CtVariable> varsInScope;
-	
+
 	public CtClass parentClass;
-	
+
 	public List<CtStatement> statements;
-	
+
 	public List allMethods;
-	
+
 	public List<CtInvocation> invocationsFromClass;
-	
+
 	public List<CtConstructorCall> constructorcallsFromClass;
-	
+
 	public CtElement elementToStudy;
-	
+
 	public List<CtVariableAccess> varsAffected;
-	
+
 	public List<CtInvocation> invocations; // invocations from the element under study
-	
+
 	public List<CtConstructorCall> constructorcalls; // constructors from the element under study
-	
+
 	public List<CtLiteral> literalsFromFaultyLine;
-	
-	public List<CtTypeAccess> typeaccess; 
-		
+
+	public List<CtTypeAccess> typeaccess;
+
 	public List<CtExpression> logicalExpressions = new ArrayList();
-	
+
 	public List<CtExpression> desirableExpressions = new ArrayList();
-	
+
 	public List<CtBinaryOperator> binoperators = new ArrayList();
 
-
-	public CodeElementInfo(CtElement elementoriginal, List<CtExpression> allExpressions, 
+	public CodeElementInfo(CtElement elementoriginal, List<CtExpression> allExpressions,
 			List<CtExpression> allrootlogicalexpers, List<CtBinaryOperator> allBinOperators) {
 
 		this.element = elementoriginal;
 		this.desirableExpressions = allExpressions;
 		this.logicalExpressions = allrootlogicalexpers;
 		this.binoperators = allBinOperators;
-		
+
 		setContext();
 		setVarsInScope();
 		setParentClass();
@@ -82,17 +81,21 @@ public class CodeElementInfo {
 		setConstructorcalls();
 		setLiteralsFromFaultyLine();
 		setTypeaccess();
-		
+
 	}
-	
-	private void setContext () {
+
+	private void setContext() {
 		context = new Cntx<>(determineKey(element));
+		context.getInformation().put("FEATURES_VARS", new Cntx<>());
+		context.getInformation().put("FEATURES_TYPEACCESS", new Cntx<>());
+		context.getInformation().put("FEATURES_METHODS", new Cntx<>());
+
 	}
-	
-	private Cntx<Object> getContext () {
+
+	private Cntx<Object> getContext() {
 		return this.context;
 	}
-	
+
 	private Object determineKey(CtElement element) {
 		String key = null;
 		if (element.getPosition() != null && element.getPosition().getFile() != null) {
@@ -102,48 +105,50 @@ public class CodeElementInfo {
 		}
 		return key;
 	}
-	
-	private void setVarsInScope () {
+
+	private void setVarsInScope() {
 		varsInScope = VariableResolver.searchVariablesInScope(element);
 	}
-	
-	private List<CtVariable> getVarsInScope () {
+
+	private List<CtVariable> getVarsInScope() {
 		return this.varsInScope;
 	}
-	
-	private void setParentClass () {
-		
+
+	private void setParentClass() {
+
 		if (element instanceof CtClass)
 			parentClass = (CtClass) element;
 		else
 			parentClass = element.getParent(CtClass.class);
 	}
-	
-	private CtClass getParentClass () {
-		
-    	return this.parentClass;
+
+	private CtClass getParentClass() {
+
+		return this.parentClass;
 	}
 
-    private void setStatementList () {
-    	
-    	if(parentClass!=null)
-    		statements = parentClass.getElements(new LineFilter());
-    	else statements = null;
+	private void setStatementList() {
+
+		if (parentClass != null)
+			statements = parentClass.getElements(new LineFilter());
+		else
+			statements = null;
 	}
-	
-    private List<CtStatement> getStatementList () {
-		
-    	return this.statements;
+
+	private List<CtStatement> getStatementList() {
+
+		return this.statements;
 	}
-    
-    private void setMethodList () {
-    	
-    	if(parentClass!=null)
-    		allMethods = getAllMethodsFromClass(parentClass);
-    	else allMethods = null;
+
+	private void setMethodList() {
+
+		if (parentClass != null)
+			allMethods = getAllMethodsFromClass(parentClass);
+		else
+			allMethods = null;
 	}
-    
-    private List getAllMethodsFromClass(CtClass parentClass) {
+
+	private List getAllMethodsFromClass(CtClass parentClass) {
 
 		List allMethods = new ArrayList();
 
@@ -158,44 +163,46 @@ public class CodeElementInfo {
 		}
 		return allMethods;
 	}
-	
-    private List getMethodList() {
-		
-    	return this.allMethods;
+
+	private List getMethodList() {
+
+		return this.allMethods;
 	}
-    
-    private void setInvocationsFromClass () {
-    	
-    	if(parentClass!=null)
-    		invocationsFromClass = parentClass.getElements(e -> (e instanceof CtInvocation)).stream()
-			.map(CtInvocation.class::cast).collect(Collectors.toList());
-    	else invocationsFromClass = null;
+
+	private void setInvocationsFromClass() {
+
+		if (parentClass != null)
+			invocationsFromClass = parentClass.getElements(e -> (e instanceof CtInvocation)).stream()
+					.map(CtInvocation.class::cast).collect(Collectors.toList());
+		else
+			invocationsFromClass = null;
 	}
-    
-    private List<CtInvocation> getInvocationsFromClass () {
-    	
-    	return this.invocationsFromClass;
+
+	private List<CtInvocation> getInvocationsFromClass() {
+
+		return this.invocationsFromClass;
 	}
-    
-    private void setConstructorcallsFromClass () {
-    	
-    	if(parentClass!=null)
-    		constructorcallsFromClass = parentClass.getElements(e -> (e instanceof CtConstructorCall)).stream()
-			.map(CtConstructorCall.class::cast).collect(Collectors.toList());
-    	else constructorcallsFromClass = null;
+
+	private void setConstructorcallsFromClass() {
+
+		if (parentClass != null)
+			constructorcallsFromClass = parentClass.getElements(e -> (e instanceof CtConstructorCall)).stream()
+					.map(CtConstructorCall.class::cast).collect(Collectors.toList());
+		else
+			constructorcallsFromClass = null;
 	}
-    
-    private List<CtConstructorCall> getConstructorcallsFromClass () {
-    	
-    	return this.constructorcallsFromClass;
+
+	private List<CtConstructorCall> getConstructorcallsFromClass() {
+
+		return this.constructorcallsFromClass;
 	}
-    
-    private void setElementToStudy () {
-    	
-		 elementToStudy = retrieveElementToStudy(element);
+
+	private void setElementToStudy() {
+
+		elementToStudy = retrieveElementToStudy(element);
 	}
-    
-    private CtElement retrieveElementToStudy(CtElement element) {
+
+	private CtElement retrieveElementToStudy(CtElement element) {
 
 		if (element instanceof CtIf) {
 			return (((CtIf) element).getCondition());
@@ -212,84 +219,88 @@ public class CodeElementInfo {
 		} else
 			return (element);
 	}
-    
-    private CtElement getElementToStudy () {
-    	
-    	return this.elementToStudy;
+
+	private CtElement getElementToStudy() {
+
+		return this.elementToStudy;
 	}
-    
-    private void setVarsAffected () {
-    	
-    	varsAffected = VariableResolver.collectVariableAccess(elementToStudy, false);
+
+	private void setVarsAffected() {
+
+		varsAffected = VariableResolver.collectVariableAccess(elementToStudy, false);
 	}
-    
-    private List<CtVariableAccess> getVarsAffected () {
-    	
-    	return this.varsAffected;
+
+	private List<CtVariableAccess> getVarsAffected() {
+
+		return this.varsAffected;
 	}
-    
-    private void setInvocations () {
-    	if(elementToStudy!=null)
-    	    invocations = elementToStudy.getElements(e -> (e instanceof CtInvocation)).stream()
-				.map(CtInvocation.class::cast).collect(Collectors.toList());
-    	else invocations = null;
+
+	private void setInvocations() {
+		if (elementToStudy != null)
+			invocations = elementToStudy.getElements(e -> (e instanceof CtInvocation)).stream()
+					.map(CtInvocation.class::cast).collect(Collectors.toList());
+		else
+			invocations = null;
 	}
-    
-    private List<CtInvocation> getInvocations () {
-    	
-    	return this.invocations;
+
+	private List<CtInvocation> getInvocations() {
+
+		return this.invocations;
 	}
-    
-    private void setConstructorcalls () {
-    	if(elementToStudy!=null)
-    		constructorcalls = elementToStudy.getElements(e -> (e instanceof CtConstructorCall)).stream()
-				.map(CtConstructorCall.class::cast).collect(Collectors.toList());
-    	else constructorcalls = null;
+
+	private void setConstructorcalls() {
+		if (elementToStudy != null)
+			constructorcalls = elementToStudy.getElements(e -> (e instanceof CtConstructorCall)).stream()
+					.map(CtConstructorCall.class::cast).collect(Collectors.toList());
+		else
+			constructorcalls = null;
 	}
-    
-    private List<CtConstructorCall> getConstructorcalls() {
-    	
-    	return this.constructorcalls;
+
+	private List<CtConstructorCall> getConstructorcalls() {
+
+		return this.constructorcalls;
 	}
-    
-    private void setLiteralsFromFaultyLine () {
-    	
-    	if(elementToStudy!=null)
-    		literalsFromFaultyLine = elementToStudy.getElements(e -> (e instanceof CtLiteral)).stream()
-				.map(CtLiteral.class::cast).collect(Collectors.toList());
-    	else literalsFromFaultyLine = null;
+
+	private void setLiteralsFromFaultyLine() {
+
+		if (elementToStudy != null)
+			literalsFromFaultyLine = elementToStudy.getElements(e -> (e instanceof CtLiteral)).stream()
+					.map(CtLiteral.class::cast).collect(Collectors.toList());
+		else
+			literalsFromFaultyLine = null;
 	}
-    
-    private List<CtLiteral> getLiteralsFromFaultyLine() {
-    	
-    	return this.literalsFromFaultyLine;
+
+	private List<CtLiteral> getLiteralsFromFaultyLine() {
+
+		return this.literalsFromFaultyLine;
 	}
-    
-    private void setTypeaccess () {
-    	
-    	if(elementToStudy!=null)
-    		typeaccess = elementToStudy.getElements(e -> (e instanceof CtTypeAccess)).stream()
-				.map(CtTypeAccess.class::cast).collect(Collectors.toList());
-    	else typeaccess = null;
+
+	private void setTypeaccess() {
+
+		if (elementToStudy != null)
+			typeaccess = elementToStudy.getElements(e -> (e instanceof CtTypeAccess)).stream()
+					.map(CtTypeAccess.class::cast).collect(Collectors.toList());
+		else
+			typeaccess = null;
 	}
-    
-    private List<CtTypeAccess> getTypeaccess() {
-    	
-    	return this.typeaccess;
+
+	private List<CtTypeAccess> getTypeaccess() {
+
+		return this.typeaccess;
 	}
-                           
-    private List<CtExpression> getLogicalExpressions() {
-    	
-    	return this.logicalExpressions;
-	}    
-    
-    private List<CtExpression> getDesirableExpressions() {
-    	
-    	return this.desirableExpressions;
-	}   
-    
-    private List<CtBinaryOperator> getAllBinaryOperators() {
-    	
-    	return this.binoperators;
-	} 
+
+	private List<CtExpression> getLogicalExpressions() {
+
+		return this.logicalExpressions;
+	}
+
+	private List<CtExpression> getDesirableExpressions() {
+
+		return this.desirableExpressions;
+	}
+
+	private List<CtBinaryOperator> getAllBinaryOperators() {
+
+		return this.binoperators;
+	}
 }

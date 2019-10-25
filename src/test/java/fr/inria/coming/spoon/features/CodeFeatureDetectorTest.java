@@ -6,28 +6,26 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 import fr.inria.coming.codefeatures.Cntx;
 import fr.inria.coming.codefeatures.CodeFeatureDetector;
 import fr.inria.coming.codefeatures.CodeFeatures;
-import fr.inria.coming.main.ComingProperties;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
-import spoon.reflect.code.BinaryOperatorKind;
-import spoon.reflect.code.CtAssignment;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
 import spoon.support.compiler.VirtualFile;
@@ -39,51 +37,158 @@ import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
  *
  */
 public class CodeFeatureDetectorTest {
-//
-//	@Test
-//	public void testProperty_V6_IS_METHOD_RETURN_TYPE_VAR() {
-//
-//		String content = "" + "class X {" + "public Object foo() {" //
-//				+ " int a = 1;"//
-//				+ "int b = a;" + "float f = 0;" + "" + "return f;" + "}" //
-//				+ "public float getFloat(){return 1.0;}"//
-//				+ "public double getConvertFloat(int i){return 0.0;}"//
-//				+ "public double getConvert2Float(int i){String s2;Integer.valueOf(s2);return 0.0;}"//
-//				+ "};";
-//
-//		CtType type = getCtType(content);
-//
-//		assertNotNull(type);
-//		CtMethod method = (CtMethod) type.getMethods().stream()
-//				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
-//
-//		assertNotNull(method);
-//		System.out.println(method);
-//		CtElement stassig = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return f"))
-//				.findFirst().get();
-//		System.out.println(stassig);
-//		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
-//		Cntx cntx = cntxResolver.analyzeFeatures(stassig);
-//
-//		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.V6_IS_METHOD_RETURN_TYPE_VAR));
-//		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
-//
-//		stassig = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float f")).findFirst()
-//				.get();
-//		cntx = cntxResolver.analyzeFeatures(stassig);
-//
-//		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V6_IS_METHOD_RETURN_TYPE_VAR));
-//		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
-//
-//		///
-//		stassig = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int b")).findFirst()
-//				.get();
-//		cntx = cntxResolver.analyzeFeatures(stassig);
-//
-//		assertEquals(Boolean.TRUE, cntx.get(CodeFeatures.V6_IS_METHOD_RETURN_TYPE_VAR));
-//		assertEquals(Boolean.FALSE, cntx.get(CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
-//
-//	}
+
+	@Test
+	public void testProperty_Missing_S6_METHOD_THROWS_EXCEPTION() {
+
+		String content = "" + "class X {"
+		//
+				+ "public X() {" + "int b = 0;" + "}"
+				//
+				+ "public Object foo() {" //
+				+ "int a = 1;"//
+				+ "int b = a;" + "float f = 0;" + "" + "return f;" + "}" //
+				+ "public float getFloat(){return 1.0;}"//
+				+ "public double getConvertFloat(int i){return 0.0;}"//
+				+ "public double getConvert2Float(int i){String s2;Integer.valueOf(s2);return 0.0;}"//
+				+ "};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtExecutable method = (CtExecutable) type.getAllExecutables().stream()
+				.filter(e -> ((CtExecutableReference) e).getExecutableDeclaration().getSimpleName().equals("X")
+						|| ((CtExecutableReference) e).getExecutableDeclaration().getSimpleName().equals("<init>"))
+				.findFirst().get().getExecutableDeclaration();
+
+		assertNotNull(method);
+		System.out.println(method);
+		CtElement stassig = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int b = 0"))
+				.findFirst().get();
+		System.out.println(stassig);
+		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
+		Cntx cntx = cntxResolver.analyzeFeatures(stassig);
+
+		printJSon(cntx.toJSON());
+
+		Cntx feat_vars = (Cntx) cntx.getInformation().get("FEATURES_VARS");
+		assertTrue(feat_vars.getInformation().isEmpty());
+
+		Boolean hasFeat_method = cntx.getInformation().containsKey("FEATURES_METHODS");
+		assertTrue(hasFeat_method);
+
+		Cntx feat_method = (Cntx) cntx.getInformation().get("FEATURES_METHODS");
+		assertTrue(feat_method.getInformation().isEmpty());
+
+		Boolean hasS6 = cntx.getInformation().containsKey(CodeFeatures.S6_METHOD_THROWS_EXCEPTION.toString());
+
+		assertTrue(hasS6);
+
+	}
+
+	@Test
+	public void testProperty_Missing_Feature_Groups() {
+
+		String content = "" + "class X {" +
+		//
+				"public X() {" + "int b = 0;" + "System.out.println(b);" + "}"
+				//
+				+ "public Object foo() {" //
+				+ "int a = 1;"//
+				+ "int b = a;" + "float f = 0;" + "" + "return f;" + "}" //
+				+ "public float getFloat(){return 1.0;}"//
+				+ "public double getConvertFloat(int i){return 0.0;}"//
+				+ "public double getConvert2Float(int i){String s2;Integer.valueOf(s2);return 0.0;}"//
+				+ "};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtExecutable method = (CtExecutable) type.getAllExecutables().stream()
+				.filter(e -> ((CtExecutableReference) e).getExecutableDeclaration().getSimpleName().equals("X")
+						|| ((CtExecutableReference) e).getExecutableDeclaration().getSimpleName().equals("<init>"))
+				.findFirst().get().getExecutableDeclaration();
+
+		assertNotNull(method);
+
+		CtElement stassig = method.getBody().getStatements().stream()
+				.filter(e -> e.toString().contains("System.out.println(b)")).findFirst().get();
+
+		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
+		Cntx cntx = cntxResolver.analyzeFeatures(stassig);
+
+		printJSon(cntx.toJSON());
+
+		Boolean hasFeat_vars = cntx.getInformation().containsKey("FEATURES_VARS");
+		assertTrue(hasFeat_vars);
+
+		Boolean hasFeat_method = cntx.getInformation().containsKey("FEATURES_METHODS");
+		assertTrue(hasFeat_method);
+
+		Cntx feat_vars = (Cntx) cntx.getInformation().get("FEATURES_VARS");
+		assertFalse(feat_vars.getInformation().isEmpty());
+
+		Cntx feat_method = (Cntx) cntx.getInformation().get("FEATURES_METHODS");
+		assertFalse(feat_method.getInformation().isEmpty());
+
+		Boolean hasS6 = cntx.getInformation().containsKey(CodeFeatures.S6_METHOD_THROWS_EXCEPTION.toString());
+
+		assertTrue(hasS6);
+
+	}
+
+	@Test
+	public void testProperty_V6_IS_METHOD_RETURN_TYPE_VAR() {
+
+		String content = "" + "class X {" + "public Object foo() {" //
+				+ " int a = 1;"//
+				+ "int b = a;" + "float f = 0;" + "" + "return f;" + "}" //
+				+ "public float getFloat(){return 1.0;}"//
+				+ "public double getConvertFloat(int i){return 0.0;}"//
+				+ "public double getConvert2Float(int i){String s2;Integer.valueOf(s2);return 0.0;}"//
+				+ "};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+		CtElement stassig = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return f"))
+				.findFirst().get();
+		System.out.println(stassig);
+		CodeFeatureDetector cntxResolver = new CodeFeatureDetector();
+		Cntx cntx = cntxResolver.analyzeFeatures(stassig);
+
+		printJSon(cntx.toJSON());
+
+		Cntx vars = (Cntx) cntx.getInformation().get("FEATURES_VARS");
+		System.out.println(vars);
+
+		assertEquals(1, vars.getInformation().values().size());
+
+		Cntx var1 = (Cntx) vars.getInformation().values().stream().findFirst().get();
+
+		assertEquals(Boolean.TRUE, var1.get(CodeFeatures.V6_IS_METHOD_RETURN_TYPE_VAR));
+		assertEquals(Boolean.FALSE, var1.get(CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
+
+		assertEquals(Boolean.TRUE, var1.get(CodeFeatures.V6_IS_METHOD_RETURN_TYPE_VAR));
+		assertEquals(Boolean.FALSE, var1.get(CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
+
+		assertEquals(Boolean.TRUE, var1.get(CodeFeatures.V6_IS_METHOD_RETURN_TYPE_VAR));
+		assertEquals(Boolean.FALSE, var1.get(CodeFeatures.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
+
+	}
+
+	private void printJSon(JsonObject json) {
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		String jsonOutput = gson.toJson(json);
+		System.out.println(jsonOutput);
+
+	}
+
 //
 //	@Test
 //	public void testProperty_LE2_a() {
@@ -147,7 +252,7 @@ public class CodeFeatureDetectorTest {
 //		System.out.println(cntx.toJSON());
 //
 //	}
-//
+
 //	@Test
 //	public void testProperty_V1_IS_METHOD_PARAM_TYPE_VAR() {
 //
@@ -1469,42 +1574,42 @@ public class CodeFeatureDetectorTest {
 //
 //	}
 //
-//	protected CtType getCtType(File file) throws Exception {
-//
-//		SpoonResource resource = SpoonResourceHelper.createResource(file);
-//		return getCtType(resource);
-//	}
-//
-//	protected CtType getCtType(SpoonResource resource) {
-//		Factory factory = createFactory();
-//		factory.getModel().setBuildModelIsFinished(false);
-//		SpoonModelBuilder compiler = new JDTBasedSpoonCompiler(factory);
-//		compiler.getFactory().getEnvironment().setLevel("OFF");
-//		compiler.addInputSource(resource);
-//		compiler.build();
-//
-//		if (factory.Type().getAll().size() == 0) {
-//			return null;
-//		}
-//
-//		// let's first take the first type.
-//		CtType type = factory.Type().getAll().get(0);
-//		// Now, let's ask to the factory the type (which it will set up the
-//		// corresponding
-//		// package)
-//		return factory.Type().get(type.getQualifiedName());
-//	}
-//
-//	protected CtType<?> getCtType(String content) {
-//		VirtualFile resource = new VirtualFile(content, "/test");
-//		return getCtType(resource);
-//	}
-//
-//	protected Factory createFactory() {
-//		Factory factory = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
-//		factory.getEnvironment().setNoClasspath(true);
-//		factory.getEnvironment().setCommentEnabled(false);
-//		return factory;
-//	}
-//
+	protected CtType getCtType(File file) throws Exception {
+
+		SpoonResource resource = SpoonResourceHelper.createResource(file);
+		return getCtType(resource);
+	}
+
+	protected CtType getCtType(SpoonResource resource) {
+		Factory factory = createFactory();
+		factory.getModel().setBuildModelIsFinished(false);
+		SpoonModelBuilder compiler = new JDTBasedSpoonCompiler(factory);
+		compiler.getFactory().getEnvironment().setLevel("OFF");
+		compiler.addInputSource(resource);
+		compiler.build();
+
+		if (factory.Type().getAll().size() == 0) {
+			return null;
+		}
+
+		// let's first take the first type.
+		CtType type = factory.Type().getAll().get(0);
+		// Now, let's ask to the factory the type (which it will set up the
+		// corresponding
+		// package)
+		return factory.Type().get(type.getQualifiedName());
+	}
+
+	protected CtType<?> getCtType(String content) {
+		VirtualFile resource = new VirtualFile(content, "/test");
+		return getCtType(resource);
+	}
+
+	protected Factory createFactory() {
+		Factory factory = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
+		factory.getEnvironment().setNoClasspath(true);
+		factory.getEnvironment().setCommentEnabled(false);
+		return factory;
+	}
+
 }
