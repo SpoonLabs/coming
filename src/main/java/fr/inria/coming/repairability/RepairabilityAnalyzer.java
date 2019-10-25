@@ -96,4 +96,19 @@ public class RepairabilityAnalyzer implements Analyzer {
 
         return finalResult;
     }
+
+    private boolean coversTheWholeDiff(ChangePatternInstance instancePattern, Diff diff) {
+        for(Operation diffOperation : diff.getRootOperations()){
+            boolean foundOp = false;
+            for(Operation instanceOperation : instancePattern.getActions()){
+                if(diffOperation.equals(instanceOperation)){
+                    foundOp = true;
+                    break;
+                }
+            }
+            if(!foundOp)
+                return false;
+        }
+        return true;
+    }
 }

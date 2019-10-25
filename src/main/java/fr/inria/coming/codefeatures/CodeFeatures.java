@@ -15,36 +15,20 @@ public enum CodeFeatures {
 	// since its introduction (declaration)(chart-4)
 	S1_LOCAL_VAR_NOT_ASSIGNED, //
 	S1_LOCAL_VAR_NOT_USED,
-	S7_OBJECT_USED_IN_ASSIGNMENT,
-	S8_PRIMITIVE_USED_IN_ASSIGNMENT,
-	S9_METHOD_CALL_WITH_NORMAL_GUARD,
-	S10_METHOD_CALL_WITH_NULL_GUARD,
-	S11_FAULTY_CLASS_EXCEPTION_TYPE,
-	S12_METHOD_CALL_WITH_TRY_CATCH,
+	
 	// If the faulty statement involves using object type variables (either local or
-	// global), whether exist other statements in the faulty class that use some
-	// same type object variables (with same of the object type variables used in
-	// the faulty statement), but add guard check (wrap with if or if-else, and not
-	// null or non- null related check) (for closure-111, the faulty statement uses
-	// variable topType, whose type is JSType, and there are many other statements
-	// in the faulty class which uses JSType variables, but have gurand checks, like
-	// statement in 61, in 72. also see for example closure 60.)
+		// global), whether exist other statements in the faulty class that use some
+		// same type object variables (with same of the object type variables used in
+		// the faulty statement), but add guard check (wrap with if or if-else, and not
+		// null or non- null related check) (for closure-111, the faulty statement uses
+		// variable topType, whose type is JSType, and there are many other statements
+		// in the faulty class which uses JSType variables, but have gurand checks, like
+		// statement in 61, in 72. also see for example closure 60.)
 	S2_SIMILAR_OBJECT_TYPE_WITH_NORMAL_GUARD, //
 	S2_SIMILAR_OBJECT_TYPE_WITH_NULL_GUARD,
+	
 	// Spoon class of the fault statement.
 	S3_TYPE_OF_FAULTY_STATEMENT,
-	S14_TYPE_OF_FAULTY_STATEMENT_PARENT,
-	
-	S15_HAS_OBJECTIVE_METHOD_CALL,
-	S16_HAS_Invocations_Prone_Exception,
-	S18_In_Synchronized_Method,
-	
-	S13_TYPE_OF_FAULTY_STATEMENT_BEFORE_1,
-	S13_TYPE_OF_FAULTY_STATEMENT_BEFORE_2,
-	S13_TYPE_OF_FAULTY_STATEMENT_BEFORE_3,
-	S13_TYPE_OF_FAULTY_STATEMENT_AFTER_1,
-	S13_TYPE_OF_FAULTY_STATEMENT_AFTER_2,
-	S13_TYPE_OF_FAULTY_STATEMENT_AFTER_3,
 	
 	// If the faulty statement involves object reference to field (i.e., use object
 	// type class field), do there exist certain field(s) that have never been
@@ -52,6 +36,7 @@ public enum CodeFeatures {
 	// S4_USED_FIELD,
 	S4_Field_NOT_USED,
 	S4_Field_NOT_ASSIGNED,
+	
 	// If the faulty statement involves using primitive type variables (either local
 	// or global),
 	// whether exist other statements in the faulty class that use some same
@@ -66,6 +51,29 @@ public enum CodeFeatures {
 	// that involve using variable whose type is same with v
 	// whether the associated method or class for the faulty line throws exception
 	S6_METHOD_THROWS_EXCEPTION,
+	
+	S7_OBJECT_USED_IN_ASSIGNMENT,
+	S8_PRIMITIVE_USED_IN_ASSIGNMENT,
+	S9_METHOD_CALL_WITH_NORMAL_GUARD,
+	S10_METHOD_CALL_WITH_NULL_GUARD,
+	S11_FAULTY_CLASS_EXCEPTION_TYPE,
+	S12_METHOD_CALL_WITH_TRY_CATCH,
+	
+	S13_TYPE_OF_FAULTY_STATEMENT_BEFORE_1,
+	S13_TYPE_OF_FAULTY_STATEMENT_BEFORE_2,
+	S13_TYPE_OF_FAULTY_STATEMENT_BEFORE_3,
+	S13_TYPE_OF_FAULTY_STATEMENT_AFTER_1,
+	S13_TYPE_OF_FAULTY_STATEMENT_AFTER_2,
+	S13_TYPE_OF_FAULTY_STATEMENT_AFTER_3,
+
+	S14_TYPE_OF_FAULTY_STATEMENT_PARENT,
+	
+	S15_HAS_OBJECTIVE_METHOD_CALL,
+	S16_HAS_Invocations_Prone_Exception,
+	S18_In_Synchronized_Method,
+	
+
+	
 	// For any variable v involved in a logical expression, whether exist other
 	// boolean
 	// expressions that involve using variable whose type is same with v —note it is

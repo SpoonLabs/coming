@@ -268,4 +268,33 @@ class DataLoader {
         }
         return catalogs;
     }
+
+    static Map<String, Map<File, File>> loadCLOSUREWithoutPatches(String dataPath) throws NullPointerException {
+        Map<String, Map<File, File>> catalogs = new HashMap<>();
+        System.out.println(dataPath);
+        for (File file : new File(dataPath).listFiles((dir, name) -> !name.startsWith("."))) {
+            // patchInfo
+            String pathName = file.getName();
+            File buggyFile = null;
+            File patchedFile = null;
+            for (File tmpFile : Files.fileTraverser().breadthFirst(file)) {
+                if (tmpFile.getName().endsWith("_s.java")) {
+                    buggyFile = tmpFile;
+                } else if (tmpFile.getName().endsWith("_t.java")) {
+                    patchedFile = tmpFile;
+                }
+            }
+            if (buggyFile != null && patchedFile != null) {
+                Map<File, File> catalog = new HashMap<>();
+                catalog.put(buggyFile, patchedFile);
+
+                if (!catalogs.containsKey(pathName)) {
+                    catalogs.put(pathName, catalog);
+                } else {
+                    catalogs.get(pathName).putAll(catalog);
+                }
+            }
+        }
+        return catalogs;
+    }
 }
