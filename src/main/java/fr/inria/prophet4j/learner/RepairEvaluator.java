@@ -199,8 +199,8 @@ public class RepairEvaluator {
     public void run() {
 //        run(RankingOption.D_CORRECT, RankingOption.D_INCORRECT);
 //        run(RankingOption.D_HUMAN, RankingOption.D_CORRECT);
-//        run(RankingOption.D_HUMAN, RankingOption.D_INCORRECT);
-        run(RankingOption.P_CORRECT, RankingOption.P_INCORRECT);
+        run(RankingOption.D_HUMAN, RankingOption.D_INCORRECT);
+//        run(RankingOption.P_CORRECT, RankingOption.P_INCORRECT);
     }
 
     public void run(RankingOption foreOption, RankingOption backOption) {

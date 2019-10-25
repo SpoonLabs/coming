@@ -494,7 +494,7 @@ public class ComingMain {
 		HelpFormatter formater = new HelpFormatter();
 		formater.setWidth(500);
 		formater.printHelp("Main", options);
-		logm.info("More options and default values at 'configuration.properties' file");
+		logm.info("More options and default values at 'config-coming.properties' file");
 
 	}
 

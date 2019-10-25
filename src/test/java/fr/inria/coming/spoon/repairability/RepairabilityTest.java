@@ -8,6 +8,7 @@ import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstancesFro
 import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.entities.RevisionResult;
+import fr.inria.coming.main.ComingMain;
 import fr.inria.coming.repairability.RepairabilityAnalyzer;
 import fr.inria.coming.spoon.utils.TestUtils;
 import gumtree.spoon.diff.Diff;
@@ -217,5 +218,4 @@ public class RepairabilityTest {
             Assert.assertTrue(op.getSrcNode().getElements(null).size() > 0);
         }
     }
-
 }

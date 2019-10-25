@@ -37,6 +37,9 @@ public class Support {
                     case QUIX_BUGS:
                         stringJoiner.add("QuixBugs");
                         break;
+                    case CLOSURE:
+                        stringJoiner.add("Closure/human-closure");
+                        break;
                 }
                 break;
             case FEATURE_DIR:

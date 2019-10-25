@@ -69,6 +69,8 @@ public class DataManager {
             case BUG_DOT_JAR_MINUS_MATH:
             case QUIX_BUGS:
                 return DataLoader.loadODSWithoutPatches(dataPath);
+            case CLOSURE:
+                return DataLoader.loadCLOSUREWithoutPatches(dataPath);
         }
         return new HashMap<>();
     }
