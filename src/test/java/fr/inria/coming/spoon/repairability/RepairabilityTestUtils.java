@@ -146,7 +146,7 @@ public class RepairabilityTestUtils {
 
         File[] files = new File(groundTruthPatchesBasePath).listFiles();
         for (File file : files) {
-            if(!file.getName().contains("patch2-Math-40"))
+            if(!file.getName().contains("patch4-Math-63-Cardumen"))
                 continue;
             FinalResult result =
                     RepairabilityTestUtils.runRepairabilityWithParameters
@@ -160,8 +160,7 @@ public class RepairabilityTestUtils {
                 /* we are sure that Gumtree did not work as we wanted; however, some of such cases might be
                    included in undetectedInstances */
                 gumtreeUndetected.add(file.getName());
-            }else {
-
+            } else {
                 int numberOfRepairInstances = RepairabilityTestUtils.countNumberOfUniqueInstances(
                         result.getAllResults(), RepairabilityAnalyzer.class);
 
@@ -175,11 +174,11 @@ public class RepairabilityTestUtils {
             }
         }
 
-        assertEquals(gumtreeUndetected.size(), expectedGumtreeUndetected);
+        assertEquals(expectedGumtreeUndetected, gumtreeUndetected.size());
 
-        assertEquals(overDetectedInstances.size(), expectedOverDetected);
+        assertEquals(expectedOverDetected, overDetectedInstances.size());
 
-        assertEquals(undetectedInstances.size(), expectedUndetected);
+        assertEquals(expectedUndetected, undetectedInstances.size());
         /* legitimate causes for undetectedInstances:
         1- ingredient (variable or literal) is extracted from a different scope (not from the same file).
         2- template is extracted from from a different scope (not from the same file).

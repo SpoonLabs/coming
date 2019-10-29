@@ -6,7 +6,7 @@ import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
 import fr.inria.coming.utils.CtEntityType;
 import fr.inria.coming.utils.EntityTypesInfoResolver;
-import gumtree.spoon.diff.Diff;
+import gumtree.spoon.diff.operations.InsertOperation;
 import gumtree.spoon.diff.operations.Operation;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtElement;
@@ -14,20 +14,31 @@ import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Cardumen fixes bugs by replacing expressions with template-based generated expressions.
  * The templates of the generated expressions are extracted from the same file/package/project by replacing variables with
  * placeholders.
  * <p>
- * expression_replacement.xml pattern only collects the changes that update an expression.
+ * expression_replacement_by_upd.xml pattern collects the changes that update an expression.
+ * expression_replacement_by_del_ins.xml pattern collects the changes that delete an expression and then insert a new expression.
+ * expression_replacement_by_del_mov.xml pattern collects the changes that replace an expression with a part of it.
+ * expression_insertion_deep.xml pattern collects the changes that update an expression by inserting an expression to it.
  * <p>
  * The filter functions should determine whether the new expression is an instance of a template from the same file.
  */
 public class Cardumen extends AbstractRepairTool {
+    private static final String UPD_PATTERN_NAME = "expression_replacement_by_upd";
+    private static final String DEL_INS_PATTERN_NAME = "expression_replacement_by_del_ins";
+    private static final String DEL_MOV_PATTERN_NAME = "expression_replacement_by_del_mov";
+    private static final String INS_DEP_PATTERN_NAME = "expression_insertion_deep";
 
     private static final String[] patternFileNames = {
-            "expression_replacement.xml"
+            UPD_PATTERN_NAME + ".xml",
+            DEL_INS_PATTERN_NAME + ".xml",
+            DEL_MOV_PATTERN_NAME + ".xml",
+            INS_DEP_PATTERN_NAME + ".xml"
     };
 
     /**
@@ -55,9 +66,42 @@ public class Cardumen extends AbstractRepairTool {
      */
     @Override
     public boolean filter(ChangePatternInstance instance, IRevision revision) {
-        Operation anyOperation = instance.getActions().get(0);
-        CtElement srcNode = anyOperation.getSrcNode(), dstNode = anyOperation.getDstNode();
+        CtElement srcNode = null, dstNode = null;
+        if (instance.getPattern().getName().contains(UPD_PATTERN_NAME)) {
+            Operation anyOperation = instance.getActions().get(0);
+            srcNode = anyOperation.getSrcNode();
+            dstNode = anyOperation.getDstNode();
+        } else if (instance.getPattern().getName().contains(DEL_INS_PATTERN_NAME)) {
+            if (instance.getActions().get(0).getAction().getName().equals("DEL")) {
+                srcNode = instance.getActions().get(0).getSrcNode();
+                dstNode = instance.getActions().get(1).getSrcNode();
+            } else {
+                srcNode = instance.getActions().get(1).getSrcNode();
+                dstNode = instance.getActions().get(0).getSrcNode();
+            }
+            if(!srcNode.getPosition().isValidPosition() || !dstNode.getPosition().isValidPosition()
+                    || !(srcNode.getPosition().getLine() == dstNode.getPosition().getLine()))
+                return false;
+        } else if (instance.getPattern().getName().contains(DEL_MOV_PATTERN_NAME)) {
+            if (instance.getActions().get(0).getAction().getName().equals("DEL")) {
+                srcNode = instance.getActions().get(0).getSrcNode();
+                dstNode = instance.getActions().get(1).getSrcNode();
+            } else {
+                srcNode = instance.getActions().get(1).getSrcNode();
+                dstNode = instance.getActions().get(0).getSrcNode();
+            }
+            return EntityTypesInfoResolver.getPathToRootNode(dstNode).contains(srcNode);
+        } else if(instance.getPattern().getName().contains(INS_DEP_PATTERN_NAME)){
+            srcNode = ((InsertOperation)instance.getActions().get(0)).getParent(); // to have access to the old AST
+            dstNode = instance.getActions().get(0).getSrcNode().getParent();
+        } else {
+            return false;
+        }
 
+        return checkSrcIncludesDstTemplate(srcNode, dstNode);
+    }
+
+    private boolean checkSrcIncludesDstTemplate(CtElement srcNode, CtElement dstNode) {
         CtElement srcRootNode = EntityTypesInfoResolver.getPathToRootNode(srcNode).get(0);
         List<CtElement> allSrcElements = srcRootNode.getElements(null);
         Set<String> srcVariablesAndLiterals = new HashSet<>();
@@ -175,15 +219,52 @@ public class Cardumen extends AbstractRepairTool {
         return type.toString();
     }
 
+    // INS_DEP_PATTERN might add instances that are already added by other patterns. They should be filtered.
     @Override
-    public boolean coversTheWholeDiff(ChangePatternInstance instancePattern, Diff diff) {
-        CtElement instanceSrcNode = instancePattern.getActions().get(0).getSrcNode();
-        for (Operation diffOperation : diff.getRootOperations()) {
-            List<CtElement> pathToDiffRoot = EntityTypesInfoResolver.getPathToRootNode(diffOperation.getSrcNode());
-            if(!pathToDiffRoot.contains(instanceSrcNode))
-                return false;
+    public List<ChangePatternInstance> filterInstances(List<ChangePatternInstance> lst) {
+        List<ChangePatternInstance> ret = new ArrayList<>();
+        for(ChangePatternInstance instance : lst){
+            if(!instance.getPattern().getName().contains(INS_DEP_PATTERN_NAME)){
+                ret.add(instance);
+            }
         }
-        return true;
+        for(ChangePatternInstance instance : lst){
+            if(!instance.getPattern().getName().contains(INS_DEP_PATTERN_NAME))
+                continue;
+            CtElement changedExpressionNode = instance.getActions().get(0).getSrcNode().getParent();
+            boolean addedBefore = false;
+            for(ChangePatternInstance existingInstance : ret){
+                Set<CtElement> instanceNodes = getInstanceCoveredNodes(existingInstance);
+                if(coveredByInstanceNodes(instanceNodes, changedExpressionNode)){
+                    addedBefore = true;
+                    break;
+                }
+            }
+            if(!addedBefore){
+                ret.add(instance);
+            }
+        }
+        return ret;
     }
 
+    @Override
+    protected Set<CtElement> getInstanceCoveredNodes(ChangePatternInstance instancePattern) {
+        Set<CtElement> dstNodes = instancePattern.getPattern().getName().contains(INS_DEP_PATTERN_NAME) ?
+                instancePattern.getActions().stream()
+                        .map(action -> (action.getSrcNode().getParent())).collect(Collectors.toSet()) :
+                instancePattern.getActions().stream()
+                        .map(action -> (action.getDstNode() != null ? action.getDstNode() : action.getSrcNode()))
+                        .collect(Collectors.toSet());
+
+        Set<CtElement> srcNodes = instancePattern.getPattern().getName().contains(INS_DEP_PATTERN_NAME) ?
+                instancePattern.getActions().stream()
+                        .map(action -> (((InsertOperation)action).getParent())).collect(Collectors.toSet()) :
+                instancePattern.getActions().stream()
+                        .map(action -> (action.getSrcNode()))
+                        .collect(Collectors.toSet());
+
+        Set<CtElement> all = dstNodes;
+        all.addAll(srcNodes);
+        return all;
+    }
 }

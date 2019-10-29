@@ -1,4 +1,4 @@
-<pattern name="expression_replacement">
+<pattern name="expression_replacement_by_upd">
 
     <entity id="1" type="Expression" />
     <action entityId="1" type="UPD"/>

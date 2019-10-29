@@ -15,7 +15,9 @@ import gumtree.spoon.diff.operations.Operation;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RepairabilityAnalyzer implements Analyzer {
     /**
@@ -84,6 +86,8 @@ public class RepairabilityAnalyzer implements Analyzer {
                 }
             }
 
+            patternInstanceList = filterResult(patternInstanceList);
+
             // this PatternInstancesFromDiff contains only filtered elements
             allInstances.add(new PatternInstancesFromDiff(
                     result.getAnalyzed(),
@@ -97,18 +101,22 @@ public class RepairabilityAnalyzer implements Analyzer {
         return finalResult;
     }
 
-    private boolean coversTheWholeDiff(ChangePatternInstance instancePattern, Diff diff) {
-        for(Operation diffOperation : diff.getRootOperations()){
-            boolean foundOp = false;
-            for(Operation instanceOperation : instancePattern.getActions()){
-                if(diffOperation.equals(instanceOperation)){
-                    foundOp = true;
-                    break;
-                }
-            }
-            if(!foundOp)
-                return false;
+    private List<ChangePatternInstance> filterResult(List<ChangePatternInstance> patternInstanceList) {
+        List<ChangePatternInstance> res = new ArrayList<>();
+        Map<String, List> toolToInstances = new HashMap<>();
+        for(ChangePatternInstance instance : patternInstanceList){
+            String toolName = instance.getPattern().getName().split(File.pathSeparator)[0];
+            if(!toolToInstances.containsKey(toolName))
+                toolToInstances.put(toolName, new ArrayList());
+            toolToInstances.get(toolName).add(instance);
         }
-        return true;
+        for(Map.Entry<String, List> entry : toolToInstances.entrySet()){
+            String toolName = entry.getKey();
+            List<ChangePatternInstance> instances = entry.getValue();
+            AbstractRepairTool tool = RepairTools.getRepairToolInstance(toolName);
+            res.addAll(tool.filterInstances(instances));
+        }
+        return res;
     }
+
 }
