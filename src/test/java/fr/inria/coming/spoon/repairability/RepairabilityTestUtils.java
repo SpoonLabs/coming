@@ -146,8 +146,6 @@ public class RepairabilityTestUtils {
 
         File[] files = new File(groundTruthPatchesBasePath).listFiles();
         for (File file : files) {
-            if(!file.getName().contains("patch4-Math-63-Cardumen"))
-                continue;
             FinalResult result =
                     RepairabilityTestUtils.runRepairabilityWithParameters
                             (

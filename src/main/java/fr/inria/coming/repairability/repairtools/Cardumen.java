@@ -4,6 +4,7 @@ import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstan
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
+import fr.inria.coming.main.ComingProperties;
 import fr.inria.coming.utils.CtEntityType;
 import fr.inria.coming.utils.EntityTypesInfoResolver;
 import gumtree.spoon.diff.operations.InsertOperation;
@@ -32,13 +33,11 @@ public class Cardumen extends AbstractRepairTool {
     private static final String UPD_PATTERN_NAME = "expression_replacement_by_upd";
     private static final String DEL_INS_PATTERN_NAME = "expression_replacement_by_del_ins";
     private static final String DEL_MOV_PATTERN_NAME = "expression_replacement_by_del_mov";
-    private static final String INS_DEP_PATTERN_NAME = "expression_insertion_deep";
 
     private static final String[] patternFileNames = {
             UPD_PATTERN_NAME + ".xml",
             DEL_INS_PATTERN_NAME + ".xml",
-            DEL_MOV_PATTERN_NAME + ".xml",
-            INS_DEP_PATTERN_NAME + ".xml"
+            DEL_MOV_PATTERN_NAME + ".xml"
     };
 
     /**
@@ -69,31 +68,30 @@ public class Cardumen extends AbstractRepairTool {
         CtElement srcNode = null, dstNode = null;
         if (instance.getPattern().getName().contains(UPD_PATTERN_NAME)) {
             Operation anyOperation = instance.getActions().get(0);
+
             srcNode = anyOperation.getSrcNode();
             dstNode = anyOperation.getDstNode();
+
         } else if (instance.getPattern().getName().contains(DEL_INS_PATTERN_NAME)) {
-            if (instance.getActions().get(0).getAction().getName().equals("DEL")) {
-                srcNode = instance.getActions().get(0).getSrcNode();
-                dstNode = instance.getActions().get(1).getSrcNode();
-            } else {
-                srcNode = instance.getActions().get(1).getSrcNode();
-                dstNode = instance.getActions().get(0).getSrcNode();
-            }
-            if(!srcNode.getPosition().isValidPosition() || !dstNode.getPosition().isValidPosition()
-                    || !(srcNode.getPosition().getLine() == dstNode.getPosition().getLine()))
+            Operation delAction, insAction;
+            delAction = getActionFromDelInstance(instance, "DEL");
+            insAction = getActionFromDelInstance(instance, "INS");
+
+            if (delAction.getSrcNode().getParent() != ((InsertOperation) insAction).getParent())
                 return false;
+
+            srcNode = delAction.getSrcNode();
+            dstNode = insAction.getSrcNode();
         } else if (instance.getPattern().getName().contains(DEL_MOV_PATTERN_NAME)) {
-            if (instance.getActions().get(0).getAction().getName().equals("DEL")) {
-                srcNode = instance.getActions().get(0).getSrcNode();
-                dstNode = instance.getActions().get(1).getSrcNode();
-            } else {
-                srcNode = instance.getActions().get(1).getSrcNode();
-                dstNode = instance.getActions().get(0).getSrcNode();
-            }
+
+            if(!ComingProperties.getPropertyBoolean("exclude_repair_patterns_not_covering_the_whole_diff"))
+                // this pattern produces too many false positives when not-covering instances are not excluded.
+                return false;
+
+            srcNode = getActionFromDelInstance(instance, "DEL").getSrcNode();
+            dstNode = getActionFromDelInstance(instance, "MOV").getSrcNode();
+
             return EntityTypesInfoResolver.getPathToRootNode(dstNode).contains(srcNode);
-        } else if(instance.getPattern().getName().contains(INS_DEP_PATTERN_NAME)){
-            srcNode = ((InsertOperation)instance.getActions().get(0)).getParent(); // to have access to the old AST
-            dstNode = instance.getActions().get(0).getSrcNode().getParent();
         } else {
             return false;
         }
@@ -121,7 +119,7 @@ public class Cardumen extends AbstractRepairTool {
             if (dstElement instanceof CtVariableAccess || dstElement instanceof CtLiteral) {
                 if (!srcVariablesAndLiterals.contains(getCleanedName(dstElement)))
                     // A variable/literal is used that does not exist in SRC
-                    // FIXME: We should also make sure than the variable/literal is in the current scope
+                    // FIXME: We should also make sure that the variable/literal is in the current scope
                     return false;
                 String variableOrLiteralType = getType(dstElement);
                 dstNodeAsString = replaceElement(dstNodeAsString, dstElement.toString(),
@@ -219,52 +217,96 @@ public class Cardumen extends AbstractRepairTool {
         return type.toString();
     }
 
-    // INS_DEP_PATTERN might add instances that are already added by other patterns. They should be filtered.
+    // DEL_MOV/INS might add instances that are already added by other patterns. They should be filtered.
     @Override
-    public List<ChangePatternInstance> filterInstances(List<ChangePatternInstance> lst) {
+    public List<ChangePatternInstance> filterSelectedInstances(List<ChangePatternInstance> lst) {
+        Map<ChangePatternInstance, Set> instanceToCoveredNodes = new HashMap<>();
+
         List<ChangePatternInstance> ret = new ArrayList<>();
-        for(ChangePatternInstance instance : lst){
-            if(!instance.getPattern().getName().contains(INS_DEP_PATTERN_NAME)){
+        for (ChangePatternInstance instance : lst) {
+            if (instance.getPattern().getName().contains(UPD_PATTERN_NAME)) {
                 ret.add(instance);
+                instanceToCoveredNodes.put(instance, getInstanceCoveredNodes(instance));
             }
         }
-        for(ChangePatternInstance instance : lst){
-            if(!instance.getPattern().getName().contains(INS_DEP_PATTERN_NAME))
-                continue;
-            CtElement changedExpressionNode = instance.getActions().get(0).getSrcNode().getParent();
-            boolean addedBefore = false;
-            for(ChangePatternInstance existingInstance : ret){
-                Set<CtElement> instanceNodes = getInstanceCoveredNodes(existingInstance);
-                if(coveredByInstanceNodes(instanceNodes, changedExpressionNode)){
+
+        for (ChangePatternInstance instance : lst) {
+            if (instance.getPattern().getName().contains(DEL_MOV_PATTERN_NAME)
+                    || instance.getPattern().getName().contains(DEL_INS_PATTERN_NAME)) {
+                List<CtElement> changedNodes = new ArrayList<>();
+                changedNodes.add(getActionFromDelInstance(instance, "DEL").getSrcNode());
+                updateSelectedInstances(instanceToCoveredNodes, ret, instance, changedNodes);
+            }
+        }
+
+        return ret;
+    }
+
+    private void updateSelectedInstances
+            (
+                    Map<ChangePatternInstance, Set> instanceToCoveredNodes,
+                    List<ChangePatternInstance> ret,
+                    ChangePatternInstance instance,
+                    List<CtElement> changedNodes
+            ) {
+        boolean addedBefore = false;
+        for (ChangePatternInstance existingInstance : ret) {
+            Set<CtElement> instanceCoveredNodes = instanceToCoveredNodes.get(existingInstance);
+            for (CtElement changedNode : changedNodes) {
+                if (coveredByInstanceNodes(instanceCoveredNodes, changedNode)) {
                     addedBefore = true;
                     break;
                 }
             }
-            if(!addedBefore){
-                ret.add(instance);
-            }
+            if(addedBefore)
+                break;
         }
-        return ret;
+        if (!addedBefore) {
+            ret.add(instance);
+            instanceToCoveredNodes.put(instance, getInstanceCoveredNodes(instance));
+        }
     }
 
     @Override
     protected Set<CtElement> getInstanceCoveredNodes(ChangePatternInstance instancePattern) {
-        Set<CtElement> dstNodes = instancePattern.getPattern().getName().contains(INS_DEP_PATTERN_NAME) ?
-                instancePattern.getActions().stream()
-                        .map(action -> (action.getSrcNode().getParent())).collect(Collectors.toSet()) :
-                instancePattern.getActions().stream()
-                        .map(action -> (action.getDstNode() != null ? action.getDstNode() : action.getSrcNode()))
-                        .collect(Collectors.toSet());
+        Set<CtElement> dstNodes = new HashSet<>();
 
-        Set<CtElement> srcNodes = instancePattern.getPattern().getName().contains(INS_DEP_PATTERN_NAME) ?
-                instancePattern.getActions().stream()
-                        .map(action -> (((InsertOperation)action).getParent())).collect(Collectors.toSet()) :
-                instancePattern.getActions().stream()
-                        .map(action -> (action.getSrcNode()))
-                        .collect(Collectors.toSet());
+        if (instancePattern.getPattern().getName().contains(DEL_INS_PATTERN_NAME)) {
+            for (Operation op : instancePattern.getActions()) {
+                if (op.getAction().getName().contains("INS")) {
+                    dstNodes.add(op.getSrcNode());
+                }
+            }
+        } else if (instancePattern.getPattern().getName().contains(UPD_PATTERN_NAME)
+                || instancePattern.getPattern().getName().contains(DEL_MOV_PATTERN_NAME)) {
+            dstNodes = instancePattern.getActions().stream()
+                    .map(action -> (action.getDstNode() != null ? action.getDstNode() : action.getSrcNode()))
+                    .collect(Collectors.toSet());
+        }
+
+        Set<CtElement> srcNodes = new HashSet<>();
+            if (instancePattern.getPattern().getName().contains(DEL_INS_PATTERN_NAME)
+                || instancePattern.getPattern().getName().contains(DEL_MOV_PATTERN_NAME)) {
+            for (Operation op : instancePattern.getActions()) {
+                if (op.getAction().getName().contains("DEL")) {
+                    srcNodes.add(op.getSrcNode());
+                }
+            }
+        } else if (instancePattern.getPattern().getName().contains(UPD_PATTERN_NAME)) {
+            srcNodes = instancePattern.getActions().stream()
+                    .map(action -> (action.getSrcNode())).collect(Collectors.toSet());
+        }
 
         Set<CtElement> all = dstNodes;
         all.addAll(srcNodes);
         return all;
+    }
+
+    private Operation getActionFromDelInstance(ChangePatternInstance instance, String actionType) {
+        if (instance.getActions().get(0).getAction().getName().equals(actionType)) {
+            return instance.getActions().get(0);
+        } else {
+            return instance.getActions().get(1);
+        }
     }
 }

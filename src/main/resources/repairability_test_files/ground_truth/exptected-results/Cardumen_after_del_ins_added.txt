@@ -147,9 +147,9 @@ undetected:
 31 = "patch1-Math-69-Cardumen"=>literal out of scope
 32 = "patch1-Math-70-Cardumen"=>template out of scope
 33 = "patch1-Math-73-Cardumen"=>template out of scope
-34 = "patch1-Math-78-Cardumen"=>solved (gumtree)
+34 = "patch1-Math-78-Cardumen"=>gumtree
 35 = "patch1-Math-79-Cardumen"=>literal out of scope
-36 = "patch1-Math-81-Cardumen"=>solved (gumtree)
+36 = "patch1-Math-81-Cardumen"=>gumtree
 37 = "patch1-Math-82-Cardumen"=>template out of scope
 38 = "patch1-Math-84-Cardumen"=>literal out of scope
 39 = "patch1-Math-88-Cardumen"=>template out of scope
@@ -180,7 +180,7 @@ undetected:
 64 = "patch2-Math-50-Cardumen"=>template
 65 = "patch2-Math-57-Cardumen"=>literal
 66 = "patch2-Math-60-Cardumen"=>literal
-67 = "patch2-Math-63-Cardumen"=>template (wrongly solved-turned to false positive)
+67 = "patch2-Math-63-Cardumen"=>solved
 68 = "patch2-Math-69-Cardumen"=>literal
 69 = "patch2-Math-70-Cardumen"=>template
 70 = "patch2-Math-73-Cardumen"=>template
@@ -202,11 +202,11 @@ undetected:
 86 = "patch3-Closure-40-Cardumen"=>template
 87 = "patch3-Closure-45-Cardumen"=>template
 88 = "patch3-Closure-46-Cardumen"=>template
-89 = "patch3-Lang-27-Cardumen"=>solved
+89 = "patch3-Lang-27-Cardumen"=>gumtree
 90 = "patch3-Lang-7-Cardumen"=>template
 91 = "patch3-Math-105-Cardumen"=>template
 92 = "patch3-Math-30-Cardumen"=>template
-93 = "patch3-Math-40-Cardumen"=>solved
+93 = "patch3-Math-40-Cardumen"=>gumtree
 94 = "patch3-Math-41-Cardumen"=>literal
 95 = "patch3-Math-46-Cardumen"=>template
 96 = "patch3-Math-49-Cardumen"=>template
@@ -239,7 +239,7 @@ undetected:
 123 = "patch4-Math-41-Cardumen"=>template
 124 = "patch4-Math-46-Cardumen"=>template
 125 = "patch4-Math-5-Cardumen"=>template
-126 = "patch4-Math-50-Cardumen"=>solved (gumtree)
+126 = "patch4-Math-50-Cardumen"=>gumtree
 127 = "patch4-Math-57-Cardumen"=>literal
 128 = "patch4-Math-60-Cardumen"=>higher order mutant
 129 = "patch4-Math-63-Cardumen"=>gumtree (public static final variables are not listed by root.getElements(null))
@@ -250,7 +250,7 @@ undetected:
 134 = "patch4-Math-8-Cardumen"=>template
 135 = "patch4-Math-82-Cardumen"=>template
 136 = "patch4-Math-84-Cardumen"=>template
-137 = "patch4-Math-85-Cardumen"=>solved (gumtree)
+137 = "patch4-Math-85-Cardumen"=>gumtree
 138 = "patch4-Math-88-Cardumen"=>template
 139 = "patch4-Math-95-Cardumen"=>template
 140 = "patch4-Time-11-Cardumen"=>literal

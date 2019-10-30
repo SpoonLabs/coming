@@ -8,7 +8,7 @@
 
     <entity id="3" type="*"  value="null">
         <parent parentId="2" distance="1"/>
-    </entity>>
+    </entity>
 
     <action entityId="1" type="INS"/>
     <action entityId="3" type="INS"/>

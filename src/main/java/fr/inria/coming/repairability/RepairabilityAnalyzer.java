@@ -10,8 +10,6 @@ import fr.inria.coming.core.entities.AnalysisResult;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.main.ComingProperties;
 import fr.inria.coming.repairability.repairtools.AbstractRepairTool;
-import gumtree.spoon.diff.Diff;
-import gumtree.spoon.diff.operations.Operation;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -114,7 +112,7 @@ public class RepairabilityAnalyzer implements Analyzer {
             String toolName = entry.getKey();
             List<ChangePatternInstance> instances = entry.getValue();
             AbstractRepairTool tool = RepairTools.getRepairToolInstance(toolName);
-            res.addAll(tool.filterInstances(instances));
+            res.addAll(tool.filterSelectedInstances(instances));
         }
         return res;
     }

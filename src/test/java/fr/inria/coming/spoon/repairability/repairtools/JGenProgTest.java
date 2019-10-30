@@ -25,7 +25,7 @@ public class JGenProgTest {
 
     @Test
     public void testGroundTruthCreatedPatches() throws Exception {
-//        RepairabilityTestUtils.checkGroundTruthPatches(getClass(),"JGenProg2015", new DefaultDiffResultChecker(), 4, 0, 0);
-        RepairabilityTestUtils.checkGroundTruthPatches(getClass(),"JGenProg2017", new DefaultDiffResultChecker(), 0, 0, 0);
+        RepairabilityTestUtils.checkGroundTruthPatches(getClass(),"JGenProg2015", new DefaultDiffResultChecker(), 4, 0, 0);
+//        RepairabilityTestUtils.checkGroundTruthPatches(getClass(),"JGenProg2017", new DefaultDiffResultChecker(), 0, 0, 0);
     }
 }

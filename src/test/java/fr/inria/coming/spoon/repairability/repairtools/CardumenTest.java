@@ -19,7 +19,6 @@ import static org.junit.Assert.assertEquals;
  * Created by khesoem on 10/14/2019.
  */
 public class CardumenTest {
-
     @Test
     public void testCardumen1() throws Exception {
         FinalResult result =
@@ -64,7 +63,7 @@ public class CardumenTest {
                 // Gumtree detected 'del' or 'ins' operations instead of 'upd'.
                 return true;
             }
-        }, 49, 0, 176);
+        }, 167, 0, 0);
     }
 
 }

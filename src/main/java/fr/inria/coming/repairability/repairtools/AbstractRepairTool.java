@@ -110,11 +110,11 @@ public abstract class AbstractRepairTool {
         return true;
     }
 
-    protected boolean coveredByInstanceNodes(Set<CtElement> instanceNodes, CtElement node) {
+    protected boolean coveredByInstanceNodes(Set<CtElement> instanceCoveredNodes, CtElement node) {
         List<CtElement> pathToDiffRoot =
                 EntityTypesInfoResolver.getPathToRootNode(node);
         for(CtElement element : pathToDiffRoot){
-            for(CtElement instanceNode : instanceNodes) {
+            for(CtElement instanceNode : instanceCoveredNodes) {
                 if (element == instanceNode)
                     return true;
             }
@@ -129,7 +129,7 @@ public abstract class AbstractRepairTool {
                 .collect(Collectors.toSet());
     }
 
-    public List<ChangePatternInstance> filterInstances(List<ChangePatternInstance> lst){
+    public List<ChangePatternInstance> filterSelectedInstances(List<ChangePatternInstance> lst){
         return lst;
     }
 }

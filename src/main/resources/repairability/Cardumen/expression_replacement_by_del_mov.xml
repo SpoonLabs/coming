@@ -1,4 +1,4 @@
-<pattern name="expression_replacement_by_del_ins">
+<pattern name="expression_replacement_by_del_mov">
 
     <entity id="1" type="Expression" />
     <action entityId="1" type="DEL"/>
