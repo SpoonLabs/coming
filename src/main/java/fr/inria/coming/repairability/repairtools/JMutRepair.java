@@ -4,6 +4,7 @@ import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstan
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
+import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
 import spoon.reflect.code.CtBinaryOperator;
 
@@ -38,10 +39,11 @@ public class JMutRepair extends AbstractRepairTool {
      *
      * @param patternInstance
      * @param revision
+     * @param diff
      * @return
      */
     @Override
-    public boolean filter(ChangePatternInstance patternInstance, IRevision revision) {
+    public boolean filter(ChangePatternInstance patternInstance, IRevision revision, Diff diff) {
 
         String patternType = patternInstance.getPattern().getName().split(File.pathSeparator)[1];
         if (patternType.startsWith("binary")) {

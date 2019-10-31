@@ -12,6 +12,7 @@ import java.util.*;
 /**
  * Created by khesoem on 10/4/2019.
  */
+// FIXME: getPathToRootNode & getOperatoinStats & getLabel... functions should be moved to a separate class
 public class EntityTypesInfoResolver {
     private static EntityTypesInfoResolver _instance = null;
     private static final String CLASSES_HIERARCHY_PATH = "src/main/resources/gumtree-inheritance-relations.txt";

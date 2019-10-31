@@ -39,9 +39,10 @@ public abstract class AbstractRepairTool {
      *
      * @param instance
      * @param revision
+     * @param diff
      * @return boolean value
      */
-    public boolean filter(ChangePatternInstance instance, IRevision revision) {
+    public boolean filter(ChangePatternInstance instance, IRevision revision, Diff diff) {
         return true;
     }
 
@@ -123,8 +124,8 @@ public abstract class AbstractRepairTool {
     }
 
     // the abstract implementation only returns nodes in the Dst AST.
-    protected Set<CtElement> getInstanceCoveredNodes(ChangePatternInstance instancePattern) {
-        return instancePattern.getActions().stream()
+    protected Set<CtElement> getInstanceCoveredNodes(ChangePatternInstance instance) {
+        return instance.getActions().stream()
                 .map(action -> (action.getDstNode() != null ? action.getDstNode() : action.getSrcNode()))
                 .collect(Collectors.toSet());
     }

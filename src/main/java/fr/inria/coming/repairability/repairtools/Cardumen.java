@@ -7,6 +7,7 @@ import fr.inria.coming.changeminer.util.PatternXMLParser;
 import fr.inria.coming.main.ComingProperties;
 import fr.inria.coming.utils.CtEntityType;
 import fr.inria.coming.utils.EntityTypesInfoResolver;
+import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.InsertOperation;
 import gumtree.spoon.diff.operations.Operation;
 import spoon.reflect.code.*;
@@ -61,10 +62,11 @@ public class Cardumen extends AbstractRepairTool {
      * The filter functions should determine whether the new expression is an instance of a template from the same file.
      *
      * @param instance
+     * @param diff
      * @return
      */
     @Override
-    public boolean filter(ChangePatternInstance instance, IRevision revision) {
+    public boolean filter(ChangePatternInstance instance, IRevision revision, Diff diff) {
         CtElement srcNode = null, dstNode = null;
         if (instance.getPattern().getName().contains(UPD_PATTERN_NAME)) {
             Operation anyOperation = instance.getActions().get(0);
@@ -221,8 +223,8 @@ public class Cardumen extends AbstractRepairTool {
     @Override
     public List<ChangePatternInstance> filterSelectedInstances(List<ChangePatternInstance> lst) {
         Map<ChangePatternInstance, Set> instanceToCoveredNodes = new HashMap<>();
-
         List<ChangePatternInstance> ret = new ArrayList<>();
+
         for (ChangePatternInstance instance : lst) {
             if (instance.getPattern().getName().contains(UPD_PATTERN_NAME)) {
                 ret.add(instance);
@@ -268,32 +270,32 @@ public class Cardumen extends AbstractRepairTool {
     }
 
     @Override
-    protected Set<CtElement> getInstanceCoveredNodes(ChangePatternInstance instancePattern) {
+    protected Set<CtElement> getInstanceCoveredNodes(ChangePatternInstance instance) {
         Set<CtElement> dstNodes = new HashSet<>();
 
-        if (instancePattern.getPattern().getName().contains(DEL_INS_PATTERN_NAME)) {
-            for (Operation op : instancePattern.getActions()) {
+        if (instance.getPattern().getName().contains(DEL_INS_PATTERN_NAME)) {
+            for (Operation op : instance.getActions()) {
                 if (op.getAction().getName().contains("INS")) {
                     dstNodes.add(op.getSrcNode());
                 }
             }
-        } else if (instancePattern.getPattern().getName().contains(UPD_PATTERN_NAME)
-                || instancePattern.getPattern().getName().contains(DEL_MOV_PATTERN_NAME)) {
-            dstNodes = instancePattern.getActions().stream()
+        } else if (instance.getPattern().getName().contains(UPD_PATTERN_NAME)
+                || instance.getPattern().getName().contains(DEL_MOV_PATTERN_NAME)) {
+            dstNodes = instance.getActions().stream()
                     .map(action -> (action.getDstNode() != null ? action.getDstNode() : action.getSrcNode()))
                     .collect(Collectors.toSet());
         }
 
         Set<CtElement> srcNodes = new HashSet<>();
-            if (instancePattern.getPattern().getName().contains(DEL_INS_PATTERN_NAME)
-                || instancePattern.getPattern().getName().contains(DEL_MOV_PATTERN_NAME)) {
-            for (Operation op : instancePattern.getActions()) {
+            if (instance.getPattern().getName().contains(DEL_INS_PATTERN_NAME)
+                || instance.getPattern().getName().contains(DEL_MOV_PATTERN_NAME)) {
+            for (Operation op : instance.getActions()) {
                 if (op.getAction().getName().contains("DEL")) {
                     srcNodes.add(op.getSrcNode());
                 }
             }
-        } else if (instancePattern.getPattern().getName().contains(UPD_PATTERN_NAME)) {
-            srcNodes = instancePattern.getActions().stream()
+        } else if (instance.getPattern().getName().contains(UPD_PATTERN_NAME)) {
+            srcNodes = instance.getActions().stream()
                     .map(action -> (action.getSrcNode())).collect(Collectors.toSet());
         }
 

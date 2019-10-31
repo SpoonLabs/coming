@@ -146,6 +146,8 @@ public class RepairabilityTestUtils {
 
         File[] files = new File(groundTruthPatchesBasePath).listFiles();
         for (File file : files) {
+//            if(!file.getName().contains("patch1-Chart-5-JGenProg2017"))
+//                continue;
             FinalResult result =
                     RepairabilityTestUtils.runRepairabilityWithParameters
                             (
