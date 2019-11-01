@@ -3,11 +3,15 @@ package fr.inria.coming.repairability.repairtools;
 import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.entity.IRevision;
+import fr.inria.coming.utils.EntityTypesInfoResolver;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
+import spoon.reflect.declaration.CtElement;
 
 import java.io.*;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Each repair tool in RepairabilityAnalyzer must be a subclass of Repair tool
@@ -35,9 +39,10 @@ public abstract class AbstractRepairTool {
      *
      * @param instance
      * @param revision
+     * @param diff
      * @return boolean value
      */
-    public boolean filter(ChangePatternInstance instance, IRevision revision) {
+    public boolean filter(ChangePatternInstance instance, IRevision revision, Diff diff) {
         return true;
     }
 
@@ -95,17 +100,37 @@ public abstract class AbstractRepairTool {
     }
 
     public boolean coversTheWholeDiff(ChangePatternInstance instancePattern, Diff diff) {
-        for(Operation diffOperation : diff.getRootOperations()){
-            boolean foundOp = false;
-            for(Operation instanceOperation : instancePattern.getActions()){
-                if(diffOperation.equals(instanceOperation)){
-                    foundOp = true;
-                    break;
-                }
-            }
-            if(!foundOp)
+        Set<CtElement> instanceNodes = getInstanceCoveredNodes(instancePattern);
+        for (Operation diffOperation : diff.getRootOperations()) {
+            boolean found = coveredByInstanceNodes(instanceNodes, diffOperation.getDstNode() == null
+                    ? diffOperation.getSrcNode()
+                    : diffOperation.getDstNode());
+            if(found == false)
                 return false;
         }
         return true;
+    }
+
+    protected boolean coveredByInstanceNodes(Set<CtElement> instanceCoveredNodes, CtElement node) {
+        List<CtElement> pathToDiffRoot =
+                EntityTypesInfoResolver.getPathToRootNode(node);
+        for(CtElement element : pathToDiffRoot){
+            for(CtElement instanceNode : instanceCoveredNodes) {
+                if (element == instanceNode)
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    // the abstract implementation only returns nodes in the Dst AST.
+    protected Set<CtElement> getInstanceCoveredNodes(ChangePatternInstance instance) {
+        return instance.getActions().stream()
+                .map(action -> (action.getDstNode() != null ? action.getDstNode() : action.getSrcNode()))
+                .collect(Collectors.toSet());
+    }
+
+    public List<ChangePatternInstance> filterSelectedInstances(List<ChangePatternInstance> lst){
+        return lst;
     }
 }

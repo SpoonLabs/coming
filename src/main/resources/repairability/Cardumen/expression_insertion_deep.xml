@@ -1,0 +1,7 @@
+<!--<pattern name="expression_insertion_deep">-->
+<!--    <entity id="1" type="Expression"/>-->
+<!--    <entity id="2" type="Expression">-->
+<!--        <parent parentId="1" distance="1"/>-->
+<!--    </entity>-->
+<!--    <action entityId="2" type="INS"/>-->
+<!--</pattern>-->

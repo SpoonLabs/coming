@@ -2,6 +2,7 @@ package fr.inria.coming.utils;
 
 import org.reflections.Reflections;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtPackage;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,6 +12,7 @@ import java.util.*;
 /**
  * Created by khesoem on 10/4/2019.
  */
+// FIXME: getPathToRootNode & getOperatoinStats & getLabel... functions should be moved to a separate class
 public class EntityTypesInfoResolver {
     private static EntityTypesInfoResolver _instance = null;
     private static final String CLASSES_HIERARCHY_PATH = "src/main/resources/gumtree-inheritance-relations.txt";
@@ -59,6 +61,18 @@ public class EntityTypesInfoResolver {
 //        String inheritanceRelationsFilePath = CLASSES_HIERARCHY_PATH;
 //        extractAndSaveCtElementsHierarchyModel(inheritanceRelationsFilePath);
 //    }
+
+    public static List<CtElement> getPathToRootNode(CtElement element) {
+        CtElement par = element.getParent();
+        if (par == null || par instanceof CtPackage || element == par) {
+            List<CtElement> res = new ArrayList<>();
+            res.add(element);
+            return res;
+        }
+        List<CtElement> pathToParent = getPathToRootNode(par);
+        pathToParent.add(element);
+        return pathToParent;
+    }
 
     private static void extractAndSaveCtElementsHierarchyModel(String outputPath) throws FileNotFoundException {
         PrintWriter pw = new PrintWriter(new File(outputPath));

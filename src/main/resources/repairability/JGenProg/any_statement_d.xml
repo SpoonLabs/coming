@@ -2,7 +2,7 @@
 
     <entity id="1" type="*" role="Statement"/>
     <entity id="2" type="*" role="*">
-        <parent parentId="1" distance="1000000"/>
+        <parent parentId="1" distance="100000"/>
     </entity>
     <action entityId="2" type="*"/>
 

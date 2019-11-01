@@ -4,13 +4,11 @@ import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstan
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
+import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
 import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.path.CtRole;
 
 import java.io.File;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,10 +62,11 @@ public class Elixir extends AbstractRepairTool {
      * This filter is supposed to delete/remove such instances from the results given by PatternInstanceAnalyser.
      *
      * @param patternInstance
+     * @param diff
      * @return
      */
     @Override
-    public boolean filter(ChangePatternInstance patternInstance, IRevision revision) {
+    public boolean filter(ChangePatternInstance patternInstance, IRevision revision, Diff diff) {
 
         String patternType = patternInstance.getPattern().getName().split(File.pathSeparator)[1];
         if (patternType.startsWith("ep_4")) {

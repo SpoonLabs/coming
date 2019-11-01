@@ -10,7 +10,7 @@ public class NPEfixTest {
     @Test
     public void NPEfixTest() throws Exception {
         FinalResult result = RepairabilityTestUtils.runRepairability("NPEfix", "/repairability_test_files/NPEfix/");
-        RepairabilityTestUtils.checkNumberOfInstances(result, 13, 11);
+        RepairabilityTestUtils.checkNumberOfRepairInstances(result, 13, 11);
 
         //18 is FN
     }

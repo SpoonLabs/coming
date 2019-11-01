@@ -84,21 +84,19 @@ public class JSONRepairabilityOutput extends JSonPatternInstanceOutput {
                         opjson.add("pattern_entity", getJSONFromEntity(pa.getAffectedEntity()));
                         opjson.add("concrete_change", getJSONFromOperator(op));
 
-                        if (op.getNode().getPosition() != null) {
-                            if (op.getNode().getPosition() != null) {
-                                try {
-                                    opjson.addProperty("line", op.getNode().getPosition().getLine());
-                                } catch (UnsupportedOperationException e) {
-                                    e.printStackTrace();
-                                    opjson.addProperty("line", -1);
-                                }
-                                if (op.getNode().getPosition().getFile() != null) {
-                                    opjson.addProperty("file", op.getNode().getPosition().getFile().getAbsolutePath());
-                                }
+                        if (op.getNode().getPosition() != null && op.getNode().getPosition().isValidPosition()) {
+                            try {
+                                opjson.addProperty("line", op.getNode().getPosition().getLine());
+                            } catch (UnsupportedOperationException e) {
+                                e.printStackTrace();
+                                opjson.addProperty("line", -1);
+                            }
+                            if (op.getNode().getPosition().getFile() != null) {
+                                opjson.addProperty("file", op.getNode().getPosition().getFile().getAbsolutePath());
                             }
                         }
 
-                        if(isRootOperation(op, diff)){
+                        if (isRootOperation(op, diff)) {
                             InstanceStats instanceStats = getOperationStats(op);
                             opjson.add("stats", getJSONFromInstanceStats(instanceStats));
                         }
@@ -117,8 +115,8 @@ public class JSONRepairabilityOutput extends JSonPatternInstanceOutput {
     }
 
     private boolean isRootOperation(Operation op, Diff diff) {
-        for(Operation diffOp : diff.getRootOperations()){
-            if(diffOp.getAction().equals(op.getAction())){
+        for (Operation diffOp : diff.getRootOperations()) {
+            if (diffOp.getAction().equals(op.getAction())) {
                 return true;
             }
         }

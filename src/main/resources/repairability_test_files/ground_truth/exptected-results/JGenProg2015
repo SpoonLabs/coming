@@ -1,0 +1,14 @@
+detected:
+0 = "patch1-Chart-15-JGenProg2015-plausible"
+1 = "patch1-Chart-7-JGenProg2015-plausible"
+2 = "patch1-Math-49-JGenProg2015-plausible"
+3 = "patch1-Math-5-JGenProg2015"
+4 = "patch1-Math-50-JGenProg2015"
+5 = "patch1-Math-53-JGenProg2015"
+6 = "patch1-Math-70-JGenProg2015"
+
+undetected:
+0 = "patch1-Chart-5-JGenProg2015-plausible"=>bug in gumtree
+1 = "patch1-Math-2-JGenProg2015-plausible"=>solved
+2 = "patch1-Math-73-JGenProg2015"=>solved
+3 = "patch1-Time-4-JGenProg2015-plausible"=>solved

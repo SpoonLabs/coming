@@ -9,38 +9,38 @@ public class JMutRepairTest {
     @Test
     public void testJMutRepairTruePositive1() throws Exception {
         FinalResult result = RepairabilityTestUtils.runRepairability("JMutRepair", "/repairability_test_files/jMutRepairTest/");
-        RepairabilityTestUtils.checkNumberOfInstances(result, 4, 4);
+        RepairabilityTestUtils.checkNumberOfRepairInstances(result, 4, 4);
     }
 
     @Test
     public void testJMutRepairTrueNegatives1() throws Exception {
         FinalResult result = RepairabilityTestUtils.runRepairability("JMutRepair", "/repairability_test_files/NopolTest/");
-        RepairabilityTestUtils.checkNumberOfInstances(result, 6, 0);
+        RepairabilityTestUtils.checkNumberOfRepairInstances(result, 6, 0);
     }
 
 
     @Test
     public void testJMutRepairBinaryTestSS() throws Exception {
         FinalResult result = RepairabilityTestUtils.runRepairability("JMutRepair", "/repairability_test_files/jMutRepairBinaryTypes/ss/");
-        RepairabilityTestUtils.checkNumberOfInstances(result, 1, 1);
+        RepairabilityTestUtils.checkNumberOfRepairInstances(result, 1, 1);
     }
 
     @Test
     public void testJMutRepairBinaryTestSD() throws Exception {
         FinalResult result = RepairabilityTestUtils.runRepairability("JMutRepair", "/repairability_test_files/jMutRepairBinaryTypes/sd/");
-        RepairabilityTestUtils.checkNumberOfInstances(result, 1, 1);
+        RepairabilityTestUtils.checkNumberOfRepairInstances(result, 1, 1);
     }
 
     @Test
     public void testJMutRepairBinaryTestDS() throws Exception {
         FinalResult result = RepairabilityTestUtils.runRepairability("JMutRepair", "/repairability_test_files/jMutRepairBinaryTypes/ds/");
-        RepairabilityTestUtils.checkNumberOfInstances(result, 1, 1);
+        RepairabilityTestUtils.checkNumberOfRepairInstances(result, 1, 1);
     }
 
     @Test
     public void testJMutRepairBinaryTestDD() throws Exception {
         FinalResult result = RepairabilityTestUtils.runRepairability("JMutRepair", "/repairability_test_files/jMutRepairBinaryTypes/dd/");
-        RepairabilityTestUtils.checkNumberOfInstances(result, 1, 1);
+        RepairabilityTestUtils.checkNumberOfRepairInstances(result, 1, 1);
     }
 
 }

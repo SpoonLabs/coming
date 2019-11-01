@@ -9,7 +9,7 @@ public class JKaliTest {
     @Test
     public void JKaliTest() throws Exception {
         FinalResult result = RepairabilityTestUtils.runRepairability("JKali", "/repairability_test_files/JKali/");
-        RepairabilityTestUtils.checkNumberOfInstances(result, 5, 5);
+        RepairabilityTestUtils.checkNumberOfRepairInstances(result, 5, 5);
     }
 
 

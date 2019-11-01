@@ -4,6 +4,7 @@ import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstan
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
+import gumtree.spoon.diff.Diff;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,10 +57,11 @@ public class NPEfix extends AbstractRepairTool {
      * This filter is supposed to delete/remove such instances from the results given by PatternInstanceAnalyser.
      *
      * @param patternInstance
+     * @param diff
      * @return
      */
     @Override
-    public boolean filter(ChangePatternInstance patternInstance, IRevision revision) {
+    public boolean filter(ChangePatternInstance patternInstance, IRevision revision, Diff diff) {
         return true;
     }
 

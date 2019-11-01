@@ -1,0 +1,146 @@
+detected:
+0 = "patch1-Chart-13-JGenProg2017"
+1 = "patch1-Chart-15-JGenProg2017"
+2 = "patch1-Chart-25-JGenProg2017"
+3 = "patch1-Chart-26-JGenProg2017"
+4 = "patch1-Chart-3-JGenProg2017"
+5 = "patch1-Chart-7-JGenProg2017"
+6 = "patch1-Closure-21-JGenProg2017"
+7 = "patch1-Closure-59-JGenProg2017"
+8 = "patch1-Lang-10-JGenProg2017"
+9 = "patch1-Lang-22-JGenProg2017"
+10 = "patch1-Lang-24-JGenProg2017"
+11 = "patch1-Lang-27-JGenProg2017"
+12 = "patch1-Lang-39-JGenProg2017"
+13 = "patch1-Lang-7-JGenProg2017"
+14 = "patch1-Math-2-JGenProg2017"
+15 = "patch1-Math-20-JGenProg2017"
+16 = "patch1-Math-28-JGenProg2017"
+17 = "patch1-Math-32-JGenProg2017"
+18 = "patch1-Math-40-JGenProg2017"
+19 = "patch1-Math-49-JGenProg2017"
+20 = "patch1-Math-5-JGenProg2017"
+21 = "patch1-Math-50-JGenProg2017"
+22 = "patch1-Math-53-JGenProg2017"
+23 = "patch1-Math-7-JGenProg2017"
+24 = "patch1-Math-8-JGenProg2017"
+25 = "patch1-Math-80-JGenProg2017"
+26 = "patch1-Math-81-JGenProg2017"
+27 = "patch1-Math-82-JGenProg2017"
+28 = "patch1-Math-85-JGenProg2017"
+29 = "patch2-Chart-1-JGenProg2017"
+30 = "patch2-Chart-13-JGenProg2017"
+31 = "patch2-Chart-25-JGenProg2017"
+32 = "patch2-Chart-26-JGenProg2017"
+33 = "patch2-Chart-3-JGenProg2017"
+34 = "patch2-Chart-5-JGenProg2017"
+35 = "patch2-Chart-7-JGenProg2017"
+36 = "patch2-Closure-22-JGenProg2017"
+37 = "patch2-Lang-22-JGenProg2017"
+38 = "patch2-Lang-27-JGenProg2017"
+39 = "patch2-Math-2-JGenProg2017"
+40 = "patch2-Math-20-JGenProg2017"
+41 = "patch2-Math-28-JGenProg2017"
+42 = "patch2-Math-32-JGenProg2017"
+43 = "patch2-Math-40-JGenProg2017"
+44 = "patch2-Math-49-JGenProg2017"
+45 = "patch2-Math-50-JGenProg2017"
+46 = "patch2-Math-53-JGenProg2017"
+47 = "patch2-Math-70-JGenProg2017"
+48 = "patch2-Math-8-JGenProg2017"
+49 = "patch2-Math-80-JGenProg2017"
+50 = "patch2-Math-81-JGenProg2017"
+51 = "patch2-Math-84-JGenProg2017"
+52 = "patch2-Time-4-JGenProg2017"
+53 = "patch3-Chart-1-JGenProg2017"
+54 = "patch3-Chart-13-JGenProg2017"
+55 = "patch3-Chart-26-JGenProg2017"
+56 = "patch3-Chart-3-JGenProg2017"
+57 = "patch3-Lang-22-JGenProg2017"
+58 = "patch3-Lang-7-JGenProg2017"
+59 = "patch3-Math-2-JGenProg2017"
+60 = "patch3-Math-20-JGenProg2017"
+61 = "patch3-Math-28-JGenProg2017"
+62 = "patch3-Math-40-JGenProg2017"
+63 = "patch3-Math-50-JGenProg2017"
+64 = "patch3-Math-78-JGenProg2017"
+65 = "patch3-Math-80-JGenProg2017"
+66 = "patch3-Math-81-JGenProg2017"
+67 = "patch3-Math-85-JGenProg2017"
+68 = "patch3-Time-11-JGenProg2017"
+69 = "patch4-Chart-1-JGenProg2017"
+70 = "patch4-Chart-13-JGenProg2017"
+71 = "patch4-Chart-25-JGenProg2017"
+72 = "patch4-Chart-26-JGenProg2017"
+73 = "patch4-Chart-3-JGenProg2017"
+74 = "patch4-Closure-22-JGenProg2017"
+75 = "patch4-Lang-7-JGenProg2017"
+76 = "patch4-Math-2-JGenProg2017"
+77 = "patch4-Math-20-JGenProg2017"
+78 = "patch4-Math-50-JGenProg2017"
+79 = "patch4-Math-73-JGenProg2017"
+80 = "patch4-Math-80-JGenProg2017"
+81 = "patch4-Math-81-JGenProg2017"
+82 = "patch4-Math-95-JGenProg2017"
+83 = "patch4-Time-11-JGenProg2017"
+84 = "patch5-Chart-13-JGenProg2017"
+85 = "patch5-Chart-25-JGenProg2017"
+86 = "patch5-Chart-26-JGenProg2017"
+87 = "patch5-Chart-3-JGenProg2017"
+88 = "patch5-Math-20-JGenProg2017"
+89 = "patch5-Math-80-JGenProg2017"
+90 = "patch5-Time-11-JGenProg2017"
+
+undetected:
+0 = "patch1-Chart-1-JGenProg2017"=>ingredient out of scope
+1 = "patch1-Chart-12-JGenProg2017"=>ingredient
+2 = "patch1-Chart-5-JGenProg2017"=>a bug in gumtree
+3 = "patch1-Closure-22-JGenProg2017"=>a continue is added by gumtree
+4 = "patch1-Math-70-JGenProg2017"=>ingredient
+5 = "patch1-Math-74-JGenProg2017"=>ingredient
+6 = "patch1-Math-78-JGenProg2017"=>ingredient
+7 = "patch1-Math-84-JGenProg2017"=>ingredient
+8 = "patch1-Math-95-JGenProg2017"=>ingredient
+9 = "patch1-Time-11-JGenProg2017"=>ingredient
+10 = "patch1-Time-4-JGenProg2017"=>ingredient
+11 = "patch2-Chart-15-JGenProg2017"=>an if block is replaced (gumtree)
+12 = "patch2-Closure-21-JGenProg2017"=>ingredient
+13 = "patch2-Lang-39-JGenProg2017"=>a for block is replaced (gumtree)
+14 = "patch2-Lang-7-JGenProg2017"=>ingredient
+15 = "patch2-Math-73-JGenProg2017"=>ingredient
+16 = "patch2-Math-78-JGenProg2017"=>ingredient
+17 = "patch2-Math-85-JGenProg2017"=>an if block is replaced (gumtree)
+18 = "patch2-Math-95-JGenProg2017"=>ingredient
+19 = "patch2-Time-11-JGenProg2017"=>ingredient
+20 = "patch3-Chart-15-JGenProg2017"=>an if block is replaced (gumtree)
+21 = "patch3-Chart-25-JGenProg2017"=>ingredient
+22 = "patch3-Closure-22-JGenProg2017"=>a continue is added by gumtree
+23 = "patch3-Lang-39-JGenProg2017"=>a for block is replaced (gumtree)
+24 = "patch3-Math-73-JGenProg2017"=>ingredient
+25 = "patch3-Math-95-JGenProg2017"=>ingredient
+26 = "patch3-Time-4-JGenProg2017"=>ingredient
+27 = "patch4-Chart-15-JGenProg2017"=>ingredient
+28 = "patch4-Math-28-JGenProg2017"=>gumtree recognizes too many actions
+29 = "patch4-Math-49-JGenProg2017"=>ingredient
+30 = "patch4-Math-78-JGenProg2017"=>ingredient
+31 = "patch4-Math-85-JGenProg2017"=>an if block is replaced (gumtree)
+32 = "patch4-Time-4-JGenProg2017"=>ingredient
+33 = "patch5-Chart-1-JGenProg2017"=>a part of an if block is replaced (gumtree)
+34 = "patch5-Lang-7-JGenProg2017"=>ingredient
+35 = "patch5-Math-2-JGenProg2017"=>ingredient
+36 = "patch5-Math-49-JGenProg2017"=>ingredient
+37 = "patch5-Math-78-JGenProg2017"=>ingredient
+38 = "patch5-Math-81-JGenProg2017"=>an if block is replaced (gumtree)
+39 = "patch5-Math-85-JGenProg2017"=>an if block is replaced (gumtree)
+40 = "patch5-Math-95-JGenProg2017"=>ingredient
+41 = "patch5-Time-4-JGenProg2017"=>ingredient
+42 = "patch1-Math-56-JGenProg2017"=>a part of a node is added to itself (gumtree)
+43 = "patch4-Math-74-JGenProg2017"=>ingredient
+44 = "patch1-Math-39-JGenProg2017"=>ingredient
+45 = "patch5-Math-74-JGenProg2017"=>ingredient
+46 = "patch5-Math-73-JGenProg2017"=>ingredient
+47 = "patch2-Math-74-JGenProg2017"=>ingredient
+48 = "patch5-Math-50-JGenProg2017"=>ingredient
+49 = "patch1-Math-73-JGenProg2017"=>ingredient
+50 = "patch3-Math-74-JGenProg2017"=>ingredient
+51 = "patch1-Chart-19-JGenProg2017"=>ingredient

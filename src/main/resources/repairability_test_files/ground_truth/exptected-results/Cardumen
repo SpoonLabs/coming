@@ -1,0 +1,288 @@
+detected:
+0 = "patch1-Chart-1-Cardumen"
+1 = "patch1-Chart-15-Cardumen"
+2 = "patch1-Chart-25-Cardumen"
+3 = "patch1-Chart-7-Cardumen"
+4 = "patch1-Chart-9-Cardumen"
+5 = "patch1-Closure-12-Cardumen"
+6 = "patch1-Closure-133-Cardumen"
+7 = "patch1-Closure-33-Cardumen"
+8 = "patch1-Closure-7-Cardumen"
+9 = "patch1-Lang-10-Cardumen"
+10 = "patch1-Lang-14-Cardumen"
+11 = "patch1-Lang-24-Cardumen"
+12 = "patch1-Lang-27-Cardumen"
+13 = "patch1-Lang-39-Cardumen"
+14 = "patch1-Lang-7-Cardumen"
+15 = "patch1-Math-101-Cardumen"
+16 = "patch1-Math-18-Cardumen"
+17 = "patch1-Math-2-Cardumen"
+18 = "patch1-Math-20-Cardumen"
+19 = "patch1-Math-49-Cardumen"
+20 = "patch1-Math-50-Cardumen"
+21 = "patch1-Math-58-Cardumen"
+22 = "patch1-Math-6-Cardumen"
+23 = "patch1-Math-74-Cardumen"
+24 = "patch1-Math-8-Cardumen"
+25 = "patch1-Math-80-Cardumen"
+26 = "patch1-Math-85-Cardumen"
+27 = "patch1-Math-97-Cardumen"
+28 = "patch1-Time-11-Cardumen"
+29 = "patch1-Time-7-Cardumen"
+30 = "patch1-Time-9-Cardumen"
+31 = "patch2-Chart-1-Cardumen"
+32 = "patch2-Chart-15-Cardumen"
+33 = "patch2-Chart-25-Cardumen"
+34 = "patch2-Chart-5-Cardumen"
+35 = "patch2-Chart-7-Cardumen"
+36 = "patch2-Closure-10-Cardumen"
+37 = "patch2-Closure-33-Cardumen"
+38 = "patch2-Closure-7-Cardumen"
+39 = "patch2-Lang-14-Cardumen"
+40 = "patch2-Lang-22-Cardumen"
+41 = "patch2-Lang-27-Cardumen"
+42 = "patch2-Lang-39-Cardumen"
+43 = "patch2-Lang-7-Cardumen"
+44 = "patch2-Math-18-Cardumen"
+45 = "patch2-Math-2-Cardumen"
+46 = "patch2-Math-20-Cardumen"
+47 = "patch2-Math-28-Cardumen"
+48 = "patch2-Math-32-Cardumen"
+49 = "patch2-Math-40-Cardumen"
+50 = "patch2-Math-49-Cardumen"
+51 = "patch2-Math-6-Cardumen"
+52 = "patch2-Math-62-Cardumen"
+53 = "patch2-Math-78-Cardumen"
+54 = "patch2-Math-8-Cardumen"
+55 = "patch2-Math-80-Cardumen"
+56 = "patch2-Math-81-Cardumen"
+57 = "patch2-Math-85-Cardumen"
+58 = "patch2-Math-97-Cardumen"
+59 = "patch2-Time-17-Cardumen"
+60 = "patch3-Chart-1-Cardumen"
+61 = "patch3-Chart-15-Cardumen"
+62 = "patch3-Chart-25-Cardumen"
+63 = "patch3-Chart-5-Cardumen"
+64 = "patch3-Chart-7-Cardumen"
+65 = "patch3-Lang-10-Cardumen"
+66 = "patch3-Lang-14-Cardumen"
+67 = "patch3-Lang-22-Cardumen"
+68 = "patch3-Lang-39-Cardumen"
+69 = "patch3-Math-18-Cardumen"
+70 = "patch3-Math-2-Cardumen"
+71 = "patch3-Math-20-Cardumen"
+72 = "patch3-Math-28-Cardumen"
+73 = "patch3-Math-8-Cardumen"
+74 = "patch3-Math-80-Cardumen"
+75 = "patch3-Math-81-Cardumen"
+76 = "patch3-Math-85-Cardumen"
+77 = "patch3-Math-97-Cardumen"
+78 = "patch3-Time-11-Cardumen"
+79 = "patch3-Time-17-Cardumen"
+80 = "patch4-Chart-1-Cardumen"
+81 = "patch4-Chart-15-Cardumen"
+82 = "patch4-Chart-25-Cardumen"
+83 = "patch4-Chart-7-Cardumen"
+84 = "patch4-Chart-9-Cardumen"
+85 = "patch4-Closure-40-Cardumen"
+86 = "patch4-Lang-10-Cardumen"
+87 = "patch4-Lang-14-Cardumen"
+88 = "patch4-Lang-22-Cardumen"
+89 = "patch4-Lang-39-Cardumen"
+90 = "patch4-Math-18-Cardumen"
+91 = "patch4-Math-2-Cardumen"
+92 = "patch4-Math-28-Cardumen"
+93 = "patch4-Math-40-Cardumen"
+94 = "patch4-Math-49-Cardumen"
+95 = "patch4-Math-80-Cardumen"
+96 = "patch4-Math-81-Cardumen"
+97 = "patch4-Math-97-Cardumen"
+98 = "patch4-Time-17-Cardumen"
+99 = "patch5-Chart-26-Cardumen"
+100 = "patch5-Chart-5-Cardumen"
+101 = "patch5-Chart-7-Cardumen"
+102 = "patch5-Lang-14-Cardumen"
+103 = "patch5-Lang-27-Cardumen"
+104 = "patch5-Lang-39-Cardumen"
+105 = "patch5-Math-2-Cardumen"
+106 = "patch5-Math-28-Cardumen"
+107 = "patch5-Math-40-Cardumen"
+108 = "patch5-Math-80-Cardumen"
+109 = "patch5-Math-85-Cardumen"
+110 = "patch5-Time-17-Cardumen"
+111 = "patch6-Math-49-Cardumen"
+
+undetected:
+0 = "patch1-Chart-12-Cardumen"=>template out of scope
+1 = "patch1-Chart-13-Cardumen"=>variable out of scope
+2 = "patch1-Chart-17-Cardumen"=>template out of scope
+3 = "patch1-Chart-24-Cardumen"=>template out of scope
+4 = "patch1-Chart-26-Cardumen"=>template out of scope
+5 = "patch1-Chart-3-Cardumen"=>template out of scope
+6 = "patch1-Chart-4-Cardumen"=>template out of scope
+7 = "patch1-Chart-5-Cardumen"=>literal out of scope
+8 = "patch1-Chart-6-Cardumen"=>variable out of scope
+9 = "patch1-Closure-10-Cardumen"=>literal out of scope
+10 = "patch1-Closure-13-Cardumen"=>template out of scope
+11 = "patch1-Closure-21-Cardumen"=>template out of scope
+12 = "patch1-Closure-40-Cardumen"=>template out of scope
+13 = "patch1-Closure-45-Cardumen"=>template out of scope
+14 = "patch1-Closure-46-Cardumen"=>template out of scope
+15 = "patch1-Closure-55-Cardumen"=>template out of scope
+16 = "patch1-Lang-22-Cardumen"=>solved
+17 = "patch1-Math-104-Cardumen"=>template out of scope
+18 = "patch1-Math-105-Cardumen"=>template out of scope
+19 = "patch1-Math-28-Cardumen"=>variable out of scope
+20 = "patch1-Math-30-Cardumen"=>template out of scope
+21 = "patch1-Math-32-Cardumen"=>solved
+22 = "patch1-Math-33-Cardumen"=>literal out of scope
+23 = "patch1-Math-40-Cardumen"=>literal out of scope
+24 = "patch1-Math-41-Cardumen"=>literal out of scope
+25 = "patch1-Math-46-Cardumen"=>template out of scope
+26 = "patch1-Math-5-Cardumen"=>solved (gumtree)
+27 = "patch1-Math-57-Cardumen"=>literal out of scope
+28 = "patch1-Math-60-Cardumen"=>higher order mutation
+29 = "patch1-Math-62-Cardumen"=>literal out of scope
+30 = "patch1-Math-63-Cardumen"=>template out of scope
+31 = "patch1-Math-69-Cardumen"=>literal out of scope
+32 = "patch1-Math-70-Cardumen"=>template out of scope
+33 = "patch1-Math-73-Cardumen"=>template out of scope
+34 = "patch1-Math-78-Cardumen"=>gumtree
+35 = "patch1-Math-79-Cardumen"=>literal out of scope
+36 = "patch1-Math-81-Cardumen"=>gumtree
+37 = "patch1-Math-82-Cardumen"=>template out of scope
+38 = "patch1-Math-84-Cardumen"=>literal out of scope
+39 = "patch1-Math-88-Cardumen"=>template out of scope
+40 = "patch1-Math-95-Cardumen"=>literal out of scope
+41 = "patch1-Time-17-Cardumen"=>template out of scope
+42 = "patch1-Time-18-Cardumen"=>template out of scope
+43 = "patch1-Time-4-Cardumen"=>literal out of scope
+44 = "patch2-Chart-13-Cardumen"=>template out of scope
+45 = "patch2-Chart-24-Cardumen"=>template out of scope
+46 = "patch2-Chart-26-Cardumen"=>template out of scope
+47 = "patch2-Chart-3-Cardumen"=>template
+48 = "patch2-Chart-4-Cardumen"=>template out of scope
+49 = "patch2-Chart-6-Cardumen"=>variable
+50 = "patch2-Chart-9-Cardumen"=>template
+51 = "patch2-Closure-12-Cardumen"=>variable
+52 = "patch2-Closure-13-Cardumen"=>template
+53 = "patch2-Closure-21-Cardumen"=>literal
+54 = "patch2-Closure-40-Cardumen"=>template
+55 = "patch2-Closure-45-Cardumen"=>template
+56 = "patch2-Closure-46-Cardumen"=>variable
+57 = "patch2-Lang-10-Cardumen"=>literal
+58 = "patch2-Lang-24-Cardumen"=>literal
+59 = "patch2-Math-104-Cardumen"=>template
+60 = "patch2-Math-105-Cardumen"=> template
+61 = "patch2-Math-30-Cardumen"=>literal
+62 = "patch2-Math-41-Cardumen"=>template
+63 = "patch2-Math-46-Cardumen"=>template
+64 = "patch2-Math-50-Cardumen"=>template
+65 = "patch2-Math-57-Cardumen"=>literal
+66 = "patch2-Math-60-Cardumen"=>literal
+67 = "patch2-Math-63-Cardumen"=>solved
+68 = "patch2-Math-69-Cardumen"=>literal
+69 = "patch2-Math-70-Cardumen"=>template
+70 = "patch2-Math-73-Cardumen"=>template
+71 = "patch2-Math-74-Cardumen"=>template
+72 = "patch2-Math-79-Cardumen"=>template
+73 = "patch2-Math-82-Cardumen"=>template
+74 = "patch2-Math-84-Cardumen"=>template
+75 = "patch2-Math-88-Cardumen"=>template
+76 = "patch2-Math-95-Cardumen"=>template
+77 = "patch2-Time-11-Cardumen"=>literal
+78 = "patch2-Time-4-Cardumen"=>template
+79 = "patch3-Chart-13-Cardumen"=>variable
+80 = "patch3-Chart-24-Cardumen"=>template
+81 = "patch3-Chart-26-Cardumen"=>template
+82 = "patch3-Chart-3-Cardumen"=>literal
+83 = "patch3-Chart-9-Cardumen"=>template
+84 = "patch3-Closure-10-Cardumen"=>template
+85 = "patch3-Closure-21-Cardumen"=>template
+86 = "patch3-Closure-40-Cardumen"=>template
+87 = "patch3-Closure-45-Cardumen"=>template
+88 = "patch3-Closure-46-Cardumen"=>template
+89 = "patch3-Lang-27-Cardumen"=>gumtree
+90 = "patch3-Lang-7-Cardumen"=>template
+91 = "patch3-Math-105-Cardumen"=>template
+92 = "patch3-Math-30-Cardumen"=>template
+93 = "patch3-Math-40-Cardumen"=>gumtree
+94 = "patch3-Math-41-Cardumen"=>literal
+95 = "patch3-Math-46-Cardumen"=>template
+96 = "patch3-Math-49-Cardumen"=>template
+97 = "patch3-Math-5-Cardumen"=>template
+98 = "patch3-Math-50-Cardumen"=>template
+99 = "patch3-Math-57-Cardumen"=>literal
+100 = "patch3-Math-60-Cardumen"=>literal
+101 = "patch3-Math-63-Cardumen"=>gumtree
+102 = "patch3-Math-70-Cardumen"=>template
+103 = "patch3-Math-73-Cardumen"=>template
+104 = "patch3-Math-78-Cardumen"=>gumtree
+105 = "patch3-Math-79-Cardumen"=>template
+106 = "patch3-Math-82-Cardumen"=>template
+107 = "patch3-Math-84-Cardumen"=>template
+108 = "patch3-Math-88-Cardumen"=>template
+109 = "patch3-Math-95-Cardumen"=>template
+110 = "patch3-Time-4-Cardumen"=>template
+111 = "patch4-Chart-13-Cardumen"=>template
+112 = "patch4-Chart-26-Cardumen"=>template
+113 = "patch4-Chart-3-Cardumen"=>template
+114 = "patch4-Chart-5-Cardumen"=>template
+115 = "patch4-Closure-10-Cardumen"=>template
+116 = "patch4-Closure-21-Cardumen"=>template
+117 = "patch4-Closure-45-Cardumen"=>literal
+118 = "patch4-Closure-46-Cardumen"=>template
+119 = "patch4-Lang-27-Cardumen"=>solved (patch had a typo)
+120 = "patch4-Lang-7-Cardumen"=>template
+121 = "patch4-Math-20-Cardumen"=>template
+122 = "patch4-Math-30-Cardumen"=>template
+123 = "patch4-Math-41-Cardumen"=>template
+124 = "patch4-Math-46-Cardumen"=>template
+125 = "patch4-Math-5-Cardumen"=>template
+126 = "patch4-Math-50-Cardumen"=>gumtree
+127 = "patch4-Math-57-Cardumen"=>literal
+128 = "patch4-Math-60-Cardumen"=>higher order mutant
+129 = "patch4-Math-63-Cardumen"=>gumtree (public static final variables are not listed by root.getElements(null))
+130 = "patch4-Math-70-Cardumen"=>template
+131 = "patch4-Math-73-Cardumen"=>template
+132 = "patch4-Math-78-Cardumen"=>gumtree
+133 = "patch4-Math-79-Cardumen"=>template
+134 = "patch4-Math-8-Cardumen"=>template
+135 = "patch4-Math-82-Cardumen"=>template
+136 = "patch4-Math-84-Cardumen"=>template
+137 = "patch4-Math-85-Cardumen"=>gumtree
+138 = "patch4-Math-88-Cardumen"=>template
+139 = "patch4-Math-95-Cardumen"=>template
+140 = "patch4-Time-11-Cardumen"=>literal
+141 = "patch4-Time-4-Cardumen"=>template
+142 = "patch5-Chart-15-Cardumen"=>template
+143 = "patch5-Chart-25-Cardumen"=>template
+144 = "patch5-Chart-3-Cardumen"=>template
+145 = "patch5-Chart-9-Cardumen"=>template
+146 = "patch5-Closure-21-Cardumen"=>literal
+147 = "patch5-Closure-45-Cardumen"=>template
+148 = "patch5-Closure-46-Cardumen"=>template
+149 = "patch5-Lang-22-Cardumen"=>template
+150 = "patch5-Lang-7-Cardumen"=>template
+151 = "patch5-Math-20-Cardumen"=>template
+152 = "patch5-Math-30-Cardumen"=>literal
+153 = "patch5-Math-41-Cardumen"=>template
+154 = "patch5-Math-46-Cardumen"=>template
+155 = "patch5-Math-49-Cardumen"=>template
+156 = "patch5-Math-50-Cardumen"=>template
+157 = "patch5-Math-57-Cardumen"=>literal
+158 = "patch5-Math-60-Cardumen"=>patch problem
+159 = "patch5-Math-63-Cardumen"=>gumtree (public static final variables are not listed by root.getElements(null))
+160 = "patch5-Math-70-Cardumen"=>template
+161 = "patch5-Math-73-Cardumen"=>template
+162 = "patch5-Math-78-Cardumen"=>template
+163 = "patch5-Math-79-Cardumen"=>template
+164 = "patch5-Math-8-Cardumen"=>template
+165 = "patch5-Math-81-Cardumen"=>solved (gumtree)
+166 = "patch5-Math-82-Cardumen"=>template
+167 = "patch5-Math-84-Cardumen"=>template
+168 = "patch5-Math-88-Cardumen"=>template
+169 = "patch5-Math-95-Cardumen"=>literal
+170 = "patch5-Math-97-Cardumen"=>template
+171 = "patch5-Time-11-Cardumen"=>template
+172 = "patch5-Time-4-Cardumen"=>template

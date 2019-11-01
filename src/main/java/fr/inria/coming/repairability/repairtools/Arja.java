@@ -4,27 +4,18 @@ import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstan
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
+import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.*;
 import spoon.Launcher;
-import spoon.SpoonException;
-import spoon.pattern.Match;
-import spoon.pattern.Pattern;
-import spoon.pattern.PatternBuilder;
-import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.*;
 import spoon.reflect.path.CtRole;
-import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -57,7 +48,7 @@ public class Arja extends AbstractRepairTool {
     }
 
     @Override
-    public boolean filter(ChangePatternInstance instance, IRevision revision) {
+    public boolean filter(ChangePatternInstance instance, IRevision revision, Diff diff) {
         Operation anyOperation = instance.getActions().get(0);
 
         CtElement element;
