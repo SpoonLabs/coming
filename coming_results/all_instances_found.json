@@ -1,63 +1,24 @@
 {
   "instances": [
     {
-<<<<<<< HEAD
-      "revision": "JGenProg2017",
-      "repairability": [
-        {
-          "tool-name": "JGenProg",
-          "pattern-name": "JGenProg;any_statement_deep",
-          "Unified_Diff_of-files:": "Starts Below...",
-          "CHANGE_old:": "        return 1;\r",
-          "CHANGE_new:": "        return getName().hashCode();\r",
-=======
       "revision": "cardumen",
       "repairability": [
         {
           "tool-name": "Cardumen",
-          "pattern-name": "Cardumen;expression_replacement",
+          "pattern-name": "Cardumen;expression_replacement_by_upd",
           "Unified_Diff_of-files:": "Starts Below...",
           "CHANGE_old:": "                    minRatioPositions.add(i);\r",
           "CHANGE_new:": "                    Precision.equals(entry, 0.0, maxUlps);\r",
->>>>>>> d7c9b8fc40ada20a3598c017c8cb4f9b6b271bea
           "instance_detail": [
             {
-              "pattern_action": "ANY",
+              "pattern_action": "UPD",
               "pattern_entity": {
-<<<<<<< HEAD
-                "entity_type": "*",
-=======
                 "entity_type": "Expression",
->>>>>>> d7c9b8fc40ada20a3598c017c8cb4f9b6b271bea
                 "entity_new value": "*",
                 "entity_role": "*",
-                "entity_parent": {
-                  "entity_type": "*",
-                  "entity_new value": "*",
-                  "entity_role": "Statement",
-                  "entity_parent": "null"
-                }
+                "entity_parent": "null"
               },
               "concrete_change": {
-<<<<<<< HEAD
-                "operator": "INS",
-                "src_type": "Invocation",
-                "dst_type": "null",
-                "src": "getName().hashCode()",
-                "dst": "null",
-                "src_parent_type": "Return",
-                "dst_parent_type": "null",
-                "src_parent": "return getName().hashCode()",
-                "dst_parent": "null"
-              },
-              "line": 138,
-              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\00142",
-              "stats": {
-                "number_of_src_entities": 11,
-                "number_of_dst_entities": -1,
-                "src_entity_types": "[org.joda.time.field.ZeroIsMaxDateTimeField]",
-                "dst_entity_types": "[]"
-=======
                 "operator": "UPD",
                 "src_type": "Invocation",
                 "dst_type": "Invocation",
@@ -75,48 +36,13 @@
                 "number_of_dst_entities": 26,
                 "src_entity_types": "[java.lang.Integer, int, java.util.List\u003cjava.lang.Integer\u003e, java.util.List]",
                 "dst_entity_types": "[org.apache.commons.math3.util.Precision, double, org.apache.commons.math3.optimization.linear.SimplexSolver]"
->>>>>>> d7c9b8fc40ada20a3598c017c8cb4f9b6b271bea
               }
             }
           ]
         },
         {
-<<<<<<< HEAD
-          "tool-name": "JGenProg",
-          "pattern-name": "JGenProg;any_statement_deep",
-          "Unified_Diff_of-files:": "Starts Below...",
-          "CHANGE_old:": "        return 1;\r",
-          "CHANGE_new:": "        return getName().hashCode();\r",
-          "instance_detail": [
-            {
-              "pattern_action": "ANY",
-              "pattern_entity": {
-                "entity_type": "*",
-                "entity_new value": "*",
-                "entity_role": "*",
-                "entity_parent": {
-                  "entity_type": "*",
-                  "entity_new value": "*",
-                  "entity_role": "Statement",
-                  "entity_parent": "null"
-                }
-              },
-              "concrete_change": {
-                "operator": "INS",
-                "src_type": "Invocation",
-                "dst_type": "null",
-                "src": "getName()",
-                "dst": "null",
-                "src_parent_type": "Invocation",
-                "dst_parent_type": "null",
-                "src_parent": "getName().hashCode()",
-                "dst_parent": "null"
-              },
-              "line": 138,
-              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\00142"
-=======
           "tool-name": "Cardumen",
-          "pattern-name": "Cardumen;expression_replacement",
+          "pattern-name": "Cardumen;expression_replacement_by_upd",
           "Unified_Diff_of-files:": "Starts Below...",
           "CHANGE_old:": "                    minRatioPositions.add(i);\r",
           "CHANGE_new:": "                    Precision.equals(entry, 0.0, maxUlps);\r",
@@ -148,46 +74,12 @@
                 "src_entity_types": "[java.lang.Integer, java.util.List\u003cjava.lang.Integer\u003e]",
                 "dst_entity_types": "[double]"
               }
->>>>>>> d7c9b8fc40ada20a3598c017c8cb4f9b6b271bea
             }
           ]
         },
         {
-<<<<<<< HEAD
-          "tool-name": "JGenProg",
-          "pattern-name": "JGenProg;any_statement_deep",
-          "Unified_Diff_of-files:": "Starts Below...",
-          "CHANGE_old:": "        return 1;\r",
-          "CHANGE_new:": "        return getName().hashCode();\r",
-          "instance_detail": [
-            {
-              "pattern_action": "ANY",
-              "pattern_entity": {
-                "entity_type": "*",
-                "entity_new value": "*",
-                "entity_role": "*",
-                "entity_parent": {
-                  "entity_type": "*",
-                  "entity_new value": "*",
-                  "entity_role": "Statement",
-                  "entity_parent": "null"
-                }
-              },
-              "concrete_change": {
-                "operator": "INS",
-                "src_type": "TypeAccess",
-                "dst_type": "null",
-                "src": "org.joda.time.field.ZeroIsMaxDateTimeField",
-                "dst": "null",
-                "src_parent_type": "ThisAccess",
-                "dst_parent_type": "null",
-                "src_parent": "",
-                "dst_parent": "null"
-              },
-              "line": -1
-=======
           "tool-name": "Cardumen",
-          "pattern-name": "Cardumen;expression_replacement",
+          "pattern-name": "Cardumen;expression_replacement_by_upd",
           "Unified_Diff_of-files:": "Starts Below...",
           "CHANGE_old:": "                    minRatioPositions.add(i);\r",
           "CHANGE_new:": "                    Precision.equals(entry, 0.0, maxUlps);\r",
@@ -219,52 +111,12 @@
                 "src_entity_types": "[java.lang.Integer, int, java.util.List\u003cjava.lang.Integer\u003e, java.util.List]",
                 "dst_entity_types": "[org.apache.commons.math3.util.Precision, double, org.apache.commons.math3.optimization.linear.SimplexSolver]"
               }
->>>>>>> d7c9b8fc40ada20a3598c017c8cb4f9b6b271bea
             }
           ]
         },
         {
-<<<<<<< HEAD
-          "tool-name": "JGenProg",
-          "pattern-name": "JGenProg;any_statement_deep",
-          "Unified_Diff_of-files:": "Starts Below...",
-          "CHANGE_old:": "        return 1;\r",
-          "CHANGE_new:": "        return getName().hashCode();\r",
-          "instance_detail": [
-            {
-              "pattern_action": "ANY",
-              "pattern_entity": {
-                "entity_type": "*",
-                "entity_new value": "*",
-                "entity_role": "*",
-                "entity_parent": {
-                  "entity_type": "*",
-                  "entity_new value": "*",
-                  "entity_role": "Statement",
-                  "entity_parent": "null"
-                }
-              },
-              "concrete_change": {
-                "operator": "DEL",
-                "src_type": "Literal",
-                "dst_type": "null",
-                "src": "1",
-                "dst": "null",
-                "src_parent_type": "Return",
-                "dst_parent_type": "null",
-                "src_parent": "return 1",
-                "dst_parent": "null"
-              },
-              "line": 138,
-              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\00142",
-              "stats": {
-                "number_of_src_entities": 2,
-                "number_of_dst_entities": -1,
-                "src_entity_types": "[int]",
-                "dst_entity_types": "[]"
-=======
           "tool-name": "Cardumen",
-          "pattern-name": "Cardumen;expression_replacement",
+          "pattern-name": "Cardumen;expression_replacement_by_upd",
           "Unified_Diff_of-files:": "Starts Below...",
           "CHANGE_old:": "                    minRatioPositions.add(i);\r",
           "CHANGE_new:": "                    Precision.equals(entry, 0.0, maxUlps);\r",
@@ -295,8 +147,851 @@
                 "number_of_dst_entities": 3,
                 "src_entity_types": "[java.lang.Integer, java.util.List\u003cjava.lang.Integer\u003e]",
                 "dst_entity_types": "[double]"
->>>>>>> d7c9b8fc40ada20a3598c017c8cb4f9b6b271bea
               }
+            }
+          ]
+        },
+        {
+          "tool-name": "Cardumen",
+          "pattern-name": "Cardumen;expression_replacement_by_del_ins",
+          "Unified_Diff_of-files:": "Starts Below...",
+          "CHANGE_old:": "                    minRatioPositions.add(i);\r",
+          "CHANGE_new:": "                    Precision.equals(entry, 0.0, maxUlps);\r",
+          "instance_detail": [
+            {
+              "pattern_action": "INS",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "INS",
+                "src_type": "TypeAccess",
+                "dst_type": "null",
+                "src": "org.apache.commons.math3.util.Precision",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "org.apache.commons.math3.util.Precision.equals(entry, 0.0, maxUlps)",
+                "dst_parent": "null"
+              },
+              "line": 104,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            },
+            {
+              "pattern_action": "DEL",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "DEL",
+                "src_type": "VariableRead",
+                "dst_type": "null",
+                "src": "i",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "minRatioPositions.add(i)",
+                "dst_parent": "null"
+              },
+              "line": 104,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            }
+          ]
+        },
+        {
+          "tool-name": "Cardumen",
+          "pattern-name": "Cardumen;expression_replacement_by_del_ins",
+          "Unified_Diff_of-files:": "Starts Below...",
+          "CHANGE_old:": "                    minRatioPositions.add(i);\r",
+          "CHANGE_new:": "                    Precision.equals(entry, 0.0, maxUlps);\r",
+          "instance_detail": [
+            {
+              "pattern_action": "INS",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "INS",
+                "src_type": "TypeAccess",
+                "dst_type": "null",
+                "src": "org.apache.commons.math3.util.Precision",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "org.apache.commons.math3.util.Precision.equals(entry, 0.0, maxUlps)",
+                "dst_parent": "null"
+              },
+              "line": 104,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            },
+            {
+              "pattern_action": "DEL",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "DEL",
+                "src_type": "VariableRead",
+                "dst_type": "null",
+                "src": "i",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "minRatioPositions.add(i)",
+                "dst_parent": "null"
+              },
+              "line": 108,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            }
+          ]
+        },
+        {
+          "tool-name": "Cardumen",
+          "pattern-name": "Cardumen;expression_replacement_by_del_ins",
+          "Unified_Diff_of-files:": "Starts Below...",
+          "CHANGE_old:": "                    minRatioPositions.add(i);\r",
+          "CHANGE_new:": "                    Precision.equals(entry, 0.0, maxUlps);\r",
+          "instance_detail": [
+            {
+              "pattern_action": "INS",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "INS",
+                "src_type": "Literal",
+                "dst_type": "null",
+                "src": "0.0",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "org.apache.commons.math3.util.Precision.equals(entry, 0.0, maxUlps)",
+                "dst_parent": "null"
+              },
+              "line": 104,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            },
+            {
+              "pattern_action": "DEL",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "DEL",
+                "src_type": "VariableRead",
+                "dst_type": "null",
+                "src": "i",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "minRatioPositions.add(i)",
+                "dst_parent": "null"
+              },
+              "line": 104,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            }
+          ]
+        },
+        {
+          "tool-name": "Cardumen",
+          "pattern-name": "Cardumen;expression_replacement_by_del_ins",
+          "Unified_Diff_of-files:": "Starts Below...",
+          "CHANGE_old:": "                    minRatioPositions.add(i);\r",
+          "CHANGE_new:": "                    Precision.equals(entry, 0.0, maxUlps);\r",
+          "instance_detail": [
+            {
+              "pattern_action": "INS",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "INS",
+                "src_type": "Literal",
+                "dst_type": "null",
+                "src": "0.0",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "org.apache.commons.math3.util.Precision.equals(entry, 0.0, maxUlps)",
+                "dst_parent": "null"
+              },
+              "line": 104,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            },
+            {
+              "pattern_action": "DEL",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "DEL",
+                "src_type": "VariableRead",
+                "dst_type": "null",
+                "src": "i",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "minRatioPositions.add(i)",
+                "dst_parent": "null"
+              },
+              "line": 108,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            }
+          ]
+        },
+        {
+          "tool-name": "Cardumen",
+          "pattern-name": "Cardumen;expression_replacement_by_del_ins",
+          "Unified_Diff_of-files:": "Starts Below...",
+          "CHANGE_old:": "                    minRatioPositions.add(i);\r",
+          "CHANGE_new:": "                    Precision.equals(entry, 0.0, maxUlps);\r",
+          "instance_detail": [
+            {
+              "pattern_action": "INS",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "INS",
+                "src_type": "FieldRead",
+                "dst_type": "null",
+                "src": "maxUlps",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "org.apache.commons.math3.util.Precision.equals(entry, 0.0, maxUlps)",
+                "dst_parent": "null"
+              },
+              "line": 104,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            },
+            {
+              "pattern_action": "DEL",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "DEL",
+                "src_type": "VariableRead",
+                "dst_type": "null",
+                "src": "i",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "minRatioPositions.add(i)",
+                "dst_parent": "null"
+              },
+              "line": 104,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            }
+          ]
+        },
+        {
+          "tool-name": "Cardumen",
+          "pattern-name": "Cardumen;expression_replacement_by_del_ins",
+          "Unified_Diff_of-files:": "Starts Below...",
+          "CHANGE_old:": "                    minRatioPositions.add(i);\r",
+          "CHANGE_new:": "                    Precision.equals(entry, 0.0, maxUlps);\r",
+          "instance_detail": [
+            {
+              "pattern_action": "INS",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "INS",
+                "src_type": "FieldRead",
+                "dst_type": "null",
+                "src": "maxUlps",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "org.apache.commons.math3.util.Precision.equals(entry, 0.0, maxUlps)",
+                "dst_parent": "null"
+              },
+              "line": 104,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            },
+            {
+              "pattern_action": "DEL",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "DEL",
+                "src_type": "VariableRead",
+                "dst_type": "null",
+                "src": "i",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "minRatioPositions.add(i)",
+                "dst_parent": "null"
+              },
+              "line": 108,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            }
+          ]
+        },
+        {
+          "tool-name": "Cardumen",
+          "pattern-name": "Cardumen;expression_replacement_by_del_ins",
+          "Unified_Diff_of-files:": "Starts Below...",
+          "CHANGE_old:": "                    minRatioPositions.add(i);\r",
+          "CHANGE_new:": "                    Precision.equals(entry, 0.0, maxUlps);\r",
+          "instance_detail": [
+            {
+              "pattern_action": "INS",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "INS",
+                "src_type": "TypeAccess",
+                "dst_type": "null",
+                "src": "org.apache.commons.math3.optimization.linear.SimplexSolver",
+                "dst": "null",
+                "src_parent_type": "ThisAccess",
+                "dst_parent_type": "null",
+                "src_parent": "",
+                "dst_parent": "null"
+              },
+              "line": -1
+            },
+            {
+              "pattern_action": "DEL",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "DEL",
+                "src_type": "VariableRead",
+                "dst_type": "null",
+                "src": "i",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "minRatioPositions.add(i)",
+                "dst_parent": "null"
+              },
+              "line": 104,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            }
+          ]
+        },
+        {
+          "tool-name": "Cardumen",
+          "pattern-name": "Cardumen;expression_replacement_by_del_ins",
+          "Unified_Diff_of-files:": "Starts Below...",
+          "CHANGE_old:": "                    minRatioPositions.add(i);\r",
+          "CHANGE_new:": "                    Precision.equals(entry, 0.0, maxUlps);\r",
+          "instance_detail": [
+            {
+              "pattern_action": "INS",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "INS",
+                "src_type": "TypeAccess",
+                "dst_type": "null",
+                "src": "org.apache.commons.math3.optimization.linear.SimplexSolver",
+                "dst": "null",
+                "src_parent_type": "ThisAccess",
+                "dst_parent_type": "null",
+                "src_parent": "",
+                "dst_parent": "null"
+              },
+              "line": -1
+            },
+            {
+              "pattern_action": "DEL",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "DEL",
+                "src_type": "VariableRead",
+                "dst_type": "null",
+                "src": "i",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "minRatioPositions.add(i)",
+                "dst_parent": "null"
+              },
+              "line": 108,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            }
+          ]
+        },
+        {
+          "tool-name": "Cardumen",
+          "pattern-name": "Cardumen;expression_replacement_by_del_ins",
+          "Unified_Diff_of-files:": "Starts Below...",
+          "CHANGE_old:": "                    minRatioPositions.add(i);\r",
+          "CHANGE_new:": "                    Precision.equals(entry, 0.0, maxUlps);\r",
+          "instance_detail": [
+            {
+              "pattern_action": "INS",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "INS",
+                "src_type": "TypeAccess",
+                "dst_type": "null",
+                "src": "org.apache.commons.math3.util.Precision",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "org.apache.commons.math3.util.Precision.equals(entry, 0.0, maxUlps)",
+                "dst_parent": "null"
+              },
+              "line": 108,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            },
+            {
+              "pattern_action": "DEL",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "DEL",
+                "src_type": "VariableRead",
+                "dst_type": "null",
+                "src": "i",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "minRatioPositions.add(i)",
+                "dst_parent": "null"
+              },
+              "line": 104,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            }
+          ]
+        },
+        {
+          "tool-name": "Cardumen",
+          "pattern-name": "Cardumen;expression_replacement_by_del_ins",
+          "Unified_Diff_of-files:": "Starts Below...",
+          "CHANGE_old:": "                    minRatioPositions.add(i);\r",
+          "CHANGE_new:": "                    Precision.equals(entry, 0.0, maxUlps);\r",
+          "instance_detail": [
+            {
+              "pattern_action": "INS",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "INS",
+                "src_type": "TypeAccess",
+                "dst_type": "null",
+                "src": "org.apache.commons.math3.util.Precision",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "org.apache.commons.math3.util.Precision.equals(entry, 0.0, maxUlps)",
+                "dst_parent": "null"
+              },
+              "line": 108,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            },
+            {
+              "pattern_action": "DEL",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "DEL",
+                "src_type": "VariableRead",
+                "dst_type": "null",
+                "src": "i",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "minRatioPositions.add(i)",
+                "dst_parent": "null"
+              },
+              "line": 108,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            }
+          ]
+        },
+        {
+          "tool-name": "Cardumen",
+          "pattern-name": "Cardumen;expression_replacement_by_del_ins",
+          "Unified_Diff_of-files:": "Starts Below...",
+          "CHANGE_old:": "                    minRatioPositions.add(i);\r",
+          "CHANGE_new:": "                    Precision.equals(entry, 0.0, maxUlps);\r",
+          "instance_detail": [
+            {
+              "pattern_action": "INS",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "INS",
+                "src_type": "Literal",
+                "dst_type": "null",
+                "src": "0.0",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "org.apache.commons.math3.util.Precision.equals(entry, 0.0, maxUlps)",
+                "dst_parent": "null"
+              },
+              "line": 108,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            },
+            {
+              "pattern_action": "DEL",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "DEL",
+                "src_type": "VariableRead",
+                "dst_type": "null",
+                "src": "i",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "minRatioPositions.add(i)",
+                "dst_parent": "null"
+              },
+              "line": 104,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            }
+          ]
+        },
+        {
+          "tool-name": "Cardumen",
+          "pattern-name": "Cardumen;expression_replacement_by_del_ins",
+          "Unified_Diff_of-files:": "Starts Below...",
+          "CHANGE_old:": "                    minRatioPositions.add(i);\r",
+          "CHANGE_new:": "                    Precision.equals(entry, 0.0, maxUlps);\r",
+          "instance_detail": [
+            {
+              "pattern_action": "INS",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "INS",
+                "src_type": "Literal",
+                "dst_type": "null",
+                "src": "0.0",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "org.apache.commons.math3.util.Precision.equals(entry, 0.0, maxUlps)",
+                "dst_parent": "null"
+              },
+              "line": 108,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            },
+            {
+              "pattern_action": "DEL",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "DEL",
+                "src_type": "VariableRead",
+                "dst_type": "null",
+                "src": "i",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "minRatioPositions.add(i)",
+                "dst_parent": "null"
+              },
+              "line": 108,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            }
+          ]
+        },
+        {
+          "tool-name": "Cardumen",
+          "pattern-name": "Cardumen;expression_replacement_by_del_ins",
+          "Unified_Diff_of-files:": "Starts Below...",
+          "CHANGE_old:": "                    minRatioPositions.add(i);\r",
+          "CHANGE_new:": "                    Precision.equals(entry, 0.0, maxUlps);\r",
+          "instance_detail": [
+            {
+              "pattern_action": "INS",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "INS",
+                "src_type": "FieldRead",
+                "dst_type": "null",
+                "src": "maxUlps",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "org.apache.commons.math3.util.Precision.equals(entry, 0.0, maxUlps)",
+                "dst_parent": "null"
+              },
+              "line": 108,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            },
+            {
+              "pattern_action": "DEL",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "DEL",
+                "src_type": "VariableRead",
+                "dst_type": "null",
+                "src": "i",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "minRatioPositions.add(i)",
+                "dst_parent": "null"
+              },
+              "line": 104,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            }
+          ]
+        },
+        {
+          "tool-name": "Cardumen",
+          "pattern-name": "Cardumen;expression_replacement_by_del_ins",
+          "Unified_Diff_of-files:": "Starts Below...",
+          "CHANGE_old:": "                    minRatioPositions.add(i);\r",
+          "CHANGE_new:": "                    Precision.equals(entry, 0.0, maxUlps);\r",
+          "instance_detail": [
+            {
+              "pattern_action": "INS",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "INS",
+                "src_type": "FieldRead",
+                "dst_type": "null",
+                "src": "maxUlps",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "org.apache.commons.math3.util.Precision.equals(entry, 0.0, maxUlps)",
+                "dst_parent": "null"
+              },
+              "line": 108,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            },
+            {
+              "pattern_action": "DEL",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "DEL",
+                "src_type": "VariableRead",
+                "dst_type": "null",
+                "src": "i",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "minRatioPositions.add(i)",
+                "dst_parent": "null"
+              },
+              "line": 108,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            }
+          ]
+        },
+        {
+          "tool-name": "Cardumen",
+          "pattern-name": "Cardumen;expression_replacement_by_del_ins",
+          "Unified_Diff_of-files:": "Starts Below...",
+          "CHANGE_old:": "                    minRatioPositions.add(i);\r",
+          "CHANGE_new:": "                    Precision.equals(entry, 0.0, maxUlps);\r",
+          "instance_detail": [
+            {
+              "pattern_action": "INS",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "INS",
+                "src_type": "TypeAccess",
+                "dst_type": "null",
+                "src": "org.apache.commons.math3.optimization.linear.SimplexSolver",
+                "dst": "null",
+                "src_parent_type": "ThisAccess",
+                "dst_parent_type": "null",
+                "src_parent": "",
+                "dst_parent": "null"
+              },
+              "line": -1
+            },
+            {
+              "pattern_action": "DEL",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "DEL",
+                "src_type": "VariableRead",
+                "dst_type": "null",
+                "src": "i",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "minRatioPositions.add(i)",
+                "dst_parent": "null"
+              },
+              "line": 104,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
+            }
+          ]
+        },
+        {
+          "tool-name": "Cardumen",
+          "pattern-name": "Cardumen;expression_replacement_by_del_ins",
+          "Unified_Diff_of-files:": "Starts Below...",
+          "CHANGE_old:": "                    minRatioPositions.add(i);\r",
+          "CHANGE_new:": "                    Precision.equals(entry, 0.0, maxUlps);\r",
+          "instance_detail": [
+            {
+              "pattern_action": "INS",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "INS",
+                "src_type": "TypeAccess",
+                "dst_type": "null",
+                "src": "org.apache.commons.math3.optimization.linear.SimplexSolver",
+                "dst": "null",
+                "src_parent_type": "ThisAccess",
+                "dst_parent_type": "null",
+                "src_parent": "",
+                "dst_parent": "null"
+              },
+              "line": -1
+            },
+            {
+              "pattern_action": "DEL",
+              "pattern_entity": {
+                "entity_type": "Expression",
+                "entity_new value": "*",
+                "entity_role": "*",
+                "entity_parent": "null"
+              },
+              "concrete_change": {
+                "operator": "DEL",
+                "src_type": "VariableRead",
+                "dst_type": "null",
+                "src": "i",
+                "dst": "null",
+                "src_parent_type": "Invocation",
+                "dst_parent_type": "null",
+                "src_parent": "minRatioPositions.add(i)",
+                "dst_parent": "null"
+              },
+              "line": 108,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\two"
             }
           ]
         }
