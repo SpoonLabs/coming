@@ -103,7 +103,7 @@ public abstract class RevisionNavigationExperiment<R extends IRevision> {
 
 		int size = data.size();
 		int max_nb_commit_analyze = ComingProperties.getPropertyInteger("max_nb_commit_analyze");
-		int max_time_for_a_git__repo = ComingProperties.getPropertyInteger("max_time_for_a_git__repo");
+		int max_time_for_a_git__repo = ComingProperties.getPropertyInteger("max_time_for_a_git_repo");
 
 		Long startTime = System.currentTimeMillis();
 		for (Iterator<R> iterator = it; iterator.hasNext();) {

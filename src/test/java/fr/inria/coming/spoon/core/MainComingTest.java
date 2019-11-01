@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstanceAnalyzer;
+import fr.inria.coming.spoon.utils.TestUtils;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -766,6 +768,23 @@ public class MainComingTest {
 			assertTrue(diff21.getRootOperations().size() > 0);
 		}
 
+	}
+
+	@Test
+	public void testMaxTimeForGitRepos(){
+		FinalResult result = new ComingMain().run(
+				new String[] { "-location", "repogit4testv0", "-mode", "repairability", "-repairtool", "ALL",
+						"-parameters", "max_time_for_a_git_repo:0" });
+
+		int instancesCnt = TestUtils.countNumberOfInstances(result, PatternInstanceAnalyzer.class);
+		assertTrue(instancesCnt == 0);
+
+		result = new ComingMain().run(
+				new String[] { "-location", "repogit4testv0", "-mode", "repairability", "-repairtool", "ALL",
+						"-parameters", "max_time_for_a_git_repo:-1" });
+
+		instancesCnt = TestUtils.countNumberOfInstances(result, PatternInstanceAnalyzer.class);
+		assertTrue(instancesCnt > 0);
 	}
 
 	public boolean hasChange(DiffResult<IRevision, Diff> diff1) {
