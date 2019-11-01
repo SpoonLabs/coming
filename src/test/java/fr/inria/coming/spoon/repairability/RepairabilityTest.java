@@ -114,11 +114,11 @@ public class RepairabilityTest {
                     (PatternInstancesFromRevision) rr.getResultFromClass(RepairabilityAnalyzer.class);
 
             // for each revision
-            for (PatternInstancesFromDiff v : instances.getInfoPerDiff()) {
-                if (v.getLocation().equals("covered")) // for the covered sample
-                    assertTrue(v.getInstances().size() > 0);
-                else if (v.getLocation().equals("not_covered")) // for the not covered sample
-                    assertTrue(v.getInstances().size() == 0);
+            for (PatternInstancesFromDiff diff : instances.getInfoPerDiff()) {
+                if (diff.getAnalyzed().getName().equals("covered")) // for the covered sample
+                    assertTrue(diff.getInstances().size() > 0);
+                else if (diff.getAnalyzed().getName().equals("not_covered")) // for the not covered sample
+                    assertTrue(diff.getInstances().size() == 0);
             }
         }
     }
