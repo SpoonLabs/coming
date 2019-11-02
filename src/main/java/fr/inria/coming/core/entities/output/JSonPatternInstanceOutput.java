@@ -2,6 +2,8 @@ package fr.inria.coming.core.entities.output;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -32,7 +34,11 @@ public class JSonPatternInstanceOutput implements IOutput {
 		JsonObject root = new JsonObject();
 		JsonArray instances = new JsonArray();
 		root.add("instances", instances);
+		JsonArray analyzedRevisions = new JsonArray();
+		root.add("analyzed_revisions", analyzedRevisions);
+
 		for (Object revision_commit : finalResult.getAllResults().keySet()) {
+			analyzedRevisions.add(revision_commit.toString());
 
 			RevisionResult revisionResult = (RevisionResult) finalResult.getAllResults().get(revision_commit);
 

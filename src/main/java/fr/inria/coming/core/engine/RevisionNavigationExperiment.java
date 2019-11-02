@@ -103,7 +103,7 @@ public abstract class RevisionNavigationExperiment<R extends IRevision> {
 
 		int size = data.size();
 		int max_nb_commit_analyze = ComingProperties.getPropertyInteger("max_nb_commit_analyze");
-		int max_time_for_a_git__repo = ComingProperties.getPropertyInteger("max_time_for_a_git_repo");
+		int max_time_for_a_git_repo = ComingProperties.getPropertyInteger("max_time_for_a_git_repo");
 
 		Long startTime = System.currentTimeMillis();
 		for (Iterator<R> iterator = it; iterator.hasNext();) {
@@ -113,8 +113,8 @@ public abstract class RevisionNavigationExperiment<R extends IRevision> {
 			log.info("\n***********\nAnalyzing " + i + "/" + size + " " + oneRevision.getName());
 
 			Long spentMillis = System.currentTimeMillis() - startTime;
-			if (i > size - max_nb_commit_analyze && (max_time_for_a_git__repo == -1
-					|| max_time_for_a_git__repo > spentMillis / 1000)) {
+			if (i > size - max_nb_commit_analyze && (max_time_for_a_git_repo == -1
+					|| max_time_for_a_git_repo > spentMillis / 1000)) {
 				if (!(accept(oneRevision))) {
 					continue;
 				}
