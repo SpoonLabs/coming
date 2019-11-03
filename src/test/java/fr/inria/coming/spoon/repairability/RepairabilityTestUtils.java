@@ -1,24 +1,16 @@
 package fr.inria.coming.spoon.repairability;
 
-import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
-import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
-import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstancesFromDiff;
-import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstancesFromRevision;
 import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.changeminer.entity.IRevision;
-import fr.inria.coming.core.entities.DiffResult;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.main.ComingMain;
 import fr.inria.coming.repairability.RepairabilityAnalyzer;
 import fr.inria.coming.spoon.repairability.checkers.DiffResultChecker;
-import gumtree.spoon.diff.Diff;
-import gumtree.spoon.diff.operations.Operation;
+import fr.inria.coming.spoon.utils.TestUtils;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -30,41 +22,9 @@ public class RepairabilityTestUtils {
         Map<IRevision, RevisionResult> revisionsMap = result.getAllResults();
         assertEquals(totalInputs, revisionsMap.keySet().size());
 
-        int counter = countNumberOfInstances(revisionsMap, RepairabilityAnalyzer.class);
+        int counter = TestUtils.countNumberOfInstances(revisionsMap, RepairabilityAnalyzer.class);
 
         assertEquals(foundInstances, counter);
-    }
-
-    public static int countNumberOfInstances(Map<IRevision, RevisionResult> revisionsMap, Class analyzer) {
-        int counter = 0;
-        for (Map.Entry<IRevision, RevisionResult> entry : revisionsMap.entrySet()) {
-            RevisionResult rr = entry.getValue();
-            PatternInstancesFromRevision instances =
-                    (PatternInstancesFromRevision) rr.getResultFromClass(analyzer);
-            counter += instances.getInfoPerDiff().stream().mapToInt(v -> v.getInstances().size()).sum();
-        }
-        return counter;
-    }
-
-    public static int countNumberOfUniqueInstances(Map<IRevision, RevisionResult> revisionsMap, Class analyzer) {
-        List<ChangePatternInstance> allUniqueInstances = new ArrayList<>();
-        for (Map.Entry<IRevision, RevisionResult> entry : revisionsMap.entrySet()) {
-            RevisionResult rr = entry.getValue();
-            PatternInstancesFromRevision instances =
-                    (PatternInstancesFromRevision) rr.getResultFromClass(analyzer);
-            for (PatternInstancesFromDiff info : instances.getInfoPerDiff()) {
-                for (ChangePatternInstance instance : info.getInstances()) {
-                    boolean alreadyAdded = false;
-                    for (ChangePatternInstance addedInstance : allUniqueInstances) {
-                        if (new HashSet(instance.getActions()).equals(new HashSet(addedInstance.getActions())))
-                            alreadyAdded = true;
-                    }
-                    if (!alreadyAdded)
-                        allUniqueInstances.add(instance);
-                }
-            }
-        }
-        return allUniqueInstances.size();
     }
 
     public static FinalResult runRepairability(String toolName, String inputFiles) throws Exception {
@@ -161,7 +121,7 @@ public class RepairabilityTestUtils {
                    included in undetectedInstances */
                 gumtreeUndetected.add(file.getName());
             } else {
-                int numberOfRepairInstances = RepairabilityTestUtils.countNumberOfUniqueInstances(
+                int numberOfRepairInstances = TestUtils.countNumberOfUniqueInstances(
                         result.getAllResults(), RepairabilityAnalyzer.class);
 
                 if (numberOfRepairInstances > 1) {

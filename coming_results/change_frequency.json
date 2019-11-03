@@ -1,0 +1,154 @@
+{
+  "frequency": [
+    {
+      "c": "BinaryOperator",
+      "f": "6"
+    },
+    {
+      "c": "Invocation",
+      "f": "2"
+    },
+    {
+      "c": "If",
+      "f": "2"
+    },
+    {
+      "c": "VariableRead",
+      "f": "1"
+    },
+    {
+      "c": "UnaryOperator",
+      "f": "1"
+    },
+    {
+      "c": "Literal",
+      "f": "1"
+    },
+    {
+      "c": "Assignment",
+      "f": "1"
+    }
+  ],
+  "frequencyParent": [
+    {
+      "c": "UPD_BinaryOperator_If",
+      "f": "2"
+    },
+    {
+      "c": "INS_Invocation_Block",
+      "f": "2"
+    },
+    {
+      "c": "INS_If_Block",
+      "f": "2"
+    },
+    {
+      "c": "MOV_Literal_BinaryOperator",
+      "f": "1"
+    },
+    {
+      "c": "UPD_BinaryOperator_For",
+      "f": "1"
+    },
+    {
+      "c": "INS_BinaryOperator_Invocation",
+      "f": "1"
+    },
+    {
+      "c": "UPD_UnaryOperator_Invocation",
+      "f": "1"
+    },
+    {
+      "c": "UPD_BinaryOperator_Assignment",
+      "f": "1"
+    },
+    {
+      "c": "INS_BinaryOperator_BinaryOperator",
+      "f": "1"
+    },
+    {
+      "c": "DEL_VariableRead_Invocation",
+      "f": "1"
+    },
+    {
+      "c": "MOV_Assignment_Block",
+      "f": "1"
+    }
+  ],
+  "probability": [
+    {
+      "c": "BinaryOperator",
+      "f": "0.42857142857142855"
+    },
+    {
+      "c": "Invocation",
+      "f": "0.14285714285714285"
+    },
+    {
+      "c": "If",
+      "f": "0.14285714285714285"
+    },
+    {
+      "c": "VariableRead",
+      "f": "0.07142857142857142"
+    },
+    {
+      "c": "UnaryOperator",
+      "f": "0.07142857142857142"
+    },
+    {
+      "c": "Literal",
+      "f": "0.07142857142857142"
+    },
+    {
+      "c": "Assignment",
+      "f": "0.07142857142857142"
+    }
+  ],
+  "probabilityParent": [
+    {
+      "c": "UPD_BinaryOperator_If",
+      "f": "0.14285714285714285"
+    },
+    {
+      "c": "INS_Invocation_Block",
+      "f": "0.14285714285714285"
+    },
+    {
+      "c": "INS_If_Block",
+      "f": "0.14285714285714285"
+    },
+    {
+      "c": "MOV_Literal_BinaryOperator",
+      "f": "0.07142857142857142"
+    },
+    {
+      "c": "UPD_BinaryOperator_For",
+      "f": "0.07142857142857142"
+    },
+    {
+      "c": "INS_BinaryOperator_Invocation",
+      "f": "0.07142857142857142"
+    },
+    {
+      "c": "UPD_UnaryOperator_Invocation",
+      "f": "0.07142857142857142"
+    },
+    {
+      "c": "UPD_BinaryOperator_Assignment",
+      "f": "0.07142857142857142"
+    },
+    {
+      "c": "INS_BinaryOperator_BinaryOperator",
+      "f": "0.07142857142857142"
+    },
+    {
+      "c": "DEL_VariableRead_Invocation",
+      "f": "0.07142857142857142"
+    },
+    {
+      "c": "MOV_Assignment_Block",
+      "f": "0.07142857142857142"
+    }
+  ]
+}
