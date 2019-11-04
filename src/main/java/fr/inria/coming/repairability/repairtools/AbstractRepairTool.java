@@ -102,16 +102,30 @@ public abstract class AbstractRepairTool {
     public boolean coversTheWholeDiff(ChangePatternInstance instancePattern, Diff diff) {
         Set<CtElement> instanceNodes = getInstanceCoveredNodes(instancePattern);
         for (Operation diffOperation : diff.getRootOperations()) {
-            boolean found = coveredByInstanceNodes(instanceNodes, diffOperation.getDstNode() == null
-                    ? diffOperation.getSrcNode()
-                    : diffOperation.getDstNode());
+            boolean found = coveredByInstanceNodes(instancePattern, instanceNodes, diffOperation);
             if(found == false)
                 return false;
         }
         return true;
     }
 
-    protected boolean coveredByInstanceNodes(Set<CtElement> instanceCoveredNodes, CtElement node) {
+    protected boolean coveredByInstanceNodes
+            (
+                    ChangePatternInstance instance,
+                    Set<CtElement> instanceCoveredNodes,
+                    Operation diffOperation
+            ) {
+        CtElement opAffectedNode = diffOperation.getDstNode() == null
+                ? diffOperation.getSrcNode()
+                : diffOperation.getDstNode();
+        return coveredByInstanceNodes(instanceCoveredNodes, opAffectedNode);
+    }
+
+    protected boolean coveredByInstanceNodes
+            (
+                    Set<CtElement> instanceCoveredNodes,
+                    CtElement node
+            ) {
         List<CtElement> pathToDiffRoot =
                 EntityTypesInfoResolver.getPathToRootNode(node);
         for(CtElement element : pathToDiffRoot){
