@@ -1,16 +1,21 @@
 package fr.inria.coming.repairability.repairtools;
 
+import com.github.gumtreediff.tree.ITree;
 import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
 import gumtree.spoon.diff.Diff;
+import gumtree.spoon.diff.operations.DeleteOperation;
+import gumtree.spoon.diff.operations.InsertOperation;
 import gumtree.spoon.diff.operations.Operation;
 import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.declaration.CtElement;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class JMutRepair extends AbstractRepairTool {
 
@@ -59,4 +64,19 @@ public class JMutRepair extends AbstractRepairTool {
         return true;
     }
 
+    @Override
+    protected boolean coveredByInstanceNodes
+            (
+                    ChangePatternInstance instance,
+                    Set<CtElement> instanceCoveredNodes,
+                    Operation diffOperation
+            ) {
+        if (instance.getActions().get(0).getAction().getName().equals("INS")
+                && diffOperation instanceof DeleteOperation) {
+            return ((InsertOperation) instance.getActions().get(0)).getParent()
+                    .equals(diffOperation.getSrcNode().getParent());
+        } else {
+            return super.coveredByInstanceNodes(instance, instanceCoveredNodes, diffOperation);
+        }
+    }
 }
