@@ -1,14 +1,14 @@
 {
   "instances": [
     {
-      "revision": "patch1-Closure-7-Nopol2017",
+      "revision": "deep_deep",
       "repairability": [
         {
           "tool-name": "JMutRepair",
           "pattern-name": "JMutRepair;binary_1",
           "Unified_Diff_of-files:": "Starts Below...",
-          "CHANGE_old:": "    if (a \u003d\u003d null) {\r",
-          "CHANGE_new:": "    if (message!\u003dnull) {\r",
+          "CHANGE_old:": "        if (array[(array[a - 8])] \u0026gt; array[(array[a - 4])]) {\r",
+          "CHANGE_new:": "        if (array[(array[a - 8])] \u0026lt; array[(array[a - 4])]) {\r",
           "instance_detail": [
             {
               "pattern_action": "UPD",
@@ -22,20 +22,20 @@
                 "operator": "UPD",
                 "src_type": "BinaryOperator",
                 "dst_type": "BinaryOperator",
-                "src": "a \u003d\u003d null",
-                "dst": "message !\u003d null",
+                "src": "(array[array[(a - 8)]]) \u003e (array[array[(a - 4)]])",
+                "dst": "(array[array[(a - 8)]]) \u003c (array[array[(a - 4)]])",
                 "src_parent_type": "If",
                 "dst_parent_type": "If",
-                "src_parent": "if (a \u003d\u003d null) {\r\n    return;\r\n}",
-                "dst_parent": "if (message !\u003d null) {\r\n    return;\r\n}"
+                "src_parent": "if ((array[array[(a - 8)]]) \u003e (array[array[(a - 4)]])) {\r\n    java.lang.System.out.println(\"#deep #deep by bo burnham\");\r\n}",
+                "dst_parent": "if ((array[array[(a - 8)]]) \u003c (array[array[(a - 4)]])) {\r\n    java.lang.System.out.println(\"#deep #deep by bo burnham\");\r\n}"
               },
-              "line": 103,
-              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\patch1-Closure-7-Nopol2017",
+              "line": 14,
+              "file": "D:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\deep_deep",
               "stats": {
-                "number_of_src_entities": 7,
-                "number_of_dst_entities": 8,
-                "src_entity_types": "[com.google.javascript.rhino.jstype.JSType, \u003cnulltype\u003e]",
-                "dst_entity_types": "[boolean, java.lang.String, \u003cnulltype\u003e]"
+                "number_of_src_entities": 40,
+                "number_of_dst_entities": 40,
+                "src_entity_types": "[int, boolean]",
+                "dst_entity_types": "[int, boolean]"
               }
             }
           ]
@@ -44,11 +44,6 @@
     }
   ],
   "analyzed_revisions": [
-    "FileDiff [diffFolder\u003dD:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\target\\classes\\repairability_test_files\\NopolTest\\patch1-Closure-22-Nopol2017]",
-    "FileDiff [diffFolder\u003dD:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\target\\classes\\repairability_test_files\\NopolTest\\patch1-Closure-28-Nopol2017]",
-    "FileDiff [diffFolder\u003dD:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\target\\classes\\repairability_test_files\\NopolTest\\patch1-Closure-7-Nopol2017]",
-    "FileDiff [diffFolder\u003dD:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\target\\classes\\repairability_test_files\\NopolTest\\patch1-Math-81-Nopol2017]",
-    "FileDiff [diffFolder\u003dD:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\target\\classes\\repairability_test_files\\NopolTest\\patch1-Time-14-Nopol2017]",
-    "FileDiff [diffFolder\u003dD:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\target\\classes\\repairability_test_files\\NopolTest\\patch1-Time-4-Nopol2017]"
+    "FileDiff [diffFolder\u003dD:\\Daneshgah\\phd-kth\\projects\\commit summarization\\template-based\\coming\\target\\classes\\repairability_test_files\\jMutRepairBinaryTypes\\dd\\deep_deep]"
   ]
 }
