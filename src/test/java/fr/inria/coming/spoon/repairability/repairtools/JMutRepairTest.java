@@ -46,7 +46,7 @@ public class JMutRepairTest {
 
     @Test
     public void testGroundTruthCreatedPatches() throws Exception {
-        RepairabilityTestUtils.checkGroundTruthPatches(getClass(), "JMutRepair", new DiffResultChecker() {
+        RepairabilityTestUtils.checkGroundTruthPatches(getClass(), "jMutRepair", new DiffResultChecker() {
             @Override
             public boolean isDiffResultCorrect(FinalResult result) {
                 // Gumtree detected 'del' or 'ins' operations instead of 'upd'.
