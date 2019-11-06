@@ -11,13 +11,24 @@ public class FilePair implements IRevisionPair<String> {
 
 	protected String previousVersion;
 	protected String postVersion;
-	protected String name;
+	protected String postName;
+	protected String previousName;
 
 	public FilePair(String previous, String post, String name) {
 		super();
 		this.previousVersion = previous;
 		this.postVersion = post;
-		this.name = name;
+		this.postName = name;
+		// let's put the same name to both versions of the file:
+		this.previousName = name;
+	}
+
+	public FilePair(String previous, String post, String previousName, String postName) {
+		super();
+		this.previousVersion = previous;
+		this.postVersion = post;
+		this.postName = postName;
+		this.previousName = previousName;
 	}
 
 	@Override
@@ -32,12 +43,12 @@ public class FilePair implements IRevisionPair<String> {
 
 	@Override
 	public String getName() {
-		return name;
+		return postName;
 	}
 
 	@Override
 	public String getPreviousName() {
-		return name;
+		return previousName;
 	}
 
 	@Override
@@ -54,13 +65,13 @@ public class FilePair implements IRevisionPair<String> {
 
 	@Override
 	public void setName(String name) {
-		this.name = name;
+		this.postName = name;
 
 	}
 
 	@Override
 	public void setPreviousName(String previousName) {
-		// TODO: maybe we would add a second field for the previous name
+		this.previousName = previousName;
 
 	}
 
