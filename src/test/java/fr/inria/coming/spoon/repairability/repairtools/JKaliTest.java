@@ -16,6 +16,6 @@ public class JKaliTest {
     @Test
     public void testGroundTruthCreatedPatches() throws Exception {
         RepairabilityTestUtils.checkGroundTruthPatches(getClass(),"jKali", new DefaultDiffResultChecker(),
-                0, 0, 0);
+                6, 0, 0);
     }
 }
