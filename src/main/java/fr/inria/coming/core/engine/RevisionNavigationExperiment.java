@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.engine.callback.IntermediateResultProcessorCallback;
-import fr.inria.coming.core.engine.filespair.FileDiff;
+import fr.inria.coming.core.engine.filespair.FilePairsDiff;
 import fr.inria.coming.core.entities.AnalysisResult;
 import fr.inria.coming.core.entities.RevisionDataset;
 import fr.inria.coming.core.entities.RevisionResult;
@@ -22,7 +22,7 @@ import fr.inria.coming.main.ComingProperties;
  * @author Matias Martinez
  */
 public abstract class RevisionNavigationExperiment<R extends IRevision> {
-    Logger log = Logger.getLogger(FileDiff.class.getName());
+    Logger log = Logger.getLogger(FilePairsDiff.class.getName());
 
     protected RevisionOrder<R> navigationStrategy = null;
     protected List<Analyzer> analyzers = new ArrayList<>();
