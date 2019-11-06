@@ -65,7 +65,7 @@ public class FilesPairNavigation extends RevisionNavigationExperiment<IRevision>
 		 */
 		List<IRevision> list = new ArrayList<>();
 
-		FileDiff fileDiff = new FileDiff(leftFile, rightFile);
+		FilePairsDiff fileDiff = new FilePairsDiff(leftFile, rightFile);
 		list.add(fileDiff);
 
 		RevisionDataset<IRevision> history = new RevisionDataset<>(list);
