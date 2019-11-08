@@ -1,5 +1,6 @@
 package fr.inria.coming.spoon.repairability;
 
+import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstancesFromRevision;
 import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.entities.RevisionResult;
@@ -11,6 +12,7 @@ import fr.inria.coming.spoon.utils.TestUtils;
 import java.io.File;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -101,6 +103,7 @@ public class RepairabilityTestUtils {
 
         List<String> gumtreeUndetected = new ArrayList<>(),
                 detectedInstances = new ArrayList<>(),
+                detectedInstancePatternNames = new ArrayList<>(),
                 undetectedInstances = new ArrayList<>(),
                 overDetectedInstances = new ArrayList<>(); // diffs with more than one detected instances
 
@@ -130,6 +133,10 @@ public class RepairabilityTestUtils {
                     undetectedInstances.add(file.getName());
                 } else {
                     detectedInstances.add(file.getName());
+                    detectedInstancePatternNames.add(
+                            ((PatternInstancesFromRevision)((RevisionResult)((Map.Entry<Object, Object>)result.entrySet().toArray()[0]).getValue())
+                                    .get("RepairabilityAnalyzer")).getInfoPerDiff().get(0).getInstances().get(0).getPattern().getName()
+                    );
                 }
             }
         }
