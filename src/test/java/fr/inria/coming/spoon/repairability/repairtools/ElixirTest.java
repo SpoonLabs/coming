@@ -3,6 +3,7 @@ package fr.inria.coming.spoon.repairability.repairtools;
 
 import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.spoon.repairability.RepairabilityTestUtils;
+import fr.inria.coming.spoon.repairability.checkers.impl.DefaultDiffResultChecker;
 import org.junit.Test;
 
 public class ElixirTest {
@@ -28,5 +29,11 @@ public class ElixirTest {
     public void elixirTestonDatasetFalse2() throws Exception {
         FinalResult result = RepairabilityTestUtils.runRepairability("Elixir", "/repairability_test_files/NopolTypes/");
         RepairabilityTestUtils.checkNumberOfRepairInstances(result, 3, 0);
+    }
+
+    @Test
+    public void testGroundTruthCreatedPatches() throws Exception {
+        RepairabilityTestUtils.checkGroundTruthPatches(getClass(),"Elixir", new DefaultDiffResultChecker(),
+                0, 0, 0);
     }
 }

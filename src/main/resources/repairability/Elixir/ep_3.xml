@@ -10,7 +10,10 @@
         <parent parentId="2" distance="1"/>
     </entity>
 
+    <entity id="4" type="*"/>
+
     <action entityId="1" type="INS"/>
     <action entityId="3" type="INS"/>
+    <action entityId="4" type="MOV"/>
 
 </pattern>
