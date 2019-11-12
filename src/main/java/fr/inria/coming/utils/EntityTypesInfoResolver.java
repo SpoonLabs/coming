@@ -62,18 +62,6 @@ public class EntityTypesInfoResolver {
 //        extractAndSaveCtElementsHierarchyModel(inheritanceRelationsFilePath);
 //    }
 
-    public static List<CtElement> getPathToRootNode(CtElement element) {
-        CtElement par = element.getParent();
-        if (par == null || par instanceof CtPackage || element == par) {
-            List<CtElement> res = new ArrayList<>();
-            res.add(element);
-            return res;
-        }
-        List<CtElement> pathToParent = getPathToRootNode(par);
-        pathToParent.add(element);
-        return pathToParent;
-    }
-
     private static void extractAndSaveCtElementsHierarchyModel(String outputPath) throws FileNotFoundException {
         PrintWriter pw = new PrintWriter(new File(outputPath));
 

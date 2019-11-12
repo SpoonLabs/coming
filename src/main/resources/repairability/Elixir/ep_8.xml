@@ -7,5 +7,5 @@
     </entity>
 
     <action entityId="2" type="INS"/>
-    <action entityId="1" type="UNCHANGED"/>
+    <action entityId="1" type="UNCHANGED_HIGH_PRIORITY"/>
 </pattern>

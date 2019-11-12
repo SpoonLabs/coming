@@ -5,6 +5,7 @@ import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSp
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
 import fr.inria.coming.main.ComingProperties;
+import fr.inria.coming.utils.ASTInfoResolver;
 import fr.inria.coming.utils.CtEntityType;
 import fr.inria.coming.utils.EntityTypesInfoResolver;
 import gumtree.spoon.diff.Diff;
@@ -97,7 +98,7 @@ public class Cardumen extends AbstractRepairTool {
             srcNode = getActionFromDelInstance(instance, "DEL").getSrcNode();
             dstNode = getActionFromDelInstance(instance, "MOV").getSrcNode();
 
-            return EntityTypesInfoResolver.getPathToRootNode(dstNode).contains(srcNode);
+            return ASTInfoResolver.getPathToRootNode(dstNode).contains(srcNode);
         } else {
             return false;
         }
@@ -106,14 +107,14 @@ public class Cardumen extends AbstractRepairTool {
     }
 
     private boolean checkSrcIncludesDstTemplate(CtElement srcNode, CtElement dstNode) {
-        CtElement srcRootNode = EntityTypesInfoResolver.getPathToRootNode(srcNode).get(0);
+        CtElement srcRootNode = ASTInfoResolver.getPathToRootNode(srcNode).get(0);
         List<CtElement> allSrcElements = srcRootNode.getElements(null);
         Set<String> srcVariablesAndLiterals = new HashSet<>();
 
         for (int i = 0; i < allSrcElements.size(); i++) {
             CtElement srcElement = allSrcElements.get(i);
             if (srcElement instanceof CtVariableAccess || srcElement instanceof CtLiteral) {
-                srcVariablesAndLiterals.add(getCleanedName(srcElement));
+                srcVariablesAndLiterals.add(ASTInfoResolver.getCleanedName(srcElement));
             }
         }
 
@@ -123,7 +124,7 @@ public class Cardumen extends AbstractRepairTool {
         for (int i = 0; i < allDstElements.size(); i++) {
             CtElement dstElement = allDstElements.get(i);
             if (dstElement instanceof CtVariableAccess || dstElement instanceof CtLiteral) {
-                if (!srcVariablesAndLiterals.contains(getCleanedName(dstElement)))
+                if (!srcVariablesAndLiterals.contains(ASTInfoResolver.getCleanedName(dstElement)))
                     // A variable/literal is used that does not exist in SRC
                     // FIXME: We should also make sure that the variable/literal is in the current scope
                     return false;
@@ -187,8 +188,8 @@ public class Cardumen extends AbstractRepairTool {
     }
 
     private boolean areTheSameTemplates(String temp1, String temp2) {
-        temp1 = getCleanedName(temp1);
-        temp2 = getCleanedName(temp2);
+        temp1 = ASTInfoResolver.getCleanedName(temp1);
+        temp2 = ASTInfoResolver.getCleanedName(temp2);
         String[] parts1 = temp1.split("#");
         String[] parts2 = temp2.split("#");
         if (parts1.length != parts2.length)
@@ -201,21 +202,6 @@ public class Cardumen extends AbstractRepairTool {
         return true;
     }
 
-    private String getCleanedName(CtElement element) {
-        String elementName = element.toString();
-        return getCleanedName(elementName);
-    }
-
-    private String getCleanedName(String elementName) {
-        while (elementName.startsWith("(") && elementName.endsWith(")")) {
-            elementName = elementName.substring(1, elementName.length() - 1);
-        }
-        if (elementName.startsWith("this.")) {
-            elementName = elementName.substring("this.".length());
-        }
-        return elementName;
-    }
-
     private String getType(CtElement element) {
         CtTypeReference type = ((CtTypedElement) element).getType();
         if (type == null)
@@ -225,14 +211,14 @@ public class Cardumen extends AbstractRepairTool {
 
     // DEL_MOV/INS might add instances that are already added by other patterns. They should be filtered.
     @Override
-    public List<ChangePatternInstance> filterSelectedInstances(List<ChangePatternInstance> lst) {
+    public List<ChangePatternInstance> filterSelectedInstances(List<ChangePatternInstance> lst, Diff diff) {
         Map<ChangePatternInstance, Set> instanceToCoveredNodes = new HashMap<>();
         List<ChangePatternInstance> ret = new ArrayList<>();
 
         for (ChangePatternInstance instance : lst) {
             if (instance.getPattern().getName().contains(UPD_PATTERN_NAME)) {
                 ret.add(instance);
-                instanceToCoveredNodes.put(instance, getInstanceCoveredNodes(instance));
+                instanceToCoveredNodes.put(instance, getInstanceCoveredNodes(instance, diff));
             }
         }
 
@@ -241,7 +227,7 @@ public class Cardumen extends AbstractRepairTool {
                     || instance.getPattern().getName().contains(DEL_INS_PATTERN_NAME)) {
                 List<CtElement> changedNodes = new ArrayList<>();
                 changedNodes.add(getActionFromDelInstance(instance, "DEL").getSrcNode());
-                updateSelectedInstances(instanceToCoveredNodes, ret, instance, changedNodes);
+                updateSelectedInstances(instanceToCoveredNodes, ret, instance, changedNodes, diff);
             }
         }
 
@@ -253,7 +239,8 @@ public class Cardumen extends AbstractRepairTool {
                     Map<ChangePatternInstance, Set> instanceToCoveredNodes,
                     List<ChangePatternInstance> ret,
                     ChangePatternInstance instance,
-                    List<CtElement> changedNodes
+                    List<CtElement> changedNodes,
+                    Diff diff
             ) {
         boolean addedBefore = false;
         for (ChangePatternInstance existingInstance : ret) {
@@ -269,12 +256,12 @@ public class Cardumen extends AbstractRepairTool {
         }
         if (!addedBefore) {
             ret.add(instance);
-            instanceToCoveredNodes.put(instance, getInstanceCoveredNodes(instance));
+            instanceToCoveredNodes.put(instance, getInstanceCoveredNodes(instance, diff));
         }
     }
 
     @Override
-    protected Set<CtElement> getInstanceCoveredNodes(ChangePatternInstance instance) {
+    protected Set<CtElement> getInstanceCoveredNodes(ChangePatternInstance instance, Diff diff) {
         Set<CtElement> dstNodes = new HashSet<>();
 
         if (instance.getPattern().getName().contains(DEL_INS_PATTERN_NAME)) {

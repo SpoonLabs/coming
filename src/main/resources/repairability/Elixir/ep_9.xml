@@ -3,12 +3,15 @@
     <entity id="1" type="If" />
     <action entityId="1" type="INS"/>
 
-    <entity id="2" type="Binary Operator" >
+    <entity id="2" type="BinaryOperator" >
         <parent parentId="1" distance="1"/>
     </entity>
 
     <entity id="3" type="Literal" role="RightOperand" >
         <parent parentId="2" distance="1"/>
     </entity>
+
+    <entity id="4" type="Statement"/>
+    <action entityId="4" type="MOV"/>
 
 </pattern>

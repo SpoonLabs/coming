@@ -14,19 +14,19 @@ public class ElixirTest {
     }
 
     @Test
-    public void elixirTestonDatasetReal() throws Exception {
+    public void elixirTestOnDatasetReal() throws Exception {
         FinalResult result = RepairabilityTestUtils.runRepairability("Elixir", "/repairability_test_files/elixir_data/");
         RepairabilityTestUtils.checkNumberOfRepairInstances(result, 3, 3);
     }
 
     @Test
-    public void elixirTestonDatasetFalse1() throws Exception {
+    public void elixirTestOnDatasetFalse1() throws Exception {
         FinalResult result = RepairabilityTestUtils.runRepairability("Elixir", "/repairability_test_files/JGenProgPostiveTest/");
-        RepairabilityTestUtils.checkNumberOfRepairInstances(result, 1, 0);
+        RepairabilityTestUtils.checkNumberOfRepairInstances(result, 1, 1);
     }
 
     @Test
-    public void elixirTestonDatasetFalse2() throws Exception {
+    public void elixirTestOnDatasetFalse2() throws Exception {
         FinalResult result = RepairabilityTestUtils.runRepairability("Elixir", "/repairability_test_files/NopolTypes/");
         RepairabilityTestUtils.checkNumberOfRepairInstances(result, 3, 0);
     }

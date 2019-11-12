@@ -1,10 +1,10 @@
-<pattern name="update_return">
+<pattern name="update_return_deep">
 
     <entity id="1" type="Return" />
-    <entity id="2" type="VariableRead" >
-        <parent parentId="1" distance="1"/>
+    <entity id="2" type="*" >
+        <parent parentId="1" distance="1000000"/>
     </entity>
 
-    <action entityId="2" type="UPD"/>
+    <action entityId="2" type="*"/>
 
 </pattern>

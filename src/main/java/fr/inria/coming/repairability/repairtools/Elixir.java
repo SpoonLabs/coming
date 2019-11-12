@@ -1,33 +1,44 @@
 package fr.inria.coming.repairability.repairtools;
 
+import com.github.gumtreediff.actions.model.Insert;
+import com.github.gumtreediff.matchers.MappingStore;
+import com.github.gumtreediff.tree.ITree;
 import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
+import fr.inria.coming.repairability.models.ASTData;
+import fr.inria.coming.utils.ASTInfoResolver;
+import fr.inria.coming.utils.CtEntityType;
 import gumtree.spoon.diff.Diff;
+import gumtree.spoon.diff.operations.InsertOperation;
 import gumtree.spoon.diff.operations.Operation;
+import gumtree.spoon.diff.operations.UpdateOperation;
 import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtReturn;
+import spoon.reflect.declaration.CtElement;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 
 /**
-
- Elixir fixes programs by doing 8 things:
-
- 1.loosening or tightening variable types => patter file ep_1
- 2.changing the return statement => patter file ep_2
- 3.adding if (variable != null) => patter file ep_3
- 4.array index in bound check => patter file ep_4
- 5.chnage of a boolean operator  => patter file ep_5
- 6.loosening or tightening boolean expressions => patter file ep_6,7
- 7.changing method invocations => patter file ep_8
- 8.inserting the method invocation => patter file ep_9
+ * Elixir fixes programs by doing 8 things:
+ * <p>
+ * 1.loosening or tightening variable types => patter file ep_1
+ * 2.changing the return statement => patter file ep_2
+ * 3.adding if (variable != null) => patter file ep_3
+ * 4.array index in bound check => patter file ep_4
+ * 5.chnage of a boolean operator  => patter file ep_5
+ * 6.loosening or tightening boolean expressions => patter file ep_6,7
+ * 7.changing method invocations => patter file ep_8
+ * 8.inserting the method invocation => patter file ep_9
  */
 
 public class Elixir extends AbstractRepairTool {
+    private static final String RETURN_UPDATE_DEEP_PATTERN = "update_return_deep";
+    private static final String INVOCATION_UPDATE_DEEP_PATTERN = "update_invocation_deep";
+    private static final String INSERT_INVOCATION_PATTERN = "Insert_Invocation";
 
     private static final String[] patternFileNames = {
             "ep_1.xml",
@@ -40,7 +51,8 @@ public class Elixir extends AbstractRepairTool {
             "ep_8.xml",
             "ep_9.xml",
             "ep_10.xml",
-            "ep_11.xml"
+            "ep_11.xml",
+            "ep_12.xml"
     };
 
     /**
@@ -67,9 +79,30 @@ public class Elixir extends AbstractRepairTool {
      */
     @Override
     public boolean filter(ChangePatternInstance patternInstance, IRevision revision, Diff diff) {
-
         String patternType = patternInstance.getPattern().getName().split(File.pathSeparator)[1];
-        if (patternType.startsWith("ep_4")) {
+
+        if (patternType.startsWith(RETURN_UPDATE_DEEP_PATTERN)) {
+            return doesSrcContainUpdatedParentOfType(patternInstance, diff, CtEntityType.RETURN);
+        }
+
+        if (patternType.startsWith(INVOCATION_UPDATE_DEEP_PATTERN)) {
+            return doesSrcContainUpdatedParentOfType(patternInstance, diff, CtEntityType.ABSTRACT_INVOCATION);
+        }
+
+        if(patternType.startsWith(INSERT_INVOCATION_PATTERN)){
+            Operation op = patternInstance.getActions().get(0);
+            MappingStore mapping = diff.getMappingsComp();
+            if (!mapping.hasSrc(((Insert) op.getAction()).getParent()))
+                // this inserted element is a part of another inserted element
+                return false;
+
+            CtElement srcNode = ((InsertOperation) op).getParent();
+            CtElement srcRootNode = ASTInfoResolver.getRootNode(srcNode);
+
+            return new ASTData(srcRootNode).canElixirGenerateNode(null, op.getSrcNode());
+        }
+
+        if (patternType.startsWith("BO_change")) {
             Operation upd = patternInstance.getActions().get(0);
             CtBinaryOperator src = (CtBinaryOperator) upd.getSrcNode();
             CtBinaryOperator dst = (CtBinaryOperator) upd.getDstNode();
@@ -79,7 +112,7 @@ public class Elixir extends AbstractRepairTool {
         }
 
 
-        if (patternType.startsWith("ep_10")) {
+        if (patternType.startsWith("loose_type2")) {
 
             Operation upd = patternInstance.getActions().get(0);
             CtBinaryOperator src = (CtBinaryOperator) upd.getSrcNode();
@@ -89,8 +122,7 @@ public class Elixir extends AbstractRepairTool {
         }
 
 
-
-        if (patternType.startsWith("ep_11")) {
+        if (patternType.startsWith("loose_type1")) {
 
             Operation upd = patternInstance.getActions().get(0);
             CtBinaryOperator src = (CtBinaryOperator) upd.getSrcNode();
@@ -99,5 +131,162 @@ public class Elixir extends AbstractRepairTool {
             return dst.getLeftHandOperand().equals(true) || dst.getLeftHandOperand().equals(false);
         }
         return true;
+    }
+
+    private boolean doesSrcContainUpdatedParentOfType
+            (
+                    ChangePatternInstance patternInstance,
+                    Diff diff,
+                    CtEntityType entityType
+            ) {
+        Operation op = patternInstance.getActions().get(0);
+
+        CtElement srcNode = null, dstMappedExpression = null, dstMappedElement = null, dstNode = null;
+
+        if (op instanceof UpdateOperation) {
+            srcNode = op.getSrcNode();
+            dstNode = op.getDstNode();
+        } else if (op instanceof InsertOperation) {
+            dstNode = op.getSrcNode();
+
+            MappingStore mapping = diff.getMappingsComp();
+            if (!mapping.hasSrc(((Insert) op.getAction()).getParent()))
+                // this inserted element is a part of another inserted element
+                return false;
+
+            srcNode = ((InsertOperation) op).getParent();
+        } else {
+            // FIXME: delete should be handled as well
+            return false;
+        }
+
+        dstMappedElement = ASTInfoResolver.getFirstAncestorOfType(dstNode, entityType);
+        if (entityType.equals(CtEntityType.RETURN)) {
+            dstMappedExpression = ((CtReturn) dstMappedElement).getReturnedExpression();
+        } else if (entityType.equals(CtEntityType.ABSTRACT_INVOCATION)) {
+            dstMappedExpression = dstMappedElement;
+        }
+
+        CtElement srcMappedElement = ASTInfoResolver.getFirstAncestorOfType(srcNode, entityType),
+                srcMappedExpression = null;
+        if(srcMappedElement == null)
+            return false;
+        if (entityType.equals(CtEntityType.RETURN)) {
+            srcMappedExpression = ((CtReturn) srcMappedElement).getReturnedExpression();
+        } else if (entityType.equals(CtEntityType.ABSTRACT_INVOCATION)) {
+            srcMappedExpression = srcMappedElement;
+        }
+
+        CtElement srcRootNode = ASTInfoResolver.getRootNode(srcNode);
+        return new ASTData(srcRootNode).canElixirGenerateNode(srcMappedExpression, dstMappedExpression);
+    }
+
+    @Override
+    protected Set<CtElement> getInstanceCoveredNodes(ChangePatternInstance instance, Diff diff) {
+        String patternType = instance.getPattern().getName().split(File.pathSeparator)[1];
+
+        if (patternType.startsWith(RETURN_UPDATE_DEEP_PATTERN)) {
+            return getCoveredElementsOfParentWithType(instance, diff, CtEntityType.RETURN);
+        } else if (patternType.contains(INVOCATION_UPDATE_DEEP_PATTERN)) {
+            return getCoveredElementsOfParentWithType(instance, diff, CtEntityType.ABSTRACT_INVOCATION);
+        }
+
+        return super.getInstanceCoveredNodes(instance, diff);
+    }
+
+    private Set<CtElement> getCoveredElementsOfParentWithType(ChangePatternInstance instance, Diff diff, CtEntityType aReturn) {
+        Set<CtElement> res = new HashSet<>();
+        Operation op = instance.getActions().get(0);
+
+        CtElement dstNode = null;
+
+        if (op instanceof UpdateOperation) {
+            dstNode = op.getDstNode();
+        } else if (op instanceof InsertOperation) {
+            dstNode = op.getSrcNode();
+        }
+
+        CtElement dstReturnNode = ASTInfoResolver.getFirstAncestorOfType(dstNode, aReturn);
+        res.add(dstReturnNode);
+
+        ITree dstReturnTree = (ITree) dstReturnNode.getMetadata("gtnode");
+
+        MappingStore mapping = diff.getMappingsComp();
+        if (!mapping.hasDst(dstReturnTree))
+            return res;
+
+        ITree srcReturnTree = mapping.getSrc(dstReturnTree);
+        CtElement srcReturnNode = (CtElement) srcReturnTree.getMetadata("spoon_object");
+
+        res.add(srcReturnNode);
+
+        return res;
+    }
+
+    @Override
+    public List<ChangePatternInstance> filterSelectedInstances(List<ChangePatternInstance> lst, Diff diff) {
+        Map<ChangePatternInstance, Set> instanceToCoveredNodes = new HashMap<>();
+        List<ChangePatternInstance> ret = new ArrayList<>();
+
+        for (ChangePatternInstance instance : lst) {
+            String patternType = instance.getPattern().getName().split(File.pathSeparator)[1];
+            if (!patternType.contains(RETURN_UPDATE_DEEP_PATTERN)
+                    && !patternType.contains(INVOCATION_UPDATE_DEEP_PATTERN)) {
+                ret.add(instance);
+                instanceToCoveredNodes.put(instance, getInstanceCoveredNodes(instance, diff));
+            }
+        }
+
+        filterAndAddSelectedInstancesOfPattern(lst, diff, instanceToCoveredNodes, ret, INVOCATION_UPDATE_DEEP_PATTERN);
+
+        filterAndAddSelectedInstancesOfPattern(lst, diff, instanceToCoveredNodes, ret, RETURN_UPDATE_DEEP_PATTERN);
+
+        return ret;
+    }
+
+    private void filterAndAddSelectedInstancesOfPattern
+            (
+                    List<ChangePatternInstance> lst,
+                    Diff diff,
+                    Map<ChangePatternInstance, Set> instanceToCoveredNodes,
+                    List<ChangePatternInstance> ret,
+                    String pattern
+            ) {
+        for (ChangePatternInstance instance : lst) {
+            String patternType = instance.getPattern().getName().split(File.pathSeparator)[1];
+            if (patternType.contains(pattern)) {
+                List<CtElement> changedNodes = new ArrayList<>();
+                changedNodes.add(instance.getActions().get(0).getSrcNode());
+                if (instance.getActions().get(0).getDstNode() != null)
+                    changedNodes.add(instance.getActions().get(0).getDstNode());
+                updateSelectedInstances(instanceToCoveredNodes, ret, instance, changedNodes, diff);
+            }
+        }
+    }
+
+    private void updateSelectedInstances
+            (
+                    Map<ChangePatternInstance, Set> instanceToCoveredNodes,
+                    List<ChangePatternInstance> ret,
+                    ChangePatternInstance instance,
+                    Collection<CtElement> changedNodes,
+                    Diff diff
+            ) {
+        boolean addedBefore = false;
+        for (ChangePatternInstance existingInstance : ret) {
+            Set<CtElement> instanceCoveredNodes = instanceToCoveredNodes.get(existingInstance);
+            for (CtElement changedNode : changedNodes) {
+                if (coveredByInstanceNodes(instanceCoveredNodes, changedNode)) {
+                    addedBefore = true;
+                    break;
+                }
+            }
+            if (addedBefore)
+                break;
+        }
+        if (!addedBefore) {
+            ret.add(instance);
+            instanceToCoveredNodes.put(instance, getInstanceCoveredNodes(instance, diff));
+        }
     }
 }

@@ -2,7 +2,7 @@
 
     <entity id="1" type="If" />
 
-    <entity id="2" type="Binary Operator" >
+    <entity id="2" type="BinaryOperator" >
         <parent parentId="1" distance="1"/>
     </entity>
 
@@ -15,6 +15,5 @@
     </entity>
 
     <action entityId="4" type="UPD"/>
-
 
 </pattern>
