@@ -33,12 +33,12 @@ detected:
 31 = "patch1-Time-4-Elixir"
 
 undetected:
-0 = "patch1-Chart-17-Elixir-plausible"
+0 = "patch1-Chart-17-Elixir-plausible"=>gumtree detects duplicate operations
 1 = "patch1-Lang-24-Elixir"=>unknown template
 2 = "patch1-Lang-38-Elixir"=>ingredient out of scope
 3 = "patch1-Lang-58-Elixir-plausible"=>unknown template
 4 = "patch1-Math-32-Elixir-plausible"=>ingredient out of scope
 5 = "patch1-Math-50-Elixir"=>unknown template
-6 = "patch1-Math-58-Elixir"
+6 = "patch1-Math-58-Elixir"=>solved
 7 = "patch1-Math-59-Elixir"=>unknown template
 8 = "patch1-Time-11-Elixir-plausible"=>unknown template

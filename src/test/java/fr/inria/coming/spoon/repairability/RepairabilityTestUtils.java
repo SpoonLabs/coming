@@ -6,7 +6,6 @@ import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.main.ComingMain;
 import fr.inria.coming.repairability.RepairabilityAnalyzer;
-import fr.inria.coming.spoon.repairability.checkers.DiffResultChecker;
 import fr.inria.coming.spoon.utils.TestUtils;
 
 import java.io.File;
@@ -91,25 +90,22 @@ public class RepairabilityTestUtils {
             (
                     Class testClass,
                     String patchesFolder,
-                    DiffResultChecker diffResultChecker,
                     int expectedUndetected,
-                    int expectedOverDetected,
-                    int expectedGumtreeUndetected) throws Exception {
+                    int expectedOverDetected) throws Exception {
         String toolName = testClass.getSimpleName().replace("Test", "");
         String groundTruthPatchesPathInResources = "/repairability_test_files/ground_truth/" + patchesFolder;
         String groundTruthPatchesBasePath =
                 URLDecoder.decode(RepairabilityTestUtils.class.getResource
                         (groundTruthPatchesPathInResources).getFile(), "UTF-8");
 
-        List<String> gumtreeUndetected = new ArrayList<>(),
-                detectedInstances = new ArrayList<>(),
+        List<String> detectedInstances = new ArrayList<>(),
                 detectedInstancePatternNames = new ArrayList<>(),
                 undetectedInstances = new ArrayList<>(),
                 overDetectedInstances = new ArrayList<>(); // diffs with more than one detected instances
 
         File[] files = new File(groundTruthPatchesBasePath).listFiles();
         for (File file : files) {
-//            if(!file.getName().contains("patch1-Math-58-Elixir"))
+//            if (!file.getName().contains("patch1-Chart-17-Elixir-plausible"))
 //                continue;
             FinalResult result =
                     RepairabilityTestUtils.runRepairabilityWithParameters
@@ -119,29 +115,21 @@ public class RepairabilityTestUtils {
                                     "include_all_instances_for_each_tool:true:exclude_repair_patterns_not_covering_the_whole_diff:true"
                             );
 
-            if (!diffResultChecker.isDiffResultCorrect(result)) {
-                /* we are sure that Gumtree did not work as we wanted; however, some of such cases might be
-                   included in undetectedInstances */
-                gumtreeUndetected.add(file.getName());
-            } else {
-                int numberOfRepairInstances = TestUtils.countNumberOfUniqueInstances(
-                        result.getAllResults(), RepairabilityAnalyzer.class);
+            int numberOfRepairInstances = TestUtils.countNumberOfUniqueInstances(
+                    result.getAllResults(), RepairabilityAnalyzer.class);
 
-                if (numberOfRepairInstances > 1) {
-                    overDetectedInstances.add(file.getName());
-                } else if (numberOfRepairInstances < 1) {
-                    undetectedInstances.add(file.getName());
-                } else {
-                    detectedInstances.add(file.getName());
-                    detectedInstancePatternNames.add(
-                            ((PatternInstancesFromRevision)((RevisionResult)((Map.Entry<Object, Object>)result.entrySet().toArray()[0]).getValue())
-                                    .get("RepairabilityAnalyzer")).getInfoPerDiff().get(0).getInstances().get(0).getPattern().getName()
-                    );
-                }
+            if (numberOfRepairInstances > 1) {
+                overDetectedInstances.add(file.getName());
+            } else if (numberOfRepairInstances < 1) {
+                undetectedInstances.add(file.getName());
+            } else {
+                detectedInstances.add(file.getName());
+                detectedInstancePatternNames.add(
+                        ((PatternInstancesFromRevision) ((RevisionResult) ((Map.Entry<Object, Object>) result.entrySet().toArray()[0]).getValue())
+                                .get("RepairabilityAnalyzer")).getInfoPerDiff().get(0).getInstances().get(0).getPattern().getName()
+                );
             }
         }
-
-        assertEquals(expectedGumtreeUndetected, gumtreeUndetected.size());
 
         assertEquals(expectedOverDetected, overDetectedInstances.size());
 

@@ -2,26 +2,32 @@ package fr.inria.coming.utils;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.ParentNotInitializedException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ASTInfoResolver {
 
-    public static CtElement getRootNode(CtElement node){
+    public static CtElement getRootNode(CtElement node) {
         return getPathToRootNode(node).get(0);
     }
 
     public static List<CtElement> getPathToRootNode(CtElement element) {
-        CtElement par = element.getParent();
-        if (par == null || par instanceof CtPackage || element == par) {
-            List<CtElement> res = new ArrayList<>();
-            res.add(element);
-            return res;
+        CtElement par = null;
+        try {
+            par = element.getParent();
+            if (par == null || par instanceof CtPackage || element == par) {
+                List<CtElement> res = new ArrayList<>();
+                res.add(element);
+                return res;
+            }
+            List<CtElement> pathToParent = getPathToRootNode(par);
+            pathToParent.add(element);
+            return pathToParent;
+        } catch (ParentNotInitializedException e) {
+            return new ArrayList<>();
         }
-        List<CtElement> pathToParent = getPathToRootNode(par);
-        pathToParent.add(element);
-        return pathToParent;
     }
 
     public static CtElement getFirstAncestorOfType(CtElement node, CtEntityType type) {

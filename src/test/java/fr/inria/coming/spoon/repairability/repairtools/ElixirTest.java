@@ -3,7 +3,6 @@ package fr.inria.coming.spoon.repairability.repairtools;
 
 import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.spoon.repairability.RepairabilityTestUtils;
-import fr.inria.coming.spoon.repairability.checkers.impl.DefaultDiffResultChecker;
 import org.junit.Test;
 
 public class ElixirTest {
@@ -33,7 +32,7 @@ public class ElixirTest {
 
     @Test
     public void testGroundTruthCreatedPatches() throws Exception {
-        RepairabilityTestUtils.checkGroundTruthPatches(getClass(),"Elixir", new DefaultDiffResultChecker(),
-                0, 0, 0);
+        RepairabilityTestUtils.checkGroundTruthPatches(getClass(),"Elixir",
+                8, 0);
     }
 }

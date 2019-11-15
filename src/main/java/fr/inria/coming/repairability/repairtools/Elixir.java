@@ -1,5 +1,6 @@
 package fr.inria.coming.repairability.repairtools;
 
+import com.github.gumtreediff.actions.model.Delete;
 import com.github.gumtreediff.actions.model.Insert;
 import com.github.gumtreediff.matchers.MappingStore;
 import com.github.gumtreediff.tree.ITree;
@@ -11,6 +12,7 @@ import fr.inria.coming.repairability.models.ASTData;
 import fr.inria.coming.utils.ASTInfoResolver;
 import fr.inria.coming.utils.CtEntityType;
 import gumtree.spoon.diff.Diff;
+import gumtree.spoon.diff.operations.DeleteOperation;
 import gumtree.spoon.diff.operations.InsertOperation;
 import gumtree.spoon.diff.operations.Operation;
 import gumtree.spoon.diff.operations.UpdateOperation;
@@ -18,6 +20,7 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtElement;
 
+import javax.naming.ldap.SortResponseControl;
 import java.io.File;
 import java.util.*;
 
@@ -89,7 +92,7 @@ public class Elixir extends AbstractRepairTool {
             return doesSrcContainUpdatedParentOfType(patternInstance, diff, CtEntityType.ABSTRACT_INVOCATION);
         }
 
-        if(patternType.startsWith(INSERT_INVOCATION_PATTERN)){
+        if (patternType.startsWith(INSERT_INVOCATION_PATTERN)) {
             Operation op = patternInstance.getActions().get(0);
             MappingStore mapping = diff.getMappingsComp();
             if (!mapping.hasSrc(((Insert) op.getAction()).getParent()))
@@ -115,20 +118,22 @@ public class Elixir extends AbstractRepairTool {
         if (patternType.startsWith("loose_type2")) {
 
             Operation upd = patternInstance.getActions().get(0);
-            CtBinaryOperator src = (CtBinaryOperator) upd.getSrcNode();
-            CtBinaryOperator dst = (CtBinaryOperator) upd.getDstNode();
+            CtElement src = upd.getSrcNode();
+            CtElement dst = upd.getDstNode();
 
-            return dst.getRightHandOperand().equals(true) || dst.getRightHandOperand().equals(false);
+            return ((CtBinaryOperator<Object>)dst.getParent()).getRightHandOperand().equals(true)
+                    || ((CtBinaryOperator<Object>)dst.getParent()).getRightHandOperand().equals(false);
         }
 
 
         if (patternType.startsWith("loose_type1")) {
 
             Operation upd = patternInstance.getActions().get(0);
-            CtBinaryOperator src = (CtBinaryOperator) upd.getSrcNode();
-            CtBinaryOperator dst = (CtBinaryOperator) upd.getDstNode();
+            CtElement src = upd.getSrcNode();
+            CtElement dst = upd.getDstNode();
 
-            return dst.getLeftHandOperand().equals(true) || dst.getLeftHandOperand().equals(false);
+            return ((CtBinaryOperator<Object>)dst.getParent()).getLeftHandOperand().equals(true)
+                    || ((CtBinaryOperator<Object>)dst.getParent()).getLeftHandOperand().equals(false);
         }
         return true;
     }
@@ -157,7 +162,19 @@ public class Elixir extends AbstractRepairTool {
             srcNode = ((InsertOperation) op).getParent();
         } else {
             // FIXME: delete should be handled as well
-            return false;
+            srcNode = op.getSrcNode();
+
+            MappingStore mapping = diff.getMappingsComp();
+            ITree srcParentITree = op.getAction().getNode().getParent();
+            if (!mapping.hasSrc(srcParentITree))
+                // this inserted element is a part of another inserted element
+                return false;
+
+            CtElement dstParentNode =
+                    (CtElement) mapping.getDst(op.getAction().getNode().getParent()).getMetadata("spoon_object");
+
+            CtElement srcRootNode = ASTInfoResolver.getRootNode(srcNode);
+            return new ASTData(srcRootNode).canElixirGenerateNode(null, dstParentNode);
         }
 
         dstMappedElement = ASTInfoResolver.getFirstAncestorOfType(dstNode, entityType);
@@ -169,7 +186,7 @@ public class Elixir extends AbstractRepairTool {
 
         CtElement srcMappedElement = ASTInfoResolver.getFirstAncestorOfType(srcNode, entityType),
                 srcMappedExpression = null;
-        if(srcMappedElement == null)
+        if (srcMappedElement == null)
             return false;
         if (entityType.equals(CtEntityType.RETURN)) {
             srcMappedExpression = ((CtReturn) srcMappedElement).getReturnedExpression();
@@ -194,31 +211,54 @@ public class Elixir extends AbstractRepairTool {
         return super.getInstanceCoveredNodes(instance, diff);
     }
 
-    private Set<CtElement> getCoveredElementsOfParentWithType(ChangePatternInstance instance, Diff diff, CtEntityType aReturn) {
+    private Set<CtElement> getCoveredElementsOfParentWithType
+            (
+                    ChangePatternInstance instance,
+                    Diff diff,
+                    CtEntityType entityType
+            ) {
         Set<CtElement> res = new HashSet<>();
         Operation op = instance.getActions().get(0);
 
-        CtElement dstNode = null;
+        if (op instanceof UpdateOperation || op instanceof InsertOperation) {
+            CtElement dstNode = null;
 
-        if (op instanceof UpdateOperation) {
-            dstNode = op.getDstNode();
-        } else if (op instanceof InsertOperation) {
-            dstNode = op.getSrcNode();
-        }
+            if (op instanceof UpdateOperation) {
+                dstNode = op.getDstNode();
+            } else if (op instanceof InsertOperation) {
+                dstNode = op.getSrcNode();
+            }
 
-        CtElement dstReturnNode = ASTInfoResolver.getFirstAncestorOfType(dstNode, aReturn);
-        res.add(dstReturnNode);
+            CtElement dstParentNode = ASTInfoResolver.getFirstAncestorOfType(dstNode, entityType);
+            res.add(dstParentNode);
 
-        ITree dstReturnTree = (ITree) dstReturnNode.getMetadata("gtnode");
+            ITree dstParentTree = (ITree) dstParentNode.getMetadata("gtnode");
 
-        MappingStore mapping = diff.getMappingsComp();
-        if (!mapping.hasDst(dstReturnTree))
+            MappingStore mapping = diff.getMappingsComp();
+            if (!mapping.hasDst(dstParentTree))
+                return res;
+
+            ITree srcParentTree = mapping.getSrc(dstParentTree);
+            CtElement srcParentNode = (CtElement) srcParentTree.getMetadata("spoon_object");
+
+            res.add(srcParentNode);
+
             return res;
+        } else if (op instanceof DeleteOperation) {
+            CtElement srcParentNode = op.getSrcNode().getParent();
+            res.add(srcParentNode);
 
-        ITree srcReturnTree = mapping.getSrc(dstReturnTree);
-        CtElement srcReturnNode = (CtElement) srcReturnTree.getMetadata("spoon_object");
+            ITree srcParentTree = (ITree) srcParentNode.getMetadata("gtnode");
 
-        res.add(srcReturnNode);
+            MappingStore mapping = diff.getMappingsComp();
+            if (!mapping.hasSrc(srcParentTree))
+                return res;
+
+            CtElement dstParentNode = (CtElement) mapping.getDst(srcParentTree).getMetadata("spoon_object");
+            res.add(dstParentNode);
+
+            return res;
+        }
 
         return res;
     }
