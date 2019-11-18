@@ -1,44 +1,44 @@
 detected:
-0 = "patch1-Chart-1-Elixir"
-1 = "patch1-Chart-11-Elixir"
-2 = "patch1-Chart-13-Elixir-plausible"
-3 = "patch1-Chart-3-Elixir-plausible"
-4 = "patch1-Chart-8-Elixir"
-5 = "patch1-Chart-9-Elixir"
-6 = "patch1-Lang-26-Elixir"
-7 = "patch1-Lang-33-Elixir"
-8 = "patch1-Lang-39-Elixir-plausible"
-9 = "patch1-Lang-43-Elixir"
-10 = "patch1-Lang-44-Elixir-plausible"
-11 = "patch1-Lang-51-Elixir-plausible"
-12 = "patch1-Lang-57-Elixir"
-13 = "patch1-Lang-59-Elixir"
-14 = "patch1-Lang-6-Elixir"
-15 = "patch1-Math-104-Elixir-plausible"
-16 = "patch1-Math-2-Elixir-plausible"
-17 = "patch1-Math-20-Elixir-plausible"
-18 = "patch1-Math-30-Elixir"
-19 = "patch1-Math-33-Elixir"
-20 = "patch1-Math-34-Elixir"
-21 = "patch1-Math-5-Elixir"
-22 = "patch1-Math-57-Elixir"
-23 = "patch1-Math-63-Elixir-plausible"
-24 = "patch1-Math-70-Elixir"
-25 = "patch1-Math-73-Elixir-plausible"
-26 = "patch1-Math-75-Elixir"
-27 = "patch1-Math-80-Elixir-plausible"
-28 = "patch1-Math-82-Elixir"
-29 = "patch1-Math-85-Elixir"
-30 = "patch1-Time-15-Elixir"
-31 = "patch1-Time-4-Elixir"
+patch1-Chart-1-Elixir
+patch1-Chart-11-Elixir
+patch1-Chart-13-Elixir-plausible
+patch1-Chart-3-Elixir-plausible
+patch1-Chart-8-Elixir
+patch1-Chart-9-Elixir
+patch1-Lang-33-Elixir
+patch1-Lang-39-Elixir-plausible
+patch1-Lang-43-Elixir
+patch1-Lang-44-Elixir-plausible
+patch1-Lang-51-Elixir-plausible
+patch1-Lang-57-Elixir
+patch1-Lang-59-Elixir
+patch1-Lang-6-Elixir
+patch1-Math-2-Elixir-plausible
+patch1-Math-20-Elixir-plausible
+patch1-Math-30-Elixir
+patch1-Math-33-Elixir
+patch1-Math-34-Elixir
+patch1-Math-5-Elixir
+patch1-Math-57-Elixir
+patch1-Math-58-Elixir
+patch1-Math-63-Elixir-plausible
+patch1-Math-70-Elixir
+patch1-Math-73-Elixir-plausible
+patch1-Math-75-Elixir
+patch1-Math-80-Elixir-plausible
+patch1-Math-82-Elixir
+patch1-Math-85-Elixir
+patch1-Time-15-Elixir
+patch1-Time-4-Elixir
 
 undetected:
-0 = "patch1-Chart-17-Elixir-plausible"=>gumtree detects duplicate operations
-1 = "patch1-Lang-24-Elixir"=>unknown template
-2 = "patch1-Lang-38-Elixir"=>ingredient out of scope
-3 = "patch1-Lang-58-Elixir-plausible"=>unknown template
-4 = "patch1-Math-32-Elixir-plausible"=>ingredient out of scope
-5 = "patch1-Math-50-Elixir"=>unknown template
-6 = "patch1-Math-58-Elixir"=>solved
-7 = "patch1-Math-59-Elixir"=>unknown template
-8 = "patch1-Time-11-Elixir-plausible"=>unknown template
+patch1-Chart-17-Elixir-plausible=>gumtree detects duplicate operations
+patch1-Lang-24-Elixir=>unknown template
+patch1-Lang-26-Elixir=>ingredient out of scope
+patch1-Lang-38-Elixir=>ingredient out of scope
+patch1-Lang-58-Elixir-plausible=>unknown template
+patch1-Math-104-Elixir-plausible=>ingredient out of scope
+patch1-Math-32-Elixir-plausible=>ingredient out of scope
+patch1-Math-50-Elixir=>unknown template
+patch1-Math-59-Elixir=>unknown template
+patch1-Time-11-Elixir-plausible=>unknown template
