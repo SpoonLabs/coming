@@ -33,10 +33,10 @@ import fr.inria.coming.core.engine.filespair.FilesPairNavigation;
 import fr.inria.coming.core.engine.git.GITRepositoryInspector;
 import fr.inria.coming.core.entities.interfaces.IFilter;
 import fr.inria.coming.core.entities.interfaces.IOutput;
-import fr.inria.coming.core.entities.output.EmptyOutput;
 import fr.inria.coming.core.entities.output.FeaturesOutput;
 import fr.inria.coming.core.entities.output.JSonChangeFrequencyOutput;
 import fr.inria.coming.core.entities.output.JSonPatternInstanceOutput;
+import fr.inria.coming.core.entities.output.NullOutput;
 import fr.inria.coming.core.entities.output.StdOutput;
 import fr.inria.coming.core.extensionpoints.PlugInLoader;
 import fr.inria.coming.core.extensionpoints.changepattern.PatternFileParser;
@@ -246,7 +246,7 @@ public class ComingMain {
 		String outputs = ComingProperties.getProperty("outputprocessor");
 		if (outputs == null) {
 			if (Boolean.valueOf(System.getProperty("executed_by_travis"))) {
-				navigatorEngine.getOutputProcessors().add(0, new EmptyOutput());
+				navigatorEngine.getOutputProcessors().add(0, new NullOutput());
 				System.out.println("****EXECUTED_BY_TRAVIS****");
 			} else {
 				navigatorEngine.getOutputProcessors().add(0, new StdOutput());
