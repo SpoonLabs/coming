@@ -14,11 +14,9 @@ import fr.inria.coming.core.entities.interfaces.IOutput;
  */
 public class StdOutput implements IOutput {
 	
-	Logger log = Logger.getLogger(StdOutput.class.getName());
-
 	@Override
 	public void generateFinalOutput(FinalResult finalResult) {
-		log.debug(finalResult);
+		System.out.println(finalResult);
 	}
 
 	@Override

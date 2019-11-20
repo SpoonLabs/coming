@@ -8,9 +8,9 @@
 	<!-- DO NOT CHANGE THIS VERSION, VERSION NUMBER IS AUTOMATICALLY HANDLED 
 		IN .buildscript/deploy_to_maven.sh -->
 	<version>0-SNAPSHOT</version>
-        <description>Coming</description>
-        <url>https://github.com/Spirals-Team/coming</url>
-        
+	<description>Coming</description>
+	<url>https://github.com/Spirals-Team/coming</url>
+
 	<packaging>jar</packaging>
 	<name>coming-parent</name>
 	<properties>
@@ -148,11 +148,11 @@
 			<version>0.1.3</version>
 		</dependency>
 
-        <dependency>
-            <groupId>io.github.java-diff-utils</groupId>
-            <artifactId>java-diff-utils</artifactId>
-            <version>4.0</version>
-        </dependency>
+		<dependency>
+			<groupId>io.github.java-diff-utils</groupId>
+			<artifactId>java-diff-utils</artifactId>
+			<version>4.0</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.reflections</groupId>
@@ -238,6 +238,11 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.0.0-M4</version>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -246,18 +251,18 @@
 			<id>release</id>
 			<build>
 				<plugins>
-                                    <plugin>
-                                        <groupId>org.sonatype.plugins</groupId>
-                                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                                        <version>1.6.2</version>
-                                        <extensions>true</extensions>
-                                        <configuration>
-                                            <serverId>ossrh</serverId>
-                                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                                        </configuration>
-                                    </plugin>
-                                    <!-- Source -->
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<version>1.6.2</version>
+						<extensions>true</extensions>
+						<configuration>
+							<serverId>ossrh</serverId>
+							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+							<autoReleaseAfterClose>true</autoReleaseAfterClose>
+						</configuration>
+					</plugin>
+					<!-- Source -->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-source-plugin</artifactId>
