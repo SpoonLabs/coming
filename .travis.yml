@@ -20,7 +20,7 @@ install: true
 
 # this is where all tests are executed
 script:
-- mvn test
+- mvn test -Dexecuted_by_travis=true
 - find . -name "*.json"
 
 after_success:

@@ -9,8 +9,4 @@
     </entity>
     <action entityId="4" type="*"/>
 
-    <entity id="3" type="*" role="Then">
-        <parent parentId="1" distance="1"/>
-    </entity>
-    <action entityId="3" type="UNCHANGED_HIGH_PRIORITY"/>
 </pattern>

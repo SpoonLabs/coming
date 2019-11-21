@@ -5,7 +5,6 @@ import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.repairability.RepairabilityAnalyzer;
 import fr.inria.coming.spoon.repairability.RepairabilityTest;
 import fr.inria.coming.spoon.repairability.RepairabilityTestUtils;
-import fr.inria.coming.spoon.repairability.checkers.DiffResultChecker;
 import fr.inria.coming.spoon.utils.TestUtils;
 import org.junit.Test;
 
@@ -57,13 +56,8 @@ public class CardumenTest {
 
     @Test
     public void testGroundTruthCreatedPatches() throws Exception {
-        RepairabilityTestUtils.checkGroundTruthPatches(getClass(), "Cardumen", new DiffResultChecker() {
-            @Override
-            public boolean isDiffResultCorrect(FinalResult result) {
-                // Gumtree detected 'del' or 'ins' operations instead of 'upd'.
-                return true;
-            }
-        }, 167, 0, 0);
+        RepairabilityTestUtils.checkGroundTruthPatches(getClass(), "Cardumen",
+                167, 0);
     }
 
 }

@@ -1,0 +1,44 @@
+detected:
+patch1-Chart-1-Elixir
+patch1-Chart-11-Elixir
+patch1-Chart-13-Elixir-plausible
+patch1-Chart-3-Elixir-plausible
+patch1-Chart-8-Elixir
+patch1-Chart-9-Elixir
+patch1-Lang-33-Elixir
+patch1-Lang-39-Elixir-plausible
+patch1-Lang-43-Elixir
+patch1-Lang-44-Elixir-plausible
+patch1-Lang-51-Elixir-plausible
+patch1-Lang-57-Elixir
+patch1-Lang-59-Elixir
+patch1-Lang-6-Elixir
+patch1-Math-2-Elixir-plausible
+patch1-Math-20-Elixir-plausible
+patch1-Math-30-Elixir
+patch1-Math-33-Elixir
+patch1-Math-34-Elixir
+patch1-Math-5-Elixir
+patch1-Math-57-Elixir
+patch1-Math-58-Elixir
+patch1-Math-63-Elixir-plausible
+patch1-Math-70-Elixir
+patch1-Math-73-Elixir-plausible
+patch1-Math-75-Elixir
+patch1-Math-80-Elixir-plausible
+patch1-Math-82-Elixir
+patch1-Math-85-Elixir
+patch1-Time-15-Elixir
+patch1-Time-4-Elixir
+
+undetected:
+patch1-Chart-17-Elixir-plausible=>gumtree detects duplicate operations
+patch1-Lang-24-Elixir=>unknown template
+patch1-Lang-26-Elixir=>ingredient out of scope
+patch1-Lang-38-Elixir=>ingredient out of scope
+patch1-Lang-58-Elixir-plausible=>unknown template
+patch1-Math-104-Elixir-plausible=>ingredient out of scope
+patch1-Math-32-Elixir-plausible=>ingredient out of scope
+patch1-Math-50-Elixir=>unknown template
+patch1-Math-59-Elixir=>unknown template
+patch1-Time-11-Elixir-plausible=>unknown template

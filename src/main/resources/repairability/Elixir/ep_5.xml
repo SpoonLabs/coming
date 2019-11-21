@@ -1,6 +1,6 @@
 <pattern name="update_invocation">
 
-    <entity id="1" type="Invocation" />
+    <entity id="1" type="AbstractInvocation" />
     <action entityId="1" type="UPD"/>
 
 </pattern>

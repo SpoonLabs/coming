@@ -43,5 +43,10 @@ public class ArjaTest {
        FinalResult result = RepairabilityTestUtils.runRepairability("Arja", "/repairability_test_files/arjatest4");
        RepairabilityTestUtils.checkNumberOfRepairInstances(result, 1, 1);
    }
+   
+//   @Test
+//	public void testGroundTruthCreatedPatches() throws Exception {
+//		RepairabilityTestUtils.checkGroundTruthPatches(getClass(), "Arja", 0, 0);
+//	}
 
 }

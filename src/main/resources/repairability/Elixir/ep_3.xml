@@ -10,6 +10,9 @@
         <parent parentId="2" distance="1"/>
     </entity>
 
+    <entity id="4" type="Statement"/>
+
+    <action entityId="4" type="MOV"/>
     <action entityId="1" type="INS"/>
     <action entityId="3" type="INS"/>
 

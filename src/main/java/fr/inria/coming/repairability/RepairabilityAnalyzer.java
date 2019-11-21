@@ -10,6 +10,7 @@ import fr.inria.coming.core.entities.AnalysisResult;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.main.ComingProperties;
 import fr.inria.coming.repairability.repairtools.AbstractRepairTool;
+import gumtree.spoon.diff.Diff;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -84,7 +85,7 @@ public class RepairabilityAnalyzer implements Analyzer {
                 }
             }
 
-            patternInstanceList = filterResult(patternInstanceList);
+            patternInstanceList = filterResult(patternInstanceList, instancesPerDiff.getDiff());
 
             // this PatternInstancesFromDiff contains only filtered elements
             allInstances.add(new PatternInstancesFromDiff(
@@ -99,7 +100,7 @@ public class RepairabilityAnalyzer implements Analyzer {
         return finalResult;
     }
 
-    private List<ChangePatternInstance> filterResult(List<ChangePatternInstance> patternInstanceList) {
+    private List<ChangePatternInstance> filterResult(List<ChangePatternInstance> patternInstanceList, Diff diff) {
         List<ChangePatternInstance> res = new ArrayList<>();
         Map<String, List> toolToInstances = new HashMap<>();
         for(ChangePatternInstance instance : patternInstanceList){
@@ -112,7 +113,7 @@ public class RepairabilityAnalyzer implements Analyzer {
             String toolName = entry.getKey();
             List<ChangePatternInstance> instances = entry.getValue();
             AbstractRepairTool tool = RepairTools.getRepairToolInstance(toolName);
-            res.addAll(tool.filterSelectedInstances(instances));
+            res.addAll(tool.filterSelectedInstances(instances, diff));
         }
         return res;
     }

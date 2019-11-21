@@ -36,6 +36,7 @@ import fr.inria.coming.core.entities.interfaces.IOutput;
 import fr.inria.coming.core.entities.output.FeaturesOutput;
 import fr.inria.coming.core.entities.output.JSonChangeFrequencyOutput;
 import fr.inria.coming.core.entities.output.JSonPatternInstanceOutput;
+import fr.inria.coming.core.entities.output.NullOutput;
 import fr.inria.coming.core.entities.output.StdOutput;
 import fr.inria.coming.core.extensionpoints.PlugInLoader;
 import fr.inria.coming.core.extensionpoints.changepattern.PatternFileParser;
@@ -65,7 +66,7 @@ public class ComingMain {
 
 		options.addOption(Option.builder("mode").argName("mineinstance | diff | features").hasArg()
 				.desc("the mode of execution of the analysis").build());
-		
+
 		options.addOption(Option.builder("featuretype").argName("S4R | P4J").hasArg()
 				.desc("the type of feature extraction").build());
 
@@ -116,8 +117,8 @@ public class ComingMain {
 				"If -mode=repairability, this option specifies which repair tools should we consider in our analysis. "
 						+ "Can be a list separated by " + File.pathSeparator)
 				.build());
-		
-	// feature module parameter
+
+		// feature module parameter
 		options.addOption(Option.builder("featuretype").argName("S4R | P4J").hasArg().desc(
 				"If -mode=features, this option specifies which feature extraction types should we consider in our analysis. "
 						+ "Can be a list separated by " + File.pathSeparator)
@@ -218,11 +219,10 @@ public class ComingMain {
 		String featureType = ComingProperties.getProperty("featuretype");
 		String input = ComingProperties.getProperty("input");
 
-
 		// CONFIGURATION:
 		loadInput(input);
 
-		loadModelAnalyzers(mode,featureType);
+		loadModelAnalyzers(mode, featureType);
 
 		loadFilters();
 
@@ -245,7 +245,13 @@ public class ComingMain {
 	private void loadOutput() {
 		String outputs = ComingProperties.getProperty("outputprocessor");
 		if (outputs == null) {
-			navigatorEngine.getOutputProcessors().add(0, new StdOutput());
+			if (Boolean.valueOf(System.getProperty("executed_by_travis"))) {
+				navigatorEngine.getOutputProcessors().add(0, new NullOutput());
+				System.out.println("****EXECUTED_BY_TRAVIS****");
+			} else {
+				navigatorEngine.getOutputProcessors().add(0, new StdOutput());
+				System.out.println("**NOT_EXECUTED_BY_TRAVIS**");
+			}
 		} else {
 			loadOutputProcessors(outputs);
 		}
@@ -292,17 +298,16 @@ public class ComingMain {
 
 			} else if ("features".equals(mode)) {
 				navigatorEngine.getAnalyzers().clear();
-				
+
 				navigatorEngine.getAnalyzers().add(new FineGrainDifftAnalyzer());
-			
+
 				if ("P4J".equals(featureType)) {
-				//for P4J:
-				navigatorEngine.getAnalyzers().add(new P4JFeatureAnalyzer());	
+					// for P4J:
+					navigatorEngine.getAnalyzers().add(new P4JFeatureAnalyzer());
 				} else {
-				//for S4R or by default
-				navigatorEngine.getAnalyzers().add(new FeatureAnalyzer());
+					// for S4R or by default
+					navigatorEngine.getAnalyzers().add(new FeatureAnalyzer());
 				}
-				
 
 				navigatorEngine.getOutputProcessors().add(new FeaturesOutput());
 

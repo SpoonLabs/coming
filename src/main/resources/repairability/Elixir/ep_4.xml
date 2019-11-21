@@ -3,5 +3,4 @@
     <entity id="1" type="BinaryOperator" />
     <action entityId="1" type="UPD"/>
 
-
 </pattern>

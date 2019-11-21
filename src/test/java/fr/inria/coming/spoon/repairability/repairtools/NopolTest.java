@@ -62,5 +62,10 @@ public class NopolTest {
         RepairabilityTestUtils.checkNumberOfRepairInstances(result, 1, 1);
     }
 
+//    @Test
+//	public void testGroundTruthCreatedPatches() throws Exception {
+//    	RepairabilityTestUtils.checkGroundTruthPatches(getClass(), "Nopol2015", 0, 0);
+//		RepairabilityTestUtils.checkGroundTruthPatches(getClass(), "Nopol2017", 0, 0);
+//	}
 
 }

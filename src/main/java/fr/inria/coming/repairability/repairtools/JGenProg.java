@@ -7,6 +7,7 @@ import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstan
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.changeminer.util.PatternXMLParser;
+import fr.inria.coming.utils.ASTInfoResolver;
 import fr.inria.coming.utils.CtEntityType;
 import fr.inria.coming.utils.EntityTypesInfoResolver;
 import gumtree.spoon.diff.Diff;
@@ -86,7 +87,7 @@ public class JGenProg extends AbstractRepairTool {
                 return false;
             }
 
-            newElement = getFirstAncestorOfType(affectedNode, CtEntityType.STATEMENT.toString());
+            newElement = ASTInfoResolver.getFirstAncestorOfType(affectedNode, CtEntityType.STATEMENT);
         } else {
             return false;
         }
@@ -94,20 +95,8 @@ public class JGenProg extends AbstractRepairTool {
         return doesElementOccursInSrcNode(srcNode, newElement);
     }
 
-    private CtElement getFirstAncestorOfType(CtElement affectedNode, String type) {
-        List<CtElement> pathToRoot = EntityTypesInfoResolver.getPathToRootNode(affectedNode);
-        for (int i = pathToRoot.size() - 1; i >= 0; i--) {
-            CtElement parent = pathToRoot.get(i);
-            if (EntityTypesInfoResolver.getInstance().isAChildOf
-                    (EntityTypesInfoResolver.getNodeLabelFromCtElement(parent), type)) {
-                return parent;
-            }
-        }
-        return null;
-    }
-
     private boolean doesElementOccursInSrcNode(CtElement srcNode, CtElement element) {
-        CtElement srcRootNodes = EntityTypesInfoResolver.getPathToRootNode(srcNode).get(0);
+        CtElement srcRootNodes = ASTInfoResolver.getPathToRootNode(srcNode).get(0);
         List<CtElement> allSrcElements = srcRootNodes.getElements(null);
 
         String elementStr = element.toString();
@@ -123,7 +112,7 @@ public class JGenProg extends AbstractRepairTool {
     }
 
     @Override
-    protected Set<CtElement> getInstanceCoveredNodes(ChangePatternInstance instance) {
+    protected Set<CtElement> getInstanceCoveredNodes(ChangePatternInstance instance, Diff diff) {
         Set<CtElement> res = new HashSet<>();
         Operation op = instance.getActions().get(0);
 
@@ -140,13 +129,13 @@ public class JGenProg extends AbstractRepairTool {
             }
         } else if (instance.getPattern().getName().contains(DEEP_PATTERN)) {
             if (op instanceof InsertOperation) {
-                res.add(getFirstAncestorOfType(op.getSrcNode(), CtEntityType.STATEMENT.toString()));
-                res.add(getFirstAncestorOfType(((InsertOperation) op).getParent(), CtEntityType.STATEMENT.toString()));
+                res.add(ASTInfoResolver.getFirstAncestorOfType(op.getSrcNode(), CtEntityType.STATEMENT));
+                res.add(ASTInfoResolver.getFirstAncestorOfType(((InsertOperation) op).getParent(), CtEntityType.STATEMENT));
             } else if (op instanceof UpdateOperation) {
-                res.add(getFirstAncestorOfType(op.getSrcNode(), CtEntityType.STATEMENT.toString()));
-                res.add(getFirstAncestorOfType(op.getDstNode(), CtEntityType.STATEMENT.toString()));
+                res.add(ASTInfoResolver.getFirstAncestorOfType(op.getSrcNode(), CtEntityType.STATEMENT));
+                res.add(ASTInfoResolver.getFirstAncestorOfType(op.getDstNode(), CtEntityType.STATEMENT));
             } else if (op instanceof DeleteOperation) {
-                res.add(getFirstAncestorOfType(op.getSrcNode(), CtEntityType.STATEMENT.toString()));
+                res.add(ASTInfoResolver.getFirstAncestorOfType(op.getSrcNode(), CtEntityType.STATEMENT));
             }
         }
 
@@ -154,14 +143,14 @@ public class JGenProg extends AbstractRepairTool {
     }
 
     @Override
-    public List<ChangePatternInstance> filterSelectedInstances(List<ChangePatternInstance> lst) {
+    public List<ChangePatternInstance> filterSelectedInstances(List<ChangePatternInstance> lst, Diff diff) {
         Map<ChangePatternInstance, Set> instanceToCoveredNodes = new HashMap<>();
         List<ChangePatternInstance> ret = new ArrayList<>();
 
         for (ChangePatternInstance instance : lst) {
             if (instance.getPattern().getName().contains(SHALLOW_PATTERN)) {
                 ret.add(instance);
-                instanceToCoveredNodes.put(instance, getInstanceCoveredNodes(instance));
+                instanceToCoveredNodes.put(instance, getInstanceCoveredNodes(instance, diff));
             }
         }
 
@@ -171,7 +160,7 @@ public class JGenProg extends AbstractRepairTool {
                 changedNodes.add(instance.getActions().get(0).getSrcNode());
                 if (instance.getActions().get(0).getDstNode() != null)
                     changedNodes.add(instance.getActions().get(0).getDstNode());
-                updateSelectedInstances(instanceToCoveredNodes, ret, instance, changedNodes);
+                updateSelectedInstances(instanceToCoveredNodes, ret, instance, changedNodes, diff);
             }
         }
 
@@ -183,7 +172,8 @@ public class JGenProg extends AbstractRepairTool {
                     Map<ChangePatternInstance, Set> instanceToCoveredNodes,
                     List<ChangePatternInstance> ret,
                     ChangePatternInstance instance,
-                    Collection<CtElement> changedNodes
+                    Collection<CtElement> changedNodes,
+                    Diff diff
             ) {
         boolean addedBefore = false;
         for (ChangePatternInstance existingInstance : ret) {
@@ -199,15 +189,7 @@ public class JGenProg extends AbstractRepairTool {
         }
         if (!addedBefore) {
             ret.add(instance);
-            instanceToCoveredNodes.put(instance, getInstanceCoveredNodes(instance));
-        }
-    }
-
-    private Operation getActionFromDelInsInstance(ChangePatternInstance instance, String actionType) {
-        if (instance.getActions().get(0).getAction().getName().equals(actionType)) {
-            return instance.getActions().get(0);
-        } else {
-            return instance.getActions().get(1);
+            instanceToCoveredNodes.put(instance, getInstanceCoveredNodes(instance, diff));
         }
     }
 }

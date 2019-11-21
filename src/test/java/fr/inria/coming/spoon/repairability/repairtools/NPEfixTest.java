@@ -14,5 +14,4 @@ public class NPEfixTest {
 
         //18 is FN
     }
-
 }

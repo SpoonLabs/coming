@@ -3,7 +3,7 @@ package fr.inria.coming.repairability.repairtools;
 import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.entity.IRevision;
-import fr.inria.coming.utils.EntityTypesInfoResolver;
+import fr.inria.coming.utils.ASTInfoResolver;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
 import spoon.reflect.declaration.CtElement;
@@ -100,7 +100,7 @@ public abstract class AbstractRepairTool {
     }
 
     public boolean coversTheWholeDiff(ChangePatternInstance instancePattern, Diff diff) {
-        Set<CtElement> instanceNodes = getInstanceCoveredNodes(instancePattern);
+        Set<CtElement> instanceNodes = getInstanceCoveredNodes(instancePattern, diff);
         for (Operation diffOperation : diff.getRootOperations()) {
             boolean found = coveredByInstanceNodes(instancePattern, instanceNodes, diffOperation);
             if(found == false)
@@ -127,7 +127,7 @@ public abstract class AbstractRepairTool {
                     CtElement node
             ) {
         List<CtElement> pathToDiffRoot =
-                EntityTypesInfoResolver.getPathToRootNode(node);
+                ASTInfoResolver.getPathToRootNode(node);
         for(CtElement element : pathToDiffRoot){
             for(CtElement instanceNode : instanceCoveredNodes) {
                 if (element == instanceNode)
@@ -138,13 +138,13 @@ public abstract class AbstractRepairTool {
     }
 
     // the abstract implementation only returns nodes in the Dst AST.
-    protected Set<CtElement> getInstanceCoveredNodes(ChangePatternInstance instance) {
+    protected Set<CtElement> getInstanceCoveredNodes(ChangePatternInstance instance, Diff diff) {
         return instance.getActions().stream()
                 .map(action -> (action.getDstNode() != null ? action.getDstNode() : action.getSrcNode()))
                 .collect(Collectors.toSet());
     }
 
-    public List<ChangePatternInstance> filterSelectedInstances(List<ChangePatternInstance> lst){
+    public List<ChangePatternInstance> filterSelectedInstances(List<ChangePatternInstance> lst, Diff diff){
         return lst;
     }
 }
