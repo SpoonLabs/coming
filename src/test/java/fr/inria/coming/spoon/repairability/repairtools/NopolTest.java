@@ -2,7 +2,13 @@ package fr.inria.coming.spoon.repairability.repairtools;
 
 
 import fr.inria.coming.changeminer.entity.FinalResult;
+import fr.inria.coming.main.ComingMain;
 import fr.inria.coming.spoon.repairability.RepairabilityTestUtils;
+
+import static org.junit.Assert.assertNotNull;
+
+import java.io.File;
+
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -62,10 +68,10 @@ public class NopolTest {
         RepairabilityTestUtils.checkNumberOfRepairInstances(result, 1, 1);
     }
 
-//    @Test
-//	public void testGroundTruthCreatedPatches() throws Exception {
-//    	RepairabilityTestUtils.checkGroundTruthPatches(getClass(), "Nopol2015", 0, 0);
-//		RepairabilityTestUtils.checkGroundTruthPatches(getClass(), "Nopol2017", 0, 0);
-//	}
-
+    @Test
+	public void testGroundTruthCreatedPatches() throws Exception {
+    	RepairabilityTestUtils.checkGroundTruthPatches(getClass(), "Nopol2015", 0, 0);
+		RepairabilityTestUtils.checkGroundTruthPatches(getClass(), "Nopol2017", 2, 0);
+	}
+    
 }

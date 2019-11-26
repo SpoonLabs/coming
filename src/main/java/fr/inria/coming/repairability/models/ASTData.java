@@ -3,15 +3,21 @@ package fr.inria.coming.repairability.models;
 import fr.inria.coming.utils.ASTInfoResolver;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class ASTData {
 	private static final String NAME_SEPARATOR = "###";
+
+	private String[] PREDEFINED_METHODS_AND_LITERALS_ARR = { "-1", "0", "1",
+			"size()", "length()", "isEmpty()", "length" };
+	private List<String> PREDEFINED_METHODS_AND_LITERALS = Arrays.asList(PREDEFINED_METHODS_AND_LITERALS_ARR);
 
 	private Set<String> executableInvocations;
 	private Set<String> variablesAndLiterals;
@@ -29,9 +35,81 @@ public class ASTData {
 			} else if (element instanceof CtMethod) {
 				executableInvocations.add(getExecutableQualifiedSignature(element));
 			} else if (element instanceof CtVariable) {
-				variablesAndLiterals.add(((CtVariable) element).getReference().toString());
+				variablesAndLiterals
+						.add(ASTInfoResolver.getCleanedName(((CtVariable) element).getReference().toString()));
+				if (element instanceof CtField) {
+					variablesAndLiterals.add(ASTInfoResolver.getCleanedName(((CtField) element).getSimpleName()));
+				}
 			}
 		}
+	}
+
+	public boolean canNopolGenerateCondition(CtElement condition) {
+		List<CtElement> elementsInConditional = condition.getElements(null);
+		for (CtElement element : elementsInConditional) {
+			String elementAsString = "";
+			if (element instanceof CtAbstractInvocation) {
+				elementAsString = getExecutableQualifiedSignature(element);
+			} else if (element instanceof CtVariableAccess || element instanceof CtLiteral) {
+				elementAsString = ASTInfoResolver.getCleanedName(element);
+			} else if (element instanceof CtMethod) {
+				elementAsString = getExecutableQualifiedSignature(element);
+			} else if (element instanceof CtVariable) {
+				elementAsString = ASTInfoResolver.getCleanedName(((CtVariable) element).getReference().toString());
+			} else {
+				continue;
+			}
+			
+			// nopol might use a field or method of an object that is not used in the src
+			String[] parts = elementAsString.split("\\.");
+			elementAsString = parts.length == 0 ? elementAsString : parts[parts.length - 1];
+			parts = elementAsString.split(NAME_SEPARATOR);
+			elementAsString = parts.length == 0 ? elementAsString : parts[parts.length - 1];
+
+			if (element.toString().equals("null") 
+					|| PREDEFINED_METHODS_AND_LITERALS.contains(elementAsString)) {
+				continue;
+			}
+
+			boolean isFromVariablesAndLiterals = false;
+			for (String str : variablesAndLiterals) {
+				if (str.equals(elementAsString)) {
+					isFromVariablesAndLiterals = true;
+					break;
+				}
+				parts = str.split("\\.");
+				str = parts.length == 0 ? str : parts[parts.length - 1];
+				if (str.equals(elementAsString)) {
+					isFromVariablesAndLiterals = true;
+					break;
+				}
+			}
+
+			if (isFromVariablesAndLiterals) {
+				continue;
+			}
+			
+			boolean isFromExecutables = false;
+			for (String str : executableInvocations) {
+				if (str.equals(elementAsString)) {
+					isFromExecutables = true;
+					break;
+				}
+				parts = str.split("\\.");
+				str = parts.length == 0 ? str : parts[parts.length - 1];
+				parts = str.split(NAME_SEPARATOR);
+				str = parts.length == 0 ? str : parts[parts.length - 1];
+				if (str.equals(elementAsString)) {
+					isFromExecutables = true;
+					break;
+				}
+			}
+
+			if (!isFromExecutables) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public boolean canElixirGenerateNode(CtElement mappedElement, CtElement newNode) {
@@ -68,8 +146,9 @@ public class ASTData {
 	private String getExecutableQualifiedSignature(CtElement element) {
 		if (element instanceof CtAbstractInvocation) {
 			CtAbstractInvocation invocation = (CtAbstractInvocation) element;
-			return invocation.getExecutable().getDeclaringType() == null ? "null" : invocation.getExecutable().getDeclaringType().toString()
-					+ NAME_SEPARATOR + invocation.getExecutable().getSignature();
+			return invocation.getExecutable().getDeclaringType() == null ? "null"
+					: invocation.getExecutable().getDeclaringType().toString() + NAME_SEPARATOR
+							+ invocation.getExecutable().getSignature();
 		} else if (element instanceof CtMethod) {
 			CtMethod method = (CtMethod) element;
 			return method.getDeclaringType().getQualifiedName().toString() + NAME_SEPARATOR + method.getSignature();

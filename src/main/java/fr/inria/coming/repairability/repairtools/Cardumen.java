@@ -13,6 +13,7 @@ import gumtree.spoon.diff.operations.InsertOperation;
 import gumtree.spoon.diff.operations.Operation;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -115,6 +116,10 @@ public class Cardumen extends AbstractRepairTool {
             CtElement srcElement = allSrcElements.get(i);
             if (srcElement instanceof CtVariableAccess || srcElement instanceof CtLiteral) {
                 srcVariablesAndLiterals.add(ASTInfoResolver.getCleanedName(srcElement));
+                if(srcElement instanceof CtField) {
+                	srcVariablesAndLiterals.add(ASTInfoResolver.getCleanedName(((CtField)srcElement)
+							.getSimpleName()));
+                }
             }
         }
 
