@@ -1,0 +1,14 @@
+detected:
+patch1-Chart-5-Nopol2015
+patch1-Lang-39-Nopol2015-plausible
+patch1-Lang-44-Nopol2015
+patch1-Lang-51-Nopol2015-plausible
+patch1-Lang-55-Nopol2015
+patch1-Lang-58-Nopol2015
+patch1-Math-50-Nopol2015
+patch1-Math-58-Nopol2015-plausible
+patch1-Math-85-Nopol2015-plausible
+
+undetected:
+patch1-Math-49-Nopol2015-plausible
+patch1-Time-11-Nopol2015-plausible

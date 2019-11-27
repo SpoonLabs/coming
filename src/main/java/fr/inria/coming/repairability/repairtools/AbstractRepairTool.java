@@ -101,11 +101,14 @@ public abstract class AbstractRepairTool {
 
     public boolean coversTheWholeDiff(ChangePatternInstance instancePattern, Diff diff) {
         Set<CtElement> instanceNodes = getInstanceCoveredNodes(instancePattern, diff);
+        
         for (Operation diffOperation : diff.getRootOperations()) {
             boolean found = coveredByInstanceNodes(instancePattern, instanceNodes, diffOperation);
+            
             if(found == false)
                 return false;
         }
+        
         return true;
     }
 

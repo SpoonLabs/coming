@@ -105,7 +105,7 @@ public class RepairabilityTestUtils {
 
         File[] files = new File(groundTruthPatchesBasePath).listFiles();
         for (File file : files) {
-//            if (!file.getName().contains("patch1-Lang-33-Elixir"))
+//            if (!file.getName().contains("patch1-Time-14-Nopol2017"))
 //                continue;
             FinalResult result =
                     RepairabilityTestUtils.runRepairabilityWithParameters
@@ -132,7 +132,6 @@ public class RepairabilityTestUtils {
         }
 
         assertEquals(expectedOverDetected, overDetectedInstances.size());
-
         assertEquals(expectedUndetected, undetectedInstances.size());
         /* legitimate causes for undetectedInstances:
         1- ingredient (variable or literal) is extracted from a different scope (not from the same file).

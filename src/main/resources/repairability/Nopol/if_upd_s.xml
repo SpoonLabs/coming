@@ -4,6 +4,6 @@
     <entity id="2" type="*" role="condition">
         <parent parentId="1" distance="1"/>
     </entity>
-    <action entityId="2" type="*"/>
+    <action entityId="2" type="UPD"/>
 
 </pattern>
