@@ -1,7 +1,7 @@
-<pattern name="any_statement_deep">
+<pattern name="arja_deep_change">
 
-    <entity id="1" type="*" role="Statement"/>
-    <entity id="2" type="*" role="*">
+    <entity id="1" type="Statement"/>
+    <entity id="2" type="*">
         <parent parentId="1" distance="1000000"/>
     </entity>
     <action entityId="2" type="*"/>

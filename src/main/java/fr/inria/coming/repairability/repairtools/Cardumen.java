@@ -25,14 +25,10 @@ import java.util.stream.Collectors;
  * The templates of the generated expressions are extracted from the same file/package/project by replacing variables with
  * placeholders.
  * <p>
-<<<<<<< HEAD
  * expression_replacement_by_upd.xml pattern collects the changes that update an expression.
  * expression_replacement_by_del_ins.xml pattern collects the changes that delete an expression and then insert a new expression.
  * expression_replacement_by_del_mov.xml pattern collects the changes that replace an expression with a part of it.
  * expression_insertion_deep.xml pattern collects the changes that update an expression by inserting an expression to it.
-=======
- * expression_replacement.xml pattern only collects the changes that update an expression.
->>>>>>> d7c9b8fc40ada20a3598c017c8cb4f9b6b271bea
  * <p>
  * The filter functions should determine whether the new expression is an instance of a template from the same file.
  */
