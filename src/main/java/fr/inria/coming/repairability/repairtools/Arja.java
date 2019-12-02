@@ -7,13 +7,9 @@ import fr.inria.coming.changeminer.util.PatternXMLParser;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.*;
 import spoon.Launcher;
-import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.code.CtConstructorCall;
-import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.*;
 import spoon.reflect.path.CtRole;
-import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.io.File;
 import java.util.ArrayList;
