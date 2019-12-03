@@ -105,7 +105,7 @@ public class RepairabilityTestUtils {
 
         File[] files = new File(groundTruthPatchesBasePath).listFiles();
         for (File file : files) {
-            if (!file.getName().contains("patch6-Math-20-Arja-plausible"))
+            if (!file.getName().contains("patch1-Lang-20-Arja"))
                 continue;
             FinalResult result =
                     RepairabilityTestUtils.runRepairabilityWithParameters

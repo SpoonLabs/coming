@@ -112,10 +112,10 @@ public class Cardumen extends AbstractRepairTool {
             CtElement srcElement = allSrcElements.get(i);
             if (srcElement instanceof CtVariableAccess || srcElement instanceof CtLiteral) {
                 srcVariablesAndLiterals.add(ASTInfoResolver.getCleanedName(srcElement));
-                if(srcElement instanceof CtField) {
-                	srcVariablesAndLiterals.add(ASTInfoResolver.getCleanedName(((CtField)srcElement)
-							.getSimpleName()));
-                }
+            }
+            if(srcElement instanceof CtField) {
+            	srcVariablesAndLiterals.add(ASTInfoResolver.getCleanedName(((CtField)srcElement)
+						.getSimpleName()));
             }
         }
 
