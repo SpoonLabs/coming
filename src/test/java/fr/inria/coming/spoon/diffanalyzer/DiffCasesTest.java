@@ -1,6 +1,7 @@
 package fr.inria.coming.spoon.diffanalyzer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -9,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.github.difflib.text.DiffRow;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -24,6 +24,7 @@ import gumtree.spoon.AstComparator;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.InsertOperation;
 import gumtree.spoon.diff.operations.Operation;
+import spoon.reflect.code.CtComment;
 
 /**
  * 
@@ -263,6 +264,72 @@ public class DiffCasesTest {
 
 		assertEquals("CharSequenceUtils.java", insop.getSrcNode().getPosition().getFile().getName());
 		assertEquals("CharSequenceUtils.java", insop.getParent().getPosition().getFile().getName());
+
+	}
+
+	@Test
+	public void testDiff1Comment() throws Exception {
+		File s = getFile("diffcases/diffcomment1/1205753_EmbedPooledConnection_0_s.java");
+		File t = getFile("diffcases/diffcomment1/1205753_EmbedPooledConnection_0_t.java");
+		FineGrainDifftAnalyzer r = new FineGrainDifftAnalyzer();
+		boolean includeComments = true;
+		Diff diffOut = r.getDiff(s, t, includeComments);
+		System.out.println("Output: " + diffOut);
+		Assert.assertEquals(1, diffOut.getRootOperations().size());
+		Operation op = diffOut.getRootOperations().get(0);
+		Assert.assertTrue(op.getSrcNode().getComments().size() > 0);
+
+		List<Operation> allop = diffOut.getAllOperations();
+		boolean hasComment = false;
+		for (Operation operation : allop) {
+			hasComment = hasComment || (operation.getSrcNode() instanceof CtComment);
+		}
+		assertTrue(hasComment);
+
+	}
+
+	@Test
+	public void testDiff2Comment() throws Exception {
+		File s = getFile("diffcases/diffcomment2/1205753_EmbedPooledConnection_0_s.java");
+		File t = getFile("diffcases/diffcomment2/1205753_EmbedPooledConnection_0_t.java");
+		FineGrainDifftAnalyzer r = new FineGrainDifftAnalyzer();
+		boolean includeComments = true;
+		Diff diffOut = r.getDiff(s, t, includeComments);
+		System.out.println("Output: " + diffOut);
+		Assert.assertEquals(1, diffOut.getRootOperations().size());
+
+		List<Operation> allop = diffOut.getAllOperations();
+		boolean hasComment = false;
+		for (Operation operation : allop) {
+			hasComment = hasComment || (operation.getSrcNode() instanceof CtComment);
+		}
+		assertTrue(hasComment);
+
+	}
+
+	@Test
+	public void testDiff3Comment() throws Exception {
+		File s = getFile("diffcases/diffcomment3/RectangularCholeskyDecomposition_s.java");
+		File t = getFile("diffcases/diffcomment3/RectangularCholeskyDecomposition_t.java");
+		FineGrainDifftAnalyzer r = new FineGrainDifftAnalyzer();
+		boolean includeComments = true;
+		Diff diffOut = r.getDiff(s, t, includeComments);
+		System.out.println("Output: " + diffOut);
+		Assert.assertEquals(1, diffOut.getRootOperations().size());
+		Operation op = diffOut.getRootOperations().get(0);
+		Assert.assertTrue(op.getSrcNode().getComments().size() > 0);
+
+		assertFalse(op.getSrcNode() instanceof CtComment);
+
+		List<Operation> allop = diffOut.getAllOperations();
+		boolean hasComment = false;
+		for (Operation operation : allop) {
+			if ((operation.getSrcNode() instanceof CtComment)) {
+				hasComment = true;
+				System.out.println(operation.getSrcNode());
+			}
+		}
+		assertTrue(hasComment);
 
 	}
 

@@ -1,7 +1,10 @@
 package fr.inria.coming.changeminer.analyzer.commitAnalyzer;
 
 import java.io.File;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -10,24 +13,23 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
+
 import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.text.DiffRow;
 import com.github.difflib.text.DiffRowGenerator;
-import fr.inria.coming.core.entities.AnalysisResult;
-import org.apache.log4j.Logger;
 
 import fr.inria.coming.changeminer.analyzer.DiffEngineFacade;
 import fr.inria.coming.changeminer.entity.GranuralityType;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.engine.Analyzer;
+import fr.inria.coming.core.entities.AnalysisResult;
 import fr.inria.coming.core.entities.DiffResult;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.core.entities.interfaces.IRevisionPair;
 import fr.inria.coming.main.ComingProperties;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
-
-import static java.lang.String.valueOf;
 
 /**
  * Commit analyzer: It searches fine grain changes.
@@ -38,7 +40,8 @@ import static java.lang.String.valueOf;
 public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 
 	Logger log = Logger.getLogger(FineGrainDifftAnalyzer.class.getName());
-	DiffEngineFacade cdiff = new DiffEngineFacade();
+
+	protected DiffEngineFacade cdiff = new DiffEngineFacade();
 
 	protected GranuralityType granularity;
 
@@ -47,6 +50,7 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 	 */
 	public FineGrainDifftAnalyzer() {
 		granularity = GranuralityType.valueOf(ComingProperties.getProperty("GRANULARITY"));
+		cdiff = new DiffEngineFacade(ComingProperties.getPropertyBoolean("processcomments"));
 	}
 
 	/**
@@ -60,7 +64,6 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 		Map<String, Diff> diffOfFiles = new HashMap<>();
 
 		List<DiffRow> rows = null;
-
 
 		log.info("\n*****\nCommit: " + revision.getName());
 
@@ -77,11 +80,8 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 				diffOfFiles.put(fileFromRevision.getName(), diff);
 			}
 
-			DiffRowGenerator generator = DiffRowGenerator.create()
-					.showInlineDiffs(false)
-					.inlineDiffByWord(false)
-					.ignoreWhiteSpaces(true)
-					.build();
+			DiffRowGenerator generator = DiffRowGenerator.create().showInlineDiffs(false).inlineDiffByWord(false)
+					.ignoreWhiteSpaces(true).build();
 
 			try {
 				rows = generator.generateDiffRows(
@@ -109,7 +109,7 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 
 		}
 
-		return (new DiffResult<IRevision, Diff>(revision, diffOfFiles,rows));
+		return (new DiffResult<IRevision, Diff>(revision, diffOfFiles, rows));
 	}
 
 	@Override
@@ -160,8 +160,13 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 	}
 
 	public Diff getDiff(File left, File right) throws Exception {
-
 		DiffEngineFacade cdiff = new DiffEngineFacade();
+		Diff d = cdiff.compareFiles(left, right, GranuralityType.SPOON);
+		return d;
+	}
+
+	public Diff getDiff(File left, File right, boolean includeComment) throws Exception {
+		DiffEngineFacade cdiff = new DiffEngineFacade(includeComment);
 		Diff d = cdiff.compareFiles(left, right, GranuralityType.SPOON);
 		return d;
 	}
