@@ -28,6 +28,7 @@ import gumtree.spoon.diff.operations.Operation;
 import gumtree.spoon.diff.operations.UpdateOperation;
 import spoon.Launcher;
 import spoon.reflect.code.CtAbstractInvocation;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtClass;
@@ -49,10 +50,14 @@ import spoon.reflect.reference.CtTypeReference;
  */
 
 public class Arja extends AbstractRepairTool {
+	private static final int INS_DEL_COMMON_PAR_HEIGHT = 5;
+	
 	private static final String ARJA_DEEP_PATTERN = "arja_deep_change";
 	private static final String ARJA_SHALLOW_PATTERN = "arja_shallow_change";
+	private static final String ARJA_INS_DEL = "arja_ins_del";
 
-	private static final String[] patternFileNames = { ARJA_DEEP_PATTERN + ".xml", ARJA_SHALLOW_PATTERN + ".xml" };
+	private static final String[] patternFileNames = { ARJA_DEEP_PATTERN + ".xml", 
+			ARJA_SHALLOW_PATTERN + ".xml", ARJA_INS_DEL + ".xml" };
 
 	@Override
 	protected List<ChangePatternSpecification> readPatterns() {
@@ -67,8 +72,6 @@ public class Arja extends AbstractRepairTool {
 	public boolean filter(ChangePatternInstance instance, IRevision revision, Diff diff) {
 		String patternType = instance.getPattern().getName().split(File.pathSeparator)[1];
 		Operation op = instance.getActions().get(0);
-		String previousVersionString = (String) revision.getChildren().get(0).getPreviousVersion();
-//		CtClass srcClass = Launcher.parseClass(previousVersionString);
 
 		if (patternType.contains(ARJA_SHALLOW_PATTERN)) {
 
@@ -85,7 +88,7 @@ public class Arja extends AbstractRepairTool {
 				CtElement srcRoot = ASTInfoResolver.getRootNode(((InsertOperation) op).getParent());
 				return canBeReproducedFromSrc(srcRoot, (CtStatement) op.getSrcNode());
 			} else if (op instanceof UpdateOperation) {
-				return canBeReproducedFromSrc(ASTInfoResolver.getRootNode(op.getSrcNode()), 
+				return canBeReproducedFromSrc(ASTInfoResolver.getRootNode(op.getSrcNode()),
 						(CtStatement) op.getDstNode());
 			}
 
@@ -97,7 +100,7 @@ public class Arja extends AbstractRepairTool {
 				if (!mapping.hasSrc(((Insert) op.getAction()).getParent()))
 					return false;
 
-				affectedNode = op.getSrcNode();
+				affectedNode = op.getSrcNode().getParent();
 				srcNode = ((InsertOperation) op).getParent();
 			} else if (op instanceof DeleteOperation) {
 				MappingStore mapping = diff.getMappingsComp();
@@ -119,19 +122,45 @@ public class Arja extends AbstractRepairTool {
 			CtStatement newElement = (CtStatement) ASTInfoResolver.getFirstAncestorOfType(affectedNode,
 					CtEntityType.STATEMENT);
 
+			if (newElement == null || srcNode == null) {
+				return false;
+			}
+
 			return canBeReproducedFromSrc(ASTInfoResolver.getRootNode(srcNode), newElement);
+		} else if (patternType.contains(ARJA_INS_DEL)) {
+			Operation insOp = getActionFromDelInsInstance(instance, "INS"), 
+					delOp = getActionFromDelInsInstance(instance, "DEL");
+			
+			MappingStore mapping = diff.getMappingsComp();
+			if (!mapping.hasSrc(((Insert) op.getAction()).getParent()))
+				// the inserted node is a part of a parent inserted node
+				return false;
+			
+			List<CtElement> insPars =
+					ASTInfoResolver.getNSubsequentParents(((InsertOperation)insOp).getParent(), INS_DEL_COMMON_PAR_HEIGHT), 
+					delPars = ASTInfoResolver.getNSubsequentParents(delOp.getSrcNode(), INS_DEL_COMMON_PAR_HEIGHT);
+			
+			Set<CtElement> insDistinctParsSet = new HashSet<CtElement>();
+			insDistinctParsSet.addAll(insPars);
+			insDistinctParsSet.removeAll(delPars);
+			
+			if (insDistinctParsSet.size() == insPars.size())
+                return false;
+
+			CtElement srcRoot = ASTInfoResolver.getRootNode(((InsertOperation) op).getParent());
+			return canBeReproducedFromSrc(srcRoot, (CtStatement) op.getSrcNode());
 		}
 
 		return false;
 	}
 
 	private boolean canBeReproducedFromSrc(CtElement src, CtStatement target) {
-		if (!checkSrcIncludesDstTemplate(src, target))
-			return false;
-
 		if (!checkSrcContainsTargetVarsAndMethods(src, target)) {
 			return false;
 		}
+
+		if (!checkSrcIncludesDstTemplate(src, target))
+			return false;
 
 		return true;
 	}
@@ -151,7 +180,8 @@ public class Arja extends AbstractRepairTool {
 		for (int i = 0; i < allDstElements.size(); i++) {
 			CtElement dstElement = allDstElements.get(i);
 
-			if (dstElement instanceof CtVariableAccess || dstElement instanceof CtVariable) {
+			if ((dstElement instanceof CtVariableAccess || dstElement instanceof CtVariable)
+					&& !(dstElement instanceof CtLocalVariable)) {
 				String variableType = getType(dstElement);
 				dstNodeAsString = replaceElement(dstNodeAsString, dstElement.toString(), "#" + variableType + "#");
 			}
@@ -170,11 +200,11 @@ public class Arja extends AbstractRepairTool {
 			}
 
 			List<CtElement> curSrcSubElements = currentSrcElement.getElements(null);
-			if(curSrcSubElements.size() > allDstElements.size() * 5) {
+			if (curSrcSubElements.size() > allDstElements.size() * 5) {
 				// to ignore the case where the srcElem is too bigger than the dstElem
 				continue;
 			}
-			
+
 			String srcAsString = currentSrcElement.toString();
 			Set<CtElement> elementsInSubtree = new HashSet<>();
 			elementsInSubtree.add(currentSrcElement);
@@ -184,7 +214,8 @@ public class Arja extends AbstractRepairTool {
 
 				elementsInSubtree.add(srcElement);
 
-				if (srcElement instanceof CtVariable || srcElement instanceof CtVariableAccess) {
+				if ((srcElement instanceof CtVariable || srcElement instanceof CtVariableAccess)
+						&& !(srcElement instanceof CtLocalVariable)) {
 					String variableOrLiteralType = getType(srcElement);
 					srcAsString = replaceElement(srcAsString, srcElement.toString(), "#" + variableOrLiteralType + "#");
 				}
@@ -279,6 +310,12 @@ public class Arja extends AbstractRepairTool {
 			} else if (op instanceof DeleteOperation) {
 				res.add(ASTInfoResolver.getFirstAncestorOfType(op.getSrcNode(), CtEntityType.STATEMENT));
 			}
+		} else if (instance.getPattern().getName().contains(ARJA_INS_DEL)) {
+			Operation delOp = getActionFromDelInsInstance(instance, "DEL"), 
+					insOp = getActionFromDelInsInstance(instance, "INS");
+			
+			res.add(insOp.getSrcNode());
+			res.add(delOp.getSrcNode());
 		}
 
 		return res;
@@ -293,6 +330,19 @@ public class Arja extends AbstractRepairTool {
 			if (instance.getPattern().getName().contains(ARJA_SHALLOW_PATTERN)) {
 				ret.add(instance);
 				instanceToCoveredNodes.put(instance, getInstanceCoveredNodes(instance, diff));
+			}
+		}
+
+		for (ChangePatternInstance instance : lst) {
+			if (instance.getPattern().getName().contains(ARJA_INS_DEL)) {
+				List<CtElement> changedNodes = new ArrayList<>();
+
+				Operation delOp = getActionFromDelInsInstance(instance, "DEL"),
+						insOp = getActionFromDelInsInstance(instance, "INS");
+
+				changedNodes.add(insOp.getSrcNode());
+				changedNodes.add(delOp.getSrcNode());
+				updateSelectedInstances(instanceToCoveredNodes, ret, instance, changedNodes, diff);
 			}
 		}
 
@@ -329,4 +379,12 @@ public class Arja extends AbstractRepairTool {
 			instanceToCoveredNodes.put(instance, getInstanceCoveredNodes(instance, diff));
 		}
 	}
+	
+	private Operation getActionFromDelInsInstance(ChangePatternInstance instance, String actionType) {
+        if (instance.getActions().get(0).getAction().getName().equals(actionType)) {
+            return instance.getActions().get(0);
+        } else {
+            return instance.getActions().get(1);
+        }
+    }
 }

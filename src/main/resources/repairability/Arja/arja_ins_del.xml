@@ -1,0 +1,11 @@
+<pattern name="arja_ins_del">
+    
+    <entity id="1" type="Statement">
+    </entity>
+    <action entityId="1" type="INS"/>
+    
+    <entity id="2" type="Statement">
+    </entity>
+    <action entityId="2" type="DEL"/>
+    
+</pattern>

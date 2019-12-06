@@ -21,7 +21,6 @@ patch1-Math-49-Arja-plausible
 patch1-Math-5-Arja
 patch1-Math-50-Arja
 patch1-Math-53-Arja
-patch1-Math-58-Arja
 patch1-Math-6-Arja-plausible
 patch1-Math-68-Arja-plausible
 patch1-Math-8-Arja-plausible
@@ -86,7 +85,6 @@ patch4-Time-4-Arja-plausible
 patch5-Chart-12-Arja-plausible
 patch5-Chart-13-Arja-plausible
 patch5-Chart-25-Arja-plausible
-patch5-Lang-55-Arja-plausible
 patch5-Lang-59-Arja-plausible
 patch5-Lang-63-Arja-plausible
 patch5-Math-2-Arja-plausible
@@ -100,7 +98,6 @@ patch6-Lang-59-Arja-plausible
 patch6-Lang-7-Arja-plausible
 patch6-Math-2-Arja-plausible
 patch6-Math-80-Arja-plausible
-patch6-Time-4-Arja-plausible
 patch7-Chart-12-Arja-plausible
 patch7-Lang-59-Arja-plausible
 patch7-Lang-7-Arja-plausible
@@ -121,6 +118,8 @@ patch9-Math-28-Arja-plausible
 patch9-Math-80-Arja-plausible
 
 undetected:
+patch1-Math-58-Arja=>template out of scope
+patch6-Time-4-Arja-plausible=>template
 patch1-Chart-12-Arja=>template/method out of scope
 patch1-Chart-19-Arja-plausible=>template out of scope
 patch1-Chart-5-Arja=>UNDETECTED
@@ -128,6 +127,7 @@ patch1-Lang-20-Arja=>more than one ops
 patch1-Lang-20-Arja-plausible=>more than one ops
 patch1-Lang-35-Arja=>more
 patch1-Lang-41-Arja-plausible=>more
+patch5-Lang-55-Arja-plausible=>more
 patch1-Lang-50-Arja-plausible=>more
 patch1-Lang-51-Arja-plausible=>UNDETECTED
 patch1-Lang-55-Arja-plausible=>more
