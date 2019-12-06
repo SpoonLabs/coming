@@ -21,22 +21,33 @@ public class DiffEngineFacade {
 
 	private Logger log = Logger.getLogger(DiffEngineFacade.class.getName());
 
+	boolean includeComments = false;
+
+	public DiffEngineFacade() {
+		super();
+	}
+
+	public DiffEngineFacade(boolean includeComments) {
+		super();
+		this.includeComments = includeComments;
+	}
+
 	public Diff compareContent(String contentL, String contentR, GranuralityType granularity) throws Exception {
 
-		AstComparator comparator = new AstComparator();
+		AstComparator comparator = new AstComparator(this.includeComments);
 		return comparator.compare(contentL, contentR);
 
 	}
 
 	public Diff compareContent(String contentL, String contentR, String nameLeft, String nameRight) throws Exception {
 
-		AstComparator comparator = new AstComparator();
+		AstComparator comparator = new AstComparator(this.includeComments);
 		return comparator.compare(contentL, contentR, nameLeft, nameRight);
 
 	}
 
 	public Diff compareFiles(File contentL, File contentR, GranuralityType granularity) throws Exception {
-		AstComparator comparator = new AstComparator();
+		AstComparator comparator = new AstComparator(this.includeComments);
 		return comparator.compare(contentL, contentR);
 
 	}

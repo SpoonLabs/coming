@@ -11,12 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstanceAnalyzer;
-import fr.inria.coming.spoon.utils.TestUtils;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,6 +23,7 @@ import com.github.gumtreediff.matchers.Matcher;
 
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.HunkDifftAnalyzer;
+import fr.inria.coming.changeminer.analyzer.instancedetector.PatternInstanceAnalyzer;
 import fr.inria.coming.changeminer.entity.CommitFinalResult;
 import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.changeminer.entity.IRevision;
@@ -46,8 +46,11 @@ import fr.inria.coming.spoon.core.dummies.MyTestFilter;
 import fr.inria.coming.spoon.core.dummies.MyTestInput;
 import fr.inria.coming.spoon.core.dummies.MyTestOutput;
 import fr.inria.coming.spoon.core.dummies.MyTestParser;
+import fr.inria.coming.spoon.utils.TestUtils;
 import fr.inria.coming.utils.CommandSummary;
 import gumtree.spoon.diff.Diff;
+import gumtree.spoon.diff.operations.Operation;
+import spoon.reflect.code.CtComment;
 
 /**
  * 
@@ -84,7 +87,6 @@ public class MainComingTest {
 		ComingMain.main(new String[] {});
 	}
 
-
 	@Test
 	public void testListEntities() {
 
@@ -112,30 +114,26 @@ public class MainComingTest {
 
 		assertFalse(output.exists());
 
-		FinalResult r = new ComingMain().run(
-				new String[] { "-mode", "features", "-location", "repogit4testv0"});
+		FinalResult r = new ComingMain().run(new String[] { "-mode", "features", "-location", "repogit4testv0" });
 
 		// the JSON file has been created
 		assertTrue(output.exists());
 	}
 
-    @Test
-    public void testFilePairsMain() throws Exception {
+	@Test
+	public void testFilePairsMain() throws Exception {
 
-        File left = getFile("diffcases/differror1/1205753_EmbedPooledConnection_0_s.java");
-        File right = getFile("diffcases/differror1/1205753_EmbedPooledConnection_0_t.java");
+		File left = getFile("diffcases/differror1/1205753_EmbedPooledConnection_0_s.java");
+		File right = getFile("diffcases/differror1/1205753_EmbedPooledConnection_0_t.java");
 
-        ComingMain cm = new ComingMain();
+		ComingMain cm = new ComingMain();
 
-        Object result = cm.run(
-                new String[]{"-location", left.getAbsolutePath() + File.pathSeparator + right.getAbsolutePath(),
-                        "-input", "filespair",
-                        "-entitytype", "BinaryOperator",
-                        "-action", "INS"});
+		Object result = cm
+				.run(new String[] { "-location", left.getAbsolutePath() + File.pathSeparator + right.getAbsolutePath(),
+						"-input", "filespair", "-entitytype", "BinaryOperator", "-action", "INS" });
 
-        assertNotNull(result);
-    }
-
+		assertNotNull(result);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Test
@@ -163,35 +161,33 @@ public class MainComingTest {
 
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testOrderOutputwithOptionNcount() throws Exception {
+		ComingMain cm = new ComingMain();
+		Object result = cm.run(new String[] { "-location", "repogit4testv0", "-hunkanalysis", "true", "-parameters",
+				"max_nb_commit_analyze:10" });
+		assertNotNull(result);
+		assertTrue(result instanceof CommitFinalResult);
+		CommitFinalResult cfres = (CommitFinalResult) result;
+		Map<Commit, RevisionResult> commits = cfres.getAllResults();
 
+		// we have only ten commits
+		assertEquals(10, commits.size());
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testOrderOutputwithOptionNcount() throws Exception {
-        ComingMain cm = new ComingMain();
-        Object result = cm.run(new String[] { "-location", "repogit4testv0", "-hunkanalysis", "true" ,"-parameters","max_nb_commit_analyze:10"});
-        assertNotNull(result);
-        assertTrue(result instanceof CommitFinalResult);
-        CommitFinalResult cfres = (CommitFinalResult) result;
-        Map<Commit, RevisionResult> commits = cfres.getAllResults();
+		List<String> commitsInOrder = new ArrayList<>();
+		for (String commit : this.commitsId) {
+			commitsInOrder.add(commit);
+		}
 
-        // we have only ten commits
-        assertEquals(10, commits.size());
+		int currentIndex = commits.size() - 10 + 3;
+		for (Commit commit : commits.keySet()) {
 
-        List<String> commitsInOrder = new ArrayList<>();
-        for (String commit : this.commitsId) {
-            commitsInOrder.add(commit);
-        }
+			assertEquals(currentIndex, commitsInOrder.indexOf(commit.getName()));
+			currentIndex++;
+		}
 
-
-        int currentIndex = commits.size()-10+3;
-        for (Commit commit : commits.keySet()) {
-
-            assertEquals(currentIndex, commitsInOrder.indexOf(commit.getName()));
-            currentIndex++;
-        }
-
-    }
+	}
 
 	@SuppressWarnings("unchecked")
 	@Test
@@ -771,17 +767,15 @@ public class MainComingTest {
 	}
 
 	@Test
-	public void testMaxTimeForGitRepos(){
-		FinalResult result = new ComingMain().run(
-				new String[] { "-location", "repogit4testv0", "-mode", "repairability", "-repairtool", "ALL",
-						"-parameters", "max_time_for_a_git_repo:0" });
+	public void testMaxTimeForGitRepos() {
+		FinalResult result = new ComingMain().run(new String[] { "-location", "repogit4testv0", "-mode",
+				"repairability", "-repairtool", "ALL", "-parameters", "max_time_for_a_git_repo:0" });
 
 		int instancesCnt = TestUtils.countNumberOfInstances(result, PatternInstanceAnalyzer.class);
 		assertTrue(instancesCnt == 0);
 
-		result = new ComingMain().run(
-				new String[] { "-location", "repogit4testv0", "-mode", "repairability", "-repairtool", "ALL",
-						"-parameters", "max_time_for_a_git_repo:-1" });
+		result = new ComingMain().run(new String[] { "-location", "repogit4testv0", "-mode", "repairability",
+				"-repairtool", "ALL", "-parameters", "max_time_for_a_git_repo:-1" });
 
 		instancesCnt = TestUtils.countNumberOfInstances(result, PatternInstanceAnalyzer.class);
 		assertTrue(instancesCnt > 0);
@@ -800,6 +794,77 @@ public class MainComingTest {
 		ClassLoader classLoader = getClass().getClassLoader();
 		File file = new File(classLoader.getResource(name).getFile());
 		return file;
+	}
+
+	@Test
+	public void testIncludeCommentMain() throws Exception {
+
+		File left = getFile("diffcases/diffcomment1/1205753_EmbedPooledConnection_0_s.java");
+		File right = getFile("diffcases/diffcomment1/1205753_EmbedPooledConnection_0_t.java");
+
+		ComingMain cm = new ComingMain();
+		// With comments
+		FinalResult result = cm.run(new String[] { "-location",
+				left.getAbsolutePath() + File.pathSeparator + right.getAbsolutePath(), "-input", "filespair",
+				"-entitytype", "BinaryOperator", "-action", "INS", "-processcomments", "true" });
+
+		assertNotNull(result);
+
+		assertNotNull(result.values().size() > 0);
+
+		RevisionResult rr = (RevisionResult) result.values().stream().findFirst().get();
+		DiffResult<IRevision, Diff> diff = (DiffResult) rr.get(FineGrainDifftAnalyzer.class.getSimpleName());
+
+		Assert.assertTrue(diff.getAll().size() > 0);
+
+		Diff diffOut = diff.getAll().get(0);
+
+		Assert.assertEquals(1, diffOut.getRootOperations().size());
+		Operation op = diffOut.getRootOperations().get(0);
+		Assert.assertTrue(op.getSrcNode().getComments().size() > 0);
+
+		List<Operation> allop = diffOut.getAllOperations();
+		boolean hasComment = false;
+		for (Operation operation : allop) {
+			hasComment = hasComment || (operation.getSrcNode() instanceof CtComment);
+		}
+		assertTrue(hasComment);
+
+	}
+
+	@Test
+	public void testNotIncludeCommentMain() throws Exception {
+
+		File left = getFile("diffcases/diffcomment1/1205753_EmbedPooledConnection_0_s.java");
+		File right = getFile("diffcases/diffcomment1/1205753_EmbedPooledConnection_0_t.java");
+
+		ComingMain cm = new ComingMain();
+		// With comments
+		FinalResult result = cm.run(new String[] { "-location",
+				left.getAbsolutePath() + File.pathSeparator + right.getAbsolutePath(), "-input", "filespair",
+				"-entitytype", "BinaryOperator", "-action", "INS", "-processcomments", "false" });
+
+		assertNotNull(result);
+
+		assertNotNull(result.values().size() > 0);
+
+		RevisionResult rr = (RevisionResult) result.values().stream().findFirst().get();
+		DiffResult<IRevision, Diff> diff = (DiffResult) rr.get(FineGrainDifftAnalyzer.class.getSimpleName());
+
+		Assert.assertTrue(diff.getAll().size() > 0);
+
+		Diff diffOut = diff.getAll().get(0);
+
+		Operation op = diffOut.getRootOperations().get(0);
+		Assert.assertTrue(op.getSrcNode().getComments().isEmpty());
+
+		List<Operation> allop = diffOut.getAllOperations();
+		boolean hasComment = false;
+		for (Operation operation : allop) {
+			hasComment = hasComment || (operation.getSrcNode() instanceof CtComment);
+		}
+		assertFalse(hasComment);
+
 	}
 
 }

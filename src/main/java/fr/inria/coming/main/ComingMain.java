@@ -123,6 +123,9 @@ public class ComingMain {
 				"If -mode=features, this option specifies which feature extraction types should we consider in our analysis. "
 						+ "Can be a list separated by " + File.pathSeparator)
 				.build());
+
+		options.addOption(Option.builder("processcomments").argName("true | false").hasArg()
+				.desc("Indicates if Coming considers code comments (inline, block, JavaDoc)").build());
 	}
 
 	public static void main(String[] args) {
