@@ -172,4 +172,24 @@ public class ASTData {
 	public void setVariablesAndLiterals(Set<String> variablesAndLiterals) {
 		this.variablesAndLiterals = variablesAndLiterals;
 	}
+
+	public boolean canArjaFindVarsAndMethods(CtElement target) {
+		List<CtElement> allElements = target.getElements(null);
+		
+		for (CtElement element : allElements) {
+			if (element instanceof CtAbstractInvocation) {
+				if(!executableInvocations.contains(getExecutableQualifiedSignature(element)))
+					return false;
+			} else if (element instanceof CtVariableAccess) {
+				if(!variablesAndLiterals.contains(ASTInfoResolver.getCleanedName(element)))
+					return false;
+			} else if (element instanceof CtVariable) {
+				if(!variablesAndLiterals
+						.contains(ASTInfoResolver.getCleanedName(((CtVariable) element).getReference().toString())))
+					return false;
+			}
+		}
+		
+		return true;
+	}
 }

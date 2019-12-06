@@ -116,7 +116,7 @@ public abstract class RevisionNavigationExperiment<R extends IRevision> {
                 if (!(accept(oneRevision))) {
                     continue;
                 }
-
+                
                 RevisionResult resultAllAnalyzed = new RevisionResult(oneRevision);
                 for (Analyzer analyzer : analyzers) {
 

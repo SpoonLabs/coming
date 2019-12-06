@@ -105,7 +105,7 @@ public class RepairabilityTestUtils {
 
         File[] files = new File(groundTruthPatchesBasePath).listFiles();
         for (File file : files) {
-//            if (!file.getName().contains("patch1-Time-14-Nopol2017"))
+//            if (!file.getName().contains("patch1-Chart-12-Arja-plausible"))
 //                continue;
             FinalResult result =
                     RepairabilityTestUtils.runRepairabilityWithParameters

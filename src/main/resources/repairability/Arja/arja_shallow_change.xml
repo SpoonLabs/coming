@@ -1,0 +1,4 @@
+<pattern name="arja_shallow_change">
+    <entity id="1" type="Statement"/>
+    <action entityId="1" type="*"/>
+</pattern>
