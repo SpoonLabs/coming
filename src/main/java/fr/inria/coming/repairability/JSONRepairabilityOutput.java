@@ -21,118 +21,115 @@ import java.io.File;
 
 public class JSONRepairabilityOutput extends JSonPatternInstanceOutput {
 
-    Logger log = Logger.getLogger(FineGrainDifftAnalyzer.class.getName());
+	Logger log = Logger.getLogger(FineGrainDifftAnalyzer.class.getName());
 
-    public void getInstancesOfRevision(RevisionResult revisionResult, JsonArray instances) {
+	public void getInstancesOfRevision(RevisionResult revisionResult, JsonArray instances) {
 
-        String revisionIdentifier = null;
-        if (revisionResult.getRelatedRevision() != null) {
-            revisionIdentifier = revisionResult.getRelatedRevision().getName();
-        }
+		String revisionIdentifier = null;
+		if (revisionResult.getRelatedRevision() != null) {
+			revisionIdentifier = revisionResult.getRelatedRevision().getName();
+		}
 
-        PatternInstancesFromRevision result = null;
-        if (ComingProperties.getPropertyBoolean("print_only_repair_results")) {
-            result = (PatternInstancesFromRevision) revisionResult.getResultFromClass(RepairabilityAnalyzer.class);
-        } else {
-            result = (PatternInstancesFromRevision) revisionResult.getResultFromClass(PatternInstanceAnalyzer.class);
-        }
-        for (PatternInstancesFromDiff pi : result.getInfoPerDiff()) {
-            if (pi.getInstances().size() > 0) {
+		PatternInstancesFromRevision result = null;
+		result = (PatternInstancesFromRevision) revisionResult.getResultFromClass(RepairabilityAnalyzer.class);
+		for (PatternInstancesFromDiff pi : result.getInfoPerDiff()) {
+			if (pi.getInstances().size() > 0) {
 
-                Diff diff = pi.getDiff();
+				Diff diff = pi.getDiff();
 
-                JsonObject instance = new JsonObject();
+				JsonObject instance = new JsonObject();
 
-                instance.addProperty("revision", revisionIdentifier.toString());
+				instance.addProperty("revision", revisionIdentifier.toString());
 
-                log.info("\n--------\ncommit with instance:\n " + revisionIdentifier);
+				log.info("\n--------\ncommit with instance:\n " + revisionIdentifier);
 //              System.out.println("\n--------\ncommit with instance:\n " + revisionIdentifier);
 //              log.info(pi.getInstances());
 //              System.out.println(pi.getInstances());
 
-                JsonArray repair_tools = new JsonArray();
-                for (ChangePatternInstance instancePattern : pi.getInstances()) {
+				JsonArray repair_tools = new JsonArray();
+				for (ChangePatternInstance instancePattern : pi.getInstances()) {
 
-                    JsonObject repair = new JsonObject();
-                    repair.addProperty("tool-name", (instancePattern.getPattern().getName().split(File.pathSeparator)[0]));
-                    repair.addProperty("pattern-name", (instancePattern.getPattern().getName()));
-                    repair.addProperty("Unified_Diff_of-files:", "Starts Below...");
+					JsonObject repair = new JsonObject();
+					repair.addProperty("tool-name",
+							(instancePattern.getPattern().getName().split(File.pathSeparator)[0]));
+					repair.addProperty("pattern-name", (instancePattern.getPattern().getName()));
+					repair.addProperty("Unified_Diff_of-files:", "Starts Below...");
 
 //                  System.out.println("result.getRow_list()");
 //                  System.out.println(result.getRow_list());
-                    for (DiffRow row : result.getRow_list()) {
-                        switch (row.getTag()) {
-                            case INSERT:
-                                repair.addProperty("INSERT:", row.getNewLine());
-                                break;
-                            case DELETE:
-                                repair.addProperty("DELETE:", row.getOldLine());
-                                break;
-                            case CHANGE:
-                                repair.addProperty("CHANGE_old:", row.getOldLine());
-                                repair.addProperty("CHANGE_new:", row.getNewLine());
-                                break;
-                        }
-                    }
+					for (DiffRow row : result.getRow_list()) {
+						switch (row.getTag()) {
+						case INSERT:
+							repair.addProperty("INSERT:", row.getNewLine());
+							break;
+						case DELETE:
+							repair.addProperty("DELETE:", row.getOldLine());
+							break;
+						case CHANGE:
+							repair.addProperty("CHANGE_old:", row.getOldLine());
+							repair.addProperty("CHANGE_new:", row.getNewLine());
+							break;
+						}
+					}
 
-                    JsonArray ops = new JsonArray();
+					JsonArray ops = new JsonArray();
 
-                    for (PatternAction pa : instancePattern.getActionOperation().keySet()) {
-                        Operation op = instancePattern.getActionOperation().get(pa);
-                        JsonObject opjson = new JsonObject();
-                        opjson.addProperty("pattern_action", pa.getAction().toString());
-                        opjson.add("pattern_entity", getJSONFromEntity(pa.getAffectedEntity()));
-                        opjson.add("concrete_change", getJSONFromOperator(op));
+					for (PatternAction pa : instancePattern.getActionOperation().keySet()) {
+						Operation op = instancePattern.getActionOperation().get(pa);
+						JsonObject opjson = new JsonObject();
+						opjson.addProperty("pattern_action", pa.getAction().toString());
+						opjson.add("pattern_entity", getJSONFromEntity(pa.getAffectedEntity()));
+						opjson.add("concrete_change", getJSONFromOperator(op));
 
-                        if (op.getNode().getPosition() != null && op.getNode().getPosition().isValidPosition()) {
-                            try {
-                                opjson.addProperty("line", op.getNode().getPosition().getLine());
-                            } catch (UnsupportedOperationException e) {
-                                e.printStackTrace();
-                                opjson.addProperty("line", -1);
-                            }
-                            if (op.getNode().getPosition().getFile() != null) {
-                                opjson.addProperty("file", op.getNode().getPosition().getFile().getAbsolutePath());
-                            }
-                        }
+						if (op.getNode().getPosition() != null && op.getNode().getPosition().isValidPosition()) {
+							try {
+								opjson.addProperty("line", op.getNode().getPosition().getLine());
+							} catch (UnsupportedOperationException e) {
+								e.printStackTrace();
+								opjson.addProperty("line", -1);
+							}
+							if (op.getNode().getPosition().getFile() != null) {
+								opjson.addProperty("file", op.getNode().getPosition().getFile().getAbsolutePath());
+							}
+						}
 
-                        if (isRootOperation(op, diff)) {
-                            InstanceStats instanceStats = getOperationStats(op);
-                            opjson.add("stats", getJSONFromInstanceStats(instanceStats));
-                        }
-                        ops.add(opjson);
-                    }
+						if (isRootOperation(op, diff)) {
+							InstanceStats instanceStats = getOperationStats(op);
+							opjson.add("stats", getJSONFromInstanceStats(instanceStats));
+						}
+						ops.add(opjson);
+					}
 
-                    repair.add("instance_detail", ops);
-                    repair_tools.add(repair);
+					repair.add("instance_detail", ops);
+					repair_tools.add(repair);
 
-                }
-                instance.add("repairability", repair_tools);
-                instances.add(instance);
+				}
+				instance.add("repairability", repair_tools);
+				instances.add(instance);
 
-            }
-        }
-    }
+			}
+		}
+	}
 
-    private boolean isRootOperation(Operation op, Diff diff) {
-        for (Operation diffOp : diff.getRootOperations()) {
-            if (diffOp.getAction().equals(op.getAction())) {
-                return true;
-            }
-        }
-        return false;
-    }
+	private boolean isRootOperation(Operation op, Diff diff) {
+		for (Operation diffOp : diff.getRootOperations()) {
+			if (diffOp.getAction().equals(op.getAction())) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-    private InstanceStats getOperationStats(Operation operation) {
-        InstanceStats stats = new InstanceStats();
-        if (operation.getSrcNode() != null) {
-            stats.setSrcEntityTypes(operation.getSrcNode().getReferencedTypes());
-            stats.setNumberOfSrcEntities(operation.getSrcNode().getElements(null).size());
-        }
-        if (operation.getDstNode() != null) {
-            stats.setDstEntityTypes(operation.getDstNode().getReferencedTypes());
-            stats.setNumberOfDstEntities(operation.getDstNode().getElements(null).size());
-        }
-        return stats;
-    }
+	private InstanceStats getOperationStats(Operation operation) {
+		InstanceStats stats = new InstanceStats();
+		if (operation.getSrcNode() != null) {
+			stats.setSrcEntityTypes(operation.getSrcNode().getReferencedTypes());
+			stats.setNumberOfSrcEntities(operation.getSrcNode().getElements(null).size());
+		}
+		if (operation.getDstNode() != null) {
+			stats.setDstEntityTypes(operation.getDstNode().getReferencedTypes());
+			stats.setNumberOfDstEntities(operation.getDstNode().getElements(null).size());
+		}
+		return stats;
+	}
 }
