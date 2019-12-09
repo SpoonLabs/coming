@@ -155,32 +155,6 @@ public class RepairabilityTest {
         assertFalse(hasRepetitiveToolUseForSingleRevision);
     }
 
-    @Test
-    public void testJSONRepairabilityOutputPrintModeParameter() throws Exception {
-        File output = new File("./coming_results/all_instances_found.json");
-        // clean test data
-        if(output.exists())
-            output.delete();
-        assertFalse(output.exists());
-
-        FinalResult r = RepairabilityTestUtils.runRepairabilityWithParameters
-                (
-                        "ALL",
-                        "/repairability_test_files/exclude_not_covering/",
-                        "exclude_repair_patterns_not_covering_the_whole_diff:true:print_only_repair_results:true"
-                );
-
-        // the JSON file has been created
-        assertTrue(output.exists());
-
-        JSONParser parser = new JSONParser();
-        JSONObject jo = (JSONObject) parser.parse(new FileReader(output));
-        JSONArray ja = (JSONArray) jo.get("instances");
-        // if it was PatternInstanceAnalyzer output, it would also include some instances for not_covered
-        assertEquals(ja.size(), 1);
-    }
-
-
     private boolean checkIncludingRepetitiveToolUseForSingleRevision(FinalResult result) {
         Map<IRevision, RevisionResult> revisionsMap = result.getAllResults();
         boolean hasRepetitiveToolUseForSingleRevision = false;
