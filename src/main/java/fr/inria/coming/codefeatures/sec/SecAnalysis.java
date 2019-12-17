@@ -3,7 +3,6 @@ package fr.inria.coming.codefeatures.sec;
 import java.util.List;
 import java.util.Map;
 
-import com.github.difflib.text.DiffRow;
 import com.github.gumtreediff.tree.ITree;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -20,6 +19,7 @@ import gumtree.spoon.diff.operations.InsertOperation;
 import gumtree.spoon.diff.operations.MoveOperation;
 import gumtree.spoon.diff.operations.Operation;
 import gumtree.spoon.diff.operations.UpdateOperation;
+import spoon.reflect.code.CtComment;
 
 /**
  * 
@@ -38,6 +38,15 @@ public class SecAnalysis {
 
 			// code source
 			change.addProperty("content", operation.getSrcNode().toString());
+
+			// comment
+			JsonArray commentArrays = new JsonArray();
+			change.add("comments", commentArrays);
+			List<CtComment> comments = operation.getSrcNode().getComments();
+
+			for (CtComment comment : comments) {
+				commentArrays.add(comment.getContent());
+			}
 
 			//
 			Json4SpoonGenerator jsongen = new Json4SpoonGenerator();
