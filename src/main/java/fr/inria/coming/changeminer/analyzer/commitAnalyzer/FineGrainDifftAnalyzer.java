@@ -19,7 +19,6 @@ import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.text.DiffRow;
 import com.github.difflib.text.DiffRowGenerator;
 
-import fr.inria.coming.changeminer.analyzer.DiffEngineFacade;
 import fr.inria.coming.changeminer.entity.GranuralityType;
 import fr.inria.coming.changeminer.entity.IRevision;
 import fr.inria.coming.core.engine.Analyzer;
@@ -28,6 +27,7 @@ import fr.inria.coming.core.entities.DiffResult;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.core.entities.interfaces.IRevisionPair;
 import fr.inria.coming.main.ComingProperties;
+import gumtree.spoon.AstComparator;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
 
@@ -41,16 +41,19 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 
 	Logger log = Logger.getLogger(FineGrainDifftAnalyzer.class.getName());
 
-	protected DiffEngineFacade cdiff = new DiffEngineFacade();
+	protected AstComparator cdiff = null;
 
 	protected GranuralityType granularity;
+
+	protected boolean includeComments = false;
 
 	/**
 	 *
 	 */
 	public FineGrainDifftAnalyzer() {
 		granularity = GranuralityType.valueOf(ComingProperties.getProperty("GRANULARITY"));
-		cdiff = new DiffEngineFacade(ComingProperties.getPropertyBoolean("processcomments"));
+		this.includeComments = ComingProperties.getPropertyBoolean("processcomments");
+		cdiff = new AstComparator(includeComments);
 	}
 
 	/**
@@ -133,7 +136,7 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 
 			try {
 
-				Diff diff = cdiff.compareContent(left, right, leftName, rightName);
+				Diff diff = cdiff.compare(left, right, leftName, rightName);
 
 				operations = diff.getRootOperations();
 
@@ -160,22 +163,22 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 	}
 
 	public Diff getDiff(File left, File right) throws Exception {
-		DiffEngineFacade cdiff = new DiffEngineFacade();
-		Diff d = cdiff.compareFiles(left, right, GranuralityType.SPOON);
+		AstComparator localdiff = new AstComparator(ComingProperties.getPropertyBoolean("processcomments"));
+		Diff d = localdiff.compare(left, right);
 		return d;
 	}
 
 	public Diff getDiff(File left, File right, boolean includeComment) throws Exception {
-		DiffEngineFacade cdiff = new DiffEngineFacade(includeComment);
-		Diff d = cdiff.compareFiles(left, right, GranuralityType.SPOON);
+		AstComparator localdiff = new AstComparator(includeComment);
+		Diff d = localdiff.compare(left, right);
 		return d;
 	}
 
 	private Future<Diff> getDiffInFuture(ExecutorService executorService, File left, File right) {
 
 		Future<Diff> future = executorService.submit(() -> {
-			DiffEngineFacade cdiff = new DiffEngineFacade();
-			Diff d = cdiff.compareFiles(left, right, GranuralityType.SPOON);
+			AstComparator cdiff = new AstComparator(this.includeComments);
+			Diff d = cdiff.compare(left, right);
 			return d;
 		});
 		return future;
