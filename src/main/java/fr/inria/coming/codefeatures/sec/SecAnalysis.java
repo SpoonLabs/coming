@@ -45,7 +45,10 @@ public class SecAnalysis {
 			List<CtComment> comments = operation.getSrcNode().getComments();
 
 			for (CtComment comment : comments) {
-				commentArrays.add(comment.getContent());
+				JsonObject cjson = new JsonObject();
+				cjson.addProperty("comment", comment.getContent());
+				cjson.addProperty("isnew", newCommentInPrevious(comment, iDiff));
+				commentArrays.add(cjson);
 			}
 
 			//
@@ -81,6 +84,25 @@ public class SecAnalysis {
 		return change;
 	}
 
+	public static boolean newCommentInPrevious(CtComment comment, Diff diff) {
+
+		boolean existInsert = false;
+		boolean existDetete = false;
+
+		for (Operation op : diff.getAllOperations()) {
+
+			if (op.getNode() == comment && op instanceof InsertOperation)
+				existInsert = true;
+
+			if (op instanceof DeleteOperation && op.getNode() instanceof CtComment
+					&& (op.getNode() == comment || op.getSrcNode().toString().equals(comment.toString())))
+				existDetete = true;
+
+		}
+
+		return existInsert && !existDetete;
+	}
+
 	public static JsonArray getSubChanges(MapList<Operation, Operation> operationHierarchy, Operation operation,
 			Diff iDiff) {
 		JsonArray subChanges = new JsonArray();
@@ -104,6 +126,8 @@ public class SecAnalysis {
 		rootRevision.addProperty("vulnerability_type", vtypes.get(rev.getName()).getType());
 		rootRevision.addProperty("project", vtypes.get(rev.getName()).getProject());
 		rootRevision.addProperty("cve", vtypes.get(rev.getName()).getCVE());
+		rootRevision.addProperty("cwe", vtypes.get(rev.getName()).getCWE());
+		rootRevision.addProperty("cwe_type", vtypes.get(rev.getName()).getCWEType());
 
 		int numbersOfFiles = result.getDiffOfFiles().keySet().size();
 

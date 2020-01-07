@@ -11,6 +11,8 @@ public class VulInstance {
 	String project;
 	String CVE;
 	String type;
+	String CWE;
+	String CWE_type;
 
 	public VulInstance(String commit, String project, String cVE, String type) {
 		super();
@@ -55,5 +57,21 @@ public class VulInstance {
 	@Override
 	public String toString() {
 		return "VulInstance [commit=" + commit + ", project=" + project + ", CVE=" + CVE + ", type=" + type + "]";
+	}
+
+	public String getCWE() {
+		return CWE;
+	}
+
+	public void setCWE(String cWE) {
+		CWE = cWE;
+	}
+
+	public String getCWEType() {
+		return CWE_type;
+	}
+
+	public void setCWEType(String cWE_type) {
+		CWE_type = cWE_type;
 	}
 }
