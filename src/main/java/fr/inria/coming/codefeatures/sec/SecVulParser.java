@@ -28,6 +28,13 @@ public class SecVulParser {
 
 			VulInstance vi = new VulInstance(commitId, project, cve, vtype);
 
+			if (record.size() > 5) {
+				String cwe = record.get(4);
+				vi.setCWE(cwe);
+				String cwetype = record.get(5);
+				vi.setCWEType(cwetype);
+			}
+
 			vulfound.put(commitId, vi);
 		}
 
