@@ -6,7 +6,7 @@ Coming is a tool for mining git repositories.
 
 If you use Coming, please cite one of: 
 
-* [Coming: a Tool for Mining Change Pattern Instances from Git Commits](http://arxiv.org/pdf/1810.08532). M. Martinez, M. Monperrus, Proceedings of ICSE - Demo track, 2019. [bibtex](https://www.monperrus.net/martin/bibtexbrowser.php?key=arXiv-1810.08532&bib=monperrus.bib)
+* [Coming: a Tool for Mining Change Pattern Instances from Git Commits](http://arxiv.org/pdf/1810.08532). M. Martinez, M. Monperrus, Proceedings of ICSE - Demo track, 2019 ([doi:10.1109/ICSE-Companion.2019.00043](https://doi.org/10.1109/ICSE-Companion.2019.00043)). [bibtex](https://www.monperrus.net/martin/bibtexbrowser.php?key=arXiv-1810.08532&bib=monperrus.bib)
 * [Accurate Extraction of Bug Fix Pattern Occurrences using Abstract Syntax Tree Analysis](https://hal.archives-ouvertes.fr/hal-01075938/file/bug-fix-pattern-identification.pdf) (Matias Martinez, Laurence Duchien and Martin Monperrus), Technical report hal-01075938, Inria, 2014 [bibtex](https://www.monperrus.net/martin/bibtexbrowser.php?key=martinez%3Ahal-01075938&bib=monperrus.bib)
 * [Automatically Extracting Instances of Code Change Patterns with AST Analysis](https://hal.inria.fr/hal-00861883/file/paper-short.pdf) (Martinez, M.; Duchien, L.; Monperrus, M.) IEEE International Conference on Software Maintenance (ICSM), pp.388-391, 2013, doi: 10.1109/ICSM.2013.54 [bibtex](https://www.monperrus.net/martin/bibtexbrowser.php?key=martinez%3Ahal-00861883&bib=monperrus.bib)
 
