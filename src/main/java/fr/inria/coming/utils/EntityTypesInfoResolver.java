@@ -15,7 +15,7 @@ import java.util.*;
 // FIXME: getPathToRootNode & getOperatoinStats & getLabel... functions should be moved to a separate class
 public class EntityTypesInfoResolver {
     private static EntityTypesInfoResolver _instance = null;
-    private static final String CLASSES_HIERARCHY_PATH = "src/main/resources/gumtree-inheritance-relations.txt";
+    private static final String CLASSES_HIERARCHY_FILE_NAME = "gumtree-inheritance-relations.txt";
 
     private Map<String, Set<String>> childrenToParentsRelationsBetweenEntityTypes;
 
@@ -32,7 +32,7 @@ public class EntityTypesInfoResolver {
     private void loadChildrenToParentsRelationsBetweenEntityTypes() {
         childrenToParentsRelationsBetweenEntityTypes = new HashMap<>();
         try {
-            Scanner sc = new Scanner(new File(CLASSES_HIERARCHY_PATH));
+        	Scanner sc = new Scanner(new File(getClass().getClassLoader().getResource(CLASSES_HIERARCHY_FILE_NAME).getFile()));
 
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
