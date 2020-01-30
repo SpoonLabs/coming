@@ -1,0 +1,22 @@
+<pattern name="npefix_global_replace">
+
+    <entity id="1" type="If"/>
+    
+    <entity id="2" type="BinaryOperator" role="condition">
+        <parent parentId="1" distance="1"/>
+    </entity>
+    <entity id="3" type="*" role="right_operant" value="null">
+    	<parent parentId="2" distance="1"/>
+    </entity>
+    
+    <entity id="4" type="*" role="Then">
+    	<parent parentId="1" distance="10"/>
+    </entity>
+    <entity id="5" type="Assignment">
+    	<parent parentId="4" distance="10"/>
+    </entity>
+    
+    <action entityId="1" type="INS"/>
+    <action entityId="5" type="INS"/>
+
+</pattern>

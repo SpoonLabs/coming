@@ -1,5 +1,0 @@
-<pattern name="replacement1">
-    <entity id="1" type="Assignment" />
-    <action entityId="1" type="INS"/>
-
-</pattern>

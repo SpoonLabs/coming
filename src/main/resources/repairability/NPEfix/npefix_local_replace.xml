@@ -1,0 +1,24 @@
+<pattern name="npefix_local_replace">
+
+    <entity id="1" type="If"/>
+    
+    <entity id="2" type="BinaryOperator" role="condition">
+        <parent parentId="1" distance="1"/>
+    </entity>
+    <entity id="3" type="*" role="right_operant" value="null">
+    	<parent parentId="2" distance="1"/>
+    </entity>
+    
+    <entity id="4" type="*" role="Then">
+    	<parent parentId="1" distance="10"/>
+    </entity>
+    
+    <entity id="6" type="Statement">
+    	<parent parentId="1" distance="10"/>
+    </entity>
+    
+    <action entityId="1" type="INS"/>
+    <action entityId="4" type="INS"/>
+    <action entityId="6" type="MOV"/>
+
+</pattern>
