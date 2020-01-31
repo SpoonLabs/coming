@@ -92,6 +92,10 @@ public class NPEfix extends AbstractRepairTool {
 			}
 
 			CtIf ifNode = (CtIf) insOp.getSrcNode();
+			
+			if(!(ifNode.getCondition() instanceof CtBinaryOperator))
+				return false;
+			
 			CtBinaryOperator condition = (CtBinaryOperator) ifNode.getCondition();
 
 			if (!condition.getKind().equals(BinaryOperatorKind.NE)) {
@@ -99,6 +103,11 @@ public class NPEfix extends AbstractRepairTool {
 			}
 
 			if (ifNode.getElseStatement() != null) {
+				return false;
+			}
+			
+			if(ifNode.getThenStatement() instanceof CtBlock 
+					&& ((CtBlock)ifNode.getThenStatement()).getStatements().size() > 1) {
 				return false;
 			}
 		} else if (patternType.startsWith(NPEFIX_S4)) {
@@ -111,6 +120,10 @@ public class NPEfix extends AbstractRepairTool {
 
 			CtReturn retNode = (CtReturn) retOp.getSrcNode();
 			CtIf ifNode = (CtIf) ifOp.getSrcNode();
+			
+			if(!(ifNode.getCondition() instanceof CtBinaryOperator))
+				return false;
+			
 			CtBinaryOperator condition = (CtBinaryOperator) ifNode.getCondition();
 
 			if (!condition.getKind().equals(BinaryOperatorKind.EQ)) {
@@ -118,6 +131,11 @@ public class NPEfix extends AbstractRepairTool {
 			}
 
 			if (ifNode.getElseStatement() != null) {
+				return false;
+			}
+			
+			if(ifNode.getThenStatement() instanceof CtBlock 
+					&& ((CtBlock)ifNode.getThenStatement()).getStatements().size() > 1) {
 				return false;
 			}
 			
@@ -145,6 +163,10 @@ public class NPEfix extends AbstractRepairTool {
 			CtAssignment assignNode = (CtAssignment) assignOp.getSrcNode();
 			CtExpression assigned = assignNode.getAssigned();
 			CtIf ifNode = (CtIf) ifOp.getSrcNode();
+			
+			if(!(ifNode.getCondition() instanceof CtBinaryOperator))
+				return false;
+			
 			CtBinaryOperator condition = (CtBinaryOperator) ifNode.getCondition();
 
 			if (!condition.getKind().equals(BinaryOperatorKind.EQ)) {
@@ -156,6 +178,11 @@ public class NPEfix extends AbstractRepairTool {
 			}
 
 			if (ifNode.getElseStatement() != null) {
+				return false;
+			}
+			
+			if(ifNode.getThenStatement() instanceof CtBlock 
+					&& ((CtBlock)ifNode.getThenStatement()).getStatements().size() > 1) {
 				return false;
 			}
 
@@ -189,6 +216,10 @@ public class NPEfix extends AbstractRepairTool {
 			CtStatement movedNode = (CtStatement) movOp.getDstNode();
 
 			CtIf ifNode = (CtIf) ifOp.getSrcNode();
+			
+			if(!(ifNode.getCondition() instanceof CtBinaryOperator))
+				return false;
+			
 			CtBinaryOperator condition = (CtBinaryOperator) ifNode.getCondition();
 
 			if (!condition.getKind().equals(BinaryOperatorKind.EQ)) {
@@ -197,6 +228,16 @@ public class NPEfix extends AbstractRepairTool {
 
 			if (ifNode.getElseStatement() == null
 					|| (ifNode.getElseStatement() != movedNode && ifNode.getElseStatement() != movedNode.getParent())) {
+				return false;
+			}
+			
+			if(ifNode.getThenStatement() instanceof CtBlock 
+					&& ((CtBlock)ifNode.getThenStatement()).getStatements().size() > 1) {
+				return false;
+			}
+			
+			if(ifNode.getElseStatement() instanceof CtBlock 
+					&& ((CtBlock)ifNode.getElseStatement()).getStatements().size() > 1) {
 				return false;
 			}
 
