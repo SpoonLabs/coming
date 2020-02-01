@@ -1,8 +1,0 @@
-<pattern name="replacement3">
-
-    <entity id="2" type="BinaryOperator" role="*"/>
-
-    <action entityId="2" type="INS"/>
-
-</pattern>
-

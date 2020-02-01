@@ -1,0 +1,196 @@
+detected:
+patch1-Lang-304
+patch1-Lang-587
+patch1-Lang-703
+patch1-Math-1115
+patch1-Math-305
+patch1-Math-369
+patch10-Lang-304
+patch10-Lang-587
+patch10-Lang-703
+patch10-Math-1115
+patch10-Math-988a
+patch11-Lang-304
+patch11-Lang-587
+patch11-Lang-703
+patch11-Math-1115
+patch11-Math-988a
+patch12-Lang-304
+patch12-Lang-587
+patch12-Lang-703
+patch12-Math-369
+patch12-Math-988b
+patch13-Lang-304
+patch13-Lang-587
+patch13-Lang-703
+patch13-Math-988b
+patch14-Lang-304
+patch14-Lang-587
+patch14-Lang-703
+patch14-Math-369
+patch14-Math-988b
+patch15-Lang-304
+patch15-Lang-587
+patch15-Math-369
+patch15-Math-988b
+patch16-Lang-304
+patch16-Lang-587
+patch16-Math-369
+patch16-Math-988b
+patch17-Lang-304
+patch17-Lang-587
+patch17-Math-988a
+patch17-Math-988b
+patch18-Lang-304
+patch18-Lang-587
+patch18-Math-988b
+patch19-Lang-304
+patch2-Lang-304
+patch2-Lang-587
+patch2-Lang-703
+patch2-Math-1115
+patch2-Math-305
+patch2-Math-369
+patch20-Lang-304
+patch20-Lang-587
+patch21-Lang-304
+patch21-Lang-587
+patch22-Lang-304
+patch22-Lang-587
+patch23-Lang-304
+patch23-Lang-587
+patch24-Lang-304
+patch24-Lang-587
+patch25-Lang-304
+patch25-Lang-587
+patch26-Lang-304
+patch26-Lang-587
+patch27-Lang-304
+patch27-Lang-587
+patch28-Lang-304
+patch28-Lang-587
+patch29-Lang-304
+patch3-Lang-304
+patch3-Lang-587
+patch3-Lang-703
+patch3-Math-1115
+patch3-Math-305
+patch3-Math-369
+patch30-Lang-304
+patch31-Lang-304
+patch32-Lang-304
+patch33-Lang-304
+patch4-Lang-304
+patch4-Lang-587
+patch4-Lang-703
+patch4-Math-1115
+patch4-Math-305
+patch4-Math-369
+patch5-Lang-304
+patch5-Lang-587
+patch5-Lang-703
+patch5-Math-1115
+patch6-Lang-304
+patch6-Lang-587
+patch6-Lang-703
+patch6-Math-1115
+patch6-Math-369
+patch7-Lang-304
+patch7-Lang-587
+patch7-Lang-703
+patch7-Math-1115
+patch7-Math-988b
+patch8-Lang-304
+patch8-Lang-703
+patch8-Math-1115
+patch8-Math-290
+patch9-Lang-304
+patch9-Lang-587
+patch9-Lang-703
+patch9-Math-1115
+patch9-Math-988a
+
+undetected:
+patch1-Math-290=>wrong patch?
+patch1-Math-988a=>ingredient out of scope
+patch1-Math-988b=>ingredient out of scope
+patch10-Math-369=>ingredient out of scope
+patch10-Math-988b=>ingredient out of scope
+patch11-Math-369=>ingredient out of scope
+patch11-Math-988b=>ingredient out of scope
+patch12-Math-988a=>ingredient out of scope
+patch13-Math-369=>ingredient out of scope
+patch13-Math-988a=>ingredient out of scope
+patch14-Math-988a=>ingredient out of scope
+patch15-Math-988a=>ingredient out of scope
+patch16-Math-988a=>ingredient out of scope
+patch19-Lang-587=>ingredient out of scope
+patch2-Math-290=>wrong patch?
+patch2-Math-988a=>ingredient out of scope
+patch2-Math-988b=>ingredient out of scope
+patch3-Math-290=>wrong patch?
+patch3-Math-988a=>ingredient out of scope
+patch3-Math-988b=>ingredient out of scope
+patch34-Lang-304=>ingredient out of scope
+patch35-Lang-304=>ingredient out of scope
+patch36-Lang-304=>ingredient out of scope
+patch37-Lang-304=>ingredient out of scope
+patch38-Lang-304=>ingredient out of scope
+patch39-Lang-304=>ingredient out of scope
+patch4-Math-290=>wrong patch?
+patch4-Math-988a=>ingredient out of scope
+patch4-Math-988b=>ingredient out of scope
+patch40-Lang-304=>ingredient out of scope
+patch41-Lang-304=>ingredient out of scope
+patch42-Lang-304=>ingredient out of scope
+patch43-Lang-304=>ingredient out of scope
+patch44-Lang-304=>ingredient out of scope
+patch45-Lang-304=>ingredient out of scope
+patch46-Lang-304=>ingredient out of scope
+patch47-Lang-304=>ingredient out of scope
+patch48-Lang-304=>ingredient out of scope
+patch49-Lang-304=>ingredient out of scope
+patch5-Math-290=>wrong patch?
+patch5-Math-369=>ingredient out of scope
+patch5-Math-988a=>ingredient out of scope
+patch5-Math-988b=>ingredient out of scope
+patch50-Lang-304=>ingredient out of scope
+patch51-Lang-304=>ingredient out of scope
+patch52-Lang-304=>ingredient out of scope
+patch53-Lang-304=>ingredient out of scope
+patch54-Lang-304=>ingredient out of scope
+patch55-Lang-304=>ingredient out of scope
+patch56-Lang-304=>ingredient out of scope
+patch57-Lang-304=>ingredient out of scope
+patch58-Lang-304=>ingredient out of scope
+patch59-Lang-304=>ingredient out of scope
+patch6-Math-290=>wrong patch?
+patch6-Math-988a=>ingredient out of scope
+patch6-Math-988b=>ingredient out of scope
+patch60-Lang-304=>ingredient out of scope
+patch61-Lang-304=>ingredient out of scope
+patch62-Lang-304=>ingredient out of scope
+patch63-Lang-304=>ingredient out of scope
+patch64-Lang-304=>ingredient out of scope
+patch65-Lang-304=>ingredient out of scope
+patch66-Lang-304=>ingredient out of scope
+patch67-Lang-304=>ingredient out of scope
+patch68-Lang-304=>ingredient out of scope
+patch69-Lang-304=>ingredient out of scope
+patch7-Math-290=>wrong patch?
+patch7-Math-369=>ingredient out of scope
+patch7-Math-988a=>ingredient out of scope
+patch70-Lang-304=>ingredient out of scope
+patch71-Lang-304=>ingredient out of scope
+patch72-Lang-304=>ingredient out of scope
+patch73-Lang-304=>ingredient out of scope
+patch74-Lang-304=>ingredient out of scope
+patch75-Lang-304=>ingredient out of scope
+patch76-Lang-304=>ingredient out of scope
+patch77-Lang-304=>ingredient out of scope
+patch8-Lang-587=>wrong patch & ingredient out of scope?
+patch8-Math-369=>ingredient out of scope
+patch8-Math-988a=>ingredient out of scope
+patch8-Math-988b=>ingredient out of scope
+patch9-Math-369=>ingredient out of scope
+patch9-Math-988b=>ingredient out of scope

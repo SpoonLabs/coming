@@ -1,8 +1,0 @@
-<pattern name="replacement3">
-
-    <entity id="1" type="Invocation" role="*"/>
-
-    <action entityId="1" type="INS"/>
-
-</pattern>
-

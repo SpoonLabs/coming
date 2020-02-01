@@ -15,8 +15,8 @@ import java.util.Set;
 public class ASTData {
 	private static final String NAME_SEPARATOR = "###";
 
-	private String[] PREDEFINED_METHODS_AND_LITERALS_ARR = { "-1", "0", "1",
-			"size()", "length()", "isEmpty()", "length" };
+	private String[] PREDEFINED_METHODS_AND_LITERALS_ARR = { "-1", "0", "1", "size()", "length()", "isEmpty()",
+			"length" };
 	private List<String> PREDEFINED_METHODS_AND_LITERALS = Arrays.asList(PREDEFINED_METHODS_AND_LITERALS_ARR);
 
 	private Set<String> executableInvocations;
@@ -44,6 +44,29 @@ public class ASTData {
 		}
 	}
 
+	public boolean canNPEfixGenerateExpression(CtExpression exp) {
+		if (exp == null)
+			return true;
+
+		String expStr = exp.toString();
+		if (PREDEFINED_METHODS_AND_LITERALS.contains(expStr)
+				|| PREDEFINED_METHODS_AND_LITERALS.contains(ASTInfoResolver.getCleanedName(exp))
+				|| ASTInfoResolver.getCleanedName(exp).startsWith("null"))
+			return true;
+		if (exp instanceof CtVariableAccess) {
+			return variablesAndLiterals.contains(ASTInfoResolver.getCleanedName(exp));
+		}
+		return false;
+	}
+
+	public boolean canNPEfixGenerateExpression(String exp) {
+		if (PREDEFINED_METHODS_AND_LITERALS.contains(exp)
+				|| PREDEFINED_METHODS_AND_LITERALS.contains(exp)
+				|| exp.startsWith("null"))
+			return true;
+		return variablesAndLiterals.contains(exp);
+	}
+
 	public boolean canNopolGenerateCondition(CtElement condition) {
 		List<CtElement> elementsInConditional = condition.getElements(null);
 		for (CtElement element : elementsInConditional) {
@@ -59,15 +82,14 @@ public class ASTData {
 			} else {
 				continue;
 			}
-			
+
 			// nopol might use a field or method of an object that is not used in the src
 			String[] parts = elementAsString.split("\\.");
 			elementAsString = parts.length == 0 ? elementAsString : parts[parts.length - 1];
 			parts = elementAsString.split(NAME_SEPARATOR);
 			elementAsString = parts.length == 0 ? elementAsString : parts[parts.length - 1];
 
-			if (element.toString().equals("null") 
-					|| PREDEFINED_METHODS_AND_LITERALS.contains(elementAsString)) {
+			if (element.toString().equals("null") || PREDEFINED_METHODS_AND_LITERALS.contains(elementAsString)) {
 				continue;
 			}
 
@@ -88,7 +110,7 @@ public class ASTData {
 			if (isFromVariablesAndLiterals) {
 				continue;
 			}
-			
+
 			boolean isFromExecutables = false;
 			for (String str : executableInvocations) {
 				if (str.equals(elementAsString)) {
@@ -175,21 +197,21 @@ public class ASTData {
 
 	public boolean canArjaFindVarsAndMethods(CtElement target) {
 		List<CtElement> allElements = target.getElements(null);
-		
+
 		for (CtElement element : allElements) {
 			if (element instanceof CtAbstractInvocation) {
-				if(!executableInvocations.contains(getExecutableQualifiedSignature(element)))
+				if (!executableInvocations.contains(getExecutableQualifiedSignature(element)))
 					return false;
 			} else if (element instanceof CtVariableAccess) {
-				if(!variablesAndLiterals.contains(ASTInfoResolver.getCleanedName(element)))
+				if (!variablesAndLiterals.contains(ASTInfoResolver.getCleanedName(element)))
 					return false;
 			} else if (element instanceof CtVariable) {
-				if(!variablesAndLiterals
+				if (!variablesAndLiterals
 						.contains(ASTInfoResolver.getCleanedName(((CtVariable) element).getReference().toString())))
 					return false;
 			}
 		}
-		
+
 		return true;
 	}
 }
