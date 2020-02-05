@@ -101,7 +101,12 @@ public class JGenProg extends AbstractRepairTool {
 
         String elementStr = element.toString();
         for (CtElement srcElement : allSrcElements) {
-            String srcElementStr = srcElement.toString();
+        	String srcElementStr;
+        	try {
+        		srcElementStr = srcElement.toString();
+        	}catch(Exception e) {
+        		continue; // ex.: on "org-tigris-jsapar__jsapar" repo
+        	}
             if (srcElementStr.equals(elementStr))
                 return true;
             else if (srcElementStr.replace(elementStr, "").trim().equals(elementStr.trim()))
