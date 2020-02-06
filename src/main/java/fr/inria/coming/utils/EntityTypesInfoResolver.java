@@ -32,8 +32,8 @@ public class EntityTypesInfoResolver {
     private void loadChildrenToParentsRelationsBetweenEntityTypes() {
         childrenToParentsRelationsBetweenEntityTypes = new HashMap<>();
         try {
-//        	Scanner sc = new Scanner(new File(getClass().getClassLoader().getResource(CLASSES_HIERARCHY_FILE_NAME).getFile()));
-        	Scanner sc = new Scanner(new File("/data/template-based/coming-test/data.txt"));
+        	Scanner sc = new Scanner(new File(getClass().getClassLoader().getResource(CLASSES_HIERARCHY_FILE_NAME).getFile()));
+//        	Scanner sc = new Scanner(new File("/data/template-based/coming-test/data.txt"));
 
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
