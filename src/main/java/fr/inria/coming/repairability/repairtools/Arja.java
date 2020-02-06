@@ -85,7 +85,12 @@ public class Arja extends AbstractRepairTool {
 				if (!mapping.hasSrc(((Insert) op.getAction()).getParent()))
 					return false;
 
-				CtElement srcRoot = ASTInfoResolver.getRootNode(((InsertOperation) op).getParent());
+				CtElement parentOfInsertedNode = ((InsertOperation) op).getParent();
+				
+				if(parentOfInsertedNode == null) // smallcreep__cucumber-seeds
+					return false;
+
+				CtElement srcRoot = ASTInfoResolver.getRootNode(parentOfInsertedNode);
 				return canBeReproducedFromSrc(srcRoot, (CtStatement) op.getSrcNode());
 			} else if (op instanceof UpdateOperation) {
 				return canBeReproducedFromSrc(ASTInfoResolver.getRootNode(op.getSrcNode()),
@@ -136,8 +141,13 @@ public class Arja extends AbstractRepairTool {
 				// the inserted node is a part of a parent inserted node
 				return false;
 			
+			CtElement insertedNodeParent = ((InsertOperation)insOp).getParent();
+			
+			if(insertedNodeParent == null)
+				return false;
+			
 			List<CtElement> insPars =
-					ASTInfoResolver.getNSubsequentParents(((InsertOperation)insOp).getParent(), INS_DEL_COMMON_PAR_HEIGHT), 
+					ASTInfoResolver.getNSubsequentParents(insertedNodeParent, INS_DEL_COMMON_PAR_HEIGHT), 
 					delPars = ASTInfoResolver.getNSubsequentParents(delOp.getSrcNode(), INS_DEL_COMMON_PAR_HEIGHT);
 			
 			Set<CtElement> insDistinctParsSet = new HashSet<CtElement>();
@@ -147,7 +157,7 @@ public class Arja extends AbstractRepairTool {
 			if (insDistinctParsSet.size() == insPars.size())
                 return false;
 
-			CtElement srcRoot = ASTInfoResolver.getRootNode(((InsertOperation) op).getParent());
+			CtElement srcRoot = ASTInfoResolver.getRootNode(insertedNodeParent);
 			return canBeReproducedFromSrc(srcRoot, (CtStatement) op.getSrcNode());
 		}
 
