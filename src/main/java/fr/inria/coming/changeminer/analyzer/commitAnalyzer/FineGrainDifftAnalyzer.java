@@ -38,6 +38,7 @@ import gumtree.spoon.diff.operations.Operation;
  *
  */
 public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
+//	private static final int MAX_FILE_SIZE = 1000000;
 
 	Logger log = Logger.getLogger(FineGrainDifftAnalyzer.class.getName());
 
@@ -135,7 +136,7 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 			List<Operation> operations;
 
 			try {
-
+				
 				Diff diff = cdiff.compare(left, right, leftName, rightName);
 
 				operations = diff.getRootOperations();

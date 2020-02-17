@@ -138,10 +138,12 @@ public abstract class RevisionNavigationExperiment<R extends IRevision> {
             }
 
             if (!(max_time_for_a_git_repo == -1 || max_time_for_a_git_repo > spentMillis / 1000)) {
-				log.info("Stopping after " + spentMillis + " milli seconds");
+				System.out.println("Stopping after " + spentMillis + " milli seconds");
 				break;
             }
         }
+        
+        System.out.println("Time spent for analysis: " + (System.currentTimeMillis() - startTime) + " millis");
 
         return processEnd();
     }

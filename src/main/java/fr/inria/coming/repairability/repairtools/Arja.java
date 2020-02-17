@@ -33,6 +33,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
@@ -51,13 +52,13 @@ import spoon.reflect.reference.CtTypeReference;
 
 public class Arja extends AbstractRepairTool {
 	private static final int INS_DEL_COMMON_PAR_HEIGHT = 5;
-	
+
 	private static final String ARJA_DEEP_PATTERN = "arja_deep_change";
 	private static final String ARJA_SHALLOW_PATTERN = "arja_shallow_change";
 	private static final String ARJA_INS_DEL = "arja_ins_del";
 
-	private static final String[] patternFileNames = { ARJA_DEEP_PATTERN + ".xml", 
-			ARJA_SHALLOW_PATTERN + ".xml", ARJA_INS_DEL + ".xml" };
+	private static final String[] patternFileNames = { ARJA_DEEP_PATTERN + ".xml", ARJA_SHALLOW_PATTERN + ".xml",
+			ARJA_INS_DEL + ".xml" };
 
 	@Override
 	protected List<ChangePatternSpecification> readPatterns() {
@@ -70,98 +71,102 @@ public class Arja extends AbstractRepairTool {
 
 	@Override
 	public boolean filter(ChangePatternInstance instance, IRevision revision, Diff diff) {
-		String patternType = instance.getPattern().getName().split(File.pathSeparator)[1];
-		Operation op = instance.getActions().get(0);
+		try { // line 156 throws exception.
+			String patternType = instance.getPattern().getName().split(File.pathSeparator)[1];
+			Operation op = instance.getActions().get(0);
 
-		if (patternType.contains(ARJA_SHALLOW_PATTERN)) {
+			if (patternType.contains(ARJA_SHALLOW_PATTERN)) {
 
-			if (op instanceof MoveOperation) {
-				// FIXME: shallow_mov operations should not be ignored
-				return false;
-			} else if (op instanceof DeleteOperation) {
-				return true;
-			} else if (op instanceof InsertOperation) {
+				if (op instanceof MoveOperation) {
+					// FIXME: shallow_mov operations should not be ignored
+					return false;
+				} else if (op instanceof DeleteOperation) {
+					return true;
+				} else if (op instanceof InsertOperation) {
+					MappingStore mapping = diff.getMappingsComp();
+					if (!mapping.hasSrc(((Insert) op.getAction()).getParent()))
+						return false;
+
+					CtElement parentOfInsertedNode = ((InsertOperation) op).getParent();
+
+					if (parentOfInsertedNode == null) // smallcreep__cucumber-seeds
+						return false;
+
+					CtElement srcRoot = ASTInfoResolver.getRootNode(parentOfInsertedNode);
+					return canBeReproducedFromSrc(srcRoot, (CtStatement) op.getSrcNode());
+				} else if (op instanceof UpdateOperation) {
+					return canBeReproducedFromSrc(ASTInfoResolver.getRootNode(op.getSrcNode()),
+							(CtStatement) op.getDstNode());
+				}
+
+			} else if (patternType.contains(ARJA_DEEP_PATTERN)) {
+
+				CtElement affectedNode, srcNode;
+				if (op instanceof InsertOperation) {
+					MappingStore mapping = diff.getMappingsComp();
+					if (!mapping.hasSrc(((Insert) op.getAction()).getParent()))
+						return false;
+
+					affectedNode = op.getSrcNode().getParent();
+					srcNode = ((InsertOperation) op).getParent();
+				} else if (op instanceof DeleteOperation) {
+					MappingStore mapping = diff.getMappingsComp();
+
+					if (!mapping.hasSrc(op.getAction().getNode().getParent()))
+						return false;
+
+					ITree dstTree = mapping.getDst(op.getAction().getNode().getParent());
+					affectedNode = (CtElement) dstTree.getMetadata("spoon_object");
+					srcNode = op.getSrcNode();
+				} else if (op instanceof UpdateOperation) {
+					affectedNode = op.getDstNode();
+					srcNode = op.getSrcNode();
+				} else {
+					// FIXME: deep_mov operations should not be ignored
+					return false;
+				}
+
+				CtStatement newElement = (CtStatement) ASTInfoResolver.getFirstAncestorOfType(affectedNode,
+						CtEntityType.STATEMENT);
+
+				if (newElement == null || srcNode == null) {
+					return false;
+				}
+
+				return canBeReproducedFromSrc(ASTInfoResolver.getRootNode(srcNode), newElement);
+			} else if (patternType.contains(ARJA_INS_DEL)) {
+				Operation insOp = getActionFromDelInsInstance(instance, "INS"),
+						delOp = getActionFromDelInsInstance(instance, "DEL");
+
 				MappingStore mapping = diff.getMappingsComp();
 				if (!mapping.hasSrc(((Insert) op.getAction()).getParent()))
+					// the inserted node is a part of a parent inserted node
 					return false;
 
-				CtElement parentOfInsertedNode = ((InsertOperation) op).getParent();
-				
-				if(parentOfInsertedNode == null) // smallcreep__cucumber-seeds
+				CtElement insertedNodeParent = ((InsertOperation) insOp).getParent();
+
+				if (insertedNodeParent == null)
 					return false;
 
-				CtElement srcRoot = ASTInfoResolver.getRootNode(parentOfInsertedNode);
+				List<CtElement> insPars = ASTInfoResolver.getNSubsequentParents(insertedNodeParent,
+						INS_DEL_COMMON_PAR_HEIGHT),
+						delPars = ASTInfoResolver.getNSubsequentParents(delOp.getSrcNode(), INS_DEL_COMMON_PAR_HEIGHT);
+
+				Set<CtElement> insDistinctParsSet = new HashSet<CtElement>();
+				insDistinctParsSet.addAll(insPars);
+				insDistinctParsSet.removeAll(delPars);
+
+				if (insDistinctParsSet.size() == insPars.size())
+					return false;
+
+				CtElement srcRoot = ASTInfoResolver.getRootNode(insertedNodeParent);
 				return canBeReproducedFromSrc(srcRoot, (CtStatement) op.getSrcNode());
-			} else if (op instanceof UpdateOperation) {
-				return canBeReproducedFromSrc(ASTInfoResolver.getRootNode(op.getSrcNode()),
-						(CtStatement) op.getDstNode());
 			}
 
-		} else if (patternType.contains(ARJA_DEEP_PATTERN)) {
-
-			CtElement affectedNode, srcNode;
-			if (op instanceof InsertOperation) {
-				MappingStore mapping = diff.getMappingsComp();
-				if (!mapping.hasSrc(((Insert) op.getAction()).getParent()))
-					return false;
-
-				affectedNode = op.getSrcNode().getParent();
-				srcNode = ((InsertOperation) op).getParent();
-			} else if (op instanceof DeleteOperation) {
-				MappingStore mapping = diff.getMappingsComp();
-
-				if (!mapping.hasSrc(op.getAction().getNode().getParent()))
-					return false;
-
-				ITree dstTree = mapping.getDst(op.getAction().getNode().getParent());
-				affectedNode = (CtElement) dstTree.getMetadata("spoon_object");
-				srcNode = op.getSrcNode();
-			} else if (op instanceof UpdateOperation) {
-				affectedNode = op.getDstNode();
-				srcNode = op.getSrcNode();
-			} else {
-				// FIXME: deep_mov operations should not be ignored
-				return false;
-			}
-
-			CtStatement newElement = (CtStatement) ASTInfoResolver.getFirstAncestorOfType(affectedNode,
-					CtEntityType.STATEMENT);
-
-			if (newElement == null || srcNode == null) {
-				return false;
-			}
-
-			return canBeReproducedFromSrc(ASTInfoResolver.getRootNode(srcNode), newElement);
-		} else if (patternType.contains(ARJA_INS_DEL)) {
-			Operation insOp = getActionFromDelInsInstance(instance, "INS"), 
-					delOp = getActionFromDelInsInstance(instance, "DEL");
-			
-			MappingStore mapping = diff.getMappingsComp();
-			if (!mapping.hasSrc(((Insert) op.getAction()).getParent()))
-				// the inserted node is a part of a parent inserted node
-				return false;
-			
-			CtElement insertedNodeParent = ((InsertOperation)insOp).getParent();
-			
-			if(insertedNodeParent == null)
-				return false;
-			
-			List<CtElement> insPars =
-					ASTInfoResolver.getNSubsequentParents(insertedNodeParent, INS_DEL_COMMON_PAR_HEIGHT), 
-					delPars = ASTInfoResolver.getNSubsequentParents(delOp.getSrcNode(), INS_DEL_COMMON_PAR_HEIGHT);
-			
-			Set<CtElement> insDistinctParsSet = new HashSet<CtElement>();
-			insDistinctParsSet.addAll(insPars);
-			insDistinctParsSet.removeAll(delPars);
-			
-			if (insDistinctParsSet.size() == insPars.size())
-                return false;
-
-			CtElement srcRoot = ASTInfoResolver.getRootNode(insertedNodeParent);
-			return canBeReproducedFromSrc(srcRoot, (CtStatement) op.getSrcNode());
+			return false;
+		} catch (Exception e) {
+			return false;
 		}
-
-		return false;
 	}
 
 	private boolean canBeReproducedFromSrc(CtElement src, CtStatement target) {
@@ -193,7 +198,8 @@ public class Arja extends AbstractRepairTool {
 			if ((dstElement instanceof CtVariableAccess || dstElement instanceof CtVariable)
 					&& !(dstElement instanceof CtLocalVariable)) {
 				String variableType = getType(dstElement);
-				dstNodeAsString = replaceElement(dstNodeAsString, dstElement.toString(), "#" + variableType + "#");
+				dstNodeAsString = replaceElement(dstNodeAsString, (dstElement instanceof CtField ? 
+						((CtField)dstElement).getSimpleName() : dstElement.toString()), "#" + variableType + "#");
 			}
 
 			if (dstElement instanceof CtAbstractInvocation) {
@@ -266,7 +272,7 @@ public class Arja extends AbstractRepairTool {
 	}
 
 	private boolean isVariableNameChar(char c) {
-		return (c <= 'z' && c >= 'a') || (c <= 'Z' && c >= 'A') || (c <= '9' && c >= '0');
+		return (c <= 'z' && c >= 'a') || (c <= 'Z' && c >= 'A') || (c <= '9' && c >= '0') || c == '_';
 	}
 
 	private boolean areTheSameTemplates(String temp1, String temp2) {
@@ -321,9 +327,9 @@ public class Arja extends AbstractRepairTool {
 				res.add(ASTInfoResolver.getFirstAncestorOfType(op.getSrcNode(), CtEntityType.STATEMENT));
 			}
 		} else if (instance.getPattern().getName().contains(ARJA_INS_DEL)) {
-			Operation delOp = getActionFromDelInsInstance(instance, "DEL"), 
+			Operation delOp = getActionFromDelInsInstance(instance, "DEL"),
 					insOp = getActionFromDelInsInstance(instance, "INS");
-			
+
 			res.add(insOp.getSrcNode());
 			res.add(delOp.getSrcNode());
 		}
@@ -389,12 +395,12 @@ public class Arja extends AbstractRepairTool {
 			instanceToCoveredNodes.put(instance, getInstanceCoveredNodes(instance, diff));
 		}
 	}
-	
+
 	private Operation getActionFromDelInsInstance(ChangePatternInstance instance, String actionType) {
-        if (instance.getActions().get(0).getAction().getName().equals(actionType)) {
-            return instance.getActions().get(0);
-        } else {
-            return instance.getActions().get(1);
-        }
-    }
+		if (instance.getActions().get(0).getAction().getName().equals(actionType)) {
+			return instance.getActions().get(0);
+		} else {
+			return instance.getActions().get(1);
+		}
+	}
 }

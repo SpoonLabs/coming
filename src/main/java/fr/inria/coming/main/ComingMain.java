@@ -248,7 +248,7 @@ public class ComingMain {
 	private void loadOutput() {
 		String outputs = ComingProperties.getProperty("outputprocessor");
 		if (outputs == null) {
-			if (Boolean.valueOf(System.getProperty("executed_by_travis"))) {
+			if (Boolean.valueOf(ComingProperties.getProperty("executed_by_travis"))) {
 				navigatorEngine.getOutputProcessors().add(0, new NullOutput());
 				System.out.println("****EXECUTED_BY_TRAVIS****");
 			} else {

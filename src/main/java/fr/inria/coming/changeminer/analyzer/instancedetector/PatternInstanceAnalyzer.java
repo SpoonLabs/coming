@@ -62,6 +62,8 @@ public class PatternInstanceAnalyzer implements Analyzer {
 
 			List<ChangePatternInstance> instances = new ArrayList<>();
 			for (ChangePatternSpecification changePatternSpecification : patternsToMine) {
+				if(input.getName().contentEquals("da9188ff65a5ea0c68a60ab431f77226997d9972"))
+					System.out.println(input.getName());
 				instances.addAll(instanceDetector.findPatternInstances(changePatternSpecification, singleDiff));
 			}
 			PatternInstancesFromDiff resultDiff = new PatternInstancesFromDiff(input, instances, singleDiff,

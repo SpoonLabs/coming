@@ -15,6 +15,18 @@ import org.junit.Test;
  */
 public class ArjaTest {
 	@Test
+    public void testArja1() throws Exception {
+        FinalResult result =
+                RepairabilityTestUtils.runRepairabilityWithParameters
+                        (
+                                "Arja",
+                                "/repairability_test_files/arja_extra/arja1",
+                                "include_all_instances_for_each_tool:true:exclude_repair_patterns_not_covering_the_whole_diff:true"
+                        );
+        RepairabilityTestUtils.checkNumberOfRepairInstances(result, 1, 0);
+    }
+	
+	@Test
 	public void testArja() throws Exception {
 		FinalResult result = RepairabilityTestUtils.runRepairability("Arja", "/repairability_test_files/arja");
 		RepairabilityTestUtils.checkNumberOfRepairInstances(result, 8, 7); 

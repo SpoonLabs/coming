@@ -92,7 +92,7 @@ public class DetectorChangePatternInstanceEngine {
 
                 continue;
             }
-
+            
             log.debug("Analyzing  instance: \n" + instance);
             if (checkPatternRelationsOnInstance(instance, relations)) {
                 instancesFinalSet.add(instance);
