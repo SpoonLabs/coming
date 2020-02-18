@@ -192,4 +192,25 @@ public class RepairabilityTest {
             Assert.assertTrue(op.getSrcNode().getElements(null).size() > 0);
         }
     }
+    
+    @Test(expected = Test.None.class)
+    public void testNullPointerInDiff() throws Exception {
+		File left = getFile("diffcases/test2/old.java");
+		File right = getFile("diffcases/test2/new.java");
+		
+		ComingMain cm = new ComingMain();
+
+		FinalResult result = cm
+				.run(new String[] { "-location", left.getAbsolutePath() + File.pathSeparator + right.getAbsolutePath(),
+						"-input", "filespair", "-mode", "repairability", "-repairtool", "JGenProg", "-parameters", 
+						"include_all_instances_for_each_tool:true:max_nb_commit_analyze:300:max_time_for_a_git_repo:-1"});
+
+		assertNotNull(result);
+	}
+	
+	public File getFile(String name) {
+		ClassLoader classLoader = getClass().getClassLoader();
+		File file = new File(classLoader.getResource(name).getFile());
+		return file;
+	}
 }
