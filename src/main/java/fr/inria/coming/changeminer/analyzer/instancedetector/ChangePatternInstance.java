@@ -83,11 +83,7 @@ public class ChangePatternInstance {
 
 	@Override
 	public String toString() {
-		try {
-			return "ChangePatternInstance [actions=" + actions + "]";
-		} catch (Exception e) {
-			return "";
-		}
+		return "ChangePatternInstance [actions=" + actions + "]";
 	}
 
 	public Map<PatternAction, MatchingAction> getMapping() {
