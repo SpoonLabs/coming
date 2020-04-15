@@ -22,8 +22,9 @@ public class JGenProgTest {
 
     @Test
     public void testGroundTruthCreatedPatches() throws Exception {
+        // was 1 now is zero after update to latest Spoon
         RepairabilityTestUtils.checkGroundTruthPatches(getClass(),"JGenProg2015",
-                1, 0);
+                0, 0);
         RepairabilityTestUtils.checkGroundTruthPatches(getClass(),"JGenProg2017",
                 52, 0);
     }
