@@ -67,7 +67,8 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 
 		Option option = new Option();
 		option.featureOption = FeatureOption.ORIGINAL;
-		CodeDiffer codeDiffer = new CodeDiffer(true, option);
+		//We set the first parameter of CodeDiffer as False to not allow the code generation at buggy location
+		CodeDiffer codeDiffer = new CodeDiffer(false, option);
 		//Get feature matrix
 		List<FeatureMatrix> featureMatrix = codeDiffer.runByGenerator(src, target);
 		//Get feature vector
@@ -120,7 +121,8 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
             List<String> valueList = null;
 	        List<String> header = new ArrayList<>();
 	        List<String> values = new ArrayList<>();
-           
+	        JsonObject jsonfile = new JsonObject();
+
 	        //Initial all vector  as 0.
 	        for (int idx = 0; idx < parameterVector.size(); idx++) {
 	            FeatureCross featureCross;
@@ -138,13 +140,13 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
                         valueList.set(featureCross.getId(), "1");
                     }
                 }
+                
+                for (int idx = 0; idx < parameterVector.size(); idx++) {
+    	        			jsonfile.addProperty(header.get(idx), valueList.get(idx));
+    	        		}
             }
              
-	        JsonObject jsonfile = new JsonObject();
-	        for (int idx = 0; idx < parameterVector.size(); idx++) {
-	        	jsonfile.addProperty(header.get(idx), valueList.get(idx));
-	        }
-	       
+	               
 	       return jsonfile;
 	        
 	    }

@@ -47,6 +47,11 @@ public class FeaturesOutput implements IOutput {
 	}
 
 	public JsonElement save(FeaturesResult result, String featureType) {
+		if (result == null || "".equals(featureType)) {
+			log.debug("No Code Change feature captured");
+			return null;
+		}
+		
 		JsonElement file = result.getFeatures();
 
 		FileWriter fw;
