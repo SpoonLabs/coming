@@ -101,19 +101,16 @@ public class FeaturesOnComingMainTest {
 	}
 
 	/**
-	 * We ignore the execution of this test case: it takes hours, it does only
-	 * compute the features but it does not assert the behaviour
+	 *  Unit test to extract S4R code features
 	 * 
-	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testFeaturesOnS4REvolutionFromFolder1() throws Exception {
 		ComingMain main = new ComingMain();
 
 		CommandSummary cs = new CommandSummary();
 		cs.append("-input", "files");
-		cs.append("-location", (new File("src/main/resources/Defects4J_all_pairs")).getAbsolutePath());
+		cs.append("-location", (new File("src/main/resources/pairsD4j")).getAbsolutePath());
 		cs.append("-mode", "features");
 		cs.append("-featuretype", "S4R");
 		cs.append("-output", "./out_features_d4j");
@@ -121,41 +118,24 @@ public class FeaturesOnComingMainTest {
 		FinalResult finalResult = null;
 
 		finalResult = main.run(cs.flat());
-
-		CommitFinalResult commitResult = (CommitFinalResult) finalResult;
-
-		assertTrue(commitResult.getAllResults().values().size() > 0);
-
-		for (Commit iCommit : commitResult.getAllResults().keySet()) {
-
-			RevisionResult resultofCommit = commitResult.getAllResults().get(iCommit);
-			// Get the results of this analyzer
-			AnalysisResult featureResult = resultofCommit.get(FeatureAnalyzer.class.getSimpleName());
-
-			assertTrue(featureResult instanceof FeaturesResult);
-			FeaturesResult fresults = (FeaturesResult) featureResult;
-			assertNotNull(fresults);
-			assertNotNull(fresults.getFeatures());
-
-		}
+		//pairsD4j contains two file pairs, expected to output two JSON feature files.
+		assertTrue(finalResult.getAllResults().values().size() == 2);
+		
 
 	}
 	
 	
 	/**
-	 * We ignore the execution of this test case: it takes hours, it does only
-	 * compute the features but it does not assert the behaviour
+	 * Unit test to extract P4J code features
 	 * 
-	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testFeaturesOnP4JEvolutionFromFolder1() throws Exception {
 		ComingMain main = new ComingMain();
 
 		CommandSummary cs = new CommandSummary();
 		cs.append("-input", "files");
-		cs.append("-location", (new File("src/main/resources/Defects4J_all_pairs")).getAbsolutePath());
+		cs.append("-location", (new File("src/main/resources/pairsD4j")).getAbsolutePath());
 		cs.append("-mode", "features");
 		cs.append("-featuretype", "P4J");
 		cs.append("-output", "./out_features_d4j");
@@ -163,24 +143,8 @@ public class FeaturesOnComingMainTest {
 		FinalResult finalResult = null;
 
 		finalResult = main.run(cs.flat());
-
-		CommitFinalResult commitResult = (CommitFinalResult) finalResult;
-
-		assertTrue(commitResult.getAllResults().values().size() > 0);
-
-		for (Commit iCommit : commitResult.getAllResults().keySet()) {
-
-			RevisionResult resultofCommit = commitResult.getAllResults().get(iCommit);
-			// Get the results of this analyzer
-			AnalysisResult featureResult = resultofCommit.get(FeatureAnalyzer.class.getSimpleName());
-
-			assertTrue(featureResult instanceof FeaturesResult);
-			FeaturesResult fresults = (FeaturesResult) featureResult;
-			assertNotNull(fresults);
-			assertNotNull(fresults.getFeatures());
-
-		}
-
+		//pairsD4j contains two file pairs, expected to output two JSON feature files.
+		assertTrue(finalResult.getAllResults().values().size() == 2);
 	}
 	
 

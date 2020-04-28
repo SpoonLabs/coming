@@ -41,12 +41,17 @@ public class FeaturesOutput implements IOutput {
 				continue;
 
 			FeaturesResult result = (FeaturesResult) rv.getResultFromClass(FeatureAnalyzer.class);
-			save(result,"");
+			save(result,"S4R");
 		}
 
 	}
 
 	public JsonElement save(FeaturesResult result, String featureType) {
+		if (result == null || "".equals(featureType)) {
+			log.debug("No Code Change feature captured");
+			return null;
+		}
+		
 		JsonElement file = result.getFeatures();
 
 		FileWriter fw;
