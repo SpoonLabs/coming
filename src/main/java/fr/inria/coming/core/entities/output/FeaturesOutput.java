@@ -41,7 +41,7 @@ public class FeaturesOutput implements IOutput {
 				continue;
 
 			FeaturesResult result = (FeaturesResult) rv.getResultFromClass(FeatureAnalyzer.class);
-			save(result,"");
+			save(result,"S4R");
 		}
 
 	}
