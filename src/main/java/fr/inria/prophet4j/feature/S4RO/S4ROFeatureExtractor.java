@@ -376,4 +376,10 @@ public class S4ROFeatureExtractor implements FeatureExtractor {
         if (!repair.isReplace)
             stmtsL.add(srcElem);
     }
+
+	@Override
+	public FeatureVector extractNonCrossFeature(Repair repair, CtElement atom) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

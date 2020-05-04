@@ -132,7 +132,6 @@ public class FeaturesOnComingMainTest {
 	@Test
 	public void testFeaturesOnP4JEvolutionFromFolder1() throws Exception {
 		ComingMain main = new ComingMain();
-
 		CommandSummary cs = new CommandSummary();
 		cs.append("-input", "files");
 		cs.append("-location", (new File("src/main/resources/pairsD4j")).getAbsolutePath());

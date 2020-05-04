@@ -14,6 +14,7 @@ public class OriginalFeatureCross implements FeatureCross, Serializable {
     private Integer id;
     private Double degree;
     private List<Feature> features;
+    private CrossType crossType;
 
     public OriginalFeatureCross(Integer id) {
         this(id, 1.0);
@@ -54,6 +55,7 @@ public class OriginalFeatureCross implements FeatureCross, Serializable {
     public OriginalFeatureCross(CrossType crossType, List<Feature> features) {
         this(crossType, features, 1.0);
     }
+    
 
     public OriginalFeatureCross(CrossType crossType, List<Feature> features, Double degree) {
         int ordinal0, ordinal1, ordinal2;
@@ -95,6 +97,7 @@ public class OriginalFeatureCross implements FeatureCross, Serializable {
         }
         this.degree = degree;
         this.features = features;
+        this.crossType = crossType;
     }
 
     public Integer getId() {
@@ -105,6 +108,10 @@ public class OriginalFeatureCross implements FeatureCross, Serializable {
         return degree;
     }
 
+    public String getCrossType() {
+        return this.crossType.toString();
+    }
+    
     public List<Feature> getFeatures() {
         return features;
     }

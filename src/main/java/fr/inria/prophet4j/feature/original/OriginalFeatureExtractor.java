@@ -3,6 +3,7 @@ package fr.inria.prophet4j.feature.original;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -301,7 +302,108 @@ public class OriginalFeatureExtractor implements FeatureExtractor {
         }
         return featureVector;
     }
+    
+	/**
+	 * This function returns non cross features
+	 */
+	public FeatureVector extractNonCrossFeature(Repair repair, CtElement atom) {
+		List<CtElement> stmtsC = getCurrentStmts(repair);
+		List<CtElement> stmtsF = new ArrayList<>();
+		List<CtElement> stmtsL = new ArrayList<>();
+		getNearbyStmts(repair, stmtsF, stmtsL);
 
+		Map<String, Set<AtomicFeature>> srcMapC = new HashMap<>();
+		Map<String, Set<AtomicFeature>> srcMapF = new HashMap<>();
+		Map<String, Set<AtomicFeature>> srcMapL = new HashMap<>();
+
+		for (CtElement stmt : stmtsC) {
+			Map<String, Set<AtomicFeature>> map = new OriginalFeatureVisitor(valueExprInfo).traverseStmt(stmt);
+			map.forEach((k, v) -> srcMapC.merge(k, v, (v1, v2) -> {
+				v1.addAll(v2);
+				return v1;
+			}));
+		}
+		for (CtElement stmt : stmtsF) {
+			Map<String, Set<AtomicFeature>> map = new OriginalFeatureVisitor(valueExprInfo).traverseStmt(stmt);
+			map.forEach((k, v) -> srcMapF.merge(k, v, (v1, v2) -> {
+				v1.addAll(v2);
+				return v1;
+			}));
+		}
+		for (CtElement stmt : stmtsL) {
+			Map<String, Set<AtomicFeature>> map = new OriginalFeatureVisitor(valueExprInfo).traverseStmt(stmt);
+			map.forEach((k, v) -> srcMapL.merge(k, v, (v1, v2) -> {
+				v1.addAll(v2);
+				return v1;
+			}));
+		}
+
+		FeatureVector featureVector = new FeatureVector();
+
+		List<Feature> CFeatures = new ArrayList<>();
+		List<Feature> FFeatures = new ArrayList<>();
+		List<Feature> LFeatures = new ArrayList<>();
+
+		/**
+		 * current position
+		 */
+		// repair features
+		EnumSet<RepairFeature> repairFeatures = getRepairFeatures(repair);
+		for (Feature repairFeature : repairFeatures) {
+			CFeatures.add(repairFeature);
+		}
+		// atomic and value features
+		for (String key : srcMapC.keySet()) {
+			Set<AtomicFeature> atomicFeatures = srcMapC.get(key);
+			for (AtomicFeature af : atomicFeatures) {
+				if (!CFeatures.contains(af)) {
+					CFeatures.add(af);
+				}
+			}
+			if (!key.contains("@")) {
+				Set<ValueFeature> valueFeatures = getValueFeature(key, repair, valueExprInfo);
+				for (ValueFeature vf : valueFeatures) {
+					if (!CFeatures.contains(vf)) {
+						CFeatures.add(vf);
+					}
+				}
+			}
+		}
+
+		/**
+		 * former position
+		 */
+		
+		for (String key : srcMapF.keySet()) {
+			Set<AtomicFeature> atomicFeatures = srcMapF.get(key);
+			for (AtomicFeature af : atomicFeatures) {
+				if (!FFeatures.contains(af)) {
+					FFeatures.add(af);
+				}
+			}
+		}
+		
+		/**
+		 * later position
+		 */
+
+		for (String key : srcMapL.keySet()) {
+			Set<AtomicFeature> atomicFeatures = srcMapL.get(key);
+			for (AtomicFeature af : atomicFeatures) {
+				if (!LFeatures.contains(af)) {
+					LFeatures.add(af);
+				}
+			}
+		}
+
+		featureVector.addFeatureCross(new OriginalFeatureCross(CrossType.SRC, CFeatures));
+		featureVector.addFeatureCross(new OriginalFeatureCross(CrossType.FORMER, FFeatures));
+		featureVector.addFeatureCross(new OriginalFeatureCross(CrossType.LATER, LFeatures));
+
+		return featureVector;
+	}
+
+    
     private List<CtElement> getCurrentStmts(Repair repair) {
         List<CtElement> ret = new ArrayList<>();
         CtElement srcElem = repair.srcElem;
@@ -374,7 +476,7 @@ public class OriginalFeatureExtractor implements FeatureExtractor {
                 e = idx + LOOKUP_DIS + 1;
             boolean above = true;
             for (int i = s; i < e; i++) {
-                if (tmp.get(i).equals(srcElem)) {
+                if (!tmp.get(i).equals(srcElem)) {
                     if (above)
                         stmtsF.add(tmp.get(i));
                     else

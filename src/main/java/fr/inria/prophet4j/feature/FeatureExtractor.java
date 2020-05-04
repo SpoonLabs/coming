@@ -8,4 +8,5 @@ import spoon.reflect.declaration.*;
 public interface FeatureExtractor {
     // this is for CodeDiffer.java
     FeatureVector extractFeature(Repair repair, CtElement atom);
+    FeatureVector extractNonCrossFeature(Repair repair, CtElement atom);
 }

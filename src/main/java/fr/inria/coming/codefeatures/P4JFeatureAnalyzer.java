@@ -68,11 +68,18 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 		Option option = new Option();
 		option.featureOption = FeatureOption.ORIGINAL;
 		//We set the first parameter of CodeDiffer as False to not allow the code generation at buggy location
-		CodeDiffer codeDiffer = new CodeDiffer(false, option);
+		//The second false indicates cross features
+		Boolean cross = false;
+		CodeDiffer codeDiffer = new CodeDiffer(false, option,cross);
 		//Get feature matrix
 		List<FeatureMatrix> featureMatrix = codeDiffer.runByGenerator(src, target);
 		//Get feature vector
-		JsonObject jsonfile = genVectorsCSV(option,target,featureMatrix);
+		JsonObject jsonfile = null;
+		if(cross) {
+			jsonfile = genVectorsCSV(option,target,featureMatrix);
+		} else {
+			jsonfile = getNonCrossJSON(option,target,featureMatrix);
+		}
 		
 		JsonArray filesArray = new JsonArray();		
 		JsonObject file = new JsonObject();
@@ -86,6 +93,22 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 		root.add("files", filesArray);
 
 		return (new FeaturesResult(revision, root));
+
+	}
+
+	private JsonObject getNonCrossJSON(Option option, File target, List<FeatureMatrix> featureMatrix) {
+		 ParameterVector parameterVector = new ParameterVector(option.featureOption);
+	        JsonObject jsonfile = new JsonObject();
+	       
+	        for (FeatureVector featureVector : featureMatrix.get(0).getFeatureVectors()) {
+                List<FeatureCross> featureCrosses = featureVector.getNonSortedFeatureCrosses();
+                for (FeatureCross featureCross : featureCrosses) {
+	                	OriginalFeatureCross ofc = (OriginalFeatureCross) featureCross;
+	                	jsonfile.addProperty(ofc.getCrossType(), ofc.getFeatures().toString());
+
+                }
+	        }
+	        return jsonfile;
 
 	}
 
