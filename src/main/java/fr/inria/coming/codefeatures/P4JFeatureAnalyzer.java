@@ -23,6 +23,7 @@ import fr.inria.coming.core.engine.Analyzer;
 import fr.inria.coming.core.entities.AnalysisResult;
 import fr.inria.coming.core.entities.DiffResult;
 import fr.inria.coming.core.entities.RevisionResult;
+import fr.inria.coming.main.ComingProperties;
 import fr.inria.prophet4j.feature.FeatureCross;
 import fr.inria.prophet4j.feature.extended.ExtendedFeatureCross;
 import fr.inria.prophet4j.feature.original.OriginalFeatureCross;
@@ -68,8 +69,8 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 		Option option = new Option();
 		option.featureOption = FeatureOption.ORIGINAL;
 		//We set the first parameter of CodeDiffer as False to not allow the code generation at buggy location
-		//The second false indicates cross features
-		Boolean cross = false;
+		//By default, coming extracts simple P4J features, so the cross sets to false
+		Boolean cross = ComingProperties.getPropertyBoolean("cross");
 		CodeDiffer codeDiffer = new CodeDiffer(false, option,cross);
 		//Get feature matrix
 		List<FeatureMatrix> featureMatrix = codeDiffer.runByGenerator(src, target);
@@ -78,7 +79,7 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 		if(cross) {
 			jsonfile = genVectorsCSV(option,target,featureMatrix);
 		} else {
-			jsonfile = getNonCrossJSON(option,target,featureMatrix);
+			jsonfile = getSimleP4JJSON(option,target,featureMatrix);
 		}
 		
 		JsonArray filesArray = new JsonArray();		
@@ -96,7 +97,7 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 
 	}
 
-	private JsonObject getNonCrossJSON(Option option, File target, List<FeatureMatrix> featureMatrix) {
+	private JsonObject getSimleP4JJSON(Option option, File target, List<FeatureMatrix> featureMatrix) {
 		 ParameterVector parameterVector = new ParameterVector(option.featureOption);
 	        JsonObject jsonfile = new JsonObject();
 	       

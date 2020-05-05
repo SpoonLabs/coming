@@ -435,7 +435,7 @@ public class CodeDiffer {
                             		if(cross) {
                                 featureVector.merge(featureExtractor.extractFeature(repair, atom));
                             		} else {
-                            			featureVector = featureExtractor.extractNonCrossFeature(repair, atom);
+                            			featureVector = featureExtractor.extractSimpleP4JFeature(repair, atom);
                                  break;
                             		}
                             }

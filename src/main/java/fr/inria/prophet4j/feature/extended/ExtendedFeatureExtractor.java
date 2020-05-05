@@ -449,7 +449,7 @@ public class ExtendedFeatureExtractor implements FeatureExtractor {
     }
 
 	@Override
-	public FeatureVector extractNonCrossFeature(Repair repair, CtElement atom) {
+	public FeatureVector extractSimpleP4JFeature(Repair repair, CtElement atom) {
 		// TODO Auto-generated method stub
 		return null;
 	}

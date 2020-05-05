@@ -304,9 +304,9 @@ public class OriginalFeatureExtractor implements FeatureExtractor {
     }
     
 	/**
-	 * This function returns non cross features
+	 * This function returns simple P4J features
 	 */
-	public FeatureVector extractNonCrossFeature(Repair repair, CtElement atom) {
+	public FeatureVector extractSimpleP4JFeature(Repair repair, CtElement atom) {
 		List<CtElement> stmtsC = getCurrentStmts(repair);
 		List<CtElement> stmtsF = new ArrayList<>();
 		List<CtElement> stmtsL = new ArrayList<>();
