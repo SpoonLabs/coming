@@ -23,6 +23,7 @@ import fr.inria.coming.core.engine.Analyzer;
 import fr.inria.coming.core.entities.AnalysisResult;
 import fr.inria.coming.core.entities.DiffResult;
 import fr.inria.coming.core.entities.RevisionResult;
+import fr.inria.coming.main.ComingProperties;
 import fr.inria.prophet4j.feature.FeatureCross;
 import fr.inria.prophet4j.feature.extended.ExtendedFeatureCross;
 import fr.inria.prophet4j.feature.original.OriginalFeatureCross;
@@ -68,11 +69,18 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 		Option option = new Option();
 		option.featureOption = FeatureOption.ORIGINAL;
 		//We set the first parameter of CodeDiffer as False to not allow the code generation at buggy location
-		CodeDiffer codeDiffer = new CodeDiffer(false, option);
+		//By default, coming extracts simple P4J features, so the cross sets to false
+		Boolean cross = ComingProperties.getPropertyBoolean("cross");
+		CodeDiffer codeDiffer = new CodeDiffer(false, option,cross);
 		//Get feature matrix
 		List<FeatureMatrix> featureMatrix = codeDiffer.runByGenerator(src, target);
 		//Get feature vector
-		JsonObject jsonfile = genVectorsCSV(option,target,featureMatrix);
+		JsonObject jsonfile = null;
+		if(cross) {
+			jsonfile = genVectorsCSV(option,target,featureMatrix);
+		} else {
+			jsonfile = getSimleP4JJSON(option,target,featureMatrix);
+		}
 		
 		JsonArray filesArray = new JsonArray();		
 		JsonObject file = new JsonObject();
@@ -86,6 +94,22 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 		root.add("files", filesArray);
 
 		return (new FeaturesResult(revision, root));
+
+	}
+
+	private JsonObject getSimleP4JJSON(Option option, File target, List<FeatureMatrix> featureMatrix) {
+		 ParameterVector parameterVector = new ParameterVector(option.featureOption);
+	        JsonObject jsonfile = new JsonObject();
+	       
+	        for (FeatureVector featureVector : featureMatrix.get(0).getFeatureVectors()) {
+                List<FeatureCross> featureCrosses = featureVector.getNonSortedFeatureCrosses();
+                for (FeatureCross featureCross : featureCrosses) {
+	                	OriginalFeatureCross ofc = (OriginalFeatureCross) featureCross;
+	                	jsonfile.addProperty(ofc.getCrossType(), ofc.getFeatures().toString());
+
+                }
+	        }
+	        return jsonfile;
 
 	}
 

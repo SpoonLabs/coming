@@ -376,4 +376,10 @@ public class S4ROFeatureExtractor implements FeatureExtractor {
         if (!repair.isReplace)
             stmtsL.add(srcElem);
     }
+
+	@Override
+	public FeatureVector extractSimpleP4JFeature(Repair repair, CtElement atom) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -50,12 +50,20 @@ public class CodeDiffer {
     private boolean byGenerator;
     private Option option;
     private String pathName;
+    private boolean cross=true;
     private static final Logger logger = LogManager.getLogger(CodeDiffer.class.getName());
 
     public CodeDiffer(boolean byGenerator, Option option) {
         this.byGenerator = byGenerator;
         this.option = option;
         this.pathName = "";
+    }
+    
+    public CodeDiffer(boolean byGenerator, Option option, boolean cross) {
+        this.byGenerator = byGenerator;
+        this.option = option;
+        this.pathName = "";
+        this.cross = cross;
     }
 
     public void setPathName(String pathName) {
@@ -424,7 +432,12 @@ public class CodeDiffer {
                             Repair repair = generator.obtainHumanRepair();
                             FeatureVector featureVector = new FeatureVector();
                             for (CtElement atom : repair.getCandidateAtoms()) {
+                            		if(cross) {
                                 featureVector.merge(featureExtractor.extractFeature(repair, atom));
+                            		} else {
+                            			featureVector = featureExtractor.extractSimpleP4JFeature(repair, atom);
+                                 break;
+                            		}
                             }
                             featureVectors.add(featureVector);
                         }

@@ -159,6 +159,11 @@ public interface Structure {
             list.sort(Comparator.comparingInt(FeatureCross::getId));
             return list;
         }
+        
+        public List<FeatureCross> getNonSortedFeatureCrosses() {
+            List<FeatureCross> list = new ArrayList<>(featureCrosses);
+            return list;
+        }
 
         public void merge(FeatureVector featureVector) {
             this.featureCrosses.addAll(featureVector.getFeatureCrosses());
