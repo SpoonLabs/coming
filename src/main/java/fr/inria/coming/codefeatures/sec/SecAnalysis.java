@@ -40,15 +40,19 @@ public class SecAnalysis {
 			change.addProperty("content", operation.getSrcNode().toString());
 
 			// comment
-			JsonArray commentArrays = new JsonArray();
-			change.add("comments", commentArrays);
+			JsonObject commentsJSON = new JsonObject();
+			change.add("comments", commentsJSON);
 			List<CtComment> comments = operation.getSrcNode().getComments();
 
+			int commentId = 0;
 			for (CtComment comment : comments) {
 				JsonObject cjson = new JsonObject();
 				cjson.addProperty("comment", comment.getContent());
 				cjson.addProperty("isnew", newCommentInPrevious(comment, iDiff));
-				commentArrays.add(cjson);
+				cjson.addProperty("change_type", getOpInComment(comment, iDiff));
+
+				commentsJSON.add(new Integer(commentId).toString(), cjson);
+				commentId++;
 			}
 
 			//
@@ -101,6 +105,20 @@ public class SecAnalysis {
 		}
 
 		return existInsert && !existDetete;
+	}
+
+	public static String getOpInComment(CtComment comment, Diff diff) {
+
+		for (Operation op : diff.getAllOperations()) {
+
+			if (op.getNode() == comment) {
+				return op.getAction().getName();
+
+			}
+
+		}
+
+		return "unchanged";
 	}
 
 	public static JsonArray getSubChanges(MapList<Operation, Operation> operationHierarchy, Operation operation,
