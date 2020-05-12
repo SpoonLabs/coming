@@ -262,6 +262,16 @@ public class OriginalFeatureExtractorTest {
                     str1 = "class Foo{public void bar(){\nboolean a=false;\n}}";
                     assertEquals(Boolean.TRUE, check(str0, str1, checkFeature));
                     break;
+                case REMOVE_GUARD_RF:
+                    str0 = "class Foo{public void bar(){\nboolean a=true;\nif(a&&true){}\n}}";
+                    str1 = "class Foo{public void bar(){\nboolean a=true;\n}}";
+                    assertEquals(Boolean.TRUE, check(str0, str1, checkFeature));
+                    break;
+                case REMOVE_STMT_RF:
+                    str0 = "class Foo{public void bar(){\nboolean a=true;\nboolean b=true;\n}}";
+                    str1 = "class Foo{public void bar(){\nboolean a=true;\n}}";
+                    assertEquals(Boolean.TRUE, check(str0, str1, checkFeature));
+                    break;
             }
         }
         if (caseFeature instanceof ValueFeature) {

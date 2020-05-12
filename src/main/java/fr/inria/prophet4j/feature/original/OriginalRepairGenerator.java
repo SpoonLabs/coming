@@ -296,7 +296,10 @@ public class OriginalRepairGenerator implements RepairGenerator {
         switch (diffEntry.type) {
             case DeleteType: // kind
                 // GuardKind: // INSERT_GUARD_RF
-                repair.kind = RepairKind.GuardKind;
+                repair.kind = RepairKind.RemoveSTMTKind;
+                if (diffEntry.srcNode instanceof CtIf) {
+                    repair.kind = RepairKind.RemoveGuardKind;
+                }
                 break;
             case InsertType: // kind
                 // IfExitKind: // INSERT_CONTROL_RF
