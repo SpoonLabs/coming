@@ -69,13 +69,19 @@ public class OriginalFeatureExtractor implements FeatureExtractor {
                 repairFeatures.add(RepairFeature.REPLACE_STMT_RF);
                 break;
              //Delete a guard in source file
-            case RemoveGuardKind:
-            	 	repairFeatures.add(RepairFeature.REMOVE_GUARD_RF);
+            case RemovePartialIFKind:
+            	 	repairFeatures.add(RepairFeature.REMOVE_PARTIAL_IF);
                 break;
              //Delete statements in source file
             case RemoveSTMTKind:
-	        	 	repairFeatures.add(RepairFeature.REMOVE_STMT_RF);
+	        	 	repairFeatures.add(RepairFeature.REMOVE_STMT);
 	            break;
+            case RemoveWholeIFKind:
+        	 	repairFeatures.add(RepairFeature.REMOVE_WHOLE_IF);
+            break;
+            case RemoveWholeBlockKind:
+        	 	repairFeatures.add(RepairFeature.REMOVE_WHOLE_BLOCK);
+            break;
         }
         return repairFeatures;
     }

@@ -99,13 +99,23 @@ public interface OriginalFeature extends Feature {
          * deleting a guard condition from an existing statement (GuardRepair in Prophet4C)
          * RemoveGuardKind
          */
-        REMOVE_GUARD_RF,
+        REMOVE_PARTIAL_IF,
         /**
          * replacing an existing statement 
          * RemoveSTMTKind
          */
-        REMOVE_STMT_RF
-       
+        REMOVE_STMT,
+        /**
+         * deleting a if condition and the block inside it from an existing statement (GuardRepair in Prophet4C)
+         * RemoveGuardBlockKind
+         */
+        REMOVE_WHOLE_IF,  
+        /**
+         * remove a whole block
+         */
+        REMOVE_WHOLE_BLOCK,
+        
+        
     }
 
     enum ValueFeature implements OriginalFeature {

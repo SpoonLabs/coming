@@ -9,9 +9,6 @@ import fr.inria.prophet4j.utility.Structure.DiffEntry;
 import fr.inria.prophet4j.feature.RepairGenerator;
 import fr.inria.prophet4j.feature.original.util.OriginalRepairAnalyzer;
 import spoon.Launcher;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
@@ -294,13 +291,20 @@ public class OriginalRepairGenerator implements RepairGenerator {
         // todo improve
         // based on matchCandidateWithHumanFix()
         switch (diffEntry.type) {
-            case DeleteType: // kind
-                // GuardKind: // INSERT_GUARD_RF
-                repair.kind = RepairKind.RemoveSTMTKind;
-                if (diffEntry.srcNode instanceof CtIf) {
-                    repair.kind = RepairKind.RemoveGuardKind;
-                }
-                break;
+		case DeleteType: // only delete
+			repair.kind = RepairKind.RemoveSTMTKind;
+			if (diffEntry.srcNode instanceof CtIf) {
+				repair.kind = RepairKind.RemoveWholeIFKind;
+			} else if (diffEntry.srcNode instanceof CtBlock) {
+				repair.kind = RepairKind.RemoveWholeBlockKind;
+			}
+			break;
+		case PartialDeleteType: // delete + move kind
+			repair.kind = RepairKind.RemoveSTMTKind;
+			if (diffEntry.srcNode instanceof CtIf) {
+				repair.kind = RepairKind.RemovePartialIFKind;
+			}
+			break;
             case InsertType: // kind
                 // IfExitKind: // INSERT_CONTROL_RF
                 // AddAndReplaceKind: // INSERT_STMT_RF

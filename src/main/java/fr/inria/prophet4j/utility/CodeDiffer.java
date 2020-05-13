@@ -149,8 +149,13 @@ public class CodeDiffer {
         Set<Integer> lineNums = new HashSet<>();
         lineNums.addAll(deleteOperations.keySet());
         lineNums.addAll(insertOperations.keySet());
+        Operation DEL = null;
         for (Integer lineNum : lineNums) {
-            Operation deleteOperation = deleteOperations.get(lineNum);
+        		Operation operation = deleteOperations.get(lineNum);       		
+        		if(operation!=null && "DEL".equals(operation.getAction().getName())) {
+        			DEL = operation;
+        		}       		 
+        	    Operation deleteOperation = deleteOperations.get(lineNum);
             Operation insertOperation = insertOperations.get(lineNum);
 
             DiffType type = null;
@@ -164,8 +169,18 @@ public class CodeDiffer {
                     dstNode = insertOperation.getSrcNode(); // ...
                 }
             } else if (deleteOperation != null) {
-                type = DiffType.DeleteType;
-                srcNode = deleteOperation.getSrcNode(); // ...
+            		Boolean pureDelete = true;
+            		for(Operation op :operations) {
+            			if(!"DEL".equals(op.getAction().getName())) {
+            				pureDelete = false;
+            			}
+            		}
+            		if(pureDelete) {
+            			type = DiffType.DeleteType;
+            		}else {
+            			type = DiffType.PartialDeleteType;
+            		}                                            
+                srcNode = DEL.getSrcNode(); // ...
                 dstNode = deleteOperation.getDstNode(); // null
                 if (srcNode == null) srcNode = dstNode;
                 if (dstNode == null) dstNode = srcNode;
