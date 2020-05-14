@@ -107,6 +107,10 @@ public abstract class RevisionNavigationExperiment<R extends IRevision> {
         for (Iterator<R> iterator = it; iterator.hasNext(); ) {
 
             R oneRevision = iterator.next();
+            
+            if(null == oneRevision) {
+            		return processEnd();
+            }
 
             log.info("\n***********\nAnalyzing " + i + "/" + size + " " + oneRevision.getName());
 

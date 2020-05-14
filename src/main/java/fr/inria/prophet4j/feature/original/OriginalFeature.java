@@ -95,8 +95,27 @@ public interface OriginalFeature extends Feature {
          * ReplaceStringKind
          */
         REPLACE_STMT_RF,
-        // DELETE_STMT_RF, // case of delete one statement
-        // UNKNOWN_STMT_RF, // other unknown operations like moving one statement
+        /**
+         * deleting a guard condition from an existing statement (GuardRepair in Prophet4C)
+         * RemoveGuardKind
+         */
+        REMOVE_PARTIAL_IF,
+        /**
+         * replacing an existing statement 
+         * RemoveSTMTKind
+         */
+        REMOVE_STMT,
+        /**
+         * deleting a if condition and the block inside it from an existing statement (GuardRepair in Prophet4C)
+         * RemoveGuardBlockKind
+         */
+        REMOVE_WHOLE_IF,  
+        /**
+         * remove a whole block
+         */
+        REMOVE_WHOLE_BLOCK,
+        
+        
     }
 
     enum ValueFeature implements OriginalFeature {

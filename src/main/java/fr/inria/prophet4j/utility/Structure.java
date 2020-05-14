@@ -324,6 +324,8 @@ public interface Structure {
         DeleteType,
         InsertType,
         UpdateType,
+        //Delete and Move
+        PartialDeleteType,
     }
 
     enum RepairKind { // implementation is at RepairGenerator.java
@@ -341,6 +343,11 @@ public interface Structure {
         // REPLACE_STMT_RF
         ReplaceKind,            // genReplaceStmt()
         ReplaceStringKind,      // genReplaceStmt()
+        //code deletion related features
+        RemovePartialIFKind,
+        RemoveSTMTKind,
+        RemoveWholeIFKind,
+        RemoveWholeBlockKind,
     }
 
     class DiffEntry { // DiffResultEntry

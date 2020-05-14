@@ -261,7 +261,39 @@ public class OriginalFeatureExtractorTest {
                     str0 = "class Foo{public void bar(){\nboolean a=true;\n}}";
                     str1 = "class Foo{public void bar(){\nboolean a=false;\n}}";
                     assertEquals(Boolean.TRUE, check(str0, str1, checkFeature));
+                    break;              
+                case REMOVE_WHOLE_IF:
+                    str0 = "class Foo{public void bar(){\nboolean a=true;\nif(a){\n int b=1;\n}\n}}";
+                    str1 = "class Foo{public void bar(){\nboolean a=true;\n}}";
+                    assertEquals(Boolean.TRUE, check(str0, str1, checkFeature));
                     break;
+                case REMOVE_PARTIAL_IF:
+                		//only remove the if condition and keep the statements in the condition
+                    str0 = "class Foo{public void bar(){\nboolean a=true;\nif(a){\nint b=1;\n}\n}}";
+                    str1 = "class Foo{public void bar(){\nboolean a=true;\nint b=1;\n}}";
+                    assertEquals(Boolean.TRUE, check(str0, str1, checkFeature));
+                    //remove the if condition and part of statements inside it and keep some statements in the condition
+                    str0 = "class Foo{public void bar(){\nboolean a=true;\nif(a){\nint b=1;\nint c=0;\n}\n}}";
+                    str1 = "class Foo{public void bar(){\nboolean a=true;\nint b=1;\n}}";
+                    assertEquals(Boolean.TRUE, check(str0, str1, checkFeature));
+                    break;               
+                case REMOVE_STMT:
+                		//remove a statement
+                    str0 = "class Foo{public void bar(){\nboolean a=true;\nboolean b=true;\n}}";
+                    str1 = "class Foo{public void bar(){\nboolean a=true;\n}}";
+                    assertEquals(Boolean.TRUE, check(str0, str1, checkFeature));
+                    //remove a statement from else block
+                    str0 = "class Foo{public void bar(){\nboolean a=true;\nif(a){\nint b=1;\n}\nelse{int b=2;\nint c=3;\n}\n}}";
+	            		str1 = "class Foo{public void bar(){\nboolean a=true;\nif(a){\nint b=1;\n}\nelse{int b=2;\n}\n}}";
+	                assertEquals(Boolean.TRUE, check(str0, str1, checkFeature));
+	                break;                   
+                case REMOVE_WHOLE_BLOCK:
+                		//remove the whole else block
+                		str0 = "class Foo{public void bar(){\nboolean a=true;\nif(a){\nint b=1;\n}\nelse{int b=2;}\n}}";
+                		str1 = "class Foo{public void bar(){\nboolean a=true;\nif(a){\nint b=1;\n}\n}}";
+                    assertEquals(Boolean.TRUE, check(str0, str1, checkFeature));
+                    break;     
+               
             }
         }
         if (caseFeature instanceof ValueFeature) {
