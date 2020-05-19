@@ -50,6 +50,8 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 
 	@Override
 	public AnalysisResult analyze(IRevision revision, RevisionResult previousResults) {
+		
+		FeaturesResult p4jfeatures = (FeaturesResult) new P4JFeatureAnalyzer().analyze(revision, previousResults);
 
 		AnalysisResult resultFromDiffAnalysis = previousResults.getResultFromClass(FineGrainDifftAnalyzer.class);
 
@@ -88,10 +90,13 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 							JsonObject opjson = JSonPatternInstanceOutput.getJSONFromOperator(operation);
 							jsonFeature.add("ast_info", opjson);
 						}
-
+						if(p4jfeatures!=null) {
+							jsonFeature.add("P4J",p4jfeatures.getFeatures());
+						}
 						changesArray.add(jsonFeature);
 					}
 				}
+				
 			}
 
 		}

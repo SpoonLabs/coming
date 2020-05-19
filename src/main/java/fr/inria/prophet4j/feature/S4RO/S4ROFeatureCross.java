@@ -126,4 +126,10 @@ public class S4ROFeatureCross implements FeatureCross, Serializable {
     public String toString() {
         return "FeatureCross: " + features;
     }
+
+	@Override
+	public List<Feature> getSimpleP4JFeatures() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

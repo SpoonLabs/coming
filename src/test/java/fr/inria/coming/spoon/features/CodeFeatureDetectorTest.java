@@ -74,10 +74,10 @@ public class CodeFeatureDetectorTest {
 		Cntx feat_vars = (Cntx) cntx.getInformation().get("FEATURES_VARS");
 		assertTrue(feat_vars.getInformation().isEmpty());
 
-		Boolean hasFeat_method = cntx.getInformation().containsKey("FEATURES_METHODS");
+		Boolean hasFeat_method = cntx.getInformation().containsKey("FEATURES_METHOD_INVOCATION");
 		assertTrue(hasFeat_method);
 
-		Cntx feat_method = (Cntx) cntx.getInformation().get("FEATURES_METHODS");
+		Cntx feat_method = (Cntx) cntx.getInformation().get("FEATURES_METHOD_INVOCATION");
 		assertTrue(feat_method.getInformation().isEmpty());
 
 		Boolean hasS6 = cntx.getInformation().containsKey(CodeFeatures.S6_METHOD_THROWS_EXCEPTION.toString());

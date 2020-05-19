@@ -67,9 +67,6 @@ public class ComingMain {
 		options.addOption(Option.builder("mode").argName("mineinstance | diff | features").hasArg()
 				.desc("the mode of execution of the analysis").build());
 
-		options.addOption(Option.builder("featuretype").argName("S4R | P4J").hasArg()
-				.desc("the type of feature extraction").build());
-
 		options.addOption(Option.builder("input").argName("git(default) | files | filespair | repairability").hasArg()
 				.desc("format of the content present in the given -path. git implies that the path is a git repository. files implies the path contains .patch files ")
 				.build());
@@ -115,12 +112,6 @@ public class ComingMain {
 		// repairability module parameter
 		options.addOption(Option.builder("repairtool").argName(RepairTools.getCLISupportString()).hasArg().desc(
 				"If -mode=repairability, this option specifies which repair tools should we consider in our analysis. "
-						+ "Can be a list separated by " + File.pathSeparator)
-				.build());
-
-		// feature module parameter
-		options.addOption(Option.builder("featuretype").argName("S4R | P4J").hasArg().desc(
-				"If -mode=features, this option specifies which feature extraction types should we consider in our analysis. "
 						+ "Can be a list separated by " + File.pathSeparator)
 				.build());
 
@@ -303,14 +294,7 @@ public class ComingMain {
 				navigatorEngine.getAnalyzers().clear();
 
 				navigatorEngine.getAnalyzers().add(new FineGrainDifftAnalyzer());
-
-				if ("P4J".equals(featureType)) {
-					// for P4J:
-					navigatorEngine.getAnalyzers().add(new P4JFeatureAnalyzer());
-				} else {
-					// for S4R or by default
-					navigatorEngine.getAnalyzers().add(new FeatureAnalyzer());
-				}
+				navigatorEngine.getAnalyzers().add(new FeatureAnalyzer());
 
 				navigatorEngine.getOutputProcessors().add(new FeaturesOutput());
 

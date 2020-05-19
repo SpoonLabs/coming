@@ -24,6 +24,7 @@ import fr.inria.coming.core.entities.AnalysisResult;
 import fr.inria.coming.core.entities.DiffResult;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.main.ComingProperties;
+import fr.inria.prophet4j.feature.Feature;
 import fr.inria.prophet4j.feature.FeatureCross;
 import fr.inria.prophet4j.feature.extended.ExtendedFeatureCross;
 import fr.inria.prophet4j.feature.original.OriginalFeatureCross;
@@ -53,7 +54,12 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 
 		AnalysisResult resultFromDiffAnalysis = previousResults.getResultFromClass(FineGrainDifftAnalyzer.class);
 		DiffResult diffResut = (DiffResult) resultFromDiffAnalysis;
-		String filename =   diffResut.getDiffOfFiles().keySet().iterator().next().toString();		
+		String filename = "";
+		if (diffResut.getDiffOfFiles().size()!=0) {
+			filename =  diffResut.getDiffOfFiles().keySet().iterator().next().toString();		
+		}else {
+			filename = diffResut.getAnalyzed().toString();
+		}
 
 		if (resultFromDiffAnalysis == null) {
 			System.err.println("Error Diff must be executed before");
@@ -62,7 +68,12 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 
 		// determine source and target file path
 		String path = revision.getFolder();
-		Map<String, File> filePaths = processFilesPair(new File(path));
+		Map<String, File> filePaths = null;
+		if(path!=null) {
+			filePaths = processFilesPair(new File(path));
+		} else {
+			return null;
+		}
 		File src = filePaths.get("src");
 		File target = filePaths.get("target");
 
@@ -93,19 +104,23 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 		root.addProperty("id", revision.getName());
 		root.add("files", filesArray);
 
-		return (new FeaturesResult(revision, root));
-
+		return (new FeaturesResult(revision,jsonfile));
 	}
 
 	private JsonObject getSimleP4JJSON(Option option, File target, List<FeatureMatrix> featureMatrix) {
-		 ParameterVector parameterVector = new ParameterVector(option.featureOption);
+		
 	        JsonObject jsonfile = new JsonObject();
-	       
+	        
 	        for (FeatureVector featureVector : featureMatrix.get(0).getFeatureVectors()) {
                 List<FeatureCross> featureCrosses = featureVector.getNonSortedFeatureCrosses();
+                
                 for (FeatureCross featureCross : featureCrosses) {
+            			List<Feature> simpleP4JFeatures= featureCross.getSimpleP4JFeatures();
 	                	OriginalFeatureCross ofc = (OriginalFeatureCross) featureCross;
-	                	jsonfile.addProperty(ofc.getCrossType(), ofc.getFeatures().toString());
+	                	for(Feature f: simpleP4JFeatures) {
+	                		Boolean positive = ofc.containFeature(f);
+	                		jsonfile.addProperty("P4J_"+ofc.getCrossType()+"_"+f, positive?"true":"false");
+	                	}
 
                 }
 	        }
