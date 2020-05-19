@@ -9,10 +9,10 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.github.difflib.text.DiffRow;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -136,6 +136,78 @@ public class InstanceMiningTest {
 			// expected
 
 		}
+	}
+
+	@Test
+	public void testFilePairsIssue219_2220bedc8e16f439a7cdbaf785fea0d20fab972a() throws Exception {
+
+		File left = getFile("issue219_2220bedc8e16f439a7cdbaf785fea0d20fab972a/PGValidConnectionChecker_s.java");
+		File right = getFile("issue219_2220bedc8e16f439a7cdbaf785fea0d20fab972a/PGValidConnectionChecker_t.java");
+
+		assertTrue(left.exists());
+		assertTrue(right.exists());
+
+		ComingMain cm = new ComingMain();
+
+		FinalResult result = cm.run(new String[] { "-location",
+				left.getAbsolutePath() + File.pathSeparator + right.getAbsolutePath(), "-input", "filespair",
+				"-entitytype", "BinaryOperator", "-action", "INS", "-mode", "mineinstance" });
+
+		assertNotNull(result);
+
+		// We have only one file-pair, we take it
+		Map m = (Map) result.getAllResults().values().stream().findAny().get();
+		DiffResult dr = (DiffResult) m.get(FineGrainDifftAnalyzer.class.getSimpleName());
+
+		List<Diff> changes = dr.getAll();
+
+		assertTrue(changes.size() > 0);
+
+		assertEquals(2, changes.get(0).getRootOperations().size());
+
+		PatternInstancesFromRevision patterns = (PatternInstancesFromRevision) m
+				.get(PatternInstanceAnalyzer.class.getSimpleName());
+
+		assertNotNull(patterns);
+
+		assertTrue(patterns.getInfoPerDiff().size() > 0);
+
+	}
+
+	@Test
+	public void testFilePairsIssue219_83bbf2b4862182b15739af31c8e432a08ec7283c() throws Exception {
+
+		File left = getFile("issue219_83bbf2b4862182b15739af31c8e432a08ec7283c/JSONPath_s.java");
+		File right = getFile("issue219_83bbf2b4862182b15739af31c8e432a08ec7283c/JSONPath_t.java");
+
+		assertTrue(left.exists());
+		assertTrue(right.exists());
+
+		ComingMain cm = new ComingMain();
+
+		FinalResult result = cm.run(new String[] { "-location",
+				left.getAbsolutePath() + File.pathSeparator + right.getAbsolutePath(), "-input", "filespair",
+				"-entitytype", "BinaryOperator", "-action", "INS", "-mode", "mineinstance" });
+
+		assertNotNull(result);
+
+		// We have only one file-pair, we take it
+		Map m = (Map) result.getAllResults().values().stream().findAny().get();
+		DiffResult dr = (DiffResult) m.get(FineGrainDifftAnalyzer.class.getSimpleName());
+
+		List<Diff> changes = dr.getAll();
+
+		assertTrue(changes.size() > 0);
+
+		assertEquals(1, changes.get(0).getRootOperations().size());
+
+		PatternInstancesFromRevision patterns = (PatternInstancesFromRevision) m
+				.get(PatternInstanceAnalyzer.class.getSimpleName());
+
+		assertNotNull(patterns);
+
+		assertTrue(patterns.getInfoPerDiff().size() > 0);
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -796,5 +868,11 @@ public class InstanceMiningTest {
 		assertTrue(mappings.getMappings().size() > 0);
 		List<ChangePatternInstance> instances = detector.findPatternInstances(pattern, md);
 		assertTrue(instances.size() > 0);
+	}
+
+	public File getFile(String name) {
+		ClassLoader classLoader = getClass().getClassLoader();
+		File file = new File(classLoader.getResource(name).getFile());
+		return file;
 	}
 }
