@@ -88,7 +88,7 @@ public class CodeElementInfo {
 		context = new Cntx<>(determineKey(element));
 		context.getInformation().put("FEATURES_VARS", new Cntx<>());
 		context.getInformation().put("FEATURES_TYPEACCESS", new Cntx<>());
-		context.getInformation().put("FEATURES_METHODS", new Cntx<>());
+		context.getInformation().put("FEATURES_METHOD_INVOCATION", new Cntx<>());
 
 	}
 

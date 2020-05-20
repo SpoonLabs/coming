@@ -89,7 +89,7 @@ public class BinaryOperatorAnalyzer extends AbstractCodeAnalyzer {
 				whethermathroot =false;
 		}
 		
-		writeGroupedInfo(context, "binaryoperator_"+Integer.toString(operatorindex), CodeFeatures.O5_IS_MATH_ROOT, 
+		writeGroupedInfo(context, Integer.toString(operatorindex)+"_"+operatorunderstudy, CodeFeatures.O5_IS_MATH_ROOT, 
 				whethermathroot, "FEATURES_BINARYOPERATOR");	
 	}
 	
@@ -122,7 +122,7 @@ public class BinaryOperatorAnalyzer extends AbstractCodeAnalyzer {
 			}
 		}
 		
-		writeGroupedInfo(context, "binaryoperator_"+Integer.toString(operatorindex), CodeFeatures.O2_LOGICAL_CONTAIN_NOT, 
+		writeGroupedInfo(context, Integer.toString(operatorindex)+"_"+operatorunderstudy, CodeFeatures.O2_LOGICAL_CONTAIN_NOT, 
 				whethercontainnotoperator, "FEATURES_BINARYOPERATOR");
 		
 	}
@@ -168,9 +168,9 @@ public class BinaryOperatorAnalyzer extends AbstractCodeAnalyzer {
 			CodeFeatures cerainfeature = binoperatortype.get(index);
 			
 			if(cerainfeature.toString().endsWith(operatorstring.toUpperCase()))
-				writeGroupedInfo(context, "binaryoperator_"+Integer.toString(operatorindex), cerainfeature, 
+				writeGroupedInfo(context,  Integer.toString(operatorindex)+"_"+operatorunderstudy, cerainfeature, 
 							true, "FEATURES_BINARYOPERATOR");
-			else writeGroupedInfo(context, "binaryoperator_"+Integer.toString(operatorindex), cerainfeature, 
+			else writeGroupedInfo(context,  Integer.toString(operatorindex)+"_"+operatorunderstudy, cerainfeature, 
 					false, "FEATURES_BINARYOPERATOR");
 		}	
 	}
@@ -186,7 +186,7 @@ public class BinaryOperatorAnalyzer extends AbstractCodeAnalyzer {
 			if(leftexpression.toString().trim().equals("null") || rightexpression.toString().trim().equals("null"))
 				whethercontainnull = true;
 			
-			writeGroupedInfo(context, "binaryoperator_"+Integer.toString(operatorindex), CodeFeatures.O3_CONTAIN_NULL, 
+			writeGroupedInfo(context, Integer.toString(operatorindex)+"_"+operatorunderstudy, CodeFeatures.O3_CONTAIN_NULL, 
 					whethercontainnull, "FEATURES_BINARYOPERATOR");
 			
 		}
@@ -207,7 +207,7 @@ public class BinaryOperatorAnalyzer extends AbstractCodeAnalyzer {
 					|| leftexpression.toString().trim().endsWith("1") || rightexpression.toString().trim().endsWith("1"))
 				whethercontain01 = true;
 			
-			writeGroupedInfo(context, "binaryoperator_"+Integer.toString(operatorindex), CodeFeatures.O3_CONTAIN_01, 
+			writeGroupedInfo(context, Integer.toString(operatorindex)+"_"+operatorunderstudy, CodeFeatures.O3_CONTAIN_01, 
 					whethercontain01, "FEATURES_BINARYOPERATOR");
 		}
 	   
@@ -224,7 +224,7 @@ public class BinaryOperatorAnalyzer extends AbstractCodeAnalyzer {
 	    			whethercompareincondition = true;
 	        }
 			
-	        writeGroupedInfo(context, "binaryoperator_"+Integer.toString(operatorindex), CodeFeatures.O4_COMPARE_IN_CONDITION, 
+	        writeGroupedInfo(context, Integer.toString(operatorindex)+"_"+operatorunderstudy, CodeFeatures.O4_COMPARE_IN_CONDITION, 
 					whethercompareincondition, "FEATURES_BINARYOPERATOR");
 		}	
 }

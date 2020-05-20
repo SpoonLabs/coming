@@ -2,12 +2,16 @@ package fr.inria.coming.core.entities.output;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import fr.inria.coming.changeminer.entity.FinalResult;
@@ -41,13 +45,13 @@ public class FeaturesOutput implements IOutput {
 				continue;
 
 			FeaturesResult result = (FeaturesResult) rv.getResultFromClass(FeatureAnalyzer.class);
-			save(result,"S4R");
+			save(result);
 		}
 
 	}
 
-	public JsonElement save(FeaturesResult result, String featureType) {
-		if (result == null || "".equals(featureType)) {
+	public JsonElement save(FeaturesResult result) {
+		if (result == null) {
 			log.debug("No Code Change feature captured");
 			return null;
 		}
@@ -56,15 +60,13 @@ public class FeaturesOutput implements IOutput {
 
 		FileWriter fw;
 		try {
-
 			// Create the output dir
 			File fout = new File(ComingProperties.getProperty("output"));
 			fout.mkdirs();
-
-			String fileName = fout.getAbsolutePath() + File.separator +featureType +"features_" + result.getAnalyzed().getName()
+			String fileName = fout.getAbsolutePath() + File.separator +"features_" + result.getAnalyzed().getName()
 					+ ".json";
 			fw = new FileWriter(fileName);
-			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 			JsonParser jp = new JsonParser();
 			JsonElement je = jp.parse(file.toString());
 			String prettyJsonString = gson.toJson(je);
@@ -79,16 +81,9 @@ public class FeaturesOutput implements IOutput {
 	}
 
 	@Override
-	public void generateRevisionOutput(RevisionResult resultAllAnalyzed) {
-		FeaturesResult result = null;
-		//For Prophet4J features
-		if (resultAllAnalyzed.containsKey("P4JFeatureAnalyzer")) {
-			result = (FeaturesResult) resultAllAnalyzed.getResultFromClass(P4JFeatureAnalyzer.class);
-			save(result,"P4J");
-		}else {
-			result = (FeaturesResult) resultAllAnalyzed.getResultFromClass(FeatureAnalyzer.class);
-			save(result,"S4R");
-		}
+	public void generateRevisionOutput(RevisionResult resultAllAnalyzed) {	
+		FeaturesResult comingFeatures = (FeaturesResult) resultAllAnalyzed.getResultFromClass(FeatureAnalyzer.class);					
+		save(comingFeatures);
 		
 	}
 

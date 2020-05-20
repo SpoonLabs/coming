@@ -6,6 +6,7 @@ import java.util.List;
 
 import fr.inria.prophet4j.feature.Feature;
 import fr.inria.prophet4j.feature.FeatureCross;
+import fr.inria.prophet4j.feature.original.OriginalFeature.AtomicFeature;
 
 import static fr.inria.prophet4j.feature.original.OriginalFeature.*;
 
@@ -14,6 +15,7 @@ public class OriginalFeatureCross implements FeatureCross, Serializable {
     private Integer id;
     private Double degree;
     private List<Feature> features;
+    private List<Feature> simpleP4Jfeatures;
     private CrossType crossType;
 
     public OriginalFeatureCross(Integer id) {
@@ -114,6 +116,20 @@ public class OriginalFeatureCross implements FeatureCross, Serializable {
     
     public List<Feature> getFeatures() {
         return features;
+    }
+    
+    public List<Feature> getSimpleP4JFeatures() {
+    	 	this.simpleP4Jfeatures = new ArrayList<>();
+    	 	for(int i=0; i < RepairFeature.values().length;i++) {
+        	 	this.simpleP4Jfeatures.add(RepairFeature.values()[i]);
+    	 	} 
+    	 	for(int i=0; i < AtomicFeature.values().length;i++) {
+        	 	this.simpleP4Jfeatures.add(AtomicFeature.values()[i]);
+    	 	}  	 	
+    	 	for(int i=0; i < ValueFeature.values().length;i++) {
+        	 	this.simpleP4Jfeatures.add(ValueFeature.values()[i]);
+    	 	}
+    	 	return this.simpleP4Jfeatures;    	 	
     }
 
     public boolean containFeature(Feature feature) {

@@ -101,18 +101,16 @@ public class FeaturesOnComingMainTest {
 	}
 
 	/**
-	 *  Unit test to extract S4R code features
+	 *  Unit test to extract coming code features
 	 * 
 	 */
 	@Test
 	public void testFeaturesOnS4REvolutionFromFolder1() throws Exception {
 		ComingMain main = new ComingMain();
-
 		CommandSummary cs = new CommandSummary();
 		cs.append("-input", "files");
 		cs.append("-location", (new File("src/main/resources/pairsD4j")).getAbsolutePath());
 		cs.append("-mode", "features");
-		cs.append("-featuretype", "S4R");
 		cs.append("-output", "./out_features_d4j");
 		cs.append("-parameters", "outputperrevision:true");
 		FinalResult finalResult = null;
@@ -121,30 +119,8 @@ public class FeaturesOnComingMainTest {
 		//pairsD4j contains two file pairs, expected to output two JSON feature files.
 		assertTrue(finalResult.getAllResults().values().size() == 2);
 		
-
 	}
 	
-	
-	/**
-	 * Unit test to extract P4J code features
-	 * 
-	 */
-	@Test
-	public void testFeaturesOnP4JEvolutionFromFolder1() throws Exception {
-		ComingMain main = new ComingMain();
-		CommandSummary cs = new CommandSummary();
-		cs.append("-input", "files");
-		cs.append("-location", (new File("src/main/resources/pairsD4j")).getAbsolutePath());
-		cs.append("-mode", "features");
-		cs.append("-featuretype", "P4J");
-		cs.append("-output", "./out_features_d4j");
-		cs.append("-parameters", "outputperrevision:true");
-		FinalResult finalResult = null;
-
-		finalResult = main.run(cs.flat());
-		//pairsD4j contains two file pairs, expected to output two JSON feature files.
-		assertTrue(finalResult.getAllResults().values().size() == 2);
-	}
 	
 
 }

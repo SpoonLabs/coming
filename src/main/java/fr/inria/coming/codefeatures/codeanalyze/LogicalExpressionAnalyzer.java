@@ -175,11 +175,11 @@ public class LogicalExpressionAnalyzer extends AbstractCodeAnalyzer {
 					}
 				}
 				
-				writeGroupedInfo(context, "logical_expression_"+Integer.toString(indexlogical), 
+				writeGroupedInfo(context, "logical_expression_"+Integer.toString(indexlogical)+"_"+logicalexpression, 
 						CodeFeatures.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION,
 						(similarUsedBefore) > 0, "FEATURES_LOGICAL_EXPRESSION");
 				
-				writeGroupedInfo(context, "logical_expression_"+Integer.toString(indexlogical), 
+				writeGroupedInfo(context, "logical_expression_"+Integer.toString(indexlogical)+"_"+logicalexpression, 
 						CodeFeatures.LE8_SCOPE_VAR_USED_OTHER_BOOLEXPER,
 						(otherVarUsedinBool) > 0, "FEATURES_LOGICAL_EXPRESSION");
 			}
@@ -271,7 +271,7 @@ public class LogicalExpressionAnalyzer extends AbstractCodeAnalyzer {
                     	break;
 				}
 
-				writeGroupedInfo(context, "logical_expression_"+Integer.toString(indexlogical), 
+				writeGroupedInfo(context, "logical_expression_"+Integer.toString(indexlogical)+"_"+logicalexpression, 
 						CodeFeatures.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR,
 						hasAnyLES2paramCompatibleWithBooleanReturn, "FEATURES_LOGICAL_EXPRESSION");
 			}
@@ -452,7 +452,7 @@ public class LogicalExpressionAnalyzer extends AbstractCodeAnalyzer {
 						break;	
 				}
 				
-				writeGroupedInfo(context, "logical_expression_"+Integer.toString(indexlogical), 
+				writeGroupedInfo(context, "logical_expression_"+Integer.toString(indexlogical)+"_"+logicalexpression, 
 						CodeFeatures.LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED,
 						hasCompatibleVarNoPresent, "FEATURES_LOGICAL_EXPRESSION");
 			}
@@ -496,7 +496,7 @@ public class LogicalExpressionAnalyzer extends AbstractCodeAnalyzer {
 					}
 				}
 				
-				writeGroupedInfo(context, "logical_expression_"+Integer.toString(indexlogical), 
+				writeGroupedInfo(context, "logical_expression_"+Integer.toString(indexlogical)+"_"+logicalexpression,  
 						CodeFeatures.LE4_EXISTS_LOCAL_UNUSED_VARIABLES,
 						hasBooleanVarNotPresent, "FEATURES_LOGICAL_EXPRESSION");
 			}
@@ -554,7 +554,7 @@ public class LogicalExpressionAnalyzer extends AbstractCodeAnalyzer {
 				    }
 				}
 				
-				writeGroupedInfo(context, "logical_expression_"+Integer.toString(indexlogical), 
+				writeGroupedInfo(context, "logical_expression_"+Integer.toString(indexlogical)+"_"+logicalexpression,  
 						CodeFeatures.LE5_COMPLEX_REFERENCE,
 						whethercomplexreference, "FEATURES_LOGICAL_EXPRESSION");
 			}
@@ -607,7 +607,7 @@ public class LogicalExpressionAnalyzer extends AbstractCodeAnalyzer {
 				boolean containsOr = binOps.contains(BinaryOperatorKind.OR.toString());
 				boolean containsNot = unaryOps.contains(UnaryOperatorKind.NOT.toString());
 				
-				writeGroupedInfo(context, "logical_expression_"+Integer.toString(indexlogical), 
+				writeGroupedInfo(context, "logical_expression_"+Integer.toString(indexlogical)+"_"+logicalexpression,  
 						CodeFeatures.LE6_HAS_NEGATION,
 						(containsAnd || containsOr) && containsNot, "FEATURES_LOGICAL_EXPRESSION");
 			}
@@ -703,7 +703,7 @@ public class LogicalExpressionAnalyzer extends AbstractCodeAnalyzer {
 					}
 				}
 				
-				writeGroupedInfo(context, "logical_expression_"+Integer.toString(indexlogical), 
+				writeGroupedInfo(context, "logical_expression_"+Integer.toString(indexlogical)+"_"+logicalexpression, 
 						CodeFeatures.LE7_SIMPLE_VAR_OR_METHOD_IN_LOGIC,
 						(containsAnd || containsOr) && (hasVarDirectlyUsed || hasMethodDirectlyUsed), "FEATURES_LOGICAL_EXPRESSION");
 			}
@@ -780,19 +780,19 @@ public class LogicalExpressionAnalyzer extends AbstractCodeAnalyzer {
 				    	break;
 				}
 				
-				writeGroupedInfo(context, "logical_expression_"+Integer.toString(indexlogical), 
+				writeGroupedInfo(context, "logical_expression_"+Integer.toString(indexlogical)+"_"+logicalexpression,  
 						CodeFeatures.LE9_NORMAL_CHECK,
 						(whethercontainnormalcheck && !whethercontainnullcheck), "FEATURES_LOGICAL_EXPRESSION");
 				
-				writeGroupedInfo(context, "logical_expression_"+Integer.toString(indexlogical), 
+				writeGroupedInfo(context, "logical_expression_"+Integer.toString(indexlogical)+"_"+logicalexpression,  
 						CodeFeatures.LE9_NULL_CHECK,
 						(!whethercontainnormalcheck && whethercontainnullcheck), "FEATURES_LOGICAL_EXPRESSION");
 				
-				writeGroupedInfo(context, "logical_expression_"+Integer.toString(indexlogical), 
+				writeGroupedInfo(context, "logical_expression_"+Integer.toString(indexlogical)+"_"+logicalexpression,  
 						CodeFeatures.LE9_MIX_CHECK,
 						(whethercontainnormalcheck && whethercontainnullcheck), "FEATURES_LOGICAL_EXPRESSION");
 				
-				writeGroupedInfo(context, "logical_expression_"+Integer.toString(indexlogical), 
+				writeGroupedInfo(context, "logical_expression_"+Integer.toString(indexlogical)+"_"+logicalexpression,  
 						CodeFeatures.LE9_EQUAL_NOTEQUAL_NULL_CHECK,
 						(equalnullcheck && notequalnullcheck), "FEATURES_LOGICAL_EXPRESSION");
 			}
@@ -863,7 +863,7 @@ public class LogicalExpressionAnalyzer extends AbstractCodeAnalyzer {
 					if(binOps.size()==0)
 						atomicboolexperssions.add(logicalexpression);
 					
-					analyzeExpressions(atomicboolexperssions, context, indexlogical);
+					analyzeExpressions(atomicboolexperssions, context, indexlogical,logicalexpression);
 				}
 			} catch (Throwable e) {
 				e.printStackTrace();
@@ -894,7 +894,7 @@ public class LogicalExpressionAnalyzer extends AbstractCodeAnalyzer {
 			}
 		}
 		
-		private void analyzeExpressions(List<CtExpression> atomicexperssions, Cntx<Object> context, int logicalindex) {
+		private void analyzeExpressions(List<CtExpression> atomicexperssions, Cntx<Object> context, int logicalindex,CtExpression logicalexpression) {
 			
 			List<CtInvocation> invocationtypes = new ArrayList();
 			
@@ -1049,33 +1049,33 @@ public class LogicalExpressionAnalyzer extends AbstractCodeAnalyzer {
 					break;
 			}
 			
-			writeGroupedInfo(context, "logical_expression_"+Integer.toString(logicalindex), 
+			writeGroupedInfo(context, "logical_expression_"+Integer.toString(logicalindex)+"_"+logicalexpression,  
 					CodeFeatures.LE10_ATOMIC_EXPRESSION_SAME_INVOCATION_TARGET, 
 					(invocationtarget.size()>=2 &&
 			        invocationtarget.size() != new HashSet<CtExpression>(invocationtarget).size()), 
 			        "FEATURES_LOGICAL_EXPRESSION");
 			
-			writeGroupedInfo(context, "logical_expression_"+Integer.toString(logicalindex), 
+			writeGroupedInfo(context, "logical_expression_"+Integer.toString(logicalindex)+"_"+logicalexpression, 
 					CodeFeatures.LE10_ATOMIC_EXPRESSION_COMPARISION_SAME_LEFT,
 					(comparisionleft.size()>=2 &&
 					comparisionleft.size() != new HashSet<CtExpression>(comparisionleft).size()), 
 			        "FEATURES_LOGICAL_EXPRESSION");
 			
-			writeGroupedInfo(context, "logical_expression_"+Integer.toString(logicalindex), 
+			writeGroupedInfo(context, "logical_expression_"+Integer.toString(logicalindex)+"_"+logicalexpression, 
 					CodeFeatures.LE10_ATOMIC_EXPRESSION_COMPARISION_SAME_RIGHT,
 					(comparisionright.size()>=2 &&
 					comparisionright.size() != new HashSet<CtExpression>(comparisionright).size()), 
 			        "FEATURES_LOGICAL_EXPRESSION");
 			
-			writeGroupedInfo(context, "logical_expression_"+Integer.toString(logicalindex), 
+			writeGroupedInfo(context, "logical_expression_"+Integer.toString(logicalindex)+"_"+logicalexpression, 
 					CodeFeatures.LE10_ATOMIC_EXPRESSION_MULTIPLE_VAR_AS_BOOLEAN,
 					variableaccess.size()>=2, "FEATURES_LOGICAL_EXPRESSION");
 			
-			writeGroupedInfo(context, "logical_expression_"+Integer.toString(logicalindex), 
+			writeGroupedInfo(context, "logical_expression_"+Integer.toString(logicalindex)+"_"+logicalexpression, 
 					CodeFeatures.LE10_ATOMIC_EXPRESSION_USED_IN_INVOCATION_COMPARISION_VARIABLE,
 					whetherinvtargetincomparision, "FEATURES_LOGICAL_EXPRESSION");
 			
-			writeGroupedInfo(context, "logical_expression_"+Integer.toString(logicalindex), 
+			writeGroupedInfo(context, "logical_expression_"+Integer.toString(logicalindex)+"_"+logicalexpression, 
 					CodeFeatures.LE10_CONTAINS_ALL_INVOCATION_COMPARISION_VARIABLE,
 					invocationtypes.size()>0 && variableaccess.size()>0 &&
 					comparisiontypes.size()>0, "FEATURES_LOGICAL_EXPRESSION");
