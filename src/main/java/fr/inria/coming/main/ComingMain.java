@@ -210,13 +210,12 @@ public class ComingMain {
 		}
 
 		String mode = ComingProperties.getProperty("mode");
-		String featureType = ComingProperties.getProperty("featuretype");
 		String input = ComingProperties.getProperty("input");
 
 		// CONFIGURATION:
 		loadInput(input);
 
-		loadModelAnalyzers(mode, featureType);
+		loadModelAnalyzers(mode);
 
 		loadFilters();
 
@@ -264,7 +263,7 @@ public class ComingMain {
 		}
 	}
 
-	private void loadModelAnalyzers(String modes, String featureType) {
+	private void loadModelAnalyzers(String modes) {
 
 		String[] modesp = modes.split(":");
 
