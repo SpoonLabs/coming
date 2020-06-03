@@ -165,6 +165,12 @@
 			<artifactId>reflections</artifactId>
 			<version>0.9.11</version>
 		</dependency>
+
+		<dependency>
+			<groupId>br.ufu.lascam</groupId>
+			<artifactId>automatic-diff-dissection</artifactId>
+			<version>1.1-SNAPSHOT</version>
+		</dependency>
 		
 	</dependencies>
 

@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import add.entities.RepairPatterns;
+import add.features.detector.repairpatterns.RepairPatternDetector;
+import add.main.Config;
 import com.github.difflib.text.DiffRow;
 import org.apache.log4j.Logger;
 
@@ -98,7 +101,14 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 				}
 				
 			}
-
+			try {
+				RepairPatternDetector patternDetector = new RepairPatternDetector(new Config(), diff);
+				RepairPatterns analyze = patternDetector.analyze();
+				changesArray.add(analyze.toString());
+				// TODO jsons are not compatible between ADD and comiing
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		JsonObject root = new JsonObject();
 		root.addProperty("id", revision.getName());
