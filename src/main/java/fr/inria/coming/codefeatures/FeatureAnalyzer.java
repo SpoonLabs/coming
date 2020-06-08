@@ -6,7 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import add.entities.RepairPatterns;
+import add.features.detector.repairpatterns.RepairPatternDetector;
+import add.main.Config;
 import com.github.difflib.text.DiffRow;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.apache.log4j.Logger;
 
 import com.google.gson.JsonArray;
@@ -98,7 +103,15 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 				}
 				
 			}
+			try {
+				// Analyze the diff and extract all the patterns of ADD
+				RepairPatternDetector patternDetector = new RepairPatternDetector(new Config(), diff);
+				RepairPatterns analyze = patternDetector.analyze();
 
+				changesArray.add(new Gson().fromJson(analyze.toJson().toString(), JsonObject.class));
+			} catch (Exception e) {
+				new RuntimeException("Unable to compute ADD analysis", e);
+			}
 		}
 		JsonObject root = new JsonObject();
 		root.addProperty("id", revision.getName());
