@@ -1,7 +1,8 @@
 package fr.inria.coming.codefeatures;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.io.FileWriter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,9 +10,10 @@ import java.util.Map;
 import add.entities.RepairPatterns;
 import add.features.detector.repairpatterns.RepairPatternDetector;
 import add.main.Config;
-import com.github.difflib.text.DiffRow;
+import com.github.difflib.DiffUtils;
+import com.github.difflib.UnifiedDiffUtils;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import fr.inria.coming.core.entities.interfaces.IRevisionPair;
 import org.apache.log4j.Logger;
 
 import com.google.gson.JsonArray;
@@ -104,11 +106,26 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 				
 			}
 			try {
+				// generate unified diff
+				File tempFile = File.createTempFile("add_", ".diff");
+				try (FileWriter sb = new FileWriter(tempFile)) {
+					for (IRevisionPair<String> fileFromRevision : revision.getChildren()) {
+						String previousVersion = fileFromRevision.getPreviousVersion();
+						String nextVersion = fileFromRevision.getNextVersion();
+						List<String> strings = UnifiedDiffUtils.generateUnifiedDiff(fileFromRevision.getPreviousName(), fileFromRevision.getName(), Arrays.asList(previousVersion.split("\n")), DiffUtils.diff(previousVersion, nextVersion, null), 0);
+						sb.append(String.join("\n", strings));
+					}
+				}
+
 				// Analyze the diff and extract all the patterns of ADD
-				RepairPatternDetector patternDetector = new RepairPatternDetector(new Config(), diff);
+				Config config = new Config();
+				config.setDiffPath(tempFile.getAbsolutePath());
+				config.setBuggySourceDirectoryPath(revision.getFolder());
+				RepairPatternDetector patternDetector = new RepairPatternDetector(config, diff);
 				RepairPatterns analyze = patternDetector.analyze();
 
 				changesArray.add(new Gson().fromJson(analyze.toJson().toString(), JsonObject.class));
+				tempFile.delete();
 			} catch (Exception e) {
 				new RuntimeException("Unable to compute ADD analysis", e);
 			}
