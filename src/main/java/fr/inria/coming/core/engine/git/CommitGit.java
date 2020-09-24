@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
@@ -13,8 +14,10 @@ import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
+import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.PersonIdent;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
@@ -157,7 +160,50 @@ public class CommitGit implements Commit {
 
 	@Override
 	public String getName() {
+
 		return this.revCommit.getName();
+	}
+
+	@Override
+	public List<String> getParents() {
+
+		List<String> parents = new ArrayList();
+		for (RevCommit rc : this.revCommit.getParents()) {
+			parents.add(rc.getName());
+		}
+
+		return parents;
+	}
+
+	@Override
+	public List<String> getBranches() {
+
+		List<String> branches = new ArrayList();
+		// https://www.eclipse.org/forums/index.php/t/280339/
+		RevWalk walk = new RevWalk(repo.getRepository());
+		for (Map.Entry<String, Ref> e : repo.getRepository().getAllRefs().entrySet())
+
+			if (e.getKey().startsWith(Constants.R_HEADS) || e.getKey().startsWith(Constants.R_REMOTES))
+				try {
+					RevCommit parseCommit = walk.parseCommit(e.getValue().getObjectId());
+					RevCommit base = walk.parseCommit(this.revCommit.toObjectId());
+
+					if (walk.isMergedInto(base, parseCommit)) {
+						branches.add(e.getValue().getName());
+					}
+
+				} catch (Exception e1) {
+
+					e1.printStackTrace();
+				}
+
+		return branches;
+	}
+
+	@Override
+	public PersonIdent getAuthorInfo() {
+		return this.revCommit.getAuthorIdent();
+
 	}
 
 	@Override

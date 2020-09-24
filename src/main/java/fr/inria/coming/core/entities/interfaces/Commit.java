@@ -2,6 +2,8 @@ package fr.inria.coming.core.entities.interfaces;
 
 import java.util.List;
 
+import org.eclipse.jgit.lib.PersonIdent;
+
 import fr.inria.coming.changeminer.entity.IRevision;
 
 public interface Commit extends IRevision {
@@ -33,5 +35,11 @@ public interface Commit extends IRevision {
 	public int getRevCommitTime();
 
 	public String getRevDate();
+
+	public List<String> getParents();
+
+	public List<String> getBranches();
+
+	public PersonIdent getAuthorInfo();
 
 }
