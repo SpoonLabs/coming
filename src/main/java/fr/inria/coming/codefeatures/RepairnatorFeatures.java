@@ -73,7 +73,7 @@ public class RepairnatorFeatures {
 		
 	}
 	
-	@Test
+	
 	public void trainModel(File pairFolder) throws Exception {
 		
 		String odsModel = this.getClass().getClassLoader().getResource("ODSTraining/ODSmodel.bin").getPath();  
