@@ -90,7 +90,7 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 		if(cross) {
 			jsonfile = genVectorsCSV(option,target,featureMatrix);
 		} else {
-			jsonfile = getSimleP4JJSON(option,target,featureMatrix);
+			jsonfile = getSimleP4JJSON(option,target,featureMatrix,false);
 		}
 		
 		JsonArray filesArray = new JsonArray();		
@@ -107,7 +107,7 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 		return (new FeaturesResult(revision,jsonfile));
 	}
 
-	private JsonObject getSimleP4JJSON(Option option, File target, List<FeatureMatrix> featureMatrix) {
+	public JsonObject getSimleP4JJSON(Option option, File target, List<FeatureMatrix> featureMatrix, Boolean numericalIndixator) {
 		
 	        JsonObject jsonfile = new JsonObject();
 	        
@@ -119,7 +119,11 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 	                	OriginalFeatureCross ofc = (OriginalFeatureCross) featureCross;
 	                	for(Feature f: simpleP4JFeatures) {
 	                		Boolean positive = ofc.containFeature(f);
-	                		jsonfile.addProperty("P4J_"+ofc.getCrossType()+"_"+f, positive?"true":"false");
+	                		if(numericalIndixator) {
+		                		jsonfile.addProperty("P4J_"+ofc.getCrossType()+"_"+f, positive?"1":"0");
+	                		}else {
+		                		jsonfile.addProperty("P4J_"+ofc.getCrossType()+"_"+f, positive?"true":"false");
+	                		}
 	                	}
 
                 }
