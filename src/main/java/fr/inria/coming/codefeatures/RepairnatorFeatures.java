@@ -52,7 +52,7 @@ public class RepairnatorFeatures {
 		}
 		//Load model
 		DMatrix dtest = new DMatrix(tempFile.getAbsolutePath());
-		String odsModel = this.getClass().getClassLoader().getResource("ODSTraining/ODSmodel.bin").getPath();  
+		String odsModel = ComingProperties.getProperty("ODSmodel");  
 		Booster booster = XGBoost.loadModel(odsModel);
 		
 		//Predict
@@ -76,19 +76,16 @@ public class RepairnatorFeatures {
 	
 	public void trainModel(File pairFolder) throws Exception {
 		
-		String odsModel = this.getClass().getClassLoader().getResource("ODSTraining/ODSmodel.bin").getPath();  
-
-		String trainingFile = this.getClass().getClassLoader().getResource("ODSTraining/Training-libsvm.txt").getPath();  
-
-		DMatrix trainMat = new DMatrix(trainingFile);
-		
+		String odsModel = ComingProperties.getProperty("ODSmodel");
+		String trainingFile = ComingProperties.getProperty("ODSTrainingFile");  
+		DMatrix trainMat = new DMatrix(trainingFile);		
 		Map<String, Object> params = new HashMap<String, Object>() {
 			  {
-			    put("eta", 0.3);
-			    put("max_depth", 6);
-			    put("gamma", 1);
-			    put("objective", "binary:logistic");
-			    put("eval_metric", "logloss");
+			    put("eta", ComingProperties.getProperty("xgboost-training-eta"));
+			    put("max_depth", ComingProperties.getProperty("xgboost-training-max-depth"));
+			    put("gamma", ComingProperties.getProperty("xgboost-training-gamma"));
+			    put("objective", ComingProperties.getProperty("xgboost-training-objective"));
+			    put("eval_metric",  ComingProperties.getProperty("xgboost-training-eval-metric"));
 			  }
 			};
 			
@@ -98,7 +95,7 @@ public class RepairnatorFeatures {
 		      }
 		};		
 							
-		int nround = 20;
+		int nround = Integer.parseInt(ComingProperties.getProperty("xgboost-training-nround"));
 		Booster booster = XGBoost.train(trainMat, params, nround, watches, null, null);			
 		booster.saveModel(odsModel);
 
