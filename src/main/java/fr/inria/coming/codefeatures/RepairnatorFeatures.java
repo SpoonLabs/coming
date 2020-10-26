@@ -16,8 +16,6 @@ import add.entities.RepairPatterns;
 import add.features.detector.repairpatterns.RepairPatternDetector;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
-
 import fr.inria.coming.main.ComingProperties;
 import fr.inria.prophet4j.utility.CodeDiffer;
 import fr.inria.prophet4j.utility.Option;
@@ -33,17 +31,20 @@ import ml.dmlc.xgboost4j.java.XGBoost;
 public class RepairnatorFeatures {
 
 	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
-    private final String UNKNOWN = "unknown";
-    private final String CORRECT = "correct";
-    private final String OVERFITTING = "overfitting";
+    
+	public enum ODSLabel {
+		UNKNOWN,
+		CORRECT,
+		OVERFITTING;
+	}
 
 	
-	public String getLabel(File pairFolder) throws Exception {
+	public ODSLabel getLabel(File pairFolder) throws Exception {
 		
 		//Obtain feature in libsvm format
 		String features = extractFeatures(pairFolder);
 		if("".equals(features)) {
-			return UNKNOWN;
+			return ODSLabel.UNKNOWN;
 		}
 		//Load test data in libsvm format
 		File tempFile = File.createTempFile("test", ".txt");
@@ -66,9 +67,9 @@ public class RepairnatorFeatures {
 		float threshold = Float.parseFloat(thresholdString);
 
 		if (probability > threshold) {
-			return OVERFITTING;
+			return ODSLabel.OVERFITTING;
 		} else {		
-			return CORRECT;
+			return ODSLabel.CORRECT;
 		}
 		
 	}
