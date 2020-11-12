@@ -317,7 +317,7 @@
 		</repository>
 		<snapshotRepository>
 			<id>ossrh-snapshot</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<url>https://oss.sonatype.org/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 
