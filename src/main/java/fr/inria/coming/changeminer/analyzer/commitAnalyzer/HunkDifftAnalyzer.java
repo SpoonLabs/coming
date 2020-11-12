@@ -56,7 +56,7 @@ public class HunkDifftAnalyzer implements Analyzer<IRevision> {
 			HunkDiff hunks = getNumberChanges(fileFromRevision.getPreviousVersion(), fileFromRevision.getNextVersion());
 
 			if (hunks != null) {
-				diffOfFiles.put(fileFromRevision.getName(), hunks);
+				diffOfFiles.put(fileFromRevision.getNextName(), hunks);
 			}
 		}
 		// TODO: refactor

@@ -114,7 +114,7 @@ public class MainComingTest {
 
 		assertFalse(output.exists());
 
-		FinalResult r = new ComingMain().run(new String[] { "-mode", "features",  "-location", "repogit4testv0" });
+		FinalResult r = new ComingMain().run(new String[] { "-mode", "features", "-location", "repogit4testv0" });
 
 		// the JSON file has been created
 		assertTrue(output.exists());
@@ -310,17 +310,17 @@ public class MainComingTest {
 		assertNotNull(c_e56c63bd77e289266989ee35a3369c6374275c64);
 		assertTrue(c_e56c63bd77e289266989ee35a3369c6374275c64.getFileCommits().size() > 0);
 		FileCommit fc = c_e56c63bd77e289266989ee35a3369c6374275c64.getFileCommits().stream()
-				.filter(e -> e.getPreviousFileName().contains("CharSequenceUtils.java")).findFirst().get();
+				.filter(e -> e.getPreviousName().contains("CharSequenceUtils.java")).findFirst().get();
 
 		assertNotNull(fc.getPreviousVersion());
 		assertFalse(fc.getPreviousVersion().isEmpty());
-		assertNotNull(fc.getPreviousFileName());
-		assertFalse(fc.getPreviousFileName().isEmpty());
+		assertNotNull(fc.getPreviousName());
+		assertFalse(fc.getPreviousName().isEmpty());
 
 		assertNotNull(fc.getNextVersion());
 		assertTrue(fc.getNextVersion().isEmpty());
-		assertNotNull(fc.getNextFileName());
-		assertTrue(fc.getNextFileName().isEmpty());
+		assertNotNull(fc.getNextName());
+		assertTrue(fc.getNextName().isEmpty());
 
 	}
 

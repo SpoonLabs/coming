@@ -27,14 +27,12 @@ public class ContainTestFilterFilter extends AbstractChainedFilter<Commit> {
 
 			// Retrieve a list of file affected by the commit
 			List<FileCommit> javaFiles = commit.getJavaFileCommits();
-			int countJava = 0, nTests = 0;
+			int nTests = 0;
 
 			for (FileCommit fileCommit : javaFiles) {
-				if (!fileCommit.getCompletePath().toLowerCase().endsWith("package-info.java"))
-					countJava++;
-				if (fileCommit.getCompletePath().toLowerCase().contains("test"))
-					nTests++;
 
+				if (fileCommit.getNextName().toLowerCase().contains("test"))
+					nTests++;
 			}
 
 			if (ComingProperties.getPropertyBoolean("ONLY_COMMIT_WITH_TEST_CASE") && nTests == 0) {

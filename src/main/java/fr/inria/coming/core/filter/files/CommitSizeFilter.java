@@ -30,9 +30,9 @@ public class CommitSizeFilter extends AbstractChainedFilter<Commit> {
 			int countJava = 0, nTests = 0;
 
 			for (FileCommit fileCommit : javaFiles) {
-				if (!fileCommit.getCompletePath().toLowerCase().endsWith("package-info.java"))
+				if (!fileCommit.getNextName().toLowerCase().endsWith("package-info.java"))
 					countJava++;
-				if (fileCommit.getCompletePath().toLowerCase().contains("test"))
+				if (fileCommit.getNextName().toLowerCase().contains("test"))
 					nTests++;
 
 			}

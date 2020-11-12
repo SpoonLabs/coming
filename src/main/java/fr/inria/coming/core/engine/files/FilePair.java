@@ -42,7 +42,7 @@ public class FilePair implements IRevisionPair<String> {
 	}
 
 	@Override
-	public String getName() {
+	public String getNextName() {
 		return postName;
 	}
 
@@ -64,7 +64,7 @@ public class FilePair implements IRevisionPair<String> {
 	}
 
 	@Override
-	public void setName(String name) {
+	public void setNextName(String name) {
 		this.postName = name;
 
 	}

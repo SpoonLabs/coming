@@ -52,7 +52,7 @@ public class FileDiff implements IRevision {
 					if (previousVersion != null && postVersion != null) {
 						String previousString = new String(Files.readAllBytes(previousVersion.toPath()));
 						String postString = new String(Files.readAllBytes(postVersion.toPath()));
-				
+
 						FilePair fpair = new FilePair(previousString, postString, getNameFromFile(previousVersion));
 						pairs.add(fpair);
 					} else {
@@ -108,7 +108,7 @@ public class FileDiff implements IRevision {
 
 	private String getName(File fileModif) {
 		if (!ComingProperties.getPropertyBoolean("file_complete_name")) {
-			return fileModif.getName();
+			return FileUtil.extractFileName(fileModif.getName());
 		} else {
 			String location = ComingProperties.getProperty("location");
 			if (location != null) {
@@ -121,17 +121,7 @@ public class FileDiff implements IRevision {
 	}
 
 	private String getNameFromFile(File fileModif) {
-		String result = "";
-		if (!ComingProperties.getPropertyBoolean("file_complete_name")) {
-			result = fileModif.getName();
-		} else {
-			String location = ComingProperties.getProperty("location");
-			if (location != null) {
-				result = fileModif.getAbsolutePath().replace(location, "");
-			} else
-				result = fileModif.getAbsolutePath();
-
-		}
+		String result = getName(fileModif);
 		return result.replace("_s", "").replace("_t", "");
 	}
 

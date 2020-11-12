@@ -144,7 +144,7 @@ public class CommitGit implements Commit {
 		List<FileCommit> javaFiles = new ArrayList<FileCommit>();
 
 		for (FileCommit fileCommit : files) {
-			if (fileCommit.getFileName().endsWith(extension))
+			if (fileCommit.getNextName().endsWith(extension) || fileCommit.getPreviousName().endsWith(extension))
 				javaFiles.add(fileCommit);
 		}
 
@@ -262,7 +262,7 @@ public class CommitGit implements Commit {
 	@Override
 	public List<IRevisionPair> getChildren() {
 		if (extensionToConsider == null || extensionToConsider.length == 0) {
-			List<IRevisionPair> li = new ArrayList<>(this.getJavaFileCommits());
+			List<IRevisionPair> li = new ArrayList<>(this.getFileCommits());
 			return li;
 		} else {
 

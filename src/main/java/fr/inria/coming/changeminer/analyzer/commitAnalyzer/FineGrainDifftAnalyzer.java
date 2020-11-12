@@ -76,11 +76,11 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 			String right = fileFromRevision.getNextVersion();
 
 			String leftName = fileFromRevision.getPreviousName();
-			String rightName = fileFromRevision.getName();
+			String rightName = fileFromRevision.getNextName();
 
 			Diff diff = compare(left, right, leftName, rightName);
 			if (diff != null) {
-				diffOfFiles.put(fileFromRevision.getName(), diff);
+				diffOfFiles.put(fileFromRevision.getNextName(), diff);
 			}
 
 			DiffRowGenerator generator = DiffRowGenerator.create().showInlineDiffs(false).inlineDiffByWord(false)

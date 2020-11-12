@@ -12,7 +12,7 @@ public interface IRevisionPair<T> {
 
 	public T getNextVersion();
 
-	public String getName();
+	public String getNextName();
 
 	public String getPreviousName();
 
@@ -20,7 +20,7 @@ public interface IRevisionPair<T> {
 
 	public void setNextVersion(T content);
 
-	public void setName(String name);
+	public void setNextName(String name);
 
 	public void setPreviousName(String previousName);
 

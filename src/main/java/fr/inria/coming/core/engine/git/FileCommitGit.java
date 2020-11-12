@@ -1,10 +1,7 @@
 package fr.inria.coming.core.engine.git;
 
-import java.io.File;
-
 import fr.inria.coming.core.entities.interfaces.Commit;
 import fr.inria.coming.core.entities.interfaces.FileCommit;
-import fr.inria.coming.main.ComingProperties;
 
 public class FileCommitGit implements FileCommit {
 
@@ -40,27 +37,8 @@ public class FileCommitGit implements FileCommit {
 	}
 
 	@Override
-	public String getFileName() {
-		return extractFileName(this.nextFileName);
-	}
-
-	public String extractFileName(String completeFileName) {
-		if (ComingProperties.getPropertyBoolean("file_complete_name")) {
-			return completeFileName;
-		} else {
-			int idx = completeFileName.lastIndexOf(File.separator);
-			return completeFileName.substring(idx + 1);
-		}
-	}
-
-	@Override
-	public String getPreviousFileName() {
-		return extractFileName(this.previousFileName);
-	}
-
-	@Override
-	public String getNextFileName() {
-		return extractFileName(this.nextFileName);
+	public String getPreviousName() {
+		return this.previousFileName;
 	}
 
 	@Override
@@ -73,11 +51,6 @@ public class FileCommitGit implements FileCommit {
 		return this.previousVersion;
 	}
 
-	@Override
-	public String getCompletePath() {
-		return this.getNextFileName();
-	}
-
 	public String getPreviousCommitName() {
 		return previousCommitName;
 	}
@@ -87,14 +60,8 @@ public class FileCommitGit implements FileCommit {
 	}
 
 	@Override
-	public String getName() {
-		return this.getFileName();
-	}
-
-	@Override
-	public String getPreviousName() {
-
-		return getPreviousFileName();
+	public String getNextName() {
+		return this.nextFileName;
 	}
 
 	public void setPreviousFileName(String previousFileName) {
@@ -118,7 +85,7 @@ public class FileCommitGit implements FileCommit {
 	}
 
 	@Override
-	public void setName(String name) {
+	public void setNextName(String name) {
 		this.nextFileName = name;
 
 	}

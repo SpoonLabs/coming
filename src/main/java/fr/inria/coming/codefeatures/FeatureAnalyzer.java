@@ -112,7 +112,7 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 					for (IRevisionPair<String> fileFromRevision : revision.getChildren()) {
 						String previousVersion = fileFromRevision.getPreviousVersion();
 						String nextVersion = fileFromRevision.getNextVersion();
-						List<String> strings = UnifiedDiffUtils.generateUnifiedDiff(fileFromRevision.getPreviousName(), fileFromRevision.getName(), Arrays.asList(previousVersion.split("\n")), DiffUtils.diff(previousVersion, nextVersion, null), 0);
+						List<String> strings = UnifiedDiffUtils.generateUnifiedDiff(fileFromRevision.getPreviousName(), fileFromRevision.getNextName(), Arrays.asList(previousVersion.split("\n")), DiffUtils.diff(previousVersion, nextVersion, null), 0);
 						sb.append(String.join("\n", strings));
 					}
 				}
