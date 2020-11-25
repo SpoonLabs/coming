@@ -38,4 +38,11 @@ public class RepairnatorFeatureTest {
 		ODSLabel label = new RepairnatorFeatures().getLabel(pairFolder);
 		assertEquals(label, ODSLabel.CORRECT);
 	}
+	
+	@Test
+	public void invalidFilePath() throws Exception {
+		File pairFolder = new File("invalid/path");
+		ODSLabel label = new RepairnatorFeatures().getLabel(pairFolder);
+		assertEquals(label, ODSLabel.UNKNOWN);
+	}
 }
