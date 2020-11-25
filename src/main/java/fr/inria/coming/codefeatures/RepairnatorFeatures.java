@@ -41,13 +41,29 @@ public class RepairnatorFeatures {
 
 	public ODSLabel getLabel(File pairFolder) throws Exception {
 
+		try {		
+		//if the pairFolder not exist
+		if (!pairFolder.exists()) {
+			log.error("The pairFolder file " + pairFolder.getPath() + " not exist!");
+			return ODSLabel.UNKNOWN;
+		}
+
+		
 		// Obtain feature in libsvm format
 		String features = extractFeatures(pairFolder);
 		if ("".equals(features)) {
 			return ODSLabel.UNKNOWN;
 		}
 		// Load test data in libsvm format
-		File tempFile = File.createTempFile("test", ".txt");
+		
+		File tempFile = null;
+		try {
+			tempFile = File.createTempFile("test", ".txt");
+		} catch (Exception e) {
+			log.error("ODS cannot create a feature file test.txt in the disk ");
+			return ODSLabel.UNKNOWN;
+		}
+		
 		try (FileWriter sb = new FileWriter(tempFile)) {
 			sb.append(features);
 		}
@@ -71,6 +87,9 @@ public class RepairnatorFeatures {
 			return ODSLabel.OVERFITTING;
 		} else {
 			return ODSLabel.CORRECT;
+		}
+		} catch (Exception e) {
+			return ODSLabel.UNKNOWN;
 		}
 
 	}
