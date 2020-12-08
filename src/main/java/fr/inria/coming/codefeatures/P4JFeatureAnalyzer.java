@@ -70,13 +70,30 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 		String path = revision.getFolder();
 		Map<String, File> filePaths = null;
 		if(path!=null) {
-			filePaths = processFilesPair(new File(path));
+			filePaths = processFilesPair(new File(path),"");
 		} else {
 			return null;
 		}
+		JsonObject jsonfile = extractFeatures(filePaths);
+		return (new FeaturesResult(revision,jsonfile));
+	}
+	
+	
+	public AnalysisResult analyze(IRevision revision, String targetFile) {
+		String path = revision.getFolder();
+		Map<String, File> filePaths = null;
+		if(path!=null) {
+			filePaths = processFilesPair(new File(path),targetFile);
+		} else {
+			return null;
+		}		
+		JsonObject jsonfile = extractFeatures(filePaths);
+		return (new FeaturesResult(revision,jsonfile));
+	}
+		
+	public JsonObject extractFeatures(Map<String, File> filePaths) {
 		File src = filePaths.get("src");
 		File target = filePaths.get("target");
-
 		Option option = new Option();
 		option.featureOption = FeatureOption.ORIGINAL;
 		//We set the first parameter of CodeDiffer as False to not allow the code generation at buggy location
@@ -90,22 +107,11 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 		if(cross) {
 			jsonfile = genVectorsCSV(option,target,featureMatrix);
 		} else {
-			jsonfile = getSimleP4JJSON(option,target,featureMatrix,false);
+			jsonfile = getSimleP4JJSON(option,target,featureMatrix,true);
 		}
-		
-		JsonArray filesArray = new JsonArray();		
-		JsonObject file = new JsonObject();
-		JsonArray changesArray = new JsonArray();
-		changesArray.add(jsonfile);	
-		file.addProperty("file_name", filename);
-		file.add("features", changesArray);
-		filesArray.add(file);
-		JsonObject root = new JsonObject();
-		root.addProperty("id", revision.getName());
-		root.add("files", filesArray);
-
-		return (new FeaturesResult(revision,jsonfile));
+		return jsonfile;
 	}
+	
 
 	public JsonObject getSimleP4JJSON(Option option, File target, List<FeatureMatrix> featureMatrix, Boolean numericalIndixator) {
 		
@@ -132,13 +138,19 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 
 	}
 
-	public Map processFilesPair(File pairFolder) {
+	public Map processFilesPair(File pairFolder,String targetFile) {
 		Map<String, File> pathmap = new HashMap();
 
 		for (File fileModif : pairFolder.listFiles()) {
 
 			if (".DS_Store".equals(fileModif.getName()))
 				continue;
+			
+			if(targetFile!="") {
+				if (!fileModif.getPath().contains(targetFile)) {
+					continue;
+				}
+			}
 
 			String pathname = fileModif.getAbsolutePath() + File.separator + pairFolder.getName() + "_"
 					+ fileModif.getName();
@@ -187,14 +199,7 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
                 for (int idx = 0; idx < parameterVector.size(); idx++) {
     	        			jsonfile.addProperty(header.get(idx), valueList.get(idx));
     	        		}
-            }
-             
-	               
-	       return jsonfile;
-	        
+            }	               
+	       return jsonfile;	        
 	    }
-	
-	
-	
-
 }

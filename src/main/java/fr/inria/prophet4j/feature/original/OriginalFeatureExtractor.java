@@ -473,15 +473,12 @@ public class OriginalFeatureExtractor implements FeatureExtractor {
             CtStatementList CS = (CtStatementList) parent;
             List<CtStatement> tmp = new ArrayList<>();
             int idx = 0;
-            boolean found = false;
             for (CtStatement stmt: CS.getStatements()) {
                 if (stmt.equals(srcElem)) {
-                    found = true;
                     idx = tmp.size();
                 }
                 tmp.add(stmt);
             }
-            assert(found);
             int s = 0;
             if (idx > LOOKUP_DIS)
                 s = idx - LOOKUP_DIS;

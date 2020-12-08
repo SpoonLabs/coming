@@ -168,7 +168,7 @@ public class CodeDiffer {
                 if (insertOperation instanceof InsertOperation) {
                     dstNode = insertOperation.getSrcNode(); // ...
                 }
-            } else if (deleteOperation != null) {
+            } else if (deleteOperation != null && DEL != null && insertOperation == null ) { // && DEL != null
             		Boolean pureDelete = true;
             		for(Operation op :operations) {
             			if(!"DEL".equals(op.getAction().getName())) {
@@ -442,6 +442,9 @@ public class CodeDiffer {
                     FeatureExtractor featureExtractor = newFeatureExtractor();
                     List<FeatureVector> featureVectors = new ArrayList<>();
                     for (DiffEntry diffEntry : genDiffEntries(diff)) {
+                    		if (diffEntry==null|| diffEntry.srcNode==null) {
+                    			continue;
+                    		}
                         RepairGenerator generator = newRepairGenerator(diffEntry);
                         {
                             Repair repair = generator.obtainHumanRepair();
@@ -451,7 +454,6 @@ public class CodeDiffer {
                                 featureVector.merge(featureExtractor.extractFeature(repair, atom));
                             		} else {
                             			featureVector = featureExtractor.extractSimpleP4JFeature(repair, atom);
-                                 break;
                             		}
                             }
                             featureVectors.add(featureVector);
