@@ -168,7 +168,7 @@ public class CodeDiffer {
                 if (insertOperation instanceof InsertOperation) {
                     dstNode = insertOperation.getSrcNode(); // ...
                 }
-            } else if (deleteOperation != null && DEL != null && insertOperation == null ) { // && DEL != null
+            } else if (deleteOperation != null && DEL != null && insertOperation == null ) {
             		Boolean pureDelete = true;
             		for(Operation op :operations) {
             			if(!"DEL".equals(op.getAction().getName())) {
