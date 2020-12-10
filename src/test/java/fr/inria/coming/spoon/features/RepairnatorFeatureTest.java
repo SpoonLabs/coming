@@ -20,10 +20,10 @@ public class RepairnatorFeatureTest {
 	}
 
 	@Test
-	public void unknownPatch() throws Exception {
+	public void correctPatch2() throws Exception {
 		File pairFolder = new File("src/main/resources/Defects4J_all_pairs/Math_42");
 		ODSLabel label = new RepairnatorFeatures().getLabel(pairFolder);
-		assertEquals(label, ODSLabel.UNKNOWN);
+		assertEquals(label, ODSLabel.CORRECT);
 	}
 
 	@Test
