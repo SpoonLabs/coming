@@ -90,27 +90,6 @@ public class RepairPatternFeatureAnalyzer {
       jsonObject.addProperty("addLineNo", addLineNo);
       jsonObject.addProperty("addThis", addThis);
 
-
-      
-      System.out.println("folderPath" + folderPath);
-      System.out.println("patchedFileNo" + patchedFileNo);
-      System.out.println("rmLineNo" + rmLineNo);
-      System.out.println("addLineNo" + addLineNo);
-      
-      System.out.println("insertIfFalse" + insertIfFalse);
-      System.out.println("updIfFalse" + updIfFalse);
-      System.out.println("ifTrue"+ifTrue);
-      System.out.println("dupArgsInvocation"+dupArgsInvocation);
-      System.out.println("condLogicReduce"+condLogicReduce);
-      System.out.println("insertNewConstLiteral"+insertNewConstLiteral);
-      System.out.println("insertBooleanLiteral"+insertBooleanLiteral);
-      System.out.println("UpdateLiteral"+UpdateLiteral);
-      System.out.println("removeNullinCond"+removeNullinCond);
-      System.out.println("addThis"+addThis);
-
-
-
-
 	  return jsonObject;
 
 	}
