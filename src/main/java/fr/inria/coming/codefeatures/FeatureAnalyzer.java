@@ -126,10 +126,17 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 
 				changesArray.add(new Gson().fromJson(analyze.toJson().toString(), JsonObject.class));
 				tempFile.delete();
+				
+				//add more features
+				JsonObject patternJson = RepairPatternFeatureAnalyzer.analyze(revision.getFolder(), diff, nameFile.toString());
+				changesArray.add(patternJson);
+				
 			} catch (Exception e) {
 				new RuntimeException("Unable to compute ADD analysis", e);
 			}
 		}
+		
+		
 		JsonObject root = new JsonObject();
 		root.addProperty("id", revision.getName());
 		root.add("files", filesArray);
