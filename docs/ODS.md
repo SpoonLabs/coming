@@ -1,6 +1,9 @@
 # ODS Overfitting detection system
 
-If you use ODS, please site:
+For an overview of ODS, see [
+Automated Classification of Overfitting Patches with Statically Extracted Code Features](https://arxiv.org/pdf/1910.12057.pdf)
+
+If you use ODS or ODS' features, please cite:
 
 ```
 Automated Classification of Overfitting Patches with Statically Extracted Code Features. H. Ye, J. Gu, M. Martinez, T. Durieux, M. Monperrus. arxiv:1910.12057
