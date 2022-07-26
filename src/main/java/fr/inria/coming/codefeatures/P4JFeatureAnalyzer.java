@@ -2,8 +2,11 @@ package fr.inria.coming.codefeatures;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -88,7 +91,13 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 			return null;
 		}		
 		JsonObject jsonfile = extractFeatures(filePaths);
+		
+		if(jsonfile==null) {
+			return null;
+		}
+		
 		return (new FeaturesResult(revision,jsonfile));
+		
 	}
 		
 	public JsonObject extractFeatures(Map<String, File> filePaths) {
@@ -99,6 +108,7 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 		//We set the first parameter of CodeDiffer as False to not allow the code generation at buggy location
 		//By default, coming extracts simple P4J features, so the cross sets to false
 		Boolean cross = ComingProperties.getPropertyBoolean("cross");
+
 		CodeDiffer codeDiffer = new CodeDiffer(false, option,cross);
 		//Get feature matrix
 		List<FeatureMatrix> featureMatrix = codeDiffer.runByGenerator(src, target);
@@ -106,6 +116,7 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 		JsonObject jsonfile = null;
 		if(cross) {
 			jsonfile = genVectorsCSV(option,target,featureMatrix);
+			return null;
 		} else {
 			jsonfile = getSimleP4JJSON(option,target,featureMatrix,true);
 		}
@@ -172,6 +183,11 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 	
 	
 	 public JsonObject genVectorsCSV(Option option, File patchedFile, List<FeatureMatrix> featureMatrices) {
+		 
+		 	String[] pathStr = patchedFile.getAbsolutePath().split("/");
+		 	String fileName = pathStr[pathStr.length-1];
+		 	fileName = fileName.replace(".java", "");
+		 	
 	        ParameterVector parameterVector = new ParameterVector(option.featureOption);
             List<String> valueList = null;
 	        List<String> header = new ArrayList<>();
@@ -196,9 +212,42 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
                     }
                 }
                 
+                if(valueList==null) {
+                		return null;
+                }
+                
+                String valueStr="";
+                String head="";
                 for (int idx = 0; idx < parameterVector.size(); idx++) {
     	        			jsonfile.addProperty(header.get(idx), valueList.get(idx));
+    	        			valueStr+=valueList.get(idx)+",";  	 
+    	        			head+=idx+",";
     	        		}
+                
+                //write to csv file.          
+                valueStr = fileName+","+valueStr.substring(0,valueStr.length()-1);
+                head = "id,"+head.substring(0,head.length()-1);
+
+                try {
+					Path path = Paths.get("data.csv");
+					boolean exists = Files.exists(path);  
+				    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("test.csv", true)));
+
+					if(!exists) {
+					    out.println(head);
+					    out.flush();
+					} 
+					
+				    out.println(valueStr);
+				    out.flush();
+
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+                
+                
             }	               
 	       return jsonfile;	        
 	    }
