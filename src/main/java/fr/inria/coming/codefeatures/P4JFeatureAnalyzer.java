@@ -213,38 +213,36 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
                 }
                 
                 if(valueList==null) {
-                		return null;
+                	return null;
                 }
                 
                 String valueStr="";
                 String head="";
                 for (int idx = 0; idx < parameterVector.size(); idx++) {
-    	        			jsonfile.addProperty(header.get(idx), valueList.get(idx));
-    	        			valueStr+=valueList.get(idx)+",";  	 
-    	        			head+=idx+",";
-    	        		}
+			jsonfile.addProperty(header.get(idx), valueList.get(idx));
+			valueStr+=valueList.get(idx)+",";  	 
+			head+=idx+",";
+    	        }
                 
                 //write to csv file.          
                 valueStr = fileName+","+valueStr.substring(0,valueStr.length()-1);
                 head = "id,"+head.substring(0,head.length()-1);
 
                 try {
-					Path path = Paths.get("data.csv");
-					boolean exists = Files.exists(path);  
-				    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("test.csv", true)));
+			Path path = Paths.get("test.csv");
+			boolean exists = Files.exists(path);  
+			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("test.csv", true)));
+			if(!exists) {
+			    out.println(head);
+			    out.flush();
+			} 
+			out.println(valueStr);
+			out.flush();
 
-					if(!exists) {
-					    out.println(head);
-					    out.flush();
-					} 
-					
-				    out.println(valueStr);
-				    out.flush();
-
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
                 
                 
