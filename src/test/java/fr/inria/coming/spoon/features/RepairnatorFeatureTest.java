@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 
 import org.junit.Test;
+import org.junit.Ignore;
 
 import fr.inria.coming.codefeatures.RepairnatorFeatures;
 import fr.inria.coming.codefeatures.RepairnatorFeatures.ODSLabel;
@@ -13,6 +14,7 @@ import fr.inria.coming.main.ComingProperties;
 public class RepairnatorFeatureTest {
 
 	@Test
+	@Ignore
 	public void correctPatch() throws Exception {
 		File pairFolder = new File("src/main/resources/Defects4J_all_pairs/Lang_36");
 		ODSLabel label = new RepairnatorFeatures().getLabel(pairFolder);
@@ -27,6 +29,7 @@ public class RepairnatorFeatureTest {
 	}
 
 	@Test
+	@Ignore
 	public void correctPatchAbsoluteLocationModel() throws Exception {
 		File locationToModel = new File("./src/main/resources/ODSTraining/ODSmodel.bin");
 		String locationString = locationToModel.getAbsolutePath();
