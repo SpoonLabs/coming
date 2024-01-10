@@ -68,16 +68,17 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
 		</dependency>
-		<dependency>
-            <groupId>fr.inria.gforge.spoon</groupId>
-            <artifactId>spoon-core</artifactId>
-            <version>8.1.0</version>
-        </dependency>
+		
+		<dependency><!-- must come before gumtree-spoon -->
+			<groupId>br.ufu.lascam</groupId>
+			<artifactId>automatic-diff-dissection</artifactId>
+			<version>1.1-SNAPSHOT</version>
+		</dependency>
 
 		<dependency>
 			<groupId>fr.inria.gforge.spoon.labs </groupId>
 			<artifactId>gumtree-spoon-ast-diff</artifactId>
-			<version>1.23</version>
+			<version>1.62</version>
 		</dependency>
 
 		<dependency>
@@ -166,11 +167,6 @@
 			<version>0.9.11</version>
 		</dependency>
 
-		<dependency>
-			<groupId>br.ufu.lascam</groupId>
-			<artifactId>automatic-diff-dissection</artifactId>
-			<version>1.1-SNAPSHOT</version>
-		</dependency>
 		
 		<dependency>
 		    <groupId>ml.dmlc</groupId>
