@@ -140,7 +140,10 @@ public class Arja extends AbstractRepairTool {
 			if (!mapping.isSrcMapped(((Insert) op.getAction()).getParent()))
 				// the inserted node is a part of a parent inserted node
 				return false;
-			
+
+			if (!(insOp instanceof InsertOperation)) {
+				return false;
+			}
 			CtElement insertedNodeParent = ((InsertOperation)insOp).getParent();
 			
 			if(insertedNodeParent == null)
