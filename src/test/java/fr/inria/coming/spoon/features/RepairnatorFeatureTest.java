@@ -25,7 +25,7 @@ public class RepairnatorFeatureTest {
 	public void correctPatch2() throws Exception {
 		File pairFolder = new File("src/main/resources/Defects4J_all_pairs/Math_42");
 		ODSLabel label = new RepairnatorFeatures().getLabel(pairFolder);
-		assertEquals(label, ODSLabel.CORRECT);
+		assertEquals(ODSLabel.CORRECT, label );
 	}
 
 	@Test

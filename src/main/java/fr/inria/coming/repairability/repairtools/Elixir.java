@@ -149,7 +149,9 @@ public class Elixir extends AbstractRepairTool {
 					movOp = op;
 				}
 			}
-
+			if (insIfOp == null) {
+				return false;
+			}
 			CtIf insertedNode = (CtIf) insIfOp.getSrcNode();
 			List<CtStatement> thenStatements = insertedNode.getThenStatement()
 					.getElements(new TypeFilter<CtStatementList>(CtStatementList.class)).get(0).getStatements();
