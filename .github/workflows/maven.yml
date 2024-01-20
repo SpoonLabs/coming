@@ -36,6 +36,7 @@ jobs:
               "username": "monperrus",
               "password": "${{ secrets.GHTOKEN_READPACKAGES }}"
           }]
+    - name: Clone test resource
+      run: git clone https://github.com/SpoonLabs/repogit4testv0
     - name: Build with Maven
-      run: git clone https://github.com/SpoonLabs/repogit4testv0; \
-           mvn -B package --file pom.xml
+      run: mvn -B package --file pom.xml
