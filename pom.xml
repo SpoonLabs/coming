@@ -68,13 +68,16 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
 		</dependency>
+
 		
-		<dependency><!-- must come before gumtree-spoon -->
+		<!-- must come before gumtree-spoon  --> 
+				
+		<dependency>
 			<groupId>br.ufu.lascam</groupId>
 			<artifactId>automatic-diff-dissection</artifactId>
-			<version>1.1-SNAPSHOT</version>
+			<version>1.1</version>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>fr.inria.gforge.spoon.labs </groupId>
 			<artifactId>gumtree-spoon-ast-diff</artifactId>
@@ -178,6 +181,11 @@
 
 	<repositories>
 		<repository>
+			<id>br.ufu.lascam</id>
+			<url>https://maven.pkg.github.com/lascam-UFU/automatic-diff-dissection</url>
+		</repository>
+
+		<repository>
 			<id>tdurieux.github.io/maven-repository/snapshots/</id>
 			<name>tdurieux.github.io maven-repository</name>
 			<url>https://tdurieux.github.io/maven-repository/snapshots/</url>
@@ -189,11 +197,7 @@
 			<url>https://tdurieux.github.io/maven-repository/releases/</url>
 		</repository>
 
-		<repository>
-			<id>maven.inria.fr-snapshot</id>
-			<name>Maven Repository for Spoon Snapshots</name>
-			<url>http://maven.inria.fr/artifactory/spoon-public-snapshot</url>
-		</repository>
+
 	</repositories>
 
 	<build>
@@ -311,6 +315,7 @@
 			<id>ossrh</id>
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
+
 		<snapshotRepository>
 			<id>ossrh-snapshot</id>
 			<url>https://oss.sonatype.org/repositories/snapshots</url>

@@ -16,10 +16,34 @@ Contact:
 
 ## Install
 
-Please install a JDK 1.8 and configure Maven or your IDE to use it.
+Add a github token in `.m2/settings.xml`.
+
+```xml
+<settings>
+  <servers>
+    <server>
+      <id>br.ufu.lascam</id>
+      <username>yourlogin</username>
+      <!-- your github token with scope read:packages -->
+      <password>FOOBAR</password>
+    </server>
+  </servers>
+</settings>
+```
+
+
+Install a JDK 17 and configure Maven or your IDE to use it.
+
 
 ```
- mvn install -DskipTests
+$ export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
+$ mvn -version
+Apache Maven 3.6.3
+Maven home: /usr/share/maven
+Java version: 17.0.9, vendor: Private Build, runtime: /usr/lib/jvm/java-17-openjdk-amd64
+
+# now installing
+$ mvn install -DskipTests
 ```
 
 Tests:

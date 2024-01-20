@@ -3,7 +3,7 @@ package fr.inria.coming.codefeatures.sec;
 import java.util.List;
 import java.util.Map;
 
-import com.github.gumtreediff.tree.ITree;
+import com.github.gumtreediff.tree.Tree;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -71,7 +71,7 @@ public class SecAnalysis {
 						operation.getAction().getNode());
 				change.add("ast_node_updated_previous", ast);
 
-				ITree dest = iDiff.getMappingsComp().getDst(operation.getAction().getNode());
+				Tree dest = iDiff.getMappingsComp().getDstForSrc(operation.getAction().getNode());
 				JsonObject ast_dst = jsongen.getJSONasJsonObject(((DiffImpl) iDiff).getContext(), dest);
 				change.add("ast_node_updated_post", ast_dst);
 

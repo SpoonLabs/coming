@@ -25,7 +25,7 @@ public class MegaDiff implements Diff {
 	/**
 	 * the mapping of this diff
 	 */
-	private MappingStore _mappingsComp = new MappingStore();
+	private MappingStore _mappingsComp;
 	/**
 	 * Context of the spoon diff.
 	 */
@@ -37,7 +37,7 @@ public class MegaDiff implements Diff {
 		this.rootOperations.addAll(anotherDiff.getRootOperations());
 
 		for (Mapping map : anotherDiff.getMappingsComp().asSet()) {
-			_mappingsComp.link(map.getFirst(), map.getSecond());
+			_mappingsComp = new MappingStore(map.first, map.second);
 		}
 
 		// context.
@@ -99,6 +99,11 @@ public class MegaDiff implements Diff {
 	public boolean containsOperations(List<Operation> operations, OperationKind kind, String nodeKind,
 			String nodeLabel) {
 		return false;
+	}
+
+	@Override
+	public boolean containsOperations(List<Operation> list, OperationKind operationKind, String s) {
+		return containsOperations(list, operationKind, s,"EMPTY");
 	}
 
 	@Override

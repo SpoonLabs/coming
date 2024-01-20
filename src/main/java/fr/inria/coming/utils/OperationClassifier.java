@@ -11,8 +11,8 @@ import com.github.gumtreediff.actions.model.Insert;
 import com.github.gumtreediff.actions.model.Move;
 import com.github.gumtreediff.actions.model.Update;
 import com.github.gumtreediff.matchers.MappingStore;
-import com.github.gumtreediff.tree.ITree;
 
+import com.github.gumtreediff.tree.Tree;
 import gumtree.spoon.builder.SpoonGumTreeBuilder;
 import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.Operation;
@@ -29,14 +29,14 @@ public class OperationClassifier {
 
 		MapList<Operation, Operation> hierarchy = new MapList<>();
 
-		Set<ITree> srcUpdTrees = new HashSet<>();
-		Set<ITree> dstUpdTrees = new HashSet<>();
-		Set<ITree> srcMvTrees = new HashSet<>();
-		Set<ITree> dstMvTrees = new HashSet<>();
-		Set<ITree> srcDelTrees = new HashSet<>();
-		Set<ITree> dstAddTrees = new HashSet<>();
-		Map<ITree, Operation> originalActionsSrc = new HashMap<>();
-		Map<ITree, Operation> originalActionsDst = new HashMap<>();
+		Set<Tree> srcUpdTrees = new HashSet<>();
+		Set<Tree> dstUpdTrees = new HashSet<>();
+		Set<Tree> srcMvTrees = new HashSet<>();
+		Set<Tree> dstMvTrees = new HashSet<>();
+		Set<Tree> srcDelTrees = new HashSet<>();
+		Set<Tree> dstAddTrees = new HashSet<>();
+		Map<Tree, Operation> originalActionsSrc = new HashMap<>();
+		Map<Tree, Operation> originalActionsDst = new HashMap<>();
 
 		//
 		MappingStore mappings = iDiff.getMappingsComp();
@@ -45,7 +45,7 @@ public class OperationClassifier {
 
 			Action action = operation.getAction();
 
-			final ITree original = action.getNode();
+			final Tree original = action.getNode();
 			if (action instanceof Delete) {
 				srcDelTrees.add(original);
 				originalActionsSrc.put(original, operation);
@@ -53,14 +53,14 @@ public class OperationClassifier {
 				dstAddTrees.add(original);
 				originalActionsDst.put(original, operation);
 			} else if (action instanceof Update) {
-				ITree dest = mappings.getDst(original);
+				Tree dest = mappings.getDstForSrc(original);
 				original.setMetadata(SpoonGumTreeBuilder.SPOON_OBJECT_DEST,
 						dest.getMetadata(SpoonGumTreeBuilder.SPOON_OBJECT));
 				srcUpdTrees.add(original);
 				dstUpdTrees.add(dest);
 				originalActionsSrc.put(original, operation);
 			} else if (action instanceof Move) {
-				ITree dest = mappings.getDst(original);
+				Tree dest = mappings.getDstForSrc(original);
 				original.setMetadata(SpoonGumTreeBuilder.SPOON_OBJECT_DEST,
 						dest.getMetadata(SpoonGumTreeBuilder.SPOON_OBJECT));
 				srcMvTrees.add(original);
@@ -70,7 +70,7 @@ public class OperationClassifier {
 		}
 		// Now, the hierarchy of Operations:
 
-		for (ITree deletedSrc : srcDelTrees) {
+		for (Tree deletedSrc : srcDelTrees) {
 
 			if (srcDelTrees.contains(deletedSrc.getParent()) || srcUpdTrees.contains(deletedSrc.getParent())) {
 
@@ -81,7 +81,7 @@ public class OperationClassifier {
 
 		}
 
-		for (ITree addedDst : dstAddTrees) {
+		for (Tree addedDst : dstAddTrees) {
 
 			if (dstAddTrees.contains(addedDst.getParent()) || dstUpdTrees.contains(addedDst.getParent())) {
 
@@ -92,7 +92,7 @@ public class OperationClassifier {
 			}
 		}
 
-		for (ITree movedDst : dstMvTrees) {
+		for (Tree movedDst : dstMvTrees) {
 
 			if (dstMvTrees.contains(movedDst.getParent())) {
 				Operation sonOperation = originalActionsDst.get(movedDst);

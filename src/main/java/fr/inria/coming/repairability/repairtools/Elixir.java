@@ -3,7 +3,7 @@ package fr.inria.coming.repairability.repairtools;
 import com.github.gumtreediff.actions.model.Delete;
 import com.github.gumtreediff.actions.model.Insert;
 import com.github.gumtreediff.matchers.MappingStore;
-import com.github.gumtreediff.tree.ITree;
+import com.github.gumtreediff.tree.Tree;
 import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.entity.IRevision;
@@ -93,7 +93,7 @@ public class Elixir extends AbstractRepairTool {
 		if (patternType.startsWith(INSERT_INVOCATION_PATTERN)) {
 			Operation op = patternInstance.getActions().get(0);
 			MappingStore mapping = diff.getMappingsComp();
-			if (!mapping.hasSrc(((Insert) op.getAction()).getParent()))
+			if (!mapping.isSrcMapped(((Insert) op.getAction()).getParent()))
 				// this inserted element is a part of another inserted element
 				return false;
 
@@ -189,7 +189,7 @@ public class Elixir extends AbstractRepairTool {
 			dstNode = op.getSrcNode();
 
 			MappingStore mapping = diff.getMappingsComp();
-			if (!mapping.hasSrc(((Insert) op.getAction()).getParent()))
+			if (!mapping.isSrcMapped(((Insert) op.getAction()).getParent()))
 				// this inserted element is a part of another inserted element
 				return false;
 
@@ -199,12 +199,12 @@ public class Elixir extends AbstractRepairTool {
 			srcNode = op.getSrcNode();
 
 			MappingStore mapping = diff.getMappingsComp();
-			ITree srcParentITree = op.getAction().getNode().getParent();
-			if (!mapping.hasSrc(srcParentITree))
+			Tree srcParentITree = op.getAction().getNode().getParent();
+			if (!mapping.isSrcMapped(srcParentITree))
 				// this inserted element is a part of another inserted element
 				return false;
 
-			CtElement dstParentNode = (CtElement) mapping.getDst(op.getAction().getNode().getParent())
+			CtElement dstParentNode = (CtElement) mapping.getDstForSrc(op.getAction().getNode().getParent())
 					.getMetadata("spoon_object");
 
 			CtElement srcRootNode = ASTInfoResolver.getRootNode(srcNode);
@@ -262,13 +262,13 @@ public class Elixir extends AbstractRepairTool {
 			CtElement dstParentNode = ASTInfoResolver.getFirstAncestorOfType(dstNode, entityType);
 			res.add(dstParentNode);
 
-			ITree dstParentTree = (ITree) dstParentNode.getMetadata("gtnode");
+			Tree dstParentTree = (Tree) dstParentNode.getMetadata("gtnode");
 
 			MappingStore mapping = diff.getMappingsComp();
-			if (!mapping.hasDst(dstParentTree))
+			if (!mapping.isSrcMapped(dstParentTree))
 				return res;
 
-			ITree srcParentTree = mapping.getSrc(dstParentTree);
+			Tree srcParentTree = mapping.getSrcForDst(dstParentTree);
 			CtElement srcParentNode = (CtElement) srcParentTree.getMetadata("spoon_object");
 
 			res.add(srcParentNode);
@@ -278,13 +278,13 @@ public class Elixir extends AbstractRepairTool {
 			CtElement srcParentNode = op.getSrcNode().getParent();
 			res.add(srcParentNode);
 
-			ITree srcParentTree = (ITree) srcParentNode.getMetadata("gtnode");
+			Tree srcParentTree = (Tree) srcParentNode.getMetadata("gtnode");
 
 			MappingStore mapping = diff.getMappingsComp();
-			if (!mapping.hasSrc(srcParentTree))
+			if (!mapping.isSrcMapped(srcParentTree))
 				return res;
 
-			CtElement dstParentNode = (CtElement) mapping.getDst(srcParentTree).getMetadata("spoon_object");
+			CtElement dstParentNode = (CtElement) mapping.getDstForSrc(srcParentTree).getMetadata("spoon_object");
 			res.add(dstParentNode);
 
 			return res;

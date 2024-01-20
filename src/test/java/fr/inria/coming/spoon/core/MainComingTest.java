@@ -78,7 +78,6 @@ public class MainComingTest {
 		Logger.getRootLogger().addAppender(console);
 
 		java.util.logging.Logger.getLogger("fr.labri.gumtree.matchers").setLevel(java.util.logging.Level.OFF);
-		Matcher.LOGGER.setLevel(java.util.logging.Level.OFF);
 	}
 
 	@Test

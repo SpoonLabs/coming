@@ -11,8 +11,8 @@ import java.util.Set;
 
 import com.github.gumtreediff.actions.model.Insert;
 import com.github.gumtreediff.matchers.MappingStore;
-import com.github.gumtreediff.tree.ITree;
 
+import com.github.gumtreediff.tree.Tree;
 import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.entity.IRevision;
@@ -82,7 +82,7 @@ public class Arja extends AbstractRepairTool {
 				return true;
 			} else if (op instanceof InsertOperation) {
 				MappingStore mapping = diff.getMappingsComp();
-				if (!mapping.hasSrc(((Insert) op.getAction()).getParent()))
+				if (!mapping.isSrcMapped(((Insert) op.getAction()).getParent()))
 					return false;
 
 				CtElement parentOfInsertedNode = ((InsertOperation) op).getParent();
@@ -102,7 +102,7 @@ public class Arja extends AbstractRepairTool {
 			CtElement affectedNode, srcNode;
 			if (op instanceof InsertOperation) {
 				MappingStore mapping = diff.getMappingsComp();
-				if (!mapping.hasSrc(((Insert) op.getAction()).getParent()))
+				if (!mapping.isSrcMapped(((Insert) op.getAction()).getParent()))
 					return false;
 
 				affectedNode = op.getSrcNode().getParent();
@@ -110,10 +110,10 @@ public class Arja extends AbstractRepairTool {
 			} else if (op instanceof DeleteOperation) {
 				MappingStore mapping = diff.getMappingsComp();
 
-				if (!mapping.hasSrc(op.getAction().getNode().getParent()))
+				if (!mapping.isSrcMapped(op.getAction().getNode().getParent()))
 					return false;
 
-				ITree dstTree = mapping.getDst(op.getAction().getNode().getParent());
+				Tree dstTree = mapping.getDstForSrc(op.getAction().getNode().getParent());
 				affectedNode = (CtElement) dstTree.getMetadata("spoon_object");
 				srcNode = op.getSrcNode();
 			} else if (op instanceof UpdateOperation) {
@@ -137,7 +137,7 @@ public class Arja extends AbstractRepairTool {
 					delOp = getActionFromDelInsInstance(instance, "DEL");
 			
 			MappingStore mapping = diff.getMappingsComp();
-			if (!mapping.hasSrc(((Insert) op.getAction()).getParent()))
+			if (!mapping.isSrcMapped(((Insert) op.getAction()).getParent()))
 				// the inserted node is a part of a parent inserted node
 				return false;
 			

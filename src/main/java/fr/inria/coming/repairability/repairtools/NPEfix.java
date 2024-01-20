@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.github.gumtreediff.matchers.MappingStore;
-import com.github.gumtreediff.tree.ITree;
 
+import com.github.gumtreediff.tree.Tree;
 import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.entity.IRevision;
@@ -76,7 +76,7 @@ public class NPEfix extends AbstractRepairTool {
 	 * delete/remove such instances from the results given by
 	 * PatternInstanceAnalyser.
 	 *
-	 * @param patternInstance
+	 * @param instance
 	 * @param diff
 	 * @return
 	 */
@@ -327,11 +327,11 @@ public class NPEfix extends AbstractRepairTool {
 	}
 
 	private CtElement getWrapperSrcNode(Diff diff, CtElement dstNode) {
-		ITree ifTree = (ITree) dstNode.getParent().getParent().getMetadata("gtnode");
+		Tree ifTree = (Tree) dstNode.getParent().getParent().getMetadata("gtnode");
 		MappingStore mapping = diff.getMappingsComp();
-		if (!mapping.hasDst(ifTree))
+		if (!mapping.isDstMapped(ifTree))
 			return null;
-		CtElement srcNode = (CtElement) mapping.getSrc(ifTree).getMetadata("spoon_object");
+		CtElement srcNode = (CtElement) mapping.getSrcForDst(ifTree).getMetadata("spoon_object");
 		return srcNode;
 	}
 	

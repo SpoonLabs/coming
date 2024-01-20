@@ -2,7 +2,7 @@ package fr.inria.coming.repairability.repairtools;
 
 import com.github.gumtreediff.actions.model.Insert;
 import com.github.gumtreediff.matchers.MappingStore;
-import com.github.gumtreediff.tree.ITree;
+import com.github.gumtreediff.tree.Tree;
 import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.entity.IRevision;
@@ -43,7 +43,7 @@ public class JGenProg extends AbstractRepairTool {
 
             if (operation instanceof InsertOperation) {
                 MappingStore mapping = diff.getMappingsComp();
-                if (!mapping.hasSrc(((Insert)operation.getAction()).getParent()))
+                if (!mapping.isSrcMapped(((Insert)operation.getAction()).getParent()))
                     return false;
 
                 newElement = operation.getSrcNode(); // See why are using SrcNode: https://github.com/SpoonLabs/coming/issues/72#issuecomment-508123273
@@ -65,7 +65,7 @@ public class JGenProg extends AbstractRepairTool {
             CtElement affectedNode;
             if (operation instanceof InsertOperation) {
                 MappingStore mapping = diff.getMappingsComp();
-                if (!mapping.hasSrc(((Insert)operation.getAction()).getParent()))
+                if (!mapping.isSrcMapped(((Insert)operation.getAction()).getParent()))
                     return false;
 
                 affectedNode = operation.getSrcNode();
@@ -73,10 +73,10 @@ public class JGenProg extends AbstractRepairTool {
             } else if (operation instanceof DeleteOperation) {
                 MappingStore mapping = diff.getMappingsComp();
 
-                if (!mapping.hasSrc(operation.getAction().getNode().getParent()))
+                if (!mapping.isSrcMapped(operation.getAction().getNode().getParent()))
                     return false;
 
-                ITree dstTree = mapping.getDst(operation.getAction().getNode().getParent());
+                Tree dstTree = mapping.getDstForSrc(operation.getAction().getNode().getParent());
                 affectedNode = (CtElement) dstTree.getMetadata("spoon_object");
                 srcNode = operation.getSrcNode();
             } else if (operation instanceof UpdateOperation) {
