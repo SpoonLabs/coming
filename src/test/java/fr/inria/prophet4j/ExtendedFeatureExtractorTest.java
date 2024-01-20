@@ -18,10 +18,10 @@ import fr.inria.prophet4j.utility.CodeDiffer;
 // for ExtendedFeatures
 public class ExtendedFeatureExtractorTest {
 	
-    private void test(Feature caseFeature, Feature checkFeature) {
+    private void test(Feature checkFeature) {
         String str0, str1;
-        if (caseFeature instanceof AtomicFeature) {
-            AtomicFeature atomicFeature = (AtomicFeature) caseFeature;
+        if (checkFeature instanceof AtomicFeature) {
+            AtomicFeature atomicFeature = (AtomicFeature) checkFeature;
             switch (atomicFeature) {
                 case BOP_PLUS_AF:
                     str0 = "class Foo{public void bar(){\nint a=1;\n}}";
@@ -238,8 +238,8 @@ public class ExtendedFeatureExtractorTest {
                     break;
             }
         }
-        if (caseFeature instanceof RepairFeature) {
-            RepairFeature repairFeature = (RepairFeature) caseFeature;
+        if (checkFeature instanceof RepairFeature) {
+            RepairFeature repairFeature = (RepairFeature) checkFeature;
             switch (repairFeature) {
                 case INSERT_CONTROL_RF:
                     str0 = "class Foo{public void bar(){\nboolean a=true;\n}}";
@@ -268,8 +268,8 @@ public class ExtendedFeatureExtractorTest {
                     break;
             }
         }
-        if (caseFeature instanceof ValueFeature) {
-            ValueFeature valueFeature = (ValueFeature) caseFeature;
+        if (checkFeature instanceof ValueFeature) {
+            ValueFeature valueFeature = (ValueFeature) checkFeature;
             switch (valueFeature) {
                 case MODIFIED_VF:
                     str0 = "class Foo{public void bar(){\nboolean a=true;\n}}";
@@ -332,23 +332,25 @@ public class ExtendedFeatureExtractorTest {
         CodeDiffer codeDiffer = new CodeDiffer(false, option);
         List<FeatureMatrix> featureMatrices = codeDiffer.runByGenerator(str0, str1);
         for (FeatureMatrix featureMatrix : featureMatrices) {
+            System.out.printf(featureMatrix.toString());
             if (featureMatrix.containFeature(feature)) {
                 return true;
             }
         }
+        //System.out.printf("feature %s not found\n", feature);
         return false;
     }
 
     @Test
     public void testFeatureExtractor() {
         for (AtomicFeature atomicFeature : AtomicFeature.values()) {
-            test(atomicFeature, atomicFeature);
+            test(atomicFeature);
         }
         for (RepairFeature repairFeature : RepairFeature.values()) {
-            test(repairFeature, repairFeature);
+            test(repairFeature);
         }
         for (ValueFeature valueFeature : ValueFeature.values()) {
-            test(valueFeature, valueFeature);
+            test(valueFeature);
         }
     }
 }

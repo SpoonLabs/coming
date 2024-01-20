@@ -66,7 +66,7 @@ public class GumtreeDiffTest {
 		List<Operation> operations = diff.getRootOperations();
 		// Update Literal at Foo: 1 to ((double) (1))
 		assertEquals(1, operations.size());
-		assertEquals("UPD", operations.get(0).getAction().getName());
+		assertEquals("update-node", operations.get(0).getAction().getName());
 
 		a = "class Foo{public void bar(){\nint a = 0;\n}}";
 		b = "class Foo{public void bar(){\nint a = 1;\n}}";
@@ -98,8 +98,8 @@ public class GumtreeDiffTest {
 		File newFile = new File("src/test/resources/prophet4j/patchedBaseSecantSolver.java");
 		Diff diff = comparator.compare(oldFile, newFile);
 		List<Operation> operations = diff.getRootOperations();
-		// DiffNOTFound
-		assertEquals(0, operations.size());
+		// with new Gumtree 3, this is detected
+		assertEquals(1, operations.size());
 
 		/*
 		 * SRC: n1n2prod * (n1 + n2 + 1) / 12.0; TARGET: (double) ((double) n1n2prod *

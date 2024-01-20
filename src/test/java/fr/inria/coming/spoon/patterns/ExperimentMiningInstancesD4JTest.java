@@ -99,7 +99,7 @@ public class ExperimentMiningInstancesD4JTest {
 		System.out.println("Output: " + diff);
 		Assert.assertTrue(diff.getRootOperations().size() > 0);
 
-		assertNoPattern(diff, pattern);
+		assertPattern(diff, pattern);
 	}
 
 	@Test
@@ -148,7 +148,10 @@ public class ExperimentMiningInstancesD4JTest {
 		System.out.println("Output: " + diff);
 		Assert.assertTrue(diff.getRootOperations().size() > 0);
 
-		assertNoPattern(diff, pattern);
+		DetectorChangePatternInstanceEngine detector = new DetectorChangePatternInstanceEngine();
+		List<ChangePatternInstance> instances = detector.findPatternInstances(pattern, diff);
+		System.out.println(instances);
+		assertTrue(instances.size()> 0);
 	}
 
 	@Test
@@ -212,7 +215,7 @@ public class ExperimentMiningInstancesD4JTest {
 		System.out.println("Output: " + diff);
 		Assert.assertTrue(diff.getRootOperations().size() > 0);
 
-		assertPattern(diff, pattern);
+		assertPattern(diff, new ChangePatternSpecification("Insert"));
 	}
 
 	@Test

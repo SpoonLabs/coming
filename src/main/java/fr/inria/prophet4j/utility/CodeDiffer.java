@@ -528,6 +528,7 @@ public class CodeDiffer {
     public List<FeatureMatrix> runByGenerator(String oldStr, String newStr) {
         AstComparator comparator = new AstComparator();
         Diff diff = comparator.compare(oldStr, newStr);
+        //System.out.println(diff.toString());
         List<FeatureMatrix> featureMatrices = genFeatureMatrices(diff, "");
         assert featureMatrices.size() == 1;
         return featureMatrices;
