@@ -37,5 +37,5 @@ jobs:
               "password": "${{ secrets.GHTOKEN_READPACKAGES }}"
           }]
     - name: Build with Maven
-      run: git clone https://github.com/SpoonLabs/repogit4testv0
-      run: mvn -B package --file pom.xml
+      run: git clone https://github.com/SpoonLabs/repogit4testv0; \
+           mvn -B package --file pom.xml
