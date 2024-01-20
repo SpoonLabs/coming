@@ -385,5 +385,18 @@ public interface Structure {
             ret.addAll(atoms);
             return ret;
         }
+
+        @Override
+        public String toString() {
+            return "Repair{" +
+                    "kind=" + kind +
+                    ", isReplace=" + isReplace +
+                    ", srcElem=" + srcElem +
+                    ", dstElem=" + dstElem +
+                    ", atoms=" + atoms +
+                    ", oldRExpr=" + oldRExpr +
+                    ", newRExpr=" + newRExpr +
+                    '}';
+        }
     }
 }

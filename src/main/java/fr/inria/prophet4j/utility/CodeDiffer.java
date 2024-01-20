@@ -21,7 +21,6 @@ import fr.inria.prophet4j.utility.Structure.FeatureVector;
 import fr.inria.prophet4j.utility.Structure.DiffEntry;
 import fr.inria.prophet4j.utility.Structure.Repair;
 import fr.inria.prophet4j.feature.enhanced.EnhancedFeatureExtractor;
-import fr.inria.prophet4j.feature.enhanced.EnhancedRepairGenerator;
 import fr.inria.prophet4j.feature.extended.ExtendedFeatureExtractor;
 import fr.inria.prophet4j.feature.extended.ExtendedRepairGenerator;
 import fr.inria.prophet4j.feature.original.OriginalFeatureExtractor;
@@ -35,10 +34,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.eclipse.jgit.errors.NotSupportedException;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 
+import javax.naming.OperationNotSupportedException;
 import java.io.File;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -96,8 +97,7 @@ public class CodeDiffer {
         RepairGenerator repairGenerator = null;
         switch (option.featureOption) {
             case ENHANCED:
-                repairGenerator = new EnhancedRepairGenerator(diffEntry);
-                break;
+                throw new RuntimeException("class removed by Martin was exact duplicate of ExtendedRepairGenerator");
             case EXTENDED:
                 repairGenerator = new ExtendedRepairGenerator(diffEntry);
                 break;
@@ -105,8 +105,7 @@ public class CodeDiffer {
                 repairGenerator = new OriginalRepairGenerator(diffEntry);
                 break;
             case S4R:
-                logger.warn("S4R should not call newRepairGenerator");
-                break;
+                throw new RuntimeException("S4R should not call newRepairGenerator");
             case S4RO:
                 repairGenerator = new S4RORepairGenerator(diffEntry);
                 break;
@@ -272,7 +271,7 @@ public class CodeDiffer {
         return diffEntries;
     }
 
-    // size == 1 if option.featureOption == FeatureOption.S4R or byGenerator = false
+
     private List<FeatureMatrix> genFeatureMatrices(Diff diff, String fileKey) {
         List<FeatureMatrix> featureMatrices = new ArrayList<>();
         // used for the case of SKETCH4REPAIR
