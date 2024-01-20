@@ -181,7 +181,7 @@
 
 	<repositories>
 		<repository>
-			<id>br.ufu.lascam</id>
+			<id>brufulascam</id>
 			<url>https://maven.pkg.github.com/lascam-UFU/automatic-diff-dissection</url>
 		</repository>
 
