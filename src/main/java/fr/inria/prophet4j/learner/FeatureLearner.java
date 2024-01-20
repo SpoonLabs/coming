@@ -4,7 +4,6 @@ import java.util.*;
 
 import fr.inria.prophet4j.feature.FeatureCross;
 import fr.inria.prophet4j.feature.S4R.S4RFeature;
-import fr.inria.prophet4j.feature.S4RO.S4ROFeature;
 import fr.inria.prophet4j.feature.enhanced.EnhancedFeature;
 import fr.inria.prophet4j.feature.extended.ExtendedFeature;
 import fr.inria.prophet4j.feature.original.OriginalFeature;
@@ -55,8 +54,7 @@ public class FeatureLearner {
                 arraySize = S4RFeature.FEATURE_SIZE;
                 break;
             case S4RO:
-                arraySize = S4ROFeature.FEATURE_SIZE;
-                break;
+                throw new RuntimeException("removed see https://github.com/SpoonLabs/coming/issues/235");
         }
         return new double[arraySize];
     }

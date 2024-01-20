@@ -215,7 +215,7 @@ public class ExperimentMiningInstancesD4JTest {
 		System.out.println("Output: " + diff);
 		Assert.assertTrue(diff.getRootOperations().size() > 0);
 
-		assertPattern(diff, new ChangePatternSpecification("Insert"));
+		assertPattern(diff, pattern);
 	}
 
 	@Test
