@@ -1,14 +1,10 @@
-[![Travis Build Status](https://travis-ci.org/SpoonLabs/coming.svg?branch=master)](https://travis-ci.org/SpoonLabs/coming)
-
 Coming
 =======
-Coming is a tool for mining git repositories.
+Coming is a tool for commit analysis in git repositories.
 
-If you use Coming, please cite one of: 
+If you use Coming, please cite: 
 
-* [Coming: a Tool for Mining Change Pattern Instances from Git Commits](http://arxiv.org/pdf/1810.08532). M. Martinez, M. Monperrus, Proceedings of ICSE - Demo track, 2019 ([doi:10.1109/ICSE-Companion.2019.00043](https://doi.org/10.1109/ICSE-Companion.2019.00043)). [bibtex](https://www.monperrus.net/martin/bibtexbrowser.php?key=arXiv-1810.08532&bib=monperrus.bib)
-* [Accurate Extraction of Bug Fix Pattern Occurrences using Abstract Syntax Tree Analysis](https://hal.archives-ouvertes.fr/hal-01075938/file/bug-fix-pattern-identification.pdf) (Matias Martinez, Laurence Duchien and Martin Monperrus), Technical report hal-01075938, Inria, 2014 [bibtex](https://www.monperrus.net/martin/bibtexbrowser.php?key=martinez%3Ahal-01075938&bib=monperrus.bib)
-* [Automatically Extracting Instances of Code Change Patterns with AST Analysis](https://hal.inria.fr/hal-00861883/file/paper-short.pdf) (Martinez, M.; Duchien, L.; Monperrus, M.) IEEE International Conference on Software Maintenance (ICSM), pp.388-391, 2013, doi: 10.1109/ICSM.2013.54 [bibtex](https://www.monperrus.net/martin/bibtexbrowser.php?key=martinez%3Ahal-00861883&bib=monperrus.bib)
+* [Coming: a Tool for Mining Change Pattern Instances from Git Commits](http://arxiv.org/pdf/1810.08532). M. Martinez, M. Monperrus, Proceedings of ICSE, 2019 ([doi:10.1109/ICSE-Companion.2019.00043](https://doi.org/10.1109/ICSE-Companion.2019.00043)). [bibtex](https://www.monperrus.net/martin/bibtexbrowser.php?key=1810.08532&bib=monperrus.bib)
 
 Contact: 
 
@@ -105,6 +101,8 @@ In the following command we change the value of two properties: `max_nb_hunks` a
 ### Mode Instance Mining
 
 When running Coming in mode `-mode mineinstance` the output is a file name `instances_found.json` , which shows the different instances of the pattern passed as parameter.
+
+* [Automatically Extracting Instances of Code Change Patterns with AST Analysis](https://hal.inria.fr/hal-00861883/file/paper-short.pdf) (Martinez, M.; Duchien, L.; Monperrus, M.) IEEE International Conference on Software Maintenance (ICSM), pp.388-391, 2013, doi: 10.1109/ICSM.2013.54 [bibtex](https://www.monperrus.net/martin/bibtexbrowser.php?key=martinez%3Ahal-00861883&bib=monperrus.bib)
 
 
 #### Mining Simple Changes (i.e., with exactly one change)
@@ -337,6 +335,11 @@ Example, the previous json file shows
 which means that there are 2 changes that update binary operators inside an if condition (i.e., the parent).
 
 ### Mode Repairability
+
+This is a mode to find commits which look like automated program repair commits, see paper ["Estimating the Potential of Program Repair Search Spaces with Commit Analysis"](http://arxiv.org/pdf/2007.06986) (Khashayar Etemadi, Niloofar Tarighat, Siddharth Yadav, Matias Martinez and Martin Monperrus, Journal of Systems and Software, 2022).
+
+Note that the results are sensitive to the underlying diff algorithm. If you run repairibility analysis today, you'll get results that are different from the paper. For exact reproduction, use commit [1cad74323bacad65f06ddf80ab53971d38957507](https://github.com/SpoonLabs/coming/commit/1cad74323bacad65f06ddf80ab53971d38957507) and Java 8.
+
 When running Coming in mode `-mode repairibility`, the output is a file named `all_instances_found.json` , which shows the possible tool creating the commits. You can choose tools of interest by including the option:  `-repairtool All,Jkali,..`
 
 An example of the content of such file is:
@@ -400,9 +403,11 @@ Last 100 commits of the repository are analyzed by default, you can change this 
 
 ### Mode Code Features
 
-Coming has an option to compute the features associated to the code changed by a commit.
+Coming can be used to compute features associated to the code changed by a commit.
 This functionality can be used with the argument `-mode features`.
 Coming writes in the folder specified in the `-output` a JSON file for each commit.
+
+See [Automated Classification of Overfitting Patches with Statically Extracted Code Features](http://arxiv.org/pdf/1910.12057) (He Ye, Jian Gu, Matias Martinez, Thomas Durieux and Martin Monperrus), In IEEE Transactions on Software Engineering, 2021.
 
 ## Input Types
 
