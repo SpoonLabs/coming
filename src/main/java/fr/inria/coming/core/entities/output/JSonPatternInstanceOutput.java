@@ -99,7 +99,9 @@ public class JSonPatternInstanceOutput implements IOutput {
 						opjson.add("concrete_change", getJSONFromOperator(op));
 
 						if (op.getNode().getPosition() != null) {
-							opjson.addProperty("file", op.getNode().getPosition().getFile().getAbsolutePath());
+							final String repoPath = new File(ComingProperties.getProperty("location")).getAbsolutePath();
+							final String relativePath = op.getNode().getPosition().getFile().getAbsolutePath().replace(new File(System.getProperty("user.dir")).getAbsolutePath(), "");
+							opjson.addProperty("file", repoPath+File.separator+ relativePath);
 							opjson.addProperty("line", op.getNode().getPosition().getLine());
 						}
 						ops.add(opjson);

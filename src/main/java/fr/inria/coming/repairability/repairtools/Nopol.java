@@ -1,5 +1,6 @@
 package fr.inria.coming.repairability.repairtools;
 
+import com.github.gumtreediff.tree.Tree;
 import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.entity.IRevision;
@@ -29,7 +30,6 @@ import java.util.Set;
 import com.github.gumtreediff.actions.model.Delete;
 import com.github.gumtreediff.actions.model.Insert;
 import com.github.gumtreediff.matchers.MappingStore;
-import com.github.gumtreediff.tree.ITree;
 
 public class Nopol extends AbstractRepairTool {
 	private static final String IF_UPD_SHALLOW_PATTERN = "if_condition_upd_shallow";
@@ -60,7 +60,7 @@ public class Nopol extends AbstractRepairTool {
 	 * delete/remove such instances from the results given by
 	 * PatternInstanceAnalyser.
 	 *
-	 * @param patternInstance
+	 * @param instance
 	 * @param revision
 	 * @param diff
 	 * @return
@@ -88,23 +88,23 @@ public class Nopol extends AbstractRepairTool {
 			} else if (op instanceof InsertOperation) {
 				dstCondition = getWrapperIfConditoin(op.getSrcNode());
 
-				ITree dstConditionParentTree = (ITree) dstCondition.getParent().getMetadata("gtnode");
+				Tree dstConditionParentTree = (Tree) dstCondition.getParent().getMetadata("gtnode");
 
 				MappingStore mapping = diff.getMappingsComp();
-				if (!mapping.hasDst(dstConditionParentTree))
+				if (!mapping.isDstMapped(dstConditionParentTree))
 					return false;
 
-				CtElement srcNode = (CtElement) mapping.getSrc(dstConditionParentTree).getMetadata("spoon_object");
+				CtElement srcNode = (CtElement) mapping.getSrcForDst(dstConditionParentTree).getMetadata("spoon_object");
 				srcRootNode = ASTInfoResolver.getRootNode(srcNode);
 			} else if (op instanceof DeleteOperation) {
 				CtElement srcCondition = getWrapperIfConditoin(op.getSrcNode());
-				ITree srcConditionTree = (ITree) srcCondition.getMetadata("gtnode");
+				Tree srcConditionTree = (Tree) srcCondition.getMetadata("gtnode");
 
 				MappingStore mapping = diff.getMappingsComp();
-				if (mapping.hasSrc(srcConditionTree)) {
-					dstCondition = (CtElement) mapping.getDst(srcConditionTree).getMetadata("spoon_object");
-				} else if (mapping.hasSrc(srcConditionTree.getParent())) {
-					CtElement dstConditionParent = (CtElement) mapping.getDst(srcConditionTree.getParent())
+				if (mapping.isSrcMapped(srcConditionTree)) {
+					dstCondition = (CtElement) mapping.getDstForSrc(srcConditionTree).getMetadata("spoon_object");
+				} else if (mapping.isSrcMapped(srcConditionTree.getParent())) {
+					CtElement dstConditionParent = (CtElement) mapping.getDstForSrc(srcConditionTree.getParent())
 							.getMetadata("spoon_object");
 
 					if (dstConditionParent instanceof CtIf) {
@@ -130,11 +130,11 @@ public class Nopol extends AbstractRepairTool {
 				return false;
 
 			CtElement srcRoot = null, dstRoot = ASTInfoResolver.getRootNode(insertedIf);
-			ITree dstRootTree = (ITree) dstRoot.getMetadata("gtnode");
+			Tree dstRootTree = (Tree) dstRoot.getMetadata("gtnode");
 			
 			MappingStore mapping = diff.getMappingsComp();
-            if (mapping.hasDst(dstRootTree)) {
-            	srcRoot = (CtElement)mapping.getSrc(dstRootTree)
+            if (mapping.isDstMapped(dstRootTree)) {
+            	srcRoot = (CtElement)mapping.getSrcForDst(dstRootTree)
             			.getMetadata("spoon_object");
             } else {
             	return false;
@@ -166,16 +166,16 @@ public class Nopol extends AbstractRepairTool {
 				dstCondition = op instanceof InsertOperation ? getWrapperIfConditoin(op.getSrcNode())
 						: getWrapperIfConditoin(op.getDstNode());
 				res.add(dstCondition);
-				ITree dstConditionTree = (ITree) dstCondition.getMetadata("gtnode");
+				Tree dstConditionTree = (Tree) dstCondition.getMetadata("gtnode");
 
 				MappingStore mapping = diff.getMappingsComp();
-				if (mapping.hasDst(dstConditionTree)) {
+				if (mapping.isDstMapped(dstConditionTree)) {
 
-					res.add((CtElement) mapping.getSrc(dstConditionTree).getMetadata("spoon_object"));
+					res.add((CtElement) mapping.getSrcForDst(dstConditionTree).getMetadata("spoon_object"));
 
-				} else if (mapping.hasDst(dstConditionTree.getParent())) {
+				} else if (mapping.isDstMapped(dstConditionTree.getParent())) {
 
-					CtElement srcConditionParent = (CtElement) mapping.getSrc(dstConditionTree.getParent())
+					CtElement srcConditionParent = (CtElement) mapping.getSrcForDst(dstConditionTree.getParent())
 							.getMetadata("spoon_object");
 
 					if (srcConditionParent instanceof CtIf) {
@@ -185,16 +185,16 @@ public class Nopol extends AbstractRepairTool {
 			} else if (op instanceof DeleteOperation) {
 				srcCondition = getWrapperIfConditoin(op.getSrcNode());
 				res.add(srcCondition);
-				ITree srcConditionTree = (ITree) srcCondition.getMetadata("gtnode");
+				Tree srcConditionTree = (Tree) srcCondition.getMetadata("gtnode");
 
 				MappingStore mapping = diff.getMappingsComp();
-				if (mapping.hasSrc(srcConditionTree)) {
+				if (mapping.isSrcMapped(srcConditionTree)) {
 
-					res.add((CtElement) mapping.getDst(srcConditionTree).getMetadata("spoon_object"));
+					res.add((CtElement) mapping.getDstForSrc(srcConditionTree).getMetadata("spoon_object"));
 
-				} else if (mapping.hasSrc(srcConditionTree.getParent())) {
+				} else if (mapping.isSrcMapped(srcConditionTree.getParent())) {
 
-					CtElement dstConditionParent = (CtElement) mapping.getDst(srcConditionTree.getParent())
+					CtElement dstConditionParent = (CtElement) mapping.getDstForSrc(srcConditionTree.getParent())
 							.getMetadata("spoon_object");
 
 					if (dstConditionParent instanceof CtIf) {

@@ -1,6 +1,5 @@
 package fr.inria.coming.repairability.repairtools;
 
-import com.github.gumtreediff.tree.ITree;
 import fr.inria.coming.changeminer.analyzer.instancedetector.ChangePatternInstance;
 import fr.inria.coming.changeminer.analyzer.patternspecification.ChangePatternSpecification;
 import fr.inria.coming.changeminer.entity.IRevision;

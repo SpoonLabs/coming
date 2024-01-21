@@ -383,6 +383,7 @@ public class ExtendedRepairGenerator implements RepairGenerator {
         } catch (Exception e) {
             // such as public, final, static
         }
+
         return repair;
     }
 

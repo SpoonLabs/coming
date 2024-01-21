@@ -11,17 +11,12 @@ import fr.inria.prophet4j.feature.FeatureExtractor;
 import fr.inria.prophet4j.feature.RepairGenerator;
 import fr.inria.prophet4j.feature.S4R.S4RFeature;
 import fr.inria.prophet4j.feature.S4R.S4RFeatureCross;
-import fr.inria.prophet4j.feature.S4RO.S4ROFeature;
-import fr.inria.prophet4j.feature.S4RO.S4ROFeatureCross;
-import fr.inria.prophet4j.feature.S4RO.S4ROFeatureExtractor;
-import fr.inria.prophet4j.feature.S4RO.S4RORepairGenerator;
 import fr.inria.prophet4j.utility.Structure.DiffType;
 import fr.inria.prophet4j.utility.Structure.FeatureMatrix;
 import fr.inria.prophet4j.utility.Structure.FeatureVector;
 import fr.inria.prophet4j.utility.Structure.DiffEntry;
 import fr.inria.prophet4j.utility.Structure.Repair;
 import fr.inria.prophet4j.feature.enhanced.EnhancedFeatureExtractor;
-import fr.inria.prophet4j.feature.enhanced.EnhancedRepairGenerator;
 import fr.inria.prophet4j.feature.extended.ExtendedFeatureExtractor;
 import fr.inria.prophet4j.feature.extended.ExtendedRepairGenerator;
 import fr.inria.prophet4j.feature.original.OriginalFeatureExtractor;
@@ -35,10 +30,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.eclipse.jgit.errors.NotSupportedException;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 
+import javax.naming.OperationNotSupportedException;
 import java.io.File;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -86,8 +83,7 @@ public class CodeDiffer {
                 logger.warn("S4R should not call newFeatureExtractor");
                 break;
             case S4RO:
-                featureExtractor = new S4ROFeatureExtractor();
-                break;
+                throw new RuntimeException("removed see https://github.com/SpoonLabs/coming/issues/235");
         }
         return featureExtractor;
     }
@@ -96,8 +92,7 @@ public class CodeDiffer {
         RepairGenerator repairGenerator = null;
         switch (option.featureOption) {
             case ENHANCED:
-                repairGenerator = new EnhancedRepairGenerator(diffEntry);
-                break;
+                throw new RuntimeException("class removed by Martin was exact duplicate of ExtendedRepairGenerator");
             case EXTENDED:
                 repairGenerator = new ExtendedRepairGenerator(diffEntry);
                 break;
@@ -105,11 +100,9 @@ public class CodeDiffer {
                 repairGenerator = new OriginalRepairGenerator(diffEntry);
                 break;
             case S4R:
-                logger.warn("S4R should not call newRepairGenerator");
-                break;
+                throw new RuntimeException("S4R should not call newRepairGenerator");
             case S4RO:
-                repairGenerator = new S4RORepairGenerator(diffEntry);
-                break;
+                throw new RuntimeException("removed see https://github.com/SpoonLabs/coming/issues/235");
         }
         return repairGenerator;
     }
@@ -272,7 +265,7 @@ public class CodeDiffer {
         return diffEntries;
     }
 
-    // size == 1 if option.featureOption == FeatureOption.S4R or byGenerator = false
+
     private List<FeatureMatrix> genFeatureMatrices(Diff diff, String fileKey) {
         List<FeatureMatrix> featureMatrices = new ArrayList<>();
         // used for the case of SKETCH4REPAIR
@@ -351,91 +344,7 @@ public class CodeDiffer {
                 }
                 featureMatrices.add(new FeatureMatrix(true, fileKey, featureVectors));
             } else if (option.featureOption == FeatureOption.S4RO) {
-                FeatureExtractor featureExtractor = newFeatureExtractor();
-                List<FeatureVector> featureVectors = new ArrayList<>();
-                // based on L152-186 at FeatureAnalyzer.java
-                JsonObject file = new JsonObject();
-                try {
-                    JsonArray changesArray = new JsonArray();
-                    file.add("features", changesArray);
-                    List<Operation> ops = diff.getRootOperations();
-                    for (Operation operation : ops) {
-                        try {
-                            CtElement affectedCtElement = featureAnalyzer.getLeftElement(operation);
-                            if (affectedCtElement != null) {
-                                Cntx iContext = cresolver.analyzeFeatures(affectedCtElement);
-                                changesArray.add(iContext.toJSON());
-
-                                // here we merge two feature-vectors of one MoveOperation
-                                FeatureVector featureVector = new FeatureVector();
-                                for (DiffEntry diffEntry : genDiffEntry(operation)) {
-                                    // generate P4J featureVectors beforehand
-                                    RepairGenerator generator = newRepairGenerator(diffEntry);
-                                    Repair repair = generator.obtainHumanRepair();
-                                    for (CtElement atom : repair.getCandidateAtoms()) {
-                                        featureVector.merge(featureExtractor.extractFeature(repair, atom));
-                                    }
-                                }
-                                featureVectors.add(featureVector);
-                            }
-                        } catch (Exception e) {
-//                            e.printStackTrace();
-                        }
-                    }
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-                // based on L61-79 at FeaturesOnD4jTest.java
-                JsonElement elAST = file.get("features");
-//        			assertNotNull(elAST);
-//		        	assertTrue(elAST instanceof JsonArray);
-                JsonArray featuresOperationList = (JsonArray) elAST;
-//			        assertTrue(featuresOperationList.size() > 0);
-                int index = 0;
-                for (JsonElement featuresOfOperation : featuresOperationList) {
-                    // the first one in newFiles is human patch
-                    FeatureVector featureVector = featureVectors.get(index);
-                    index += 1;
-                    JsonObject jso = featuresOfOperation.getAsJsonObject();
-                    for (S4ROFeature.CodeFeature codeFeature : S4ROFeature.CodeFeature.values()) {
-                        JsonElement property = jso.get(codeFeature.toString());
-                        if (property != null) {
-                            try {
-                                JsonPrimitive value = property.getAsJsonPrimitive();
-                                String str = value.getAsString();
-
-                                if (str.equalsIgnoreCase("true")) {
-                                    // handle boolean-form features
-                                    List<Feature> features = new ArrayList<>();
-                                    features.add(codeFeature);
-                                    FeatureCross featureCross = new S4ROFeatureCross(S4ROFeature.CrossType.CF_CT, features, 1.0);
-                                    featureVector.addFeatureCross(featureCross);
-                                } else if (str.equalsIgnoreCase("false")) {
-                                    // handle boolean-form features
-                                    List<Feature> features = new ArrayList<>();
-                                    features.add(codeFeature);
-                                    FeatureCross featureCross = new S4ROFeatureCross(S4ROFeature.CrossType.CF_CT, features, 0.0);
-                                    featureVector.addFeatureCross(featureCross);
-                                } else {
-                                    // handle numerical-form features
-                                    try {
-                                        double degree = Double.parseDouble(value.getAsString());
-                                        List<Feature> features = new ArrayList<>();
-                                        features.add(codeFeature);
-                                        FeatureCross featureCross = new S4ROFeatureCross(S4ROFeature.CrossType.CF_CT, features, degree);
-                                        featureVector.addFeatureCross(featureCross);
-                                    } catch (Exception e) {
-//                                        e.printStackTrace();
-                                    }
-                                }
-                            } catch (IllegalStateException e) {
-//                                logger.error("Not a JSON Primitive");
-                            }
-                        }
-                    }
-//                    featureVectors.add(featureVector);
-                }
-                featureMatrices.add(new FeatureMatrix(true, fileKey, featureVectors));
+                throw new RuntimeException("removed see https://github.com/SpoonLabs/coming/issues/235");
             } else {
                 // RepairGenerator receive diffEntry as parameter, so we do not need ErrorLocalizer
                 {
@@ -528,6 +437,7 @@ public class CodeDiffer {
     public List<FeatureMatrix> runByGenerator(String oldStr, String newStr) {
         AstComparator comparator = new AstComparator();
         Diff diff = comparator.compare(oldStr, newStr);
+        //System.out.println(diff.toString());
         List<FeatureMatrix> featureMatrices = genFeatureMatrices(diff, "");
         assert featureMatrices.size() == 1;
         return featureMatrices;

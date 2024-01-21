@@ -56,6 +56,9 @@ public class RepositoryPGit implements RepositoryP {
 	 *            The branch to analyze
 	 */
 	public RepositoryPGit(String pathOfRepo, String branch, Collection<String> filter) {
+		if (!new File(pathOfRepo).exists()) {
+			throw new RuntimeException("repository path (arg --location) does not exist");
+		}
 		FileRepositoryBuilder builder = new FileRepositoryBuilder();
 		this.filter = filter;
 		String path = pathOfRepo;

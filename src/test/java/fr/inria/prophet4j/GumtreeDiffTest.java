@@ -66,14 +66,14 @@ public class GumtreeDiffTest {
 		List<Operation> operations = diff.getRootOperations();
 		// Update Literal at Foo: 1 to ((double) (1))
 		assertEquals(1, operations.size());
-		assertEquals("UPD", operations.get(0).getAction().getName());
+		assertEquals("update-node", operations.get(0).getAction().getName());
 
 		a = "class Foo{public void bar(){\nint a = 0;\n}}";
 		b = "class Foo{public void bar(){\nint a = 1;\n}}";
 		diff = comparator.compare(a, b);
 		operations = diff.getRootOperations();
 		assertEquals(1, operations.size());
-		assertEquals("UPD", operations.get(0).getAction().getName());
+		assertEquals("update-node", operations.get(0).getAction().getName());
 		assertEquals("0", operations.get(0).getSrcNode().toString());
 		assertEquals("1", operations.get(0).getDstNode().toString());
 	}
@@ -98,8 +98,8 @@ public class GumtreeDiffTest {
 		File newFile = new File("src/test/resources/prophet4j/patchedBaseSecantSolver.java");
 		Diff diff = comparator.compare(oldFile, newFile);
 		List<Operation> operations = diff.getRootOperations();
-		// DiffNOTFound
-		assertEquals(0, operations.size());
+		// with new Gumtree 3, this is detected
+		assertEquals(1, operations.size());
 
 		/*
 		 * SRC: n1n2prod * (n1 + n2 + 1) / 12.0; TARGET: (double) ((double) n1n2prod *
@@ -110,6 +110,7 @@ public class GumtreeDiffTest {
 		diff = comparator.compare(oldFile, newFile);
 
 		operations = diff.getRootOperations();
-		assertEquals(0, operations.size());
+		// gumtree3 now supports detection of cast
+		assertEquals(2, operations.size());
 	}
 }

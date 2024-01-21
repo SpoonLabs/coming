@@ -59,6 +59,7 @@ public class RepairnatorFeatures {
 		File tempFile = null;
 		try {
 			tempFile = File.createTempFile("test", ".txt");
+			System.out.println("tempFile: "+tempFile);
 		} catch (Exception e) {
 			log.error("ODS cannot create a feature file test.txt in the disk ");
 			return ODSLabel.UNKNOWN;

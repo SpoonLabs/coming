@@ -66,7 +66,8 @@ public class ExtendedFeatureExtractor implements FeatureExtractor {
         return repairFeatures;
     }
 
-    private EnumSet<ValueFeature> getValueFeature(final String valueStr, final Repair repair, Map<String, CtElement> valueExprInfo) {
+    private EnumSet<ValueFeature> getValueFeature(final String valueStr, final Repair repair, CtElement E) {
+
         EnumSet<ValueFeature> valueFeatures = EnumSet.noneOf(ValueFeature.class);
         if (repair.oldRExpr != null && repair.newRExpr != null) {
             String oldStr = repair.oldRExpr.toString();
@@ -94,8 +95,6 @@ public class ExtendedFeatureExtractor implements FeatureExtractor {
                 }
             }
         }
-        assert(valueExprInfo.containsKey(valueStr));
-        CtElement E = valueExprInfo.get(valueStr);
         if (E instanceof CtVariableAccess || E instanceof CtArrayAccess || E instanceof CtLocalVariable) {
             if (E instanceof CtLocalVariable) {
                 valueFeatures.add(ValueFeature.LOCAL_VARIABLE_VF);
@@ -211,11 +210,13 @@ public class ExtendedFeatureExtractor implements FeatureExtractor {
         List<CtElement> stmtsC = getCurrentStmts(repair);
         List<CtElement> stmtsF = new ArrayList<>();
         List<CtElement> stmtsL = new ArrayList<>();
+
         getNearbyStmts(repair, stmtsF, stmtsL); // update values by reference
 
         Map<String, Set<AtomicFeature>> srcMapC = new HashMap<>();
         Map<String, Set<AtomicFeature>> srcMapF = new HashMap<>();
         Map<String, Set<AtomicFeature>> srcMapL = new HashMap<>();
+
         Map<String, Set<AtomicFeature>> dstMap = new ExtendedFeatureVisitor(valueExprInfo).traverseRepair(repair, atom);
 
         for (CtElement stmt : stmtsC) {
@@ -348,7 +349,7 @@ public class ExtendedFeatureExtractor implements FeatureExtractor {
         // ValueCrossFeatureNum = AtomFeatureNum * ValueFeatureNum      = 360
         for (String key : dstMap.keySet()) {
             Set<AtomicFeature> atomicFeatures = dstMap.get(key);
-            Set<ValueFeature> valueFeatures = getValueFeature(key, repair, valueExprInfo);
+            Set<ValueFeature> valueFeatures = getValueFeature(key, repair, valueExprInfo.get(key));
             for (Feature atomicFeature : atomicFeatures) {
                 for (Feature valueFeature : valueFeatures) {
                     // AF_VF_CT

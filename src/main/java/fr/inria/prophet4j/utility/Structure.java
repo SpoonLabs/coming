@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import fr.inria.prophet4j.feature.Feature;
 import fr.inria.prophet4j.feature.FeatureCross;
 import fr.inria.prophet4j.feature.S4R.S4RFeature;
-import fr.inria.prophet4j.feature.S4RO.S4ROFeature;
 import fr.inria.prophet4j.feature.enhanced.EnhancedFeature;
 import fr.inria.prophet4j.feature.extended.ExtendedFeature;
 import fr.inria.prophet4j.feature.original.OriginalFeature;
@@ -94,8 +93,7 @@ public interface Structure {
                     arraySize = S4RFeature.FEATURE_SIZE;
                     break;
                 case S4RO:
-                    arraySize = S4ROFeature.FEATURE_SIZE;
-                    break;
+                    throw new RuntimeException("removed see https://github.com/SpoonLabs/coming/issues/235");
             }
 
             Map<String, List<double[]>> featureMatrixList = new HashMap<>();
@@ -240,8 +238,7 @@ public interface Structure {
         public ParameterVector(FeatureOption featureOption) {
             switch (featureOption) {
                 case ENHANCED:
-                    this.arraySize = EnhancedFeature.FEATURE_SIZE;
-                    break;
+                    throw new RuntimeException("removed see https://github.com/SpoonLabs/coming/issues/235");
                 case EXTENDED:
                     this.arraySize = ExtendedFeature.FEATURE_SIZE;
                     break;
@@ -252,8 +249,7 @@ public interface Structure {
                     this.arraySize = S4RFeature.FEATURE_SIZE;
                     break;
                 case S4RO:
-                    this.arraySize = S4ROFeature.FEATURE_SIZE;
-                    break;
+                    throw new RuntimeException("removed see https://github.com/SpoonLabs/coming/issues/235");
             }
             this.parameterArray = new double[arraySize];
         }
@@ -384,6 +380,19 @@ public interface Structure {
             ret.add(null); // ?
             ret.addAll(atoms);
             return ret;
+        }
+
+        @Override
+        public String toString() {
+            return "Repair{" +
+                    "kind=" + kind +
+                    ", isReplace=" + isReplace +
+                    ", srcElem=" + srcElem +
+                    ", dstElem=" + dstElem +
+                    ", atoms=" + atoms +
+                    ", oldRExpr=" + oldRExpr +
+                    ", newRExpr=" + newRExpr +
+                    '}';
         }
     }
 }
