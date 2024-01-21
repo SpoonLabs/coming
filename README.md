@@ -12,6 +12,10 @@ Contact:
 
 ## Install
 
+Coming is deployed on Maven Central, see [past versions](https://repo1.maven.org/maven2/com/github/spoonlabs/coming/).
+
+To build yourself, the procedure is as follows.
+
 Add a github token in `.m2/settings.xml`.
 
 ```xml
