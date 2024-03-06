@@ -681,7 +681,7 @@ public class LogicalExpressionAnalyzer extends AbstractCodeAnalyzer {
 
 				for (CtInvocation invocation : invocationssInStatement) {
 					
-					if(!invocation.getTarget().toString().isEmpty()) {
+					if(invocation.getTarget() != null && !invocation.getTarget().toString().isEmpty()) {
 						continue;
 					}
 
