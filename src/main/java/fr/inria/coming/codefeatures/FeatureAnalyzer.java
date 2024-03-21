@@ -69,6 +69,7 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 
 
 		for (Object nameFile : diffResut.getDiffOfFiles().keySet()) {
+			System.out.println("Analyzing file: " + nameFile);
 			Diff diff = (Diff) diffResut.getDiffOfFiles().get(nameFile);
 
 			List<Operation> ops = diff.getRootOperations();

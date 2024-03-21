@@ -69,7 +69,11 @@ public class FeaturesOutput implements IOutput {
 			// Create the output dir
 			File fout = new File(ComingProperties.getProperty("output"));
 			fout.mkdirs();
-			String fileName = fout.getAbsolutePath() + File.separator +"features_" + commitTyped.toString()+"_"+result.getAnalyzed().getName()
+			String suffix = "";
+			if (commitTyped!=null) {
+				suffix = "_"+commitTyped.toString();
+			}
+			String fileName = fout.getAbsolutePath() + File.separator +"features"  +"_"+result.getAnalyzed().getName()+ suffix
 					+ ".json";
 			fw = new FileWriter(fileName);
 			Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();

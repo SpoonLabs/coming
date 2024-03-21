@@ -106,7 +106,7 @@ public class MainComingTest {
 
 	@Test
 	public void testFeaturesMain() throws Exception {
-		File output = new File("./coming_results/features_fe76517014e580ddcb40ac04ea824d54ba741c8b.json");
+		File output = new File("./coming_results/features_fe76517014e580ddcb40ac04ea824d54ba741c8b_FeatureAnalyzer.json");
 
 		// clean test data
 		output.delete();

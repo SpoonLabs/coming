@@ -129,16 +129,8 @@ public class FileDiff implements IRevision {
 
 	public String calculatePathName(File fileModif) {
 		return
-		// The folder with the file name
-		fileModif.getAbsolutePath() + File.separator
-		// check if add the revision name in the file name
-				+ (ComingProperties.getPropertyBoolean("excludecommitnameinfile") ? "" : (diffFolder.getName() + "_"))
-				// File name
-				+ fileModif.getName()
-		// TODO:
-		// + "_0"
-		;
-
+		// The folder with the file name without the suffix
+		fileModif.getAbsolutePath().replace("_s.java", "");
 	}
 
 	@Override

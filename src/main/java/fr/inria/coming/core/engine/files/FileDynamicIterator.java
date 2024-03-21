@@ -48,6 +48,7 @@ public class FileDynamicIterator implements Iterator<IRevision>, RevisionOrder<I
 				return this.next();
 
 			FileDiff fileDiff = new FileDiff(diffName);
+			System.out.println(fileDiff.getName());
 			return fileDiff;
 
 		} else {

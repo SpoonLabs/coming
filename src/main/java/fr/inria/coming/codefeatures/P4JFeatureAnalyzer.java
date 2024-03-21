@@ -43,7 +43,7 @@ import fr.inria.prophet4j.utility.Structure.FeatureVector;
 import fr.inria.prophet4j.utility.Structure.ParameterVector;
 
 /**
- *
+ * Computes the P4J features for a given file pair (does not work with repo)
  * @author He Ye
  *
  */
