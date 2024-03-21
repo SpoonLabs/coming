@@ -68,10 +68,12 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 	}
 
 	public Map<String, File> fileSrcTgtPaths(IRevision revision) {
+		final String folder = revision.getFolder() != null ? revision.getFolder() : "";
+
 		Map<String, File> filePaths = new HashMap<>();
 		for (IRevisionPair s: revision.getChildren()) {
-			filePaths.put("src", new File(revision.getFolder()+File.separator+s.getPreviousName()));
-			filePaths.put("target", new File(revision.getFolder()+File.separator+s.getNextName()));
+			filePaths.put("src", new File(folder + File.separator+s.getPreviousName()));
+			filePaths.put("target", new File(folder + File.separator+s.getNextName()));
 		}
 		return filePaths;
 	}
@@ -97,6 +99,9 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 		
 	public JsonObject extractFeatures(Map<String, File> filePaths) {
 		File src = filePaths.get("src");
+		if (src==null) {
+			return null;
+		}
 		File target = filePaths.get("target");
 		if (src == null || target == null) {
 			log.error("The source or target file not exist!");

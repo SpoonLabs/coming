@@ -1,6 +1,7 @@
 package fr.inria.coming.core.engine.git;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.diff.DiffFormatter;
@@ -64,11 +66,8 @@ public class CommitGit implements Commit {
 			tw.addTree(revCommit.getTree());
 
 			if (revCommit.getParentCount() == 0) {
+				String filePrevVersion = "";
 				while (tw.next()) {
-					// To retrieve file name
-					String fileNextVersion = getFileContent(this.revCommit.getId(), tw.getPathString());
-					FileCommit file = new FileCommitGit("", "", tw.getPathString(), fileNextVersion, this);
-					resultFileCommits.add(file);
 				}
 				tw.release();
 				return resultFileCommits;
@@ -105,21 +104,36 @@ public class CommitGit implements Commit {
 						if (!diff.getChangeType().equals(ChangeType.DELETE)) {
 							if (tmp.contains(diff.getNewPath())) {
 
-								String previousCommitName = this.revCommit.getParent(0).getName();
-								String filePrevVersion = getFileContent(this.revCommit.getParent(0).getId(),
-										diff.getOldPath());
-								String fileNextVersion = getFileContent(this.revCommit.getId(), diff.getNewPath());
-								FileCommit file = new FileCommitGit(diff.getOldPath(), filePrevVersion,
-										diff.getNewPath(), fileNextVersion, this, previousCommitName);
-								resultFileCommits.add(file);
+//								String previousCommitName = this.revCommit.getParent(0).getName();
+//								String filePrevVersion = getFileContent(this.revCommit.getParent(0).getId(),
+//										diff.getOldPath());
+//								String fileNextVersion = getFileContent(this.revCommit.getId(), diff.getNewPath());
+//								FileCommit file = new FileCommitGit(diff.getOldPath(), filePrevVersion,
+//										diff.getNewPath(), fileNextVersion, this, previousCommitName);
+//								resultFileCommits.add(file);
 							}
 						} else {
 							String previousCommitName = this.revCommit.getParent(0).getName();
 							String filePrevVersion = getFileContent(this.revCommit.getParent(0).getId(),
 									diff.getOldPath());
-							FileCommit file = new FileCommitGit(diff.getOldPath(), filePrevVersion, "", "", this,
-									previousCommitName);
-							resultFileCommits.add(file);
+
+							// To retrieve file name
+							final String fileNextVersion = getFileContent(this.revCommit.getId(), diff.getNewPath());
+							File src = File.createTempFile(previousCommitName+" ","_s.java");
+							File target = new File(src.getAbsolutePath().replace("_s.java", "_t.java"));
+							try(FileOutputStream fs = new FileOutputStream(src)) {
+								IOUtils.write(filePrevVersion, fs);
+							}
+							try(FileOutputStream fs = new FileOutputStream(target)){
+								IOUtils.write(fileNextVersion, fs);
+								//System.out.println(fileNextVersion);
+							}
+							final String pathString = tw.getPathString();
+							if (filePrevVersion!="") {
+								FileCommit file = new FileCommitGit(src.getAbsolutePath(), filePrevVersion, target.getAbsolutePath(), fileNextVersion, this);
+								resultFileCommits.add(file);
+								System.out.println(file.getPreviousName()+" "+file.getNextName());
+							}
 
 						}
 					}

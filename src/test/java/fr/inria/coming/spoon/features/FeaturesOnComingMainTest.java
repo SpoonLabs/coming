@@ -35,6 +35,8 @@ public class FeaturesOnComingMainTest {
 
 		//java - classpath. / target / coming - 0 - SNAPSHOT - jar - with - dependencies.jar fr.inria.coming.main.ComingMain - location. / files2compare - input files - mode features - output. / out
 
+		fr.inria.coming.main.ComingMain.main(new String[] { "-location", "./repogit4testv0/", "-input", "git", "-output", "out", "-mode", "features"});
+
 		fr.inria.coming.main.ComingMain.main(new String[] { "-location", "./src/main/resources", "-input", "files", "-output", "out", "-mode", "features"});
 		//names = {"-f", "--feature-option"},
 		//		description = "Feature Option" + commonInfo
