@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,12 +58,12 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 
 		AnalysisResult resultFromDiffAnalysis = previousResults.getResultFromClass(FineGrainDifftAnalyzer.class);
 		DiffResult diffResut = (DiffResult) resultFromDiffAnalysis;
-		String filename = "";
-		if (diffResut.getDiffOfFiles().size()!=0) {
-			filename =  diffResut.getDiffOfFiles().keySet().iterator().next().toString();		
-		}else {
-			filename = diffResut.getAnalyzed().toString();
-		}
+		String filename = revision.getName();
+//		if (diffResut.getDiffOfFiles().size()!=0) {
+//			filename =  diffResut.getDiffOfFiles().keySet().iterator().next().toString();
+//		}else {
+//			filename = diffResut.getAnalyzed().toString();
+//		}
 
 		if (resultFromDiffAnalysis == null) {
 			System.err.println("Error Diff must be executed before");
@@ -103,6 +104,10 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 	public JsonObject extractFeatures(Map<String, File> filePaths) {
 		File src = filePaths.get("src");
 		File target = filePaths.get("target");
+		if (src == null || target == null) {
+			log.error("The source or target file not exist!");
+			return null;
+		}
 		Option option = new Option();
 		option.featureOption = FeatureOption.ORIGINAL;
 		//We set the first parameter of CodeDiffer as False to not allow the code generation at buggy location
@@ -114,12 +119,12 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 		List<FeatureMatrix> featureMatrix = codeDiffer.runByGenerator(src, target);
 		//Get feature vector
 		JsonObject jsonfile = null;
-		if(cross) {
-			jsonfile = genVectorsCSV(option,target,featureMatrix);
-			return null;
-		} else {
+		//if(cross) {
+		//	jsonfile = genVectorsCSV(option,target,featureMatrix);
+		//	return null;
+		//} else {
 			jsonfile = getSimleP4JJSON(option,target,featureMatrix,true);
-		}
+		//}
 		return jsonfile;
 	}
 	
@@ -150,9 +155,17 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 	}
 
 	public Map processFilesPair(File pairFolder,String targetFile) {
+		if (pairFolder == null || !pairFolder.isDirectory()) {
+			log.info("Diff folder skipped "+pairFolder.getName());
+			return Collections.EMPTY_MAP;
+		}
+
 		Map<String, File> pathmap = new HashMap();
 
 		for (File fileModif : pairFolder.listFiles()) {
+			if (!fileModif.getName().endsWith("_s.java"))
+				continue;
+
 
 			if (".DS_Store".equals(fileModif.getName()))
 				continue;
@@ -166,12 +179,12 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 			String pathname = fileModif.getAbsolutePath() + File.separator + pairFolder.getName() + "_"
 					+ fileModif.getName();
 
-			File previousVersion = new File(pathname + "_s.java");
+			File previousVersion = new File(fileModif.getAbsolutePath());
 			if (!previousVersion.exists()) {
 				log.error("The source file " + previousVersion.getPath() + " not exist!");
 			} else {
 				pathmap.put("src", previousVersion);
-				File postVersion = new File(pathname + "_t.java");
+				File postVersion = new File(fileModif.getAbsolutePath().replace("_s.java", "_t.java"));
 				pathmap.put("target", postVersion);
 
 			}

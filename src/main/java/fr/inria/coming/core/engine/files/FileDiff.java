@@ -3,6 +3,7 @@ package fr.inria.coming.core.engine.files;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -28,9 +29,9 @@ public class FileDiff implements IRevision {
 
 	@Override
 	public List<IRevisionPair> getChildren() {
-		if (this.diffFolder == null) {
-			log.info("Diff folder == null");
-			return null;
+		if (this.diffFolder == null || !this.diffFolder.isDirectory()) {
+			log.info("Diff folder skipped "+diffFolder.getName());
+			return Collections.EMPTY_LIST;
 		}
 		List<IRevisionPair> pairs = new ArrayList<>();
 		try {
@@ -63,6 +64,7 @@ public class FileDiff implements IRevision {
 				}
 
 			} else {
+				System.out.println("Analyzing diff folder: " + diffFolder.getName());
 				// Normal behavious
 				for (File fileModif : diffFolder.listFiles()) {
 

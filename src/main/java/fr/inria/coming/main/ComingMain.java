@@ -289,6 +289,8 @@ public class ComingMain {
 				navigatorEngine.getAnalyzers().add(new FineGrainDifftAnalyzer());
 				navigatorEngine.getAnalyzers().add(new FeatureAnalyzer());
 
+				navigatorEngine.getAnalyzers().add(new P4JFeatureAnalyzer());
+
 				navigatorEngine.getOutputProcessors().add(new FeaturesOutput());
 
 			} else if ("repairability".equals(mode)) {

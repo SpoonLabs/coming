@@ -371,7 +371,7 @@ public class OriginalFeatureExtractorTest {
 
     @Test
     @Ignore // Gumtree3 has changed some features
-    // note that we maintain ExtendedFeatureExtractor in priority, for which the test case is still executed
+            // note that we maintain ExtendedFeatureExtractor in priority, for which the test case is still executed
     public void testFeatureExtractor() {
         for (AtomicFeature atomicFeature : AtomicFeature.values()) {
             test(atomicFeature, atomicFeature);

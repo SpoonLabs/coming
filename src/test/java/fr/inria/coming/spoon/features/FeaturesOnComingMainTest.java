@@ -31,6 +31,18 @@ import fr.inria.coming.utils.CommandSummary;
 public class FeaturesOnComingMainTest {
 
 	@Test
+	public void testissue259() throws Exception {
+
+		//java - classpath. / target / coming - 0 - SNAPSHOT - jar - with - dependencies.jar fr.inria.coming.main.ComingMain - location. / files2compare - input files - mode features - output. / out
+
+		fr.inria.coming.main.ComingMain.main(new String[] { "-location", "./src/main/resources", "-input", "files", "-output", "out", "-mode", "features"});
+		//names = {"-f", "--feature-option"},
+		//		description = "Feature Option" + commonInfo
+
+
+	}
+
+	@Test
 	public void testFeaturesOnComingEvolutionFromGit1() throws Exception {
 		ComingMain main = new ComingMain();
 

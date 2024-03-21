@@ -417,6 +417,7 @@ public class CodeDiffer {
     }
 
     public List<FeatureMatrix> runByGenerator(File oldFile, File newFile) {
+        //System.out.println("oldFile: " + oldFile.getPath());
         List<FeatureMatrix> featureMatrices = new ArrayList<>();
         try {
             AstComparator comparator = new AstComparator();
@@ -426,6 +427,7 @@ public class CodeDiffer {
             int rightIndex = filePath.lastIndexOf("/");
             String fileKey = filePath.substring(leftIndex + 1, rightIndex);
             fileKey = fileKey.replace("/", "-");
+            System.out.println("diff "+oldFile.getAbsolutePath()+" "+newFile.getAbsolutePath());
             featureMatrices.addAll(genFeatureMatrices(diff, fileKey));
         } catch (Exception e) {
             e.printStackTrace();

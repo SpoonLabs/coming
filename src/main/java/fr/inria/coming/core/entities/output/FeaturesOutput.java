@@ -8,20 +8,18 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import fr.inria.coming.changeminer.entity.IRevision;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import fr.inria.coming.changeminer.entity.FinalResult;
 import fr.inria.coming.codefeatures.FeatureAnalyzer;
 import fr.inria.coming.codefeatures.FeaturesResult;
-import fr.inria.coming.codefeatures.P4JFeatureAnalyzer;
 import fr.inria.coming.core.entities.AnalysisResult;
 import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.core.entities.interfaces.IOutput;
@@ -41,33 +39,37 @@ public class FeaturesOutput implements IOutput {
 		log.debug("JSON output");
 		// JsonObject root = new JsonObject();
 		// JsonArray instances = new JsonArray();
-		for (Object commit : finalResult.getAllResults().keySet()) {
-
-			RevisionResult rv = (RevisionResult) finalResult.getAllResults().get(commit);
-
-			if (rv == null)
-				continue;
-
-			FeaturesResult result = (FeaturesResult) rv.getResultFromClass(FeatureAnalyzer.class);
-			save(result);
+		for (Object commit : finalResult.getAllResults().entrySet()) {
+			Map.Entry<IRevision, RevisionResult> pair = (Map.Entry) commit;
+			//System.out.println(commit);
+			for (Object f: pair.getValue().entrySet()) {
+				Map.Entry<Object, AnalysisResult> commitTyped = (Map.Entry) f;
+				// that's a feature output so we output only features
+				if (f!=null && commitTyped.getValue() instanceof FeaturesResult) {
+					save(commitTyped.getKey(), (FeaturesResult) commitTyped.getValue());
+				}
+			}
 		}
 
 	}
 
-	public JsonElement save(FeaturesResult result) {
+	public JsonElement save(Object commitTyped, FeaturesResult result) {
 		if (result == null) {
 			log.debug("No Code Change feature captured");
 			return null;
 		}
 		
 		JsonElement file = result.getFeatures();
-
+		if (file == null) {
+			log.debug("No Code Change feature captured");
+			return null;
+		}
 		FileWriter fw;
 		try {
 			// Create the output dir
 			File fout = new File(ComingProperties.getProperty("output"));
 			fout.mkdirs();
-			String fileName = fout.getAbsolutePath() + File.separator +"features_" + result.getAnalyzed().getName()
+			String fileName = fout.getAbsolutePath() + File.separator +"features_" + commitTyped.toString()+"_"+result.getAnalyzed().getName()
 					+ ".json";
 			fw = new FileWriter(fileName);
 			Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
@@ -88,7 +90,7 @@ public class FeaturesOutput implements IOutput {
 	@Override
 	public void generateRevisionOutput(RevisionResult resultAllAnalyzed) {	
 		FeaturesResult comingFeatures = (FeaturesResult) resultAllAnalyzed.getResultFromClass(FeatureAnalyzer.class);					
-		save(comingFeatures);
+		save(null, comingFeatures);
 		
 	}
 	
