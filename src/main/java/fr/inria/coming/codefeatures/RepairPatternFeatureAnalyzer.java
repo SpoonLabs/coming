@@ -5,20 +5,19 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
+import fr.inria.coming.changeminer.entity.IRevision;
+import fr.inria.coming.core.engine.files.FileDiff;
+import fr.inria.coming.core.entities.interfaces.IRevisionPair;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import com.github.difflib.DiffUtils;
 import com.github.difflib.patch.AbstractDelta;
 import com.github.difflib.patch.Chunk;
 import com.github.difflib.patch.Patch;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import gumtree.spoon.diff.Diff;
@@ -42,8 +41,13 @@ public class RepairPatternFeatureAnalyzer {
 
 
 
-	public static JsonObject analyze(String folderPath, Diff diff, String targetFile) {
-		
+	public static JsonObject analyze(IRevision revision, Diff diff, String targetFile) {
+		if (!(revision instanceof FileDiff)) {
+			throw new IllegalArgumentException("The input should be a DifFolder");
+		}
+		String folder = revision.getFolder();
+
+
 		dupArgsInvocation = 0;
 		updIfFalse = 0; 
 		insertIfFalse = 0;
@@ -57,22 +61,23 @@ public class RepairPatternFeatureAnalyzer {
 		rmLineNo=0;
 		addLineNo=0;
 		addThis=0;
-		
-		Map<String, File> filePaths = new P4JFeatureAnalyzer().processFilesPair(new File(folderPath),targetFile);
+
+		//
+		Map<String, File> filePaths = new P4JFeatureAnalyzer().processFilesPair(new File(folder),targetFile);
 		File src = filePaths.get("src");
 		File target = filePaths.get("target");
 		
 		
-      patchAnalysis(folderPath);
+      patchAnalysis((FileDiff) revision);
 	  // if(false) in one line conditional replacement
-	  ifFalseAnalyzer(folderPath, diff, target);	
-	  ifTrueAnalyzer(folderPath, diff, target);	
+	  ifFalseAnalyzer(folder, diff, target);
+	  ifTrueAnalyzer(folder, diff, target);
 	  //dupArgsInvocation if duplicated arguments in one method invocation 
-	  dupArgsInvocation(folderPath, diff, target);
-	  condLogicReduceAnalyzer(folderPath, diff, src,target);
-	  insertLiteralAnalyzer(folderPath, diff,src, target);
-	  rmNullAnalyzer(folderPath, diff, src,target);
-	  addThisAnalyzer(folderPath, diff, src,target);
+	  dupArgsInvocation(folder, diff, target);
+	  condLogicReduceAnalyzer(folder, diff, src,target);
+	  insertLiteralAnalyzer(folder, diff,src, target);
+	  rmNullAnalyzer(folder, diff, src,target);
+	  addThisAnalyzer(folder, diff, src,target);
 
 
       JsonObject jsonObject = new JsonObject();
@@ -107,19 +112,19 @@ public class RepairPatternFeatureAnalyzer {
 		
 	}
 
-	private static void patchAnalysis(String folderPath) {
+	private static void patchAnalysis(FileDiff folderPath) {
 		Map<String, File> pathmap = new HashMap();
-		File pairFolder = new File(folderPath);
+		File pairFolder = new File(folderPath.getFolder());
 
-		for (File fileModif : pairFolder.listFiles()) {
+		for (IRevisionPair o : folderPath.getChildren()) {
 
-			if (!".DS_Store".equals(fileModif.getName())) {
+			if (".DS_Store".equals(o.getPreviousName())) {
+				continue;
+			}
 				patchedFileNo ++;
 				
-				String pathname = fileModif.getAbsolutePath() + File.separator + pairFolder.getName() + "_"
-						+ fileModif.getName();
-				File src = new File(pathname + "_s.java");
-				File target = new File(pathname + "_t.java");
+				File src = (File) o.getPreviousVersion();
+				File target = (File) o.getNextVersion();
 				try {
 				List<String> original = IOUtils.readLines(new FileInputStream(src), "UTF-8");
 		        List<String> revised = IOUtils.readLines(new FileInputStream(target), "UTF-8");
@@ -152,7 +157,7 @@ public class RepairPatternFeatureAnalyzer {
 				
 			}
 				
-		}
+
 	}
 		
 

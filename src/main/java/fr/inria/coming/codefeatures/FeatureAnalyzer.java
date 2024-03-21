@@ -13,6 +13,7 @@ import add.main.Config;
 import com.github.difflib.DiffUtils;
 import com.github.difflib.UnifiedDiffUtils;
 import com.google.gson.Gson;
+import fr.inria.coming.core.engine.files.FileDiff;
 import fr.inria.coming.core.entities.interfaces.IRevisionPair;
 import org.apache.log4j.Logger;
 
@@ -127,10 +128,13 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 
 				changesArray.add(new Gson().fromJson(analyze.toJson().toString(), JsonObject.class));
 				tempFile.delete();
-				
-				//add more features
-				JsonObject patternJson = RepairPatternFeatureAnalyzer.analyze(revision.getFolder(), diff, nameFile.toString());
-				changesArray.add(patternJson);
+
+				if (revision instanceof FileDiff) {
+					// TODO: generalize the implementation of RepairPatternFeatureAnalyzer and P4JFeatureAnalyzer with IRevision.getChildren instead of hard coding FileDiff
+					//add more features
+					JsonObject patternJson = RepairPatternFeatureAnalyzer.analyze(revision, diff, nameFile.toString());
+					changesArray.add(patternJson);
+				}
 				
 			} catch (Exception e) {
 				new RuntimeException("Unable to compute ADD analysis", e);
