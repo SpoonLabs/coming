@@ -2,16 +2,29 @@ package fr.inria.coming.codefeatures;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import add.entities.RepairPatterns;
+import add.features.detector.repairpatterns.AbstractPatternDetector;
+import add.features.detector.repairpatterns.CodeMovingDetector;
+import add.features.detector.repairpatterns.ConditionalBlockDetector;
+import add.features.detector.repairpatterns.ConstantChangeDetector;
+import add.features.detector.repairpatterns.CopyPasteDetector;
+import add.features.detector.repairpatterns.ExpressionFixDetector;
+import add.features.detector.repairpatterns.MissingNullCheckDetector;
 import add.features.detector.repairpatterns.RepairPatternDetector;
+import add.features.detector.repairpatterns.SingleLineDetector;
+import add.features.detector.repairpatterns.WrapsWithDetector;
+import add.features.detector.repairpatterns.WrongReferenceDetector;
 import add.main.Config;
 import com.github.difflib.DiffUtils;
 import com.github.difflib.UnifiedDiffUtils;
+import com.github.gumtreediff.actions.EditScript;
 import com.google.gson.Gson;
 import fr.inria.coming.core.engine.files.FileDiff;
 import fr.inria.coming.core.entities.interfaces.IRevisionPair;
@@ -123,8 +136,7 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 				Config config = new Config();
 				config.setDiffPath(tempFile.getAbsolutePath());
 				config.setBuggySourceDirectoryPath(revision.getFolder());
-				RepairPatternDetector patternDetector = new RepairPatternDetector(config, diff);
-				RepairPatterns analyze = patternDetector.analyze();
+				RepairPatterns analyze =analyze(diff, config);
 
 				changesArray.add(new Gson().fromJson(analyze.toJson().toString(), JsonObject.class));
 				tempFile.delete();
@@ -149,6 +161,30 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 		return (new FeaturesResult(revision, root));
 
 	}
+
+	public RepairPatterns analyze(Diff editScript, Config config) {
+		RepairPatterns repairPatterns = new RepairPatterns();
+		List<Operation> operations = editScript.getRootOperations();
+		List<AbstractPatternDetector> detectors = new ArrayList();
+		detectors.add(new MissingNullCheckDetector(operations));
+		//detectors.add(new SingleLineDetector(config, operations));// triggers a stackoverflow
+		detectors.add(new ConditionalBlockDetector(operations));
+		detectors.add(new WrapsWithDetector(operations));
+		detectors.add(new CopyPasteDetector(operations));
+		detectors.add(new ConstantChangeDetector(operations));
+		detectors.add(new CodeMovingDetector(operations));
+		detectors.add(new ExpressionFixDetector(operations));
+		detectors.add(new WrongReferenceDetector(operations));
+		Iterator var3 = detectors.iterator();
+
+		while(var3.hasNext()) {
+			AbstractPatternDetector detector = (AbstractPatternDetector)var3.next();
+			detector.detect(repairPatterns);
+		}
+
+		return repairPatterns;
+	}
+
 
 	public void putCodeFromHunk(RevisionResult previousResults, Object nameFile, JsonObject file) {
 		AnalysisResult resultsHunk = previousResults.get(HunkDifftAnalyzer.class.getSimpleName());

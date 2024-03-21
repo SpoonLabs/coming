@@ -41,13 +41,13 @@ public class FileDynamicIterator implements Iterator<IRevision>, RevisionOrder<I
 	public FileDiff next() {
 
 		if (currentFile < totalNumberFiles) {
-			File diffName = rootDirectory.listFiles()[currentFile];
+			File diffFolderSrcTgtName = rootDirectory.listFiles()[currentFile];
 			currentFile++;
 
-			if (".DS_Store".equals(diffName.getName()))
+			if (".DS_Store".equals(diffFolderSrcTgtName.getName()))
 				return this.next();
 
-			FileDiff fileDiff = new FileDiff(diffName);
+			FileDiff fileDiff = new FileDiff(diffFolderSrcTgtName);
 			return fileDiff;
 
 		} else {

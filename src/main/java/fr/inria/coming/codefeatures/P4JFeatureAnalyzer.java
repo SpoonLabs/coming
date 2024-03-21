@@ -9,17 +9,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
+import fr.inria.coming.core.entities.interfaces.IRevisionPair;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
 import fr.inria.coming.changeminer.entity.IRevision;
@@ -30,14 +26,10 @@ import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.main.ComingProperties;
 import fr.inria.prophet4j.feature.Feature;
 import fr.inria.prophet4j.feature.FeatureCross;
-import fr.inria.prophet4j.feature.extended.ExtendedFeatureCross;
 import fr.inria.prophet4j.feature.original.OriginalFeatureCross;
-import fr.inria.prophet4j.learner.RepairEvaluator;
 import fr.inria.prophet4j.utility.CodeDiffer;
 import fr.inria.prophet4j.utility.Option;
-import fr.inria.prophet4j.utility.Support;
 import fr.inria.prophet4j.utility.Option.FeatureOption;
-import fr.inria.prophet4j.utility.Option.RankingOption;
 import fr.inria.prophet4j.utility.Structure.FeatureMatrix;
 import fr.inria.prophet4j.utility.Structure.FeatureVector;
 import fr.inria.prophet4j.utility.Structure.ParameterVector;
@@ -71,23 +63,25 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 		}
 
 		// determine source and target file path
-		String path = revision.getFolder();
-		Map<String, File> filePaths = null;
-		if(path!=null) {
-			filePaths = processFilesPair(new File(path),"");
-		} else {
-			return null;
-		}
-		JsonObject jsonfile = extractFeatures(filePaths);
+		JsonObject jsonfile = extractFeatures(fileSrcTgtPaths(revision));
 		return (new FeaturesResult(revision,jsonfile));
 	}
-	
-	
+
+	public Map<String, File> fileSrcTgtPaths(IRevision revision) {
+		Map<String, File> filePaths = new HashMap<>();
+		for (IRevisionPair s: revision.getChildren()) {
+			filePaths.put("src", new File(revision.getFolder()+File.separator+s.getPreviousName()));
+			filePaths.put("target", new File(revision.getFolder()+File.separator+s.getNextName()));
+		}
+		return filePaths;
+	}
+
+
 	public AnalysisResult analyze(IRevision revision, String targetFile) {
 		String path = revision.getFolder();
 		Map<String, File> filePaths = null;
 		if(path!=null) {
-			filePaths = processFilesPair(new File(path),targetFile);
+			filePaths = fileSrcTgtPaths(revision);
 		} else {
 			return null;
 		}		
@@ -119,12 +113,8 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 		List<FeatureMatrix> featureMatrix = codeDiffer.runByGenerator(src, target);
 		//Get feature vector
 		JsonObject jsonfile = null;
-		//if(cross) {
-		//	jsonfile = genVectorsCSV(option,target,featureMatrix);
-		//	return null;
-		//} else {
-			jsonfile = getSimleP4JJSON(option,target,featureMatrix,true);
-		//}
+		//	csvfile = genVectorsCSV(option,target,featureMatrix);
+		jsonfile = getSimleP4JJSON(option,target,featureMatrix,true);
 		return jsonfile;
 	}
 	
@@ -154,46 +144,7 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 
 	}
 
-	public Map processFilesPair(File pairFolder,String targetFile) {
-		if (pairFolder == null || !pairFolder.isDirectory()) {
-			log.info("Diff folder skipped "+pairFolder.getName());
-			return Collections.EMPTY_MAP;
-		}
 
-		Map<String, File> pathmap = new HashMap();
-
-		for (File fileModif : pairFolder.listFiles()) {
-			if (!fileModif.getName().endsWith("_s.java"))
-				continue;
-
-
-			if (".DS_Store".equals(fileModif.getName()))
-				continue;
-			
-			if(targetFile!="") {
-				if (!fileModif.getPath().contains(targetFile)) {
-					continue;
-				}
-			}
-
-			String pathname = fileModif.getAbsolutePath() + File.separator + pairFolder.getName() + "_"
-					+ fileModif.getName();
-
-			File previousVersion = new File(fileModif.getAbsolutePath());
-			if (!previousVersion.exists()) {
-				log.error("The source file " + previousVersion.getPath() + " not exist!");
-			} else {
-				pathmap.put("src", previousVersion);
-				File postVersion = new File(fileModif.getAbsolutePath().replace("_s.java", "_t.java"));
-				pathmap.put("target", postVersion);
-
-			}
-
-		}
-		return pathmap;
-
-	}
-	
 	
 	 public JsonObject genVectorsCSV(Option option, File patchedFile, List<FeatureMatrix> featureMatrices) {
 		 

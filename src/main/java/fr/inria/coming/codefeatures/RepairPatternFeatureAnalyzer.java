@@ -63,10 +63,10 @@ public class RepairPatternFeatureAnalyzer {
 		addThis=0;
 
 		//
-		Map<String, File> filePaths = new P4JFeatureAnalyzer().processFilesPair(new File(folder),targetFile);
+		Map<String, File> filePaths = new P4JFeatureAnalyzer().fileSrcTgtPaths(revision);
 		File src = filePaths.get("src");
 		File target = filePaths.get("target");
-		
+		System.out.println(src+" "+target);
 		
       patchAnalysis((FileDiff) revision);
 	  // if(false) in one line conditional replacement

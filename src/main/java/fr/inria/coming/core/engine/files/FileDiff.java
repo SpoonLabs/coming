@@ -54,7 +54,7 @@ public class FileDiff implements IRevision {
 						String previousString = new String(Files.readAllBytes(previousVersion.toPath()));
 						String postString = new String(Files.readAllBytes(postVersion.toPath()));
 
-						FilePair fpair = new FilePair(previousString, postString, getNameFromFile(previousVersion));
+						FilePair fpair = new FilePair(previousString, postString, previousVersion.getName(), postVersion.getName());
 						pairs.add(fpair);
 					} else {
 						log.info("Missing file in pair: " + diffFolder.getAbsolutePath());
@@ -66,14 +66,17 @@ public class FileDiff implements IRevision {
 			} else {
 				System.out.println("Analyzing diff folder: " + diffFolder.getName());
 				// Normal behavious
-				for (File fileModif : diffFolder.listFiles()) {
+				for (File fileSrc : diffFolder.listFiles()) {
 
-					if (".DS_Store".equals(fileModif.getName()))
+					if (".DS_Store".equals(fileSrc.getName()))
 						continue;
 
-					String pathname = calculatePathName(fileModif);
+					if (!fileSrc.getName().endsWith("_s.java"))
+						continue;
 
-					String filename = fileModif.getName().trim();
+					String pathname = calculatePathName(fileSrc);
+
+					String filename = fileSrc.getName().trim();
 					if (ComingProperties.getPropertyBoolean("excludetests")
 							&& (filename.startsWith("Test") || filename.endsWith("Test"))) {
 						log.debug("Ignore test: " + pathname);
@@ -92,7 +95,7 @@ public class FileDiff implements IRevision {
 						String previousString = new String(Files.readAllBytes(previousVersion.toPath()));
 						String postString = new String(Files.readAllBytes(postVersion.toPath()));
 
-						FilePair fpair = new FilePair(previousString, postString, getName(fileModif));
+						FilePair fpair = new FilePair(previousString, postString, previousVersion.getName(), postVersion.getName());
 						pairs.add(fpair);
 
 					} catch (Exception e) {
