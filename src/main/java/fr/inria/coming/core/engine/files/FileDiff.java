@@ -13,7 +13,9 @@ import fr.inria.coming.core.entities.interfaces.IRevisionPair;
 import fr.inria.coming.main.ComingProperties;
 
 /**
- * 
+ * Represents a diff folder, with the files to analyze
+ * There is a pair of files FOO_s.java and FOO_t.java
+ * s for source t for target
  * @author Matias Martinez
  *
  */
