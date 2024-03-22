@@ -106,7 +106,7 @@ public class FileDiff implements IRevision {
 
 			if (!previousVersion.exists() || !postVersion.exists()) {
 				System.err.println("Missing file in diff " + pathname + " " + folder.getName());
-				continue;
+				throw new RuntimeException("Missing file in diff " + pathname + " " + folder.getName());
 			}
 
 
@@ -114,7 +114,7 @@ public class FileDiff implements IRevision {
 				String previousString = new String(Files.readAllBytes(previousVersion.toPath()));
 				String postString = new String(Files.readAllBytes(postVersion.toPath()));
 
-				FilePair fpair = new FilePair(previousString, postString, previousVersion.getName(), postVersion.getName());
+				FilePair fpair = new FilePair(previousString, postString, previousVersion.getAbsolutePath(), postVersion.getAbsolutePath());
 				pairs.add(fpair);
 
 			} catch (Exception e) {

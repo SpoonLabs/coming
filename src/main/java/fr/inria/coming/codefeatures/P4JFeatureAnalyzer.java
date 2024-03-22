@@ -72,8 +72,17 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 
 		Map<String, File> filePaths = new HashMap<>();
 		for (IRevisionPair s: revision.getChildren()) {
-			filePaths.put("src", new File(folder + File.separator+s.getPreviousName()));
-			filePaths.put("target", new File(folder + File.separator+s.getNextName()));
+			final File src = new File(s.getPreviousName());
+			if (!src.exists()) {
+				revision.getChildren();
+				throw new IllegalArgumentException("The source file not exist!");
+			}
+			filePaths.put("src", src);
+			final File tgt = new File(s.getNextName());
+			if (!tgt.exists()) {
+				throw new IllegalArgumentException("The source file not exist!");
+			}
+			filePaths.put("target", tgt);
 			break;
 		}
 		return filePaths;

@@ -12,6 +12,9 @@ public interface IRevisionPair<T> {
 
 	public T getNextVersion();
 
+	/**
+	 * @return the file path of the next version
+	 */
 	public String getNextName();
 
 	public String getPreviousName();

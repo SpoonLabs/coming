@@ -32,14 +32,14 @@ public class FeaturesOnComingMainTest {
 
 	@Test
 	public void testissue259() throws Exception {
+		// smoke test for features in both git and files mode
 
-		//java - classpath. / target / coming - 0 - SNAPSHOT - jar - with - dependencies.jar fr.inria.coming.main.ComingMain - location. / files2compare - input files - mode features - output. / out
+		//names = {"-f", "--feature-option"},
+		//		description = "Feature Option" + commonInfo
 
 		fr.inria.coming.main.ComingMain.main(new String[] { "-location", "./repogit4testv0/", "-input", "git", "-output", "out", "-mode", "features"});
 
 		fr.inria.coming.main.ComingMain.main(new String[] { "-location", "./src/main/resources", "-input", "files", "-output", "out", "-mode", "features"});
-		//names = {"-f", "--feature-option"},
-		//		description = "Feature Option" + commonInfo
 
 
 	}

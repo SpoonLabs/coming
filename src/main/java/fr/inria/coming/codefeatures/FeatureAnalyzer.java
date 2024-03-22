@@ -167,7 +167,7 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 		List<Operation> operations = editScript.getRootOperations();
 		List<AbstractPatternDetector> detectors = new ArrayList();
 		detectors.add(new MissingNullCheckDetector(operations));
-		detectors.add(new SingleLineDetector(config, operations));
+		//detectors.add(new SingleLineDetector(config, operations));
 		detectors.add(new ConditionalBlockDetector(operations));
 		detectors.add(new WrapsWithDetector(operations));
 		detectors.add(new CopyPasteDetector(operations));
@@ -211,69 +211,6 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public JsonArray processFilesPair(File pairFolder) {
-		Map<String, Diff> diffOfcommit = new HashMap();
-
-		JsonArray filesArray = new JsonArray();
-		for (File fileModif : pairFolder.listFiles()) {
-			int i_hunk = 0;
-
-			if (".DS_Store".equals(fileModif.getName()))
-				continue;
-
-			String pathname = fileModif.getAbsolutePath() + File.separator + pairFolder.getName() + "_"
-				+ fileModif.getName();
-
-			File previousVersion = new File(pathname + "_s.java");
-			if (!previousVersion.exists()) {
-				pathname = pathname + "_" + i_hunk;
-				previousVersion = new File(pathname + "_s.java");
-				if (!previousVersion.exists())
-					continue;
-			}
-
-			File postVersion = new File(pathname + "_t.java");
-			i_hunk++;
-
-			JsonObject file = new JsonObject();
-			try {
-				filesArray.add(file);
-				file.addProperty("file_name", fileModif.getName());
-				JsonArray changesArray = new JsonArray();
-				file.add("features", changesArray);
-
-				AstComparator comparator = new AstComparator();
-
-				Diff diff = comparator.compare(previousVersion, postVersion);
-				if (diff == null) {
-					file.addProperty("status", "differror");
-					continue;
-				}
-
-				log.info("--diff: " + diff);
-
-				List<Operation> ops = diff.getRootOperations();
-				String key = fileModif.getParentFile().getName() + "_" + fileModif.getName();
-				diffOfcommit.put(key, diff);
-
-				for (Operation operation : ops) {
-					CtElement affectedCtElement = getLeftElement(operation);
-
-					if (affectedCtElement != null) {
-						Cntx iContext = cresolver.analyzeFeatures(affectedCtElement);
-						changesArray.add(iContext.toJSON());
-					}
-				}
-
-			} catch (Throwable e) {
-				log.error("error with " + previousVersion);
-				log.error(e);
-				file.addProperty("status", "exception");
-			}
-
-		}
-		return filesArray;
-	}
 
 	/**
 	 * Get the element that is modified

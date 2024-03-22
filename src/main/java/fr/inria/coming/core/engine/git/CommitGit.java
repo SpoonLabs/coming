@@ -78,11 +78,6 @@ public class CommitGit implements Commit {
 				}
 				tw.setFilter(new MyTreeFilter());
 
-				List<String> tmp = new ArrayList<String>();
-				while (tw.next()) {
-					tmp.add(tw.getPathString());
-				}
-
 				DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
 				df.setRepository(this.repo.getRepository());
 				df.setDiffComparator(RawTextComparator.DEFAULT);
@@ -120,7 +115,7 @@ public class CommitGit implements Commit {
 								System.err.println(diff);
 								throw new RuntimeException("Empty file content for " + diff.getNewPath());
 							}
-							File src = File.createTempFile(previousCommitName+" ","_s.java");
+							File src = File.createTempFile(previousCommitName+"_","_s.java");
 							File target = new File(src.getAbsolutePath().replace("_s.java", "_t.java"));
 							try(FileOutputStream fs = new FileOutputStream(src)) {
 								IOUtils.write(filePrevVersion, fs);

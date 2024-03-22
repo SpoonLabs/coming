@@ -443,7 +443,7 @@ public class MainComingTest {
 			assertTrue(kwfilter.accept(c));
 			commits.add(c.getName().toString());
 		}
-		assertTrue(commits.contains("6dac8ae81bd03bcae1e1fade064d3bb03de472c0	"));
+		assertTrue(commits.contains("6dac8ae81bd03bcae1e1fade064d3bb03de472c0"));
 
 		// Let's check the nr lines hunks per hunk
 		cs.command.put("-parameters", "min_nb_hunks:1:max_nb_hunks:3:max_lines_per_hunk:1");
