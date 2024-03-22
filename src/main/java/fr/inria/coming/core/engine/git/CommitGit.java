@@ -102,24 +102,19 @@ public class CommitGit implements Commit {
 					// --
 					for (DiffEntry diff : diffs) {
 
-						if (!diff.getChangeType().equals(ChangeType.DELETE)) {
-							if (tmp.contains(diff.getNewPath())) {
+						//System.err.println(diff.getChangeType());
+						if (diff.getChangeType().equals(ChangeType.MODIFY)) {
 
-//								String previousCommitName = this.revCommit.getParent(0).getName();
-//								String filePrevVersion = getFileContent(this.revCommit.getParent(0).getId(),
-//										diff.getOldPath());
-//								String fileNextVersion = getFileContent(this.revCommit.getId(), diff.getNewPath());
-//								FileCommit file = new FileCommitGit(diff.getOldPath(), filePrevVersion,
-//										diff.getNewPath(), fileNextVersion, this, previousCommitName);
-//								resultFileCommits.add(file);
-							}
-						} else {
 							String previousCommitName = this.revCommit.getParent(0).getName();
 							String filePrevVersion = getFileContent(this.revCommit.getParent(0).getId(),
 									diff.getOldPath());
 
 							// To retrieve file name
 							final String fileNextVersion = getFileContent(this.revCommit.getId(), diff.getNewPath());
+							if (fileNextVersion == null || fileNextVersion.length() == 0) {
+								System.err.println(diff);
+								throw new RuntimeException("Empty file content for " + diff.getNewPath());
+							}
 							File src = File.createTempFile(previousCommitName+" ","_s.java");
 							File target = new File(src.getAbsolutePath().replace("_s.java", "_t.java"));
 							try(FileOutputStream fs = new FileOutputStream(src)) {
@@ -127,7 +122,6 @@ public class CommitGit implements Commit {
 							}
 							try(FileOutputStream fs = new FileOutputStream(target)){
 								IOUtils.write(fileNextVersion, fs);
-								//System.out.println(fileNextVersion);
 							}
 							final String pathString = tw.getPathString();
 							if (filePrevVersion!="") {

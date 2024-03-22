@@ -167,7 +167,7 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 		List<Operation> operations = editScript.getRootOperations();
 		List<AbstractPatternDetector> detectors = new ArrayList();
 		detectors.add(new MissingNullCheckDetector(operations));
-		//detectors.add(new SingleLineDetector(config, operations));// triggers a stackoverflow
+		detectors.add(new SingleLineDetector(config, operations));// triggers a stackoverflow
 		detectors.add(new ConditionalBlockDetector(operations));
 		detectors.add(new WrapsWithDetector(operations));
 		detectors.add(new CopyPasteDetector(operations));

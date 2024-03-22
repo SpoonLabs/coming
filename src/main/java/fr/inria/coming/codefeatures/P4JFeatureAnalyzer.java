@@ -74,6 +74,7 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 		for (IRevisionPair s: revision.getChildren()) {
 			filePaths.put("src", new File(folder + File.separator+s.getPreviousName()));
 			filePaths.put("target", new File(folder + File.separator+s.getNextName()));
+			break;
 		}
 		return filePaths;
 	}
