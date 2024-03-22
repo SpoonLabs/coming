@@ -22,7 +22,7 @@ Add a github token in `.m2/settings.xml`.
 <settings>
   <servers>
     <server>
-      <id>br.ufu.lascam</id>
+      <id>brufulascam</id>
       <username>yourlogin</username>
       <!-- your github token with scope read:packages -->
       <password>FOOBAR</password>
