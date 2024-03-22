@@ -33,11 +33,12 @@ public class FileDiff implements IRevision {
 			log.info("Diff folder skipped "+diffFolder.getName());
 			return Collections.EMPTY_LIST;
 		}
-		List<IRevisionPair> pairs = new ArrayList<>();
 		try {
 			// In the case when the revision to analyze has only one file and it does not
 			// have a folder per file
 			if (ComingProperties.getPropertyBoolean("onefile")) {
+				List<IRevisionPair> pairs = new ArrayList<>();
+
 				File previousVersion = null;
 				File postVersion = null;
 				for (File fileModif : diffFolder.listFiles()) {
@@ -64,50 +65,60 @@ public class FileDiff implements IRevision {
 				}
 
 			} else {
-				System.out.println("Analyzing diff folder: " + diffFolder.getName());
-				// Normal behavious
-				for (File fileSrc : diffFolder.listFiles()) {
-
-					if (".DS_Store".equals(fileSrc.getName()))
-						continue;
-
-					if (!fileSrc.getName().endsWith("_s.java"))
-						continue;
-
-					String pathname = calculatePathName(fileSrc);
-
-					String filename = fileSrc.getName().trim();
-					if (ComingProperties.getPropertyBoolean("excludetests")
-							&& (filename.startsWith("Test") || filename.endsWith("Test"))) {
-						log.debug("Ignore test: " + pathname);
-						continue;
-					}
-
-					File previousVersion = new File(pathname.trim() + "_s.java");
-					File postVersion = new File(pathname.trim() + "_t.java");
-
-					if (!previousVersion.exists() || !postVersion.exists()) {
-						log.debug("Missing file in diff " + pathname + " " + diffFolder.getName());
-						continue;
-					}
-
-					try {
-						String previousString = new String(Files.readAllBytes(previousVersion.toPath()));
-						String postString = new String(Files.readAllBytes(postVersion.toPath()));
-
-						FilePair fpair = new FilePair(previousString, postString, previousVersion.getName(), postVersion.getName());
-						pairs.add(fpair);
-
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
+				return extractFromFolder(this.diffFolder);
 			}
 		} catch (Exception e) {
 			log.error("Error analyzing " + diffFolder);
 			e.printStackTrace();
 		}
 
+		throw new IllegalArgumentException("Error analyzing " + diffFolder);
+	}
+
+	private List<IRevisionPair> extractFromFolder(File folder) {
+		System.out.println("Analyzing diff folder: " + folder.getName());
+		List<IRevisionPair> pairs = new ArrayList<>();
+		// Normal behavious
+		for (File fileSrc : folder.listFiles()) {
+
+			if (".DS_Store".equals(fileSrc.getName()))
+				continue;
+
+			if (fileSrc.isDirectory())
+				pairs.addAll(extractFromFolder(fileSrc));
+
+			if (!fileSrc.getName().endsWith("_s.java"))
+				continue;
+
+			String pathname = calculatePathName(fileSrc);
+
+			String filename = fileSrc.getName().trim();
+			if (ComingProperties.getPropertyBoolean("excludetests")
+					&& (filename.startsWith("Test") || filename.endsWith("Test"))) {
+				log.debug("Ignore test: " + pathname);
+				continue;
+			}
+
+			File previousVersion = new File(pathname.trim() + "_s.java");
+			File postVersion = new File(pathname.trim() + "_t.java");
+
+			if (!previousVersion.exists() || !postVersion.exists()) {
+				System.err.println("Missing file in diff " + pathname + " " + folder.getName());
+				continue;
+			}
+
+
+			try {
+				String previousString = new String(Files.readAllBytes(previousVersion.toPath()));
+				String postString = new String(Files.readAllBytes(postVersion.toPath()));
+
+				FilePair fpair = new FilePair(previousString, postString, previousVersion.getName(), postVersion.getName());
+				pairs.add(fpair);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		return pairs;
 	}
 

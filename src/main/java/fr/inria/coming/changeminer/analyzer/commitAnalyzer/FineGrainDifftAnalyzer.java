@@ -62,7 +62,6 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 	@SuppressWarnings("rawtypes")
 	public AnalysisResult analyze(IRevision revision) {
 
-		List<IRevisionPair> javaFiles = revision.getChildren();
 
 		Map<String, Diff> diffOfFiles = new HashMap<>();
 
@@ -70,7 +69,7 @@ public class FineGrainDifftAnalyzer implements Analyzer<IRevision> {
 
 		log.info("\n*****\nCommit: " + revision.getName());
 
-		for (IRevisionPair<String> fileFromRevision : javaFiles) {
+		for (IRevisionPair<String> fileFromRevision : revision.getChildren()) {
 
 			String left = fileFromRevision.getPreviousVersion();
 			String right = fileFromRevision.getNextVersion();

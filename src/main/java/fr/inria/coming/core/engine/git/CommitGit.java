@@ -66,6 +66,7 @@ public class CommitGit implements Commit {
 			tw.addTree(revCommit.getTree());
 
 			if (revCommit.getParentCount() == 0) {
+				// initial commit, is not a diff with a prev version
 				String filePrevVersion = "";
 				while (tw.next()) {
 				}
