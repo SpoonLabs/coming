@@ -96,7 +96,7 @@ public class CommitGit implements Commit {
 					 * RenameDetector rd = new RenameDetector(this.repo.getRepository());
 					 * rd.addAll(diffs); List<DiffEntry> lde = rd.compute(); for (DiffEntry de :
 					 * lde) { if (de.getScore() >= rd.getRenameScore()) {
-					 * System.out.println("score "+de.getScore()); System.out.println("file: " +
+					 * ("score "+de.getScore()); System.out.println("file: " +
 					 * de.getOldPath() + " copied/moved to: " + de.getNewPath()); } }
 					 */
 					// --
@@ -123,11 +123,9 @@ public class CommitGit implements Commit {
 							try(FileOutputStream fs = new FileOutputStream(target)){
 								IOUtils.write(fileNextVersion, fs);
 							}
-							final String pathString = tw.getPathString();
 							if (filePrevVersion!="") {
 								FileCommit file = new FileCommitGit(src.getAbsolutePath(), filePrevVersion, target.getAbsolutePath(), fileNextVersion, this);
 								resultFileCommits.add(file);
-								System.out.println(file.getPreviousName()+" "+file.getNextName());
 							}
 
 						}
