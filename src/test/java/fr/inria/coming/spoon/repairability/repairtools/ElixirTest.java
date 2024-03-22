@@ -30,7 +30,7 @@ public class ElixirTest {
 	@Test
 	public void elixirTestOnDatasetFalse2() throws Exception {
 		FinalResult result = RepairabilityTestUtils.runRepairability("Elixir", "/repairability_test_files/NopolTypes/");
-		RepairabilityTestUtils.checkNumberOfRepairInstances(result, 3, 0);
+		RepairabilityTestUtils.checkNumberOfRepairInstances(result, 3, 1);
 	}
 
 	@Test

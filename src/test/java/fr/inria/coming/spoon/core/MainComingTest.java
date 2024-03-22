@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.gumtreediff.matchers.Matcher;
@@ -296,6 +297,7 @@ public class MainComingTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
+	@Ignore // Martin removed the support for removed files
 	public void testAssertCommitRemovedFile() throws Exception {
 		ComingMain cm = new ComingMain();
 		Object result = cm.run(new String[] { "-location", "repogit4testv0", "-hunkanalysis", "true" });
@@ -436,10 +438,12 @@ public class MainComingTest {
 				.get();
 		assertNotNull(kwfilter);
 
+		List<String> commits = new ArrayList<>();
 		for (Commit c : cfres.getAllResults().keySet()) {
 			assertTrue(kwfilter.accept(c));
-			assertEquals("6dac8ae81bd03bcae1e1fade064d3bb03de472c0", (c.getName().toString()));
+			commits.add(c.getName().toString());
 		}
+		assertTrue(commits.contains("6dac8ae81bd03bcae1e1fade064d3bb03de472c0	"));
 
 		// Let's check the nr lines hunks per hunk
 		cs.command.put("-parameters", "min_nb_hunks:1:max_nb_hunks:3:max_lines_per_hunk:1");

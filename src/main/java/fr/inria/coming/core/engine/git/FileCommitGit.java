@@ -64,14 +64,6 @@ public class FileCommitGit implements FileCommit {
 		return this.nextFileName;
 	}
 
-	public void setPreviousFileName(String previousFileName) {
-		this.previousFileName = previousFileName;
-	}
-
-	public void setNextFileName(String nextFileName) {
-		this.nextFileName = nextFileName;
-	}
-
 	public void setPreviousVersion(String previousVersion) {
 		this.previousVersion = previousVersion;
 	}
@@ -80,9 +72,6 @@ public class FileCommitGit implements FileCommit {
 		this.nextVersion = nextVersion;
 	}
 
-	public void setPreviousCommitName(String previousCommitName) {
-		this.previousCommitName = previousCommitName;
-	}
 
 	@Override
 	public void setNextName(String name) {

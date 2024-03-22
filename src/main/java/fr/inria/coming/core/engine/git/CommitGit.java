@@ -103,6 +103,11 @@ public class CommitGit implements Commit {
 					for (DiffEntry diff : diffs) {
 
 						//System.err.println(diff.getChangeType());
+
+						if (diff.getChangeType().equals(ChangeType.DELETE)) {
+							// Martin removed the support for removed files
+							// because the prev § next assumption is blurry later in code
+						}
 						if (diff.getChangeType().equals(ChangeType.MODIFY)) {
 
 							String previousCommitName = this.revCommit.getParent(0).getName();
