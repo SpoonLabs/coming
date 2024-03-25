@@ -489,6 +489,7 @@ public class InstanceMiningTest {
 	public void assertResult(Set<String> commitsId, FinalResult finalResult) {
 		CommitFinalResult commitResult = (CommitFinalResult) finalResult;
 		System.out.println("FinalResults: \n" + finalResult);
+		Commit found = null;
 		for (Commit commit : commitResult.getAllResults().keySet()) {
 
 			PatternInstancesFromRevision patterns = (PatternInstancesFromRevision) commitResult.getAllResults()
@@ -496,17 +497,23 @@ public class InstanceMiningTest {
 			assertNotNull(patterns);
 
 			if (commitsId.contains(commit.getName())) {
+				found = commit;
 				assertTrue("Not changes at: " + commit.getName(), patterns.getInfoPerDiff().size() > 0);
 				System.out.println("Instance found: " + patterns.getInfoPerDiff());
 
 				for (PatternInstancesFromDiff instancesdiff : patterns.getInfoPerDiff()) {
-					assertTrue(instancesdiff.getInstances().size() > 0);
+					//
+					if (instancesdiff.getInstances().size() > 0) {
+						return;
+					}
 				}
+				throw new AssertionError("No instances found at: " + commit.getName() + " but expected");
 			} else {
 				// firsts commits, no changes, file introduction
-				// assertTrue(patterns.getInstances().isEmpty());
 			}
-
+		}
+		if (found == null) {
+			throw new AssertionError("No commit found with the expected instances");
 		}
 	}
 

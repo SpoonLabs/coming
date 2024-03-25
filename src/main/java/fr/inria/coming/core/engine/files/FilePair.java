@@ -33,6 +33,9 @@ public class FilePair implements IRevisionPair<String> {
 	}
 
 	@Override
+	// TODO this should return a file
+	// because the convention on the "name" is unclear
+	// a file name? or a valid file path?
 	public String getNextName() {
 		return postName;
 	}
