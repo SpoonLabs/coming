@@ -56,7 +56,7 @@ public class FileCommitGit implements FileCommit {
 	}
 
 	public String toString() {
-		return this.nextFileName;
+		return this.previousFileName+"->"+this.nextFileName;
 	}
 
 	@Override

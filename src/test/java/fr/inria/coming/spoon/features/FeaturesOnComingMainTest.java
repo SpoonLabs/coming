@@ -4,9 +4,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileReader;
 import java.util.List;
 
 import com.github.difflib.text.DiffRow;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -31,13 +34,26 @@ import fr.inria.coming.utils.CommandSummary;
 public class FeaturesOnComingMainTest {
 
 	@Test
-	public void testissue259() throws Exception {
-		// smoke test for features in both git and files mode
+	public void testissue261_1() throws Exception {
+		// https://github.com/SpoonLabs/coming/issues/261
+		// mode == repo
 
 		//names = {"-f", "--feature-option"},
 		//		description = "Feature Option" + commonInfo
 
-		fr.inria.coming.main.ComingMain.main(new String[] { "-location", "./repogit4testv0/", "-input", "git", "-output", "out", "-mode", "features"});
+		fr.inria.coming.main.ComingMain.main(new String[]{"-location", "./repogit4testv0/", "-input", "git", "-output", "out", "-mode", "features"});
+
+		assertTrue(new File("out/features_c6b1cd8204b10c324b92cdc3e44fe3ab6cfb1f5e_FeatureAnalyzer.json").exists());
+
+		// open features_c6b1cd8204b10c324b92cdc3e44fe3ab6cfb1f5e_FeatureAnalyzer.json as json
+		// check if the json file contains the expected content
+		JsonObject jsonObject = new Gson().fromJson(new FileReader("out/features_c6b1cd8204b10c324b92cdc3e44fe3ab6cfb1f5e_FeatureAnalyzer.json"), JsonObject.class);
+
+	}
+
+	public void testissue261_2() throws Exception {
+		// https://github.com/SpoonLabs/coming/issues/261
+		// modes  == files
 
 		fr.inria.coming.main.ComingMain.main(new String[] { "-location", "./src/main/resources", "-input", "files", "-output", "out", "-mode", "features"});
 

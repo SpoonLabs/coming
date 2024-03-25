@@ -115,7 +115,7 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 				
 			}
 			
-			FeaturesResult p4jfeatures = (FeaturesResult) new P4JFeatureAnalyzer().analyze(revision, nameFile.toString());		
+			FeaturesResult p4jfeatures = (FeaturesResult) new P4JFeatureAnalyzer().analyze(revision, previousResults);
 			if(p4jfeatures!=null) {
 				changesArray.add(p4jfeatures.getFeatures());
 			}

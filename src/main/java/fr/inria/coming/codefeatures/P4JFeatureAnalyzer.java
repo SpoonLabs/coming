@@ -62,51 +62,33 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 			throw new IllegalArgumentException("Error: missing diff");
 		}
 
-		// determine source and target file path
-		JsonObject jsonfile = extractFeatures(fileSrcTgtPaths(revision));
+		JsonObject jsonfile = new JsonObject();
+		for (IRevisionPair pair: revision.getChildren()) {
+			// determine source and target file path
+			JsonObject jsonpair = extractFeatures(fileSrcTgtPaths(pair));
+			jsonfile.add(pair.getPreviousName(), jsonpair);
+		}
 		return (new FeaturesResult(revision,jsonfile));
 	}
 
-	public Map<String, File> fileSrcTgtPaths(IRevision revision) {
-		final String folder = revision.getFolder() != null ? revision.getFolder() : "";
+	public Map<String, File> fileSrcTgtPaths(IRevisionPair s) {
 
 		Map<String, File> filePaths = new HashMap<>();
-		for (IRevisionPair s: revision.getChildren()) {
-			final File src = new File(s.getPreviousName());
-			if (!src.exists()) {
-				revision.getChildren();
-				throw new IllegalArgumentException("The source file not exist!");
-			}
-			filePaths.put("src", src);
-			final File tgt = new File(s.getNextName());
-			if (!tgt.exists()) {
-				throw new IllegalArgumentException("The source file not exist!");
-			}
-			filePaths.put("target", tgt);
-			break;
+		final File src = new File(s.getPreviousName());
+		if (!src.exists()) {
+			throw new IllegalArgumentException("The source file not exist!");
 		}
+		filePaths.put("src", src);
+		final File tgt = new File(s.getNextName());
+		if (!tgt.exists()) {
+			throw new IllegalArgumentException("The source file not exist!");
+		}
+		filePaths.put("target", tgt);
 		return filePaths;
 	}
 
 
-	public AnalysisResult analyze(IRevision revision, String targetFile) {
-		String path = revision.getFolder();
-		Map<String, File> filePaths = null;
-		if(path!=null) {
-			filePaths = fileSrcTgtPaths(revision);
-		} else {
-			return null;
-		}		
-		JsonObject jsonfile = extractFeatures(filePaths);
-		
-		if(jsonfile==null) {
-			return null;
-		}
-		
-		return (new FeaturesResult(revision,jsonfile));
-		
-	}
-		
+
 	public JsonObject extractFeatures(Map<String, File> filePaths) {
 		File src = filePaths.get("src");
 		if (src==null) {

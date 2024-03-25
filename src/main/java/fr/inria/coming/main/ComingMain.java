@@ -287,7 +287,6 @@ public class ComingMain {
 				navigatorEngine.getAnalyzers().clear();
 
 				navigatorEngine.getAnalyzers().add(new FineGrainDifftAnalyzer());
-
 				// this is a mega-analysis which does a lot, incl. P4JFeatureAnalyzer, RepairPatternFeatureAnalyzer
 				navigatorEngine.getAnalyzers().add(new FeatureAnalyzer());
 
