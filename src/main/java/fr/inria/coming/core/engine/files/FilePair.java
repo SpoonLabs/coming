@@ -14,21 +14,12 @@ public class FilePair implements IRevisionPair<String> {
 	protected String postName;
 	protected String previousName;
 
-	public FilePair(String previous, String post, String name) {
-		super();
-		this.previousVersion = previous;
-		this.postVersion = post;
-		this.postName = name;
-		// let's put the same name to both versions of the file:
-		this.previousName = name;
-	}
-
 	public FilePair(String previous, String post, String previousName, String postName) {
 		super();
 		this.previousVersion = previous;
 		this.postVersion = post;
-		this.postName = postName;
 		this.previousName = previousName;
+		this.postName = postName;
 	}
 
 	@Override
@@ -42,6 +33,9 @@ public class FilePair implements IRevisionPair<String> {
 	}
 
 	@Override
+	// TODO this should return a file
+	// because the convention on the "name" is unclear
+	// a file name? or a valid file path?
 	public String getNextName() {
 		return postName;
 	}

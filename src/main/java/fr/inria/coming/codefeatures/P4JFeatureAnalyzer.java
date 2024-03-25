@@ -13,12 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
+import fr.inria.coming.core.entities.interfaces.IRevisionPair;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.FineGrainDifftAnalyzer;
 import fr.inria.coming.changeminer.entity.IRevision;
@@ -29,20 +26,16 @@ import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.main.ComingProperties;
 import fr.inria.prophet4j.feature.Feature;
 import fr.inria.prophet4j.feature.FeatureCross;
-import fr.inria.prophet4j.feature.extended.ExtendedFeatureCross;
 import fr.inria.prophet4j.feature.original.OriginalFeatureCross;
-import fr.inria.prophet4j.learner.RepairEvaluator;
 import fr.inria.prophet4j.utility.CodeDiffer;
 import fr.inria.prophet4j.utility.Option;
-import fr.inria.prophet4j.utility.Support;
 import fr.inria.prophet4j.utility.Option.FeatureOption;
-import fr.inria.prophet4j.utility.Option.RankingOption;
 import fr.inria.prophet4j.utility.Structure.FeatureMatrix;
 import fr.inria.prophet4j.utility.Structure.FeatureVector;
 import fr.inria.prophet4j.utility.Structure.ParameterVector;
 
 /**
- *
+ * Computes the P4J features for a given file pair (does not work with repo)
  * @author He Ye
  *
  */
@@ -57,52 +50,55 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 
 		AnalysisResult resultFromDiffAnalysis = previousResults.getResultFromClass(FineGrainDifftAnalyzer.class);
 		DiffResult diffResut = (DiffResult) resultFromDiffAnalysis;
-		String filename = "";
-		if (diffResut.getDiffOfFiles().size()!=0) {
-			filename =  diffResut.getDiffOfFiles().keySet().iterator().next().toString();		
-		}else {
-			filename = diffResut.getAnalyzed().toString();
-		}
+		String filename = revision.getName();
+//		if (diffResut.getDiffOfFiles().size()!=0) {
+//			filename =  diffResut.getDiffOfFiles().keySet().iterator().next().toString();
+//		}else {
+//			filename = diffResut.getAnalyzed().toString();
+//		}
 
 		if (resultFromDiffAnalysis == null) {
 			System.err.println("Error Diff must be executed before");
 			throw new IllegalArgumentException("Error: missing diff");
 		}
 
-		// determine source and target file path
-		String path = revision.getFolder();
-		Map<String, File> filePaths = null;
-		if(path!=null) {
-			filePaths = processFilesPair(new File(path),"");
-		} else {
-			return null;
+		JsonObject jsonfile = new JsonObject();
+		for (IRevisionPair pair: revision.getChildren()) {
+			// determine source and target file path
+			JsonObject jsonpair = extractFeatures(fileSrcTgtPaths(pair));
+			jsonfile.add(pair.getPreviousName(), jsonpair);
 		}
-		JsonObject jsonfile = extractFeatures(filePaths);
 		return (new FeaturesResult(revision,jsonfile));
 	}
-	
-	
-	public AnalysisResult analyze(IRevision revision, String targetFile) {
-		String path = revision.getFolder();
-		Map<String, File> filePaths = null;
-		if(path!=null) {
-			filePaths = processFilesPair(new File(path),targetFile);
-		} else {
-			return null;
-		}		
-		JsonObject jsonfile = extractFeatures(filePaths);
-		
-		if(jsonfile==null) {
-			return null;
+
+	public Map<String, File> fileSrcTgtPaths(IRevisionPair s) {
+
+		Map<String, File> filePaths = new HashMap<>();
+		final File src = new File(s.getPreviousName());
+		if (!src.exists()) {
+			throw new IllegalArgumentException("The source file not exist!");
 		}
-		
-		return (new FeaturesResult(revision,jsonfile));
-		
+		filePaths.put("src", src);
+		final File tgt = new File(s.getNextName());
+		if (!tgt.exists()) {
+			throw new IllegalArgumentException("The source file not exist!");
+		}
+		filePaths.put("target", tgt);
+		return filePaths;
 	}
-		
+
+
+
 	public JsonObject extractFeatures(Map<String, File> filePaths) {
 		File src = filePaths.get("src");
+		if (src==null) {
+			return null;
+		}
 		File target = filePaths.get("target");
+		if (src == null || target == null) {
+			log.error("The source or target file not exist!");
+			return null;
+		}
 		Option option = new Option();
 		option.featureOption = FeatureOption.ORIGINAL;
 		//We set the first parameter of CodeDiffer as False to not allow the code generation at buggy location
@@ -114,12 +110,8 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 		List<FeatureMatrix> featureMatrix = codeDiffer.runByGenerator(src, target);
 		//Get feature vector
 		JsonObject jsonfile = null;
-		if(cross) {
-			jsonfile = genVectorsCSV(option,target,featureMatrix);
-			return null;
-		} else {
-			jsonfile = getSimleP4JJSON(option,target,featureMatrix,true);
-		}
+		//	csvfile = genVectorsCSV(option,target,featureMatrix);
+		jsonfile = getSimleP4JJSON(option,target,featureMatrix,true);
 		return jsonfile;
 	}
 	
@@ -149,38 +141,7 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 
 	}
 
-	public Map processFilesPair(File pairFolder,String targetFile) {
-		Map<String, File> pathmap = new HashMap();
 
-		for (File fileModif : pairFolder.listFiles()) {
-
-			if (".DS_Store".equals(fileModif.getName()))
-				continue;
-			
-			if(targetFile!="") {
-				if (!fileModif.getPath().contains(targetFile)) {
-					continue;
-				}
-			}
-
-			String pathname = fileModif.getAbsolutePath() + File.separator + pairFolder.getName() + "_"
-					+ fileModif.getName();
-
-			File previousVersion = new File(pathname + "_s.java");
-			if (!previousVersion.exists()) {
-				log.error("The source file " + previousVersion.getPath() + " not exist!");
-			} else {
-				pathmap.put("src", previousVersion);
-				File postVersion = new File(pathname + "_t.java");
-				pathmap.put("target", postVersion);
-
-			}
-
-		}
-		return pathmap;
-
-	}
-	
 	
 	 public JsonObject genVectorsCSV(Option option, File patchedFile, List<FeatureMatrix> featureMatrices) {
 		 

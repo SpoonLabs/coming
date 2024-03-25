@@ -1,6 +1,7 @@
 package fr.inria.coming.core.engine.git;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.diff.DiffFormatter;
@@ -64,11 +66,9 @@ public class CommitGit implements Commit {
 			tw.addTree(revCommit.getTree());
 
 			if (revCommit.getParentCount() == 0) {
+				// initial commit, is not a diff with a prev version
+				String filePrevVersion = "";
 				while (tw.next()) {
-					// To retrieve file name
-					String fileNextVersion = getFileContent(this.revCommit.getId(), tw.getPathString());
-					FileCommit file = new FileCommitGit("", "", tw.getPathString(), fileNextVersion, this);
-					resultFileCommits.add(file);
 				}
 				tw.release();
 				return resultFileCommits;
@@ -77,11 +77,6 @@ public class CommitGit implements Commit {
 					tw.addTree(rc.getTree());
 				}
 				tw.setFilter(new MyTreeFilter());
-
-				List<String> tmp = new ArrayList<String>();
-				while (tw.next()) {
-					tmp.add(tw.getPathString());
-				}
 
 				DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
 				df.setRepository(this.repo.getRepository());
@@ -96,30 +91,42 @@ public class CommitGit implements Commit {
 					 * RenameDetector rd = new RenameDetector(this.repo.getRepository());
 					 * rd.addAll(diffs); List<DiffEntry> lde = rd.compute(); for (DiffEntry de :
 					 * lde) { if (de.getScore() >= rd.getRenameScore()) {
-					 * System.out.println("score "+de.getScore()); System.out.println("file: " +
+					 * ("score "+de.getScore()); System.out.println("file: " +
 					 * de.getOldPath() + " copied/moved to: " + de.getNewPath()); } }
 					 */
 					// --
 					for (DiffEntry diff : diffs) {
 
-						if (!diff.getChangeType().equals(ChangeType.DELETE)) {
-							if (tmp.contains(diff.getNewPath())) {
+						//System.err.println(diff.getChangeType());
 
-								String previousCommitName = this.revCommit.getParent(0).getName();
-								String filePrevVersion = getFileContent(this.revCommit.getParent(0).getId(),
-										diff.getOldPath());
-								String fileNextVersion = getFileContent(this.revCommit.getId(), diff.getNewPath());
-								FileCommit file = new FileCommitGit(diff.getOldPath(), filePrevVersion,
-										diff.getNewPath(), fileNextVersion, this, previousCommitName);
-								resultFileCommits.add(file);
-							}
-						} else {
+						if (diff.getChangeType().equals(ChangeType.DELETE)) {
+							// Martin removed the support for removed files
+							// because the prev § next assumption is blurry later in code
+						}
+						if (diff.getChangeType().equals(ChangeType.MODIFY)) {
+
 							String previousCommitName = this.revCommit.getParent(0).getName();
 							String filePrevVersion = getFileContent(this.revCommit.getParent(0).getId(),
 									diff.getOldPath());
-							FileCommit file = new FileCommitGit(diff.getOldPath(), filePrevVersion, "", "", this,
-									previousCommitName);
-							resultFileCommits.add(file);
+
+							// To retrieve file name
+							final String fileNextVersion = getFileContent(this.revCommit.getId(), diff.getNewPath());
+							if (fileNextVersion == null || fileNextVersion.length() == 0) {
+								System.err.println(diff);
+								throw new RuntimeException("Empty file content for " + diff.getNewPath());
+							}
+							File src = File.createTempFile(previousCommitName+"_","_s.java");
+							File target = new File(src.getAbsolutePath().replace("_s.java", "_t.java"));
+							try(FileOutputStream fs = new FileOutputStream(src)) {
+								IOUtils.write(filePrevVersion, fs);
+							}
+							try(FileOutputStream fs = new FileOutputStream(target)){
+								IOUtils.write(fileNextVersion, fs);
+							}
+							if (filePrevVersion!="") {
+								FileCommit file = new FileCommitGit(src.getAbsolutePath(), filePrevVersion, target.getAbsolutePath(), fileNextVersion, this);
+								resultFileCommits.add(file);
+							}
 
 						}
 					}

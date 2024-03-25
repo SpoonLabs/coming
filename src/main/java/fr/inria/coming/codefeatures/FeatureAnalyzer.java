@@ -2,17 +2,31 @@ package fr.inria.coming.codefeatures;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import add.entities.RepairPatterns;
+import add.features.detector.repairpatterns.AbstractPatternDetector;
+import add.features.detector.repairpatterns.CodeMovingDetector;
+import add.features.detector.repairpatterns.ConditionalBlockDetector;
+import add.features.detector.repairpatterns.ConstantChangeDetector;
+import add.features.detector.repairpatterns.CopyPasteDetector;
+import add.features.detector.repairpatterns.ExpressionFixDetector;
+import add.features.detector.repairpatterns.MissingNullCheckDetector;
 import add.features.detector.repairpatterns.RepairPatternDetector;
+import add.features.detector.repairpatterns.SingleLineDetector;
+import add.features.detector.repairpatterns.WrapsWithDetector;
+import add.features.detector.repairpatterns.WrongReferenceDetector;
 import add.main.Config;
 import com.github.difflib.DiffUtils;
 import com.github.difflib.UnifiedDiffUtils;
+import com.github.gumtreediff.actions.EditScript;
 import com.google.gson.Gson;
+import fr.inria.coming.core.engine.files.FileDiff;
 import fr.inria.coming.core.entities.interfaces.IRevisionPair;
 import org.apache.log4j.Logger;
 
@@ -69,6 +83,7 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 
 
 		for (Object nameFile : diffResut.getDiffOfFiles().keySet()) {
+			System.out.println("Analyzing file: " + nameFile);
 			Diff diff = (Diff) diffResut.getDiffOfFiles().get(nameFile);
 
 			List<Operation> ops = diff.getRootOperations();
@@ -100,7 +115,7 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 				
 			}
 			
-			FeaturesResult p4jfeatures = (FeaturesResult) new P4JFeatureAnalyzer().analyze(revision, nameFile.toString());		
+			FeaturesResult p4jfeatures = (FeaturesResult) new P4JFeatureAnalyzer().analyze(revision, previousResults);
 			if(p4jfeatures!=null) {
 				changesArray.add(p4jfeatures.getFeatures());
 			}
@@ -121,15 +136,17 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 				Config config = new Config();
 				config.setDiffPath(tempFile.getAbsolutePath());
 				config.setBuggySourceDirectoryPath(revision.getFolder());
-				RepairPatternDetector patternDetector = new RepairPatternDetector(config, diff);
-				RepairPatterns analyze = patternDetector.analyze();
+				RepairPatterns analyze =analyze(diff, config);
 
 				changesArray.add(new Gson().fromJson(analyze.toJson().toString(), JsonObject.class));
 				tempFile.delete();
-				
-				//add more features
-				JsonObject patternJson = RepairPatternFeatureAnalyzer.analyze(revision.getFolder(), diff, nameFile.toString());
-				changesArray.add(patternJson);
+
+				if (revision instanceof FileDiff) {
+					// TODO: generalize the implementation of RepairPatternFeatureAnalyzer and P4JFeatureAnalyzer with IRevision.getChildren instead of hard coding FileDiff
+					//add more features
+					JsonObject patternJson = RepairPatternFeatureAnalyzer.analyze(revision, diff, nameFile.toString());
+					changesArray.add(patternJson);
+				}
 				
 			} catch (Exception e) {
 				new RuntimeException("Unable to compute ADD analysis", e);
@@ -144,6 +161,30 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 		return (new FeaturesResult(revision, root));
 
 	}
+
+	public RepairPatterns analyze(Diff editScript, Config config) {
+		RepairPatterns repairPatterns = new RepairPatterns();
+		List<Operation> operations = editScript.getRootOperations();
+		List<AbstractPatternDetector> detectors = new ArrayList();
+		detectors.add(new MissingNullCheckDetector(operations));
+		//detectors.add(new SingleLineDetector(config, operations));
+		detectors.add(new ConditionalBlockDetector(operations));
+		detectors.add(new WrapsWithDetector(operations));
+		detectors.add(new CopyPasteDetector(operations));
+		detectors.add(new ConstantChangeDetector(operations));
+		detectors.add(new CodeMovingDetector(operations));
+		detectors.add(new ExpressionFixDetector(operations));
+		detectors.add(new WrongReferenceDetector(operations));
+		Iterator var3 = detectors.iterator();
+
+		while(var3.hasNext()) {
+			AbstractPatternDetector detector = (AbstractPatternDetector)var3.next();
+			detector.detect(repairPatterns);
+		}
+
+		return repairPatterns;
+	}
+
 
 	public void putCodeFromHunk(RevisionResult previousResults, Object nameFile, JsonObject file) {
 		AnalysisResult resultsHunk = previousResults.get(HunkDifftAnalyzer.class.getSimpleName());
@@ -170,69 +211,6 @@ public class FeatureAnalyzer implements Analyzer<IRevision> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public JsonArray processFilesPair(File pairFolder) {
-		Map<String, Diff> diffOfcommit = new HashMap();
-
-		JsonArray filesArray = new JsonArray();
-		for (File fileModif : pairFolder.listFiles()) {
-			int i_hunk = 0;
-
-			if (".DS_Store".equals(fileModif.getName()))
-				continue;
-
-			String pathname = fileModif.getAbsolutePath() + File.separator + pairFolder.getName() + "_"
-				+ fileModif.getName();
-
-			File previousVersion = new File(pathname + "_s.java");
-			if (!previousVersion.exists()) {
-				pathname = pathname + "_" + i_hunk;
-				previousVersion = new File(pathname + "_s.java");
-				if (!previousVersion.exists())
-					continue;
-			}
-
-			File postVersion = new File(pathname + "_t.java");
-			i_hunk++;
-
-			JsonObject file = new JsonObject();
-			try {
-				filesArray.add(file);
-				file.addProperty("file_name", fileModif.getName());
-				JsonArray changesArray = new JsonArray();
-				file.add("features", changesArray);
-
-				AstComparator comparator = new AstComparator();
-
-				Diff diff = comparator.compare(previousVersion, postVersion);
-				if (diff == null) {
-					file.addProperty("status", "differror");
-					continue;
-				}
-
-				log.info("--diff: " + diff);
-
-				List<Operation> ops = diff.getRootOperations();
-				String key = fileModif.getParentFile().getName() + "_" + fileModif.getName();
-				diffOfcommit.put(key, diff);
-
-				for (Operation operation : ops) {
-					CtElement affectedCtElement = getLeftElement(operation);
-
-					if (affectedCtElement != null) {
-						Cntx iContext = cresolver.analyzeFeatures(affectedCtElement);
-						changesArray.add(iContext.toJSON());
-					}
-				}
-
-			} catch (Throwable e) {
-				log.error("error with " + previousVersion);
-				log.error(e);
-				file.addProperty("status", "exception");
-			}
-
-		}
-		return filesArray;
-	}
 
 	/**
 	 * Get the element that is modified

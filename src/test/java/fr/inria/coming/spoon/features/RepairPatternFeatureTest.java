@@ -5,21 +5,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
-import java.io.InputStream;
 
 import org.junit.Test;
 
-import com.google.gson.JsonObject;
-
-import fr.inria.coming.changeminer.entity.FinalResult;
-import fr.inria.coming.codefeatures.RepairPatternFeatureAnalyzer;
-import fr.inria.coming.codefeatures.RepairnatorFeatures;
-import fr.inria.coming.codefeatures.RepairnatorFeatures.ODSLabel;
 import fr.inria.coming.main.ComingMain;
 import fr.inria.coming.utils.CommandSummary;
-import gumtree.spoon.diff.Diff;
 
 public class RepairPatternFeatureTest {
 		

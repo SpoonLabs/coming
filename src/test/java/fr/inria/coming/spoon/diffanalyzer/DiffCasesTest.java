@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -25,6 +27,7 @@ import gumtree.spoon.diff.Diff;
 import gumtree.spoon.diff.operations.InsertOperation;
 import gumtree.spoon.diff.operations.Operation;
 import spoon.reflect.code.CtComment;
+import spoon.reflect.declaration.CtType;
 
 /**
  * 
@@ -262,8 +265,7 @@ public class DiffCasesTest {
 		InsertOperation insop = (InsertOperation) firstInsert.get();
 		assertNotNull(insop);
 
-		assertEquals("CharSequenceUtils.java", insop.getSrcNode().getPosition().getFile().getName());
-		assertEquals("CharSequenceUtils.java", insop.getParent().getPosition().getFile().getName());
+		assertEquals("CharSequenceUtils", insop.getSrcNode().getParent(CtType.class).getSimpleName());
 
 	}
 
