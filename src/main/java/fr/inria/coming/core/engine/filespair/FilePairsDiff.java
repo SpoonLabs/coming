@@ -42,8 +42,8 @@ public class FilePairsDiff implements IRevision {
 			String previousString = new String(Files.readAllBytes(left.toPath()));
 			String postString = new String(Files.readAllBytes(right.toPath()));
 
-			String previousNameFile = left.getName();
-			String postNameFile = right.getName();
+			String previousNameFile = left.getAbsolutePath();
+			String postNameFile = right.getAbsolutePath();
 			FilePair fpair = new FilePair(previousString, postString, previousNameFile, postNameFile);
 			pairs.add(fpair);
 		} catch (IOException e) {
