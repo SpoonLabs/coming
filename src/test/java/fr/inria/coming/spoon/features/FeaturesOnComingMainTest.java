@@ -86,8 +86,6 @@ public class FeaturesOnComingMainTest {
 	}
 
 
-
-
 	@Test
 	public void testFeaturesOnComingEvolutionFromGit1() throws Exception {
 		ComingMain main = new ComingMain();
