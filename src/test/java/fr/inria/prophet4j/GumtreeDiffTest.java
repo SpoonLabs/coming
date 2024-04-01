@@ -27,14 +27,18 @@ public class GumtreeDiffTest {
 		List<Operation> operations = diff.getRootOperations();
 		// Three operations are expected
 		assertEquals(3, operations.size());
-		for (Operation operation : operations) {
-			Action action = operation.getAction();
-			if ("UPD".equals(action.getName())) {
-				// 'c' -> 'b'
-				assertEquals("\"c\"", operation.getSrcNode().toString());
-				assertEquals("\"b\"", operation.getDstNode().toString());
-			}
-		}
+		Operation operation = operations.get(0);
+		Action action = operation.getAction();
+		// big change in recent GT UPD -> update-node
+		assertEquals("update-node", action.getName());
+		// 'c' -> 'b'
+		assertEquals("\"c\"", operation.getSrcNode().toString());
+		assertEquals("\"b\"", operation.getDstNode().toString());
+
+		assertEquals("insert-node",  operations.get(1).getAction().getName());
+
+		assertEquals("move-tree",  operations.get(2).getAction().getName());
+
 	}
 
 	/*
@@ -56,6 +60,18 @@ public class GumtreeDiffTest {
 	 * 
 	 * @throws Exception
 	 */
+	@Test
+	public void testDelete() throws Exception {
+		AstComparator comparator = new AstComparator();
+		String a = "class Foo{public void bar(){\ndouble b = (double) 1;\n}}";
+		String b = "class Foo{public void bar(){\n}}";
+		Diff diff = comparator.compare(a, b);
+		List<Operation> operations = diff.getRootOperations();
+		// Update Literal at Foo: 1 to ((double) (1))
+		assertEquals(1, operations.size());
+		assertEquals("delete-node", operations.get(0).getAction().getName());
+
+	}
 
 	@Test
 	public void testExplicitConversion() throws Exception {

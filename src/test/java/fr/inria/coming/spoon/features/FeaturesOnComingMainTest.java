@@ -6,9 +6,11 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.FileReader;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import com.github.difflib.text.DiffRow;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -51,14 +53,40 @@ public class FeaturesOnComingMainTest {
 
 	}
 
+	@Test
+	@Ignore //OutOfMemory Java heap space on CI
 	public void testissue261_2() throws Exception {
 		// https://github.com/SpoonLabs/coming/issues/261
 		// modes  == files
 
 		fr.inria.coming.main.ComingMain.main(new String[] { "-location", "./src/main/resources", "-input", "files", "-output", "out", "-mode", "features"});
 
+	}
+
+	@Test
+	public void testissue261_3() throws Exception {
+		// https://github.com/SpoonLabs/coming/issues/261
+		// no P4J features in special example
+		// bug was in "DEL" in CodeDiffer
+		// change in string convention in gumtree, grrrrrr
+		// "DEL".equals(operation.getAction().getName()) -> "delete-node".equals(operation.getAction().getName())
+
+		fr.inria.coming.main.ComingMain.main(new String[] { "-location", "src/main/resources/issue261/261_s.java:src/main/resources/issue261/261_t.java", "-input", "filespair", "-output", "out", "-mode", "features"});
+
+		JsonObject jsonObject = new Gson().fromJson(new FileReader("out/features_261_s.java->261_t.java_FeatureAnalyzer.json"), JsonObject.class);
+
+		// jq ".files[0].features[1]"
+		final Set<Map.Entry<String, JsonElement>> entries = jsonObject.get("files").getAsJsonArray().get(0).getAsJsonObject().get("features").getAsJsonArray().get(1).getAsJsonObject().entrySet();
+
+		// check that we have a P4J feature
+		assertTrue(entries.size() > 0);
+		for (Map.Entry<String, JsonElement> entry : entries) {
+			final JsonObject value = (JsonObject) entry.getValue();
+			assertTrue(value.keySet().contains("P4J_AF_VF_CT_ABST_V_AF"));
+		}
 
 	}
+
 
 	@Test
 	public void testFeaturesOnComingEvolutionFromGit1() throws Exception {

@@ -145,7 +145,7 @@ public class CodeDiffer {
         Operation DEL = null;
         for (Integer lineNum : lineNums) {
         		Operation operation = deleteOperations.get(lineNum);       		
-        		if(operation!=null && "DEL".equals(operation.getAction().getName())) {
+        		if(operation!=null && "delete-node".equals(operation.getAction().getName())) {
         			DEL = operation;
         		}       		 
         	    Operation deleteOperation = deleteOperations.get(lineNum);

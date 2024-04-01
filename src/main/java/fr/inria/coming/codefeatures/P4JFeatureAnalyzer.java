@@ -43,8 +43,6 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 
 	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
 
-	protected CodeFeatureDetector cresolver = new CodeFeatureDetector();
-
 	@Override
 	public AnalysisResult analyze(IRevision revision, RevisionResult previousResults) {
 
@@ -76,7 +74,7 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 		Map<String, File> filePaths = new HashMap<>();
 		final File src = new File(s.getPreviousName());
 		if (!src.exists()) {
-			throw new IllegalArgumentException("The source file not exist!");
+			throw new IllegalArgumentException("The source file not exist! "+src);
 		}
 		filePaths.put("src", src);
 		final File tgt = new File(s.getNextName());
