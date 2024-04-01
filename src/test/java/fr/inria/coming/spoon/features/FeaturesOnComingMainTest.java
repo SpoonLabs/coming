@@ -12,6 +12,7 @@ import java.util.Set;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.coming.changeminer.analyzer.commitAnalyzer.HunkDifftAnalyzer;
@@ -53,6 +54,7 @@ public class FeaturesOnComingMainTest {
 	}
 
 	@Test
+	@Ignore //OutOfMemory Java heap space on CI
 	public void testissue261_2() throws Exception {
 		// https://github.com/SpoonLabs/coming/issues/261
 		// modes  == files

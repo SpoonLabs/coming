@@ -43,8 +43,6 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 
 	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
 
-	protected CodeFeatureDetector cresolver = new CodeFeatureDetector();
-
 	@Override
 	public AnalysisResult analyze(IRevision revision, RevisionResult previousResults) {
 
