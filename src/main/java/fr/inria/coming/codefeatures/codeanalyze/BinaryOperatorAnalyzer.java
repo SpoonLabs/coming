@@ -217,7 +217,7 @@ public class BinaryOperatorAnalyzer extends AbstractCodeAnalyzer {
 			return operatorunderstudy.toString();
 		} catch (Exception e) {
 			// fake string, please open an issue if this is a problem
-			return "FIXME";
+			return "FIXME_oefa";
 		}
 	}
 

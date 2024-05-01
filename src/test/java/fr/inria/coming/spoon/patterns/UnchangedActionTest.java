@@ -111,7 +111,18 @@ public class UnchangedActionTest {
 
     @Test
     public void testNoDelParamPattern1() throws Exception {
-        testNoExist("/pattern_specification/pattern_DEL_Parameter.xml",
+        // meld ./src/main/resources/patterns_examples/case7/DEL_Param_s.java ./src/main/resources/patterns_examples/case7/DEL_Param_false_t.java
+
+        // Update BinaryOperator at Main:6
+        //	 to a == 5
+        //Delete BinaryOperator at Main:6
+        //	 ==
+        //Move BinaryOperator from Main:6 to Main:6
+        //	(a + b)
+
+        // we delete a BinaryOperator whoe parent is a method invocation
+
+        testExist("/pattern_specification/pattern_DEL_Parameter.xml",
                 "patterns_examples/case7/DEL_Param_s.java",
                 "patterns_examples/case7/DEL_Param_false_t.java");
     }

@@ -88,7 +88,7 @@ public class ExperimentMiningInstancesD4JTest {
 
 	@Test
 	public void testPatternInstanceMath60() throws Exception {
-		File fl = new File(getClass().getResource("/pattern_specification/pattern_INS_IF_RET.xml").getFile());
+		File fl = new File(getClass().getResource("/pattern_specification/pattern_DEL_IF_RET.xml").getFile());
 
 		ChangePatternSpecification pattern = PatternXMLParser.parseFile(fl.getAbsolutePath());
 
