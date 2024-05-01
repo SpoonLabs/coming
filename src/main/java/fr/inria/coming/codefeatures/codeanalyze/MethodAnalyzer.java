@@ -740,7 +740,7 @@ public class MethodAnalyzer extends AbstractCodeAnalyzer {
  			CtElement original = argumentsoriginal.get(index);
  			CtElement other = argumentsother.get(index);
  			
- 			if(original.equals(other) || original.toString().equals(other.toString())) {
+ 			if(original.equals(other)) {
  				// same
  			} else {
  				numberdiffargument+=1;

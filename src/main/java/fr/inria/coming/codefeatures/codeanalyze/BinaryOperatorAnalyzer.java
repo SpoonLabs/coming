@@ -89,7 +89,7 @@ public class BinaryOperatorAnalyzer extends AbstractCodeAnalyzer {
 				whethermathroot =false;
 		}
 		
-		writeGroupedInfo(context, Integer.toString(operatorindex)+"_"+operatorunderstudy, CodeFeatures.O5_IS_MATH_ROOT, 
+		writeGroupedInfo(context, Integer.toString(operatorindex)+"_"+getStringRepr(operatorunderstudy), CodeFeatures.O5_IS_MATH_ROOT,
 				whethermathroot, "FEATURES_BINARYOPERATOR");	
 	}
 	
@@ -122,7 +122,7 @@ public class BinaryOperatorAnalyzer extends AbstractCodeAnalyzer {
 			}
 		}
 		
-		writeGroupedInfo(context, Integer.toString(operatorindex)+"_"+operatorunderstudy, CodeFeatures.O2_LOGICAL_CONTAIN_NOT, 
+		writeGroupedInfo(context, Integer.toString(operatorindex)+"_"+getStringRepr(operatorunderstudy), CodeFeatures.O2_LOGICAL_CONTAIN_NOT,
 				whethercontainnotoperator, "FEATURES_BINARYOPERATOR");
 		
 	}
@@ -166,15 +166,61 @@ public class BinaryOperatorAnalyzer extends AbstractCodeAnalyzer {
 		
 		for(int index=0; index<binoperatortype.size(); index++) {
 			CodeFeatures cerainfeature = binoperatortype.get(index);
-			
+
+			final String operatorunderstudyStr = getStringRepr(operatorunderstudy);
 			if(cerainfeature.toString().endsWith(operatorstring.toUpperCase()))
-				writeGroupedInfo(context,  Integer.toString(operatorindex)+"_"+operatorunderstudy, cerainfeature, 
+				writeGroupedInfo(context,  Integer.toString(operatorindex)+"_"+ operatorunderstudyStr, cerainfeature,
 							true, "FEATURES_BINARYOPERATOR");
-			else writeGroupedInfo(context,  Integer.toString(operatorindex)+"_"+operatorunderstudy, cerainfeature, 
+			else writeGroupedInfo(context,  Integer.toString(operatorindex)+"_"+ operatorunderstudyStr, cerainfeature,
 					false, "FEATURES_BINARYOPERATOR");
 		}	
 	}
-	
+
+	public static String getStringRepr(CtElement operatorunderstudy) {
+		// workaround for
+//		at spoon.support.reflect.reference.CtTypeReferenceImpl.getAccessType(CtTypeReferenceImpl.java:774)
+//		at spoon.reflect.visitor.ImportAnalyzer$ScannerListener.enter(ImportAnalyzer.java:135)
+//		at spoon.reflect.visitor.EarlyTerminatingScanner.scan(EarlyTerminatingScanner.java:124)
+//		at spoon.reflect.visitor.CtScanner.scan(CtScanner.java:184)
+//		at spoon.reflect.visitor.EarlyTerminatingScanner.scan(EarlyTerminatingScanner.java:106)
+//		at spoon.reflect.visitor.CtScanner.visitCtTypeReference(CtScanner.java:813)
+//		at spoon.support.reflect.reference.CtTypeReferenceImpl.accept(CtTypeReferenceImpl.java:79)
+//		at spoon.reflect.visitor.EarlyTerminatingScanner.doScan(EarlyTerminatingScanner.java:145)
+//		at spoon.reflect.visitor.EarlyTerminatingScanner.scan(EarlyTerminatingScanner.java:127)
+//		at spoon.reflect.visitor.CtScanner.scan(CtScanner.java:184)
+//		at spoon.reflect.visitor.EarlyTerminatingScanner.scan(EarlyTerminatingScanner.java:106)
+//		at spoon.reflect.visitor.CtScanner.visitCtTypeAccess(CtScanner.java:825)
+//		at spoon.support.reflect.code.CtTypeAccessImpl.accept(CtTypeAccessImpl.java:28)
+//		at spoon.reflect.visitor.EarlyTerminatingScanner.doScan(EarlyTerminatingScanner.java:145)
+//		at spoon.reflect.visitor.EarlyTerminatingScanner.scan(EarlyTerminatingScanner.java:127)
+//		at spoon.reflect.visitor.CtScanner.scan(CtScanner.java:184)
+//		at spoon.reflect.visitor.EarlyTerminatingScanner.scan(EarlyTerminatingScanner.java:106)
+//		at spoon.reflect.visitor.EarlyTerminatingScanner.scan(EarlyTerminatingScanner.java:83)
+//		at spoon.reflect.visitor.CtScanner.visitCtInvocation(CtScanner.java:528)
+//		at spoon.support.reflect.code.CtInvocationImpl.accept(CtInvocationImpl.java:46)
+//		at spoon.reflect.visitor.EarlyTerminatingScanner.doScan(EarlyTerminatingScanner.java:145)
+//		at spoon.reflect.visitor.EarlyTerminatingScanner.scan(EarlyTerminatingScanner.java:127)
+//		at spoon.reflect.visitor.CtScanner.scan(CtScanner.java:184)
+//		at spoon.reflect.visitor.EarlyTerminatingScanner.scan(EarlyTerminatingScanner.java:106)
+//		at spoon.reflect.visitor.CtScanner.visitCtBinaryOperator(CtScanner.java:312)
+//		at spoon.support.reflect.code.CtBinaryOperatorImpl.accept(CtBinaryOperatorImpl.java:34)
+//		at spoon.reflect.visitor.EarlyTerminatingScanner.doScan(EarlyTerminatingScanner.java:145)
+//		at spoon.reflect.visitor.EarlyTerminatingScanner.scan(EarlyTerminatingScanner.java:127)
+//		at spoon.reflect.visitor.ImportAnalyzer.process(ImportAnalyzer.java:48)
+//		at spoon.reflect.visitor.ForceFullyQualifiedProcessor.process(ForceFullyQualifiedProcessor.java:28)
+//		at spoon.reflect.visitor.DefaultJavaPrettyPrinter.applyPreProcessors(DefaultJavaPrettyPrinter.java:2136)
+//		at spoon.reflect.visitor.DefaultJavaPrettyPrinter.printElement(DefaultJavaPrettyPrinter.java:281)
+//		at spoon.support.reflect.declaration.CtElementImpl.toString(CtElementImpl.java:295)
+//		at java.base/java.lang.StringConcatHelper.stringOf(StringConcatHelper.java:453)
+
+		try {
+			return operatorunderstudy.toString();
+		} catch (Exception e) {
+			// fake string, please open an issue if this is a problem
+			return "FIXME";
+		}
+	}
+
 	//icse15dataset: 1367617, 267239, 597123, 1348493, 614068, 306964, 902094, 410960, 1456710, 1458106
 	   private void analyzeBinaryOperatorInvolveNull(CtBinaryOperator operatorunderstudy, int operatorindex, Cntx<Object> context) {
 			
@@ -182,11 +228,13 @@ public class BinaryOperatorAnalyzer extends AbstractCodeAnalyzer {
 					
 			CtExpression leftexpression = operatorunderstudy.getLeftHandOperand();
 			CtExpression rightexpression = operatorunderstudy.getRightHandOperand();
-			
-			if(leftexpression.toString().trim().equals("null") || rightexpression.toString().trim().equals("null"))
+
+		   final String leftStr = getStringRepr(leftexpression);
+		   final String rightStr = getStringRepr(rightexpression);
+			if(leftStr.trim().equals("null") || rightStr.trim().equals("null"))
 				whethercontainnull = true;
 			
-			writeGroupedInfo(context, Integer.toString(operatorindex)+"_"+operatorunderstudy, CodeFeatures.O3_CONTAIN_NULL, 
+			writeGroupedInfo(context, Integer.toString(operatorindex)+"_"+getStringRepr(operatorunderstudy), CodeFeatures.O3_CONTAIN_NULL,
 					whethercontainnull, "FEATURES_BINARYOPERATOR");
 			
 		}
@@ -199,15 +247,17 @@ public class BinaryOperatorAnalyzer extends AbstractCodeAnalyzer {
 					
 			CtExpression leftexpression = operatorunderstudy.getLeftHandOperand();
 			CtExpression rightexpression = operatorunderstudy.getRightHandOperand();
-			
-			if(leftexpression.toString().trim().equals("0") || leftexpression.toString().trim().equals("0.0") ||
-					leftexpression.toString().trim().equals("1.0") || leftexpression.toString().trim().equals("1")
-					|| rightexpression.toString().trim().equals("0") || rightexpression.toString().trim().equals("0.0") ||
-					rightexpression.toString().trim().equals("1.0") || rightexpression.toString().trim().equals("1")
-					|| leftexpression.toString().trim().endsWith("1") || rightexpression.toString().trim().endsWith("1"))
+
+		   final String leftStr = getStringRepr(leftexpression);
+		   final String rightStr = getStringRepr(rightexpression);
+		   if(leftStr.trim().equals("0") || leftStr.trim().equals("0.0") ||
+					leftStr.trim().equals("1.0") || leftStr.trim().equals("1")
+					|| rightStr.trim().equals("0") || rightStr.trim().equals("0.0") ||
+					rightStr.trim().equals("1.0") || rightStr.trim().equals("1")
+					|| leftStr.trim().endsWith("1") || rightStr.trim().endsWith("1"))
 				whethercontain01 = true;
 			
-			writeGroupedInfo(context, Integer.toString(operatorindex)+"_"+operatorunderstudy, CodeFeatures.O3_CONTAIN_01, 
+			writeGroupedInfo(context, Integer.toString(operatorindex)+"_"+getStringRepr(operatorunderstudy), CodeFeatures.O3_CONTAIN_01,
 					whethercontain01, "FEATURES_BINARYOPERATOR");
 		}
 	   
@@ -224,7 +274,7 @@ public class BinaryOperatorAnalyzer extends AbstractCodeAnalyzer {
 	    			whethercompareincondition = true;
 	        }
 			
-	        writeGroupedInfo(context, Integer.toString(operatorindex)+"_"+operatorunderstudy, CodeFeatures.O4_COMPARE_IN_CONDITION, 
+	        writeGroupedInfo(context, Integer.toString(operatorindex)+"_"+getStringRepr(operatorunderstudy), CodeFeatures.O4_COMPARE_IN_CONDITION,
 					whethercompareincondition, "FEATURES_BINARYOPERATOR");
 		}	
 }

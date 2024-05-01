@@ -26,6 +26,8 @@ import fr.inria.coming.repairability.models.InstanceStats;
 import gumtree.spoon.diff.operations.Operation;
 import org.json.simple.JSONObject;
 
+import static fr.inria.coming.codefeatures.codeanalyze.BinaryOperatorAnalyzer.getStringRepr;
+
 public class JSonPatternInstanceOutput implements IOutput {
 
 	@Override
@@ -152,9 +154,9 @@ public class JSonPatternInstanceOutput implements IOutput {
 						: "null");
 
 		op.addProperty("src_parent",
-				(operation.getSrcNode() != null) ? operation.getSrcNode().getParent().toString() : "null");
+				(operation.getSrcNode() != null) ? getStringRepr(operation.getSrcNode().getParent()) : "null");
 		op.addProperty("dst_parent",
-				(operation.getDstNode() != null) ? operation.getDstNode().getParent().toString() : "null");
+				(operation.getDstNode() != null) ? getStringRepr(operation.getDstNode().getParent()) : "null");
 
 		return op;
 	}
