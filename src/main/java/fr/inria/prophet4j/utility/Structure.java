@@ -5,7 +5,6 @@ import fr.inria.prophet4j.feature.Feature;
 import fr.inria.prophet4j.feature.FeatureCross;
 import fr.inria.prophet4j.feature.S4R.S4RFeature;
 import fr.inria.prophet4j.feature.enhanced.EnhancedFeature;
-import fr.inria.prophet4j.feature.extended.ExtendedFeature;
 import fr.inria.prophet4j.utility.Option.FeatureOption;
 import org.apache.commons.io.FileUtils;
 import spoon.reflect.declaration.CtElement;
@@ -82,9 +81,10 @@ public interface Structure {
                 case ENHANCED:
                     arraySize = EnhancedFeature.FEATURE_SIZE;
                     break;
+                case ORIGINAL:
+                    throw new RuntimeException("removed see https://github.com/SpoonLabs/coming/pull/266");
                 case EXTENDED:
-                    arraySize = ExtendedFeature.FEATURE_SIZE;
-                    break;
+                    throw new RuntimeException("removed see https://github.com/SpoonLabs/coming/pull/266");
                 case S4R:
                     arraySize = S4RFeature.FEATURE_SIZE;
                     break;
@@ -234,10 +234,12 @@ public interface Structure {
         public ParameterVector(FeatureOption featureOption) {
             switch (featureOption) {
                 case ENHANCED:
-                    throw new RuntimeException("removed see https://github.com/SpoonLabs/coming/issues/235");
-                case EXTENDED:
-                    this.arraySize = ExtendedFeature.FEATURE_SIZE;
+                    this.arraySize = EnhancedFeature.FEATURE_SIZE;
                     break;
+                case ORIGINAL:
+                    throw new RuntimeException("removed see https://github.com/SpoonLabs/coming/pull/266");
+                case EXTENDED:
+                    throw new RuntimeException("removed see https://github.com/SpoonLabs/coming/pull/266");
                 case S4R:
                     this.arraySize = S4RFeature.FEATURE_SIZE;
                     break;

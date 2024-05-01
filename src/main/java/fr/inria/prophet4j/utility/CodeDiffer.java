@@ -11,14 +11,13 @@ import fr.inria.prophet4j.feature.FeatureExtractor;
 import fr.inria.prophet4j.feature.RepairGenerator;
 import fr.inria.prophet4j.feature.S4R.S4RFeature;
 import fr.inria.prophet4j.feature.S4R.S4RFeatureCross;
+import fr.inria.prophet4j.feature.enhanced.EnhancedRepairGenerator;
 import fr.inria.prophet4j.utility.Structure.DiffType;
 import fr.inria.prophet4j.utility.Structure.FeatureMatrix;
 import fr.inria.prophet4j.utility.Structure.FeatureVector;
 import fr.inria.prophet4j.utility.Structure.DiffEntry;
 import fr.inria.prophet4j.utility.Structure.Repair;
 import fr.inria.prophet4j.feature.enhanced.EnhancedFeatureExtractor;
-import fr.inria.prophet4j.feature.extended.ExtendedFeatureExtractor;
-import fr.inria.prophet4j.feature.extended.ExtendedRepairGenerator;
 import fr.inria.prophet4j.utility.Option.FeatureOption;
 import gumtree.spoon.AstComparator;
 import gumtree.spoon.diff.Diff;
@@ -45,20 +44,12 @@ public class CodeDiffer {
     private boolean byGenerator;
     private Option option;
     private String pathName;
-    private boolean cross=true;
     private static final Logger logger = LogManager.getLogger(CodeDiffer.class.getName());
 
     public CodeDiffer(boolean byGenerator, Option option) {
         this.byGenerator = byGenerator;
         this.option = option;
         this.pathName = "";
-    }
-    
-    public CodeDiffer(boolean byGenerator, Option option, boolean cross) {
-        this.byGenerator = byGenerator;
-        this.option = option;
-        this.pathName = "";
-        this.cross = cross;
     }
 
     public void setPathName(String pathName) {
@@ -71,9 +62,10 @@ public class CodeDiffer {
             case ENHANCED:
                 featureExtractor = new EnhancedFeatureExtractor();
                 break;
+            case ORIGINAL:
+                throw new RuntimeException("removed see https://github.com/SpoonLabs/coming/issues/266");
             case EXTENDED:
-                featureExtractor = new ExtendedFeatureExtractor();
-                break;
+                throw new RuntimeException("removed see https://github.com/SpoonLabs/coming/issues/266");
             case S4R:
                 logger.warn("S4R should not call newFeatureExtractor");
                 break;
@@ -87,10 +79,12 @@ public class CodeDiffer {
         RepairGenerator repairGenerator = null;
         switch (option.featureOption) {
             case ENHANCED:
-                throw new RuntimeException("class removed by Martin was exact duplicate of ExtendedRepairGenerator");
-            case EXTENDED:
-                repairGenerator = new ExtendedRepairGenerator(diffEntry);
+                repairGenerator = new EnhancedRepairGenerator(diffEntry);
                 break;
+            case ORIGINAL:
+                throw new RuntimeException("removed see https://github.com/SpoonLabs/coming/pull/266");
+            case EXTENDED:
+                throw new RuntimeException("removed see https://github.com/SpoonLabs/coming/pull/266");
             case S4R:
                 throw new RuntimeException("S4R should not call newRepairGenerator");
             case S4RO:
@@ -353,11 +347,7 @@ public class CodeDiffer {
                             Repair repair = generator.obtainHumanRepair();
                             FeatureVector featureVector = new FeatureVector();
                             for (CtElement atom : repair.getCandidateAtoms()) {
-                            		if(cross) {
                                 featureVector.merge(featureExtractor.extractFeature(repair, atom));
-                            		} else {
-                            			featureVector = featureExtractor.extractSimpleP4JFeature(repair, atom);
-                            		}
                             }
                             featureVectors.add(featureVector);
                         }

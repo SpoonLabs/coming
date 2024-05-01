@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import fr.inria.coming.core.entities.interfaces.IRevisionPair;
-import fr.inria.prophet4j.feature.extended.ExtendedFeatureCross;
+import fr.inria.prophet4j.feature.enhanced.EnhancedFeatureCross;
 import org.apache.log4j.Logger;
 
 import com.google.gson.JsonObject;
@@ -24,7 +24,6 @@ import fr.inria.coming.core.engine.Analyzer;
 import fr.inria.coming.core.entities.AnalysisResult;
 import fr.inria.coming.core.entities.DiffResult;
 import fr.inria.coming.core.entities.RevisionResult;
-import fr.inria.coming.main.ComingProperties;
 import fr.inria.prophet4j.feature.Feature;
 import fr.inria.prophet4j.feature.FeatureCross;
 import fr.inria.prophet4j.utility.CodeDiffer;
@@ -98,49 +97,20 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 			return null;
 		}
 		Option option = new Option();
-		option.featureOption = FeatureOption.EXTENDED;
-		//We set the first parameter of CodeDiffer as False to not allow the code generation at buggy location
-		//By default, coming extracts simple P4J features, so the cross sets to false
-		Boolean cross = ComingProperties.getPropertyBoolean("cross");
+		option.featureOption = FeatureOption.ENHANCED;
 
-		CodeDiffer codeDiffer = new CodeDiffer(false, option,cross);
+		CodeDiffer codeDiffer = new CodeDiffer(false, option);
 		//Get feature matrix
 		List<FeatureMatrix> featureMatrix = codeDiffer.runByGenerator(src, target);
 		//Get feature vector
 		JsonObject jsonfile = null;
 		//	csvfile = genVectorsCSV(option,target,featureMatrix);
-		jsonfile = getP4JJSON(option,target,featureMatrix,true);
+		jsonfile = genVectorsJSON(option,target,featureMatrix);
 		return jsonfile;
 	}
-	
-
-	public JsonObject getP4JJSON(Option option, File target, List<FeatureMatrix> featureMatrix, Boolean numericalIndixator) {
-		
-	        JsonObject jsonfile = new JsonObject();
-	        
-	        for (FeatureVector featureVector : featureMatrix.get(0).getFeatureVectors()) {
-                List<FeatureCross> featureCrosses = featureVector.getNonSortedFeatureCrosses();
-                
-                for (FeatureCross featureCross : featureCrosses) {
-            			List<Feature> simpleP4JFeatures= featureCross.getFeatures();
-	                	for(Feature f: simpleP4JFeatures) {
-	                		Boolean positive = featureCross.containFeature(f);
-	                		if(numericalIndixator) {
-		                		jsonfile.addProperty("P4J_"+f, positive?"1":"0");
-	                		}else {
-		                		jsonfile.addProperty("P4J_"+f, positive?"true":"false");
-	                		}
-	                	}
-
-                }
-	        }
-	        return jsonfile;
-
-	}
 
 
-	
-	 public JsonObject genVectorsCSV(Option option, File patchedFile, List<FeatureMatrix> featureMatrices) {
+	public JsonObject genVectorsJSON(Option option, File patchedFile, List<FeatureMatrix> featureMatrices) {
 		 
 		 	String[] pathStr = patchedFile.getAbsolutePath().split("/");
 		 	String fileName = pathStr[pathStr.length-1];
@@ -152,10 +122,23 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 	        List<String> values = new ArrayList<>();
 	        JsonObject jsonfile = new JsonObject();
 
-	        //Initial all vector  as 0.
+
+		for (FeatureVector featureVector : featureMatrices.get(0).getFeatureVectors()) {
+			List<FeatureCross> featureCrosses = featureVector.getNonSortedFeatureCrosses();
+			for (FeatureCross featureCross : featureCrosses) {
+				List<Feature> simpleP4JFeatures= featureCross.getFeatures();
+				for(Feature f: simpleP4JFeatures) {
+					Boolean positive = featureCross.containFeature(f);
+					jsonfile.addProperty("P4J_"+f, positive?"true":"false");
+				}
+
+			}
+		}
+
+		//Initial all vector  as 0.
 	        for (int idx = 0; idx < parameterVector.size(); idx++) {
 	            FeatureCross featureCross;
-	            featureCross = new ExtendedFeatureCross(idx);
+	            featureCross = new EnhancedFeatureCross(idx);
                 header.add(featureCross.getFeatures().toString());
 	            values.add("0");
 	        }
