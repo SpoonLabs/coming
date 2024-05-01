@@ -9,7 +9,6 @@ public interface FeatureCross {
     Double getDegree();
 
     List<Feature> getFeatures();
-    List<Feature> getSimpleP4JFeatures();
 
     boolean containFeature(Feature feature);
 }

@@ -98,7 +98,7 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 			return null;
 		}
 		Option option = new Option();
-		option.featureOption = FeatureOption.ORIGINAL;
+		option.featureOption = FeatureOption.EXTENDED;
 		//We set the first parameter of CodeDiffer as False to not allow the code generation at buggy location
 		//By default, coming extracts simple P4J features, so the cross sets to false
 		Boolean cross = ComingProperties.getPropertyBoolean("cross");
@@ -109,12 +109,12 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 		//Get feature vector
 		JsonObject jsonfile = null;
 		//	csvfile = genVectorsCSV(option,target,featureMatrix);
-		jsonfile = getSimleP4JJSON(option,target,featureMatrix,true);
+		jsonfile = getP4JJSON(option,target,featureMatrix,true);
 		return jsonfile;
 	}
 	
 
-	public JsonObject getSimleP4JJSON(Option option, File target, List<FeatureMatrix> featureMatrix, Boolean numericalIndixator) {
+	public JsonObject getP4JJSON(Option option, File target, List<FeatureMatrix> featureMatrix, Boolean numericalIndixator) {
 		
 	        JsonObject jsonfile = new JsonObject();
 	        
@@ -122,7 +122,7 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
                 List<FeatureCross> featureCrosses = featureVector.getNonSortedFeatureCrosses();
                 
                 for (FeatureCross featureCross : featureCrosses) {
-            			List<Feature> simpleP4JFeatures= featureCross.getSimpleP4JFeatures();
+            			List<Feature> simpleP4JFeatures= featureCross.getFeatures();
 	                	for(Feature f: simpleP4JFeatures) {
 	                		Boolean positive = featureCross.containFeature(f);
 	                		if(numericalIndixator) {

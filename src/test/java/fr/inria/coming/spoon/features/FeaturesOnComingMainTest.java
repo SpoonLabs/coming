@@ -86,7 +86,8 @@ public class FeaturesOnComingMainTest {
 		assertTrue(entries.size() > 0);
 		for (Map.Entry<String, JsonElement> entry : entries) {
 			final JsonObject value = (JsonObject) entry.getValue();
-			assertTrue(value.keySet().contains("P4J_AF_VF_CT_ABST_V_AF"));
+			//System.out.println(value.keySet());
+			assertTrue(value.keySet().contains("P4J_ABSTRACT_V_AF"));
 		}
 
 	}
@@ -107,7 +108,8 @@ public class FeaturesOnComingMainTest {
 		assertTrue(entries.size() > 0);
 		for (Map.Entry<String, JsonElement> entry : entries) {
 			final JsonObject value = (JsonObject) entry.getValue();
-			assertEquals("1", value.get("P4J_RF_CT_REMOVE_STMT").getAsString());
+			System.out.println(value.keySet());
+			assertEquals("1", value.get("P4J_ABSTRACT_V_AF").getAsString());
 		}
 
 	}

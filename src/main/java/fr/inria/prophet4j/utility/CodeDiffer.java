@@ -95,6 +95,8 @@ public class CodeDiffer {
                 throw new RuntimeException("S4R should not call newRepairGenerator");
             case S4RO:
                 throw new RuntimeException("removed see https://github.com/SpoonLabs/coming/issues/235");
+            default:
+                throw new RuntimeException("removed see https://github.com/SpoonLabs/coming/issues/235");
         }
         return repairGenerator;
     }
