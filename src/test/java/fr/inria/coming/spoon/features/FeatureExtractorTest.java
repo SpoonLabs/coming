@@ -1,4 +1,4 @@
-package fr.inria.prophet4j;
+package fr.inria.coming.spoon.features;
 
 import static org.junit.Assert.assertEquals;
 
