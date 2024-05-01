@@ -5,7 +5,6 @@ import java.util.*;
 import fr.inria.prophet4j.feature.FeatureCross;
 import fr.inria.prophet4j.feature.S4R.S4RFeature;
 import fr.inria.prophet4j.feature.enhanced.EnhancedFeature;
-import fr.inria.prophet4j.feature.extended.ExtendedFeature;
 import fr.inria.prophet4j.utility.Option;
 import fr.inria.prophet4j.utility.Support;
 import org.apache.logging.log4j.Level;
@@ -43,9 +42,10 @@ public class FeatureLearner {
             case ENHANCED:
                 arraySize = EnhancedFeature.FEATURE_SIZE;
                 break;
+            case ORIGINAL:
+                throw new RuntimeException("removed see https://github.com/SpoonLabs/coming/pull/266");
             case EXTENDED:
-                arraySize = ExtendedFeature.FEATURE_SIZE;
-                break;
+                throw new RuntimeException("removed see https://github.com/SpoonLabs/coming/pull/266");
             case S4R:
                 arraySize = S4RFeature.FEATURE_SIZE;
                 break;

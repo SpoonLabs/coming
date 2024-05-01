@@ -1,36 +1,33 @@
-package fr.inria.prophet4j.feature.extended;
+package fr.inria.prophet4j.feature.enhanced;
+
+import fr.inria.prophet4j.feature.RepairGenerator;
+import fr.inria.prophet4j.utility.Structure.DiffEntry;
+import fr.inria.prophet4j.utility.Structure.Repair;
+import fr.inria.prophet4j.utility.Structure.RepairKind;
+import fr.inria.prophet4j.feature.enhanced.util.EnhancedRepairAnalyzer;
+import spoon.Launcher;
+import spoon.reflect.code.*;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.factory.CoreFactory;
+import spoon.reflect.path.CtRole;
+import spoon.reflect.visitor.CtScanner;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.lang.reflect.Type;
 import java.util.*;
 
-import fr.inria.prophet4j.utility.Structure.RepairKind;
-import fr.inria.prophet4j.utility.Structure.Repair;
-import fr.inria.prophet4j.utility.Structure.DiffEntry;
-import fr.inria.prophet4j.feature.RepairGenerator;
-import fr.inria.prophet4j.feature.extended.util.ExtendedRepairAnalyzer;
-import spoon.Launcher;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtStatementList;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.reflect.code.*;
-import spoon.reflect.factory.CoreFactory;
-import spoon.reflect.path.CtRole;
-import spoon.reflect.visitor.CtScanner;
-
 // based on RepairGenerator.cpp
-public class ExtendedRepairGenerator implements RepairGenerator {
+public class EnhancedRepairGenerator implements RepairGenerator {
     private Set<CtElement> area; // loc_map
     private DiffEntry diffEntry;
     private CoreFactory factory;
     private List<Repair> repairs = new ArrayList<>();
     private Map<CtStatementList, Integer> compound_counter = new HashMap<>();
-    private ExtendedRepairAnalyzer repairAnalyzer = new ExtendedRepairAnalyzer();
+    private EnhancedRepairAnalyzer repairAnalyzer = new EnhancedRepairAnalyzer();
 
-    public ExtendedRepairGenerator(DiffEntry diffEntry) {
+    public EnhancedRepairGenerator(DiffEntry diffEntry) {
         this.area = fuzzyLocator(diffEntry.srcNode);
         this.diffEntry = diffEntry;
         this.factory = new Launcher().getFactory().Core();
@@ -189,7 +186,7 @@ public class ExtendedRepairGenerator implements RepairGenerator {
 
     private void genReplaceStmt(CtStatement n) {
         if (n instanceof CtExpression) {
-            ExtendedRepairAnalyzer.AtomReplaceVisitor V = repairAnalyzer.newAtomReplaceVisitor();
+            EnhancedRepairAnalyzer.AtomReplaceVisitor V = repairAnalyzer.newAtomReplaceVisitor();
             V.TraverseStmt(n);
             for (CtElement it : V.getResult()) {
                 Repair repair = new Repair();
@@ -241,7 +238,7 @@ public class ExtendedRepairGenerator implements RepairGenerator {
     private void genAddStmt(CtStatement n) {
         Set<CtElement> exprs = repairAnalyzer.getGlobalCandidateExprs(n);
         for (CtElement it: exprs) {
-            ExtendedRepairAnalyzer.AtomReplaceVisitor V = repairAnalyzer.newAtomReplaceVisitor();
+            EnhancedRepairAnalyzer.AtomReplaceVisitor V = repairAnalyzer.newAtomReplaceVisitor();
             V.TraverseStmt(it);
 //            if (!repairAnalyzer.isValidStmt(it))
 //                continue;
@@ -383,7 +380,6 @@ public class ExtendedRepairGenerator implements RepairGenerator {
         } catch (Exception e) {
             // such as public, final, static
         }
-
         return repair;
     }
 

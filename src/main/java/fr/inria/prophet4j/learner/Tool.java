@@ -1,10 +1,10 @@
 package fr.inria.prophet4j.learner;
 
+import fr.inria.prophet4j.feature.enhanced.EnhancedFeatureCross;
 import fr.inria.prophet4j.utility.CodeDiffer;
 import fr.inria.prophet4j.feature.FeatureCross;
 import fr.inria.prophet4j.utility.Structure.FeatureMatrix;
 import fr.inria.prophet4j.utility.Structure.FeatureVector;
-import fr.inria.prophet4j.feature.extended.ExtendedFeatureCross;
 import fr.inria.prophet4j.utility.Option;
 import fr.inria.prophet4j.utility.Option.DataOption;
 import fr.inria.prophet4j.utility.Option.PatchOption;
@@ -50,7 +50,9 @@ public class Tool {
             FeatureCross featureCross;
             switch (option.featureOption) {
                 case EXTENDED:
-                    featureCross = new ExtendedFeatureCross(idx);
+                    throw new RuntimeException("removed see https://github.com/SpoonLabs/coming/pull/266");
+                case ENHANCED:
+                    featureCross = new EnhancedFeatureCross(idx);
                     header.add(featureCross.getFeatures().toString());
                     break;
                 default:
@@ -91,7 +93,9 @@ public class Tool {
             FeatureCross featureCross;
             switch (option.featureOption) {
                 case EXTENDED:
-                    featureCross = new ExtendedFeatureCross(idx);
+                    throw new RuntimeException("removed see https://github.com/SpoonLabs/coming/pull/266");
+                case ENHANCED:
+                    featureCross = new EnhancedFeatureCross(idx);
                     header.add(featureCross.getFeatures().toString());
                     break;
                 default:

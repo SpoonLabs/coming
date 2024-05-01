@@ -1,14 +1,16 @@
-package fr.inria.prophet4j.feature.extended.util;
+package fr.inria.prophet4j.feature.enhanced.util;
 
 import spoon.reflect.code.*;
-import spoon.reflect.declaration.*;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.lang.reflect.Type;
 import java.util.*;
 
 // based on LocalAnalyzer.cpp GlobalAnalyzer.cpp
-public class ExtendedRepairAnalyzer {
+public class EnhancedRepairAnalyzer {
     public List<CtElement> getCondCandidateVars(CtElement element) {
         List<CtElement> ret = new ArrayList<>();
         // Global variables

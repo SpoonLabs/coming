@@ -1,4 +1,4 @@
-package fr.inria.prophet4j;
+package fr.inria.coming.spoon.features;
 
 import static org.junit.Assert.assertEquals;
 
@@ -10,13 +10,13 @@ import org.junit.Test;
 
 import fr.inria.prophet4j.feature.Feature;
 import fr.inria.prophet4j.utility.Structure.FeatureMatrix;
-import fr.inria.prophet4j.feature.extended.ExtendedFeature.AtomicFeature;
-import fr.inria.prophet4j.feature.extended.ExtendedFeature.RepairFeature;
-import fr.inria.prophet4j.feature.extended.ExtendedFeature.ValueFeature;
+import fr.inria.prophet4j.feature.enhanced.EnhancedFeature.AtomicFeature;
+import fr.inria.prophet4j.feature.enhanced.EnhancedFeature.RepairFeature;
+import fr.inria.prophet4j.feature.enhanced.EnhancedFeature.ValueFeature;
 import fr.inria.prophet4j.utility.CodeDiffer;
 
 // for ExtendedFeatures
-public class ExtendedFeatureExtractorTest {
+public class FeatureExtractorTest {
 	
     private void test(Feature checkFeature) {
         String str0, str1;
@@ -339,7 +339,7 @@ public class ExtendedFeatureExtractorTest {
 
     private boolean check(String str0, String str1, Feature feature) {
         Option option = new Option();
-        option.featureOption = FeatureOption.EXTENDED;
+        option.featureOption = FeatureOption.ENHANCED;
         CodeDiffer codeDiffer = new CodeDiffer(false, option);
         List<FeatureMatrix> featureMatrices = codeDiffer.runByGenerator(str0, str1);
         for (FeatureMatrix featureMatrix : featureMatrices) {

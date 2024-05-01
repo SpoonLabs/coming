@@ -224,5 +224,4 @@ public class EnhancedFeatureCross implements FeatureCross, Serializable {
     public String toString() {
         return "FeatureCross: " + features;
     }
-
 }
