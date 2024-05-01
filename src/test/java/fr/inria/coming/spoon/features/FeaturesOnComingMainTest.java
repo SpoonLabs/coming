@@ -1,5 +1,6 @@
 package fr.inria.coming.spoon.features;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -9,9 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.github.gumtreediff.matchers.GumtreeProperties;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import gumtree.spoon.AstComparator;
+import gumtree.spoon.diff.Diff;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -87,6 +91,26 @@ public class FeaturesOnComingMainTest {
 
 	}
 
+	@Test
+	public void testissue264() throws Exception {
+		// https://github.com/SpoonLabs/coming/issues/264
+
+		fr.inria.coming.main.ComingMain.main(new String[] { "-location", "src/main/resources/issue264/Util_before.java:src/main/resources/issue264/Util_after.java", "-input", "filespair", "-output", "out", "-mode", "features"});
+
+		JsonObject jsonObject = new Gson().fromJson(new FileReader("out/features_Util_before.java->Util_after.java_FeatureAnalyzer.json"), JsonObject.class);
+
+		// jq ".files[0].features[3]" out/'features_Util_before.java->Util_after.java_FeatureAnalyzer.json'
+
+		final Set<Map.Entry<String, JsonElement>> entries = jsonObject.get("files").getAsJsonArray().get(0).getAsJsonObject().get("features").getAsJsonArray().get(3).getAsJsonObject().entrySet();
+
+		// check that we have a P4J feature
+		assertTrue(entries.size() > 0);
+		for (Map.Entry<String, JsonElement> entry : entries) {
+			final JsonObject value = (JsonObject) entry.getValue();
+			assertEquals("1", value.get("P4J_RF_CT_REMOVE_STMT").getAsString());
+		}
+
+	}
 
 	@Test
 	public void testFeaturesOnComingEvolutionFromGit1() throws Exception {

@@ -41,6 +41,8 @@ import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.LineFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
+import static fr.inria.coming.codefeatures.codeanalyze.BinaryOperatorAnalyzer.getStringRepr;
+
 public abstract class AbstractCodeAnalyzer {
 
 	protected CodeElementInfo elementinfo;
@@ -295,8 +297,8 @@ public abstract class AbstractCodeAnalyzer {
 			if (binOp != null && binOp.size() > 0) {
 
 				for (CtBinaryOperator ctBinaryOperator : binOp) {
-					if (ctBinaryOperator.getRightHandOperand().toString().equals("null")
-							|| ctBinaryOperator.getLeftHandOperand().toString().equals("null")) {
+					if (getStringRepr(ctBinaryOperator.getRightHandOperand()).equals("null")
+							|| getStringRepr(ctBinaryOperator.getLeftHandOperand()).equals("null")) {
 
 						return false;
 					}
@@ -349,8 +351,8 @@ public abstract class AbstractCodeAnalyzer {
 			if (binOp != null && binOp.size() > 0) {
 
 				for (CtBinaryOperator ctBinaryOperator : binOp) {
-					if (!ctBinaryOperator.getRightHandOperand().toString().equals("null")
-							&& !ctBinaryOperator.getLeftHandOperand().toString().equals("null")) {
+					if (!getStringRepr(ctBinaryOperator.getRightHandOperand()).equals("null")
+							&& !getStringRepr(ctBinaryOperator.getLeftHandOperand()).equals("null")) {
 
 						return false;
 					}
