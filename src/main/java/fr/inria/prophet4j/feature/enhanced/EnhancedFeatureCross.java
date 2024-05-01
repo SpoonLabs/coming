@@ -225,9 +225,4 @@ public class EnhancedFeatureCross implements FeatureCross, Serializable {
         return "FeatureCross: " + features;
     }
 
-	@Override
-	public List<Feature> getSimpleP4JFeatures() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
