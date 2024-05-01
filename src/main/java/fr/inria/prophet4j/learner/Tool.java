@@ -11,7 +11,6 @@ import fr.inria.prophet4j.utility.Option.PatchOption;
 import fr.inria.prophet4j.utility.Option.FeatureOption;
 import fr.inria.prophet4j.utility.Option.RankingOption;
 import fr.inria.prophet4j.utility.Structure.ParameterVector;
-import fr.inria.prophet4j.feature.original.OriginalFeatureCross;
 import fr.inria.prophet4j.utility.Support;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -50,10 +49,6 @@ public class Tool {
         for (int idx = 0; idx < parameterVector.size(); idx++) {
             FeatureCross featureCross;
             switch (option.featureOption) {
-                case ORIGINAL:
-                    featureCross = new OriginalFeatureCross(idx);
-                    header.add(featureCross.getFeatures().toString());
-                    break;
                 case EXTENDED:
                     featureCross = new ExtendedFeatureCross(idx);
                     header.add(featureCross.getFeatures().toString());
@@ -95,10 +90,6 @@ public class Tool {
         for (int idx = 0; idx < parameterVector.size(); idx++) {
             FeatureCross featureCross;
             switch (option.featureOption) {
-                case ORIGINAL:
-                    featureCross = new OriginalFeatureCross(idx);
-                    header.add(featureCross.getFeatures().toString());
-                    break;
                 case EXTENDED:
                     featureCross = new ExtendedFeatureCross(idx);
                     header.add(featureCross.getFeatures().toString());

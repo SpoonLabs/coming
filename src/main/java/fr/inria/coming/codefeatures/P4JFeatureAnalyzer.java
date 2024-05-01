@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import fr.inria.coming.core.entities.interfaces.IRevisionPair;
+import fr.inria.prophet4j.feature.extended.ExtendedFeatureCross;
 import org.apache.log4j.Logger;
 
 import com.google.gson.JsonObject;
@@ -26,7 +27,6 @@ import fr.inria.coming.core.entities.RevisionResult;
 import fr.inria.coming.main.ComingProperties;
 import fr.inria.prophet4j.feature.Feature;
 import fr.inria.prophet4j.feature.FeatureCross;
-import fr.inria.prophet4j.feature.original.OriginalFeatureCross;
 import fr.inria.prophet4j.utility.CodeDiffer;
 import fr.inria.prophet4j.utility.Option;
 import fr.inria.prophet4j.utility.Option.FeatureOption;
@@ -123,13 +123,12 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
                 
                 for (FeatureCross featureCross : featureCrosses) {
             			List<Feature> simpleP4JFeatures= featureCross.getSimpleP4JFeatures();
-	                	OriginalFeatureCross ofc = (OriginalFeatureCross) featureCross;
 	                	for(Feature f: simpleP4JFeatures) {
-	                		Boolean positive = ofc.containFeature(f);
+	                		Boolean positive = featureCross.containFeature(f);
 	                		if(numericalIndixator) {
-		                		jsonfile.addProperty("P4J_"+ofc.getCrossType()+"_"+f, positive?"1":"0");
+		                		jsonfile.addProperty("P4J_"+f, positive?"1":"0");
 	                		}else {
-		                		jsonfile.addProperty("P4J_"+ofc.getCrossType()+"_"+f, positive?"true":"false");
+		                		jsonfile.addProperty("P4J_"+f, positive?"true":"false");
 	                		}
 	                	}
 
@@ -156,7 +155,7 @@ public class P4JFeatureAnalyzer implements Analyzer<IRevision> {
 	        //Initial all vector  as 0.
 	        for (int idx = 0; idx < parameterVector.size(); idx++) {
 	            FeatureCross featureCross;
-	            featureCross = new OriginalFeatureCross(idx);
+	            featureCross = new ExtendedFeatureCross(idx);
                 header.add(featureCross.getFeatures().toString());
 	            values.add("0");
 	        }

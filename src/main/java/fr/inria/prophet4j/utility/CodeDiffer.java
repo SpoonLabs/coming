@@ -19,8 +19,6 @@ import fr.inria.prophet4j.utility.Structure.Repair;
 import fr.inria.prophet4j.feature.enhanced.EnhancedFeatureExtractor;
 import fr.inria.prophet4j.feature.extended.ExtendedFeatureExtractor;
 import fr.inria.prophet4j.feature.extended.ExtendedRepairGenerator;
-import fr.inria.prophet4j.feature.original.OriginalFeatureExtractor;
-import fr.inria.prophet4j.feature.original.OriginalRepairGenerator;
 import fr.inria.prophet4j.utility.Option.FeatureOption;
 import gumtree.spoon.AstComparator;
 import gumtree.spoon.diff.Diff;
@@ -76,9 +74,6 @@ public class CodeDiffer {
             case EXTENDED:
                 featureExtractor = new ExtendedFeatureExtractor();
                 break;
-            case ORIGINAL:
-                featureExtractor = new OriginalFeatureExtractor();
-                break;
             case S4R:
                 logger.warn("S4R should not call newFeatureExtractor");
                 break;
@@ -95,9 +90,6 @@ public class CodeDiffer {
                 throw new RuntimeException("class removed by Martin was exact duplicate of ExtendedRepairGenerator");
             case EXTENDED:
                 repairGenerator = new ExtendedRepairGenerator(diffEntry);
-                break;
-            case ORIGINAL:
-                repairGenerator = new OriginalRepairGenerator(diffEntry);
                 break;
             case S4R:
                 throw new RuntimeException("S4R should not call newRepairGenerator");

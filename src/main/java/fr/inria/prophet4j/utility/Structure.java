@@ -6,7 +6,6 @@ import fr.inria.prophet4j.feature.FeatureCross;
 import fr.inria.prophet4j.feature.S4R.S4RFeature;
 import fr.inria.prophet4j.feature.enhanced.EnhancedFeature;
 import fr.inria.prophet4j.feature.extended.ExtendedFeature;
-import fr.inria.prophet4j.feature.original.OriginalFeature;
 import fr.inria.prophet4j.utility.Option.FeatureOption;
 import org.apache.commons.io.FileUtils;
 import spoon.reflect.declaration.CtElement;
@@ -85,9 +84,6 @@ public interface Structure {
                     break;
                 case EXTENDED:
                     arraySize = ExtendedFeature.FEATURE_SIZE;
-                    break;
-                case ORIGINAL:
-                    arraySize = OriginalFeature.FEATURE_SIZE;
                     break;
                 case S4R:
                     arraySize = S4RFeature.FEATURE_SIZE;
@@ -241,9 +237,6 @@ public interface Structure {
                     throw new RuntimeException("removed see https://github.com/SpoonLabs/coming/issues/235");
                 case EXTENDED:
                     this.arraySize = ExtendedFeature.FEATURE_SIZE;
-                    break;
-                case ORIGINAL:
-                    this.arraySize = OriginalFeature.FEATURE_SIZE;
                     break;
                 case S4R:
                     this.arraySize = S4RFeature.FEATURE_SIZE;
