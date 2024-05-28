@@ -13,6 +13,7 @@ Contact:
 ## Install
 
 Coming is deployed on Maven Central, see [past versions](https://repo1.maven.org/maven2/com/github/spoonlabs/coming/).
+As of version 1.72 (May 2024), it requires Java 17.
 
 To build yourself, the procedure is as follows.
 
