@@ -2,8 +2,6 @@ package fr.inria.coming.core.entities.output;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -24,9 +22,8 @@ import fr.inria.coming.core.entities.interfaces.IOutput;
 import fr.inria.coming.main.ComingProperties;
 import fr.inria.coming.repairability.models.InstanceStats;
 import gumtree.spoon.diff.operations.Operation;
-import org.json.simple.JSONObject;
 
-import static fr.inria.coming.codefeatures.codeanalyze.BinaryOperatorAnalyzer.getStringRepr;
+import static fr.inria.coming.codefeatures.codeanalyze.BinaryOperatorAnalyzer.getSafeStringRepr;
 
 public class JSonPatternInstanceOutput implements IOutput {
 
@@ -154,9 +151,9 @@ public class JSonPatternInstanceOutput implements IOutput {
 						: "null");
 
 		op.addProperty("src_parent",
-				(operation.getSrcNode() != null) ? getStringRepr(operation.getSrcNode().getParent()) : "null");
+				(operation.getSrcNode() != null) ? getSafeStringRepr(operation.getSrcNode().getParent()) : "null");
 		op.addProperty("dst_parent",
-				(operation.getDstNode() != null) ? getStringRepr(operation.getDstNode().getParent()) : "null");
+				(operation.getDstNode() != null) ? getSafeStringRepr(operation.getDstNode().getParent()) : "null");
 
 		return op;
 	}

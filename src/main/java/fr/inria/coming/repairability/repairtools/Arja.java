@@ -37,6 +37,8 @@ import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
+import static fr.inria.coming.codefeatures.codeanalyze.BinaryOperatorAnalyzer.getSafeStringRepr;
+
 /**
  * Arja tries to correct the code by inserting statements that are in the source
  * file either in a direct approach or a type matching approach.
@@ -218,7 +220,7 @@ public class Arja extends AbstractRepairTool {
 				continue;
 			}
 
-			String srcAsString = currentSrcElement.toString();
+			String srcAsString = getSafeStringRepr(currentSrcElement);
 			Set<CtElement> elementsInSubtree = new HashSet<>();
 			elementsInSubtree.add(currentSrcElement);
 			for (int j = 0; j == 0 || (i + j < allSrcElements.size()
