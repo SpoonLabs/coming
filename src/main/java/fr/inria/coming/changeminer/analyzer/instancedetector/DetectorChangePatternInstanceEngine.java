@@ -31,6 +31,8 @@ import gumtree.spoon.diff.operations.Operation;
 import gumtree.spoon.diff.operations.UpdateOperation;
 import spoon.reflect.declaration.CtElement;
 
+import static fr.inria.coming.codefeatures.codeanalyze.BinaryOperatorAnalyzer.getSafeStringRepr;
+
 /**
  *
  * @author Matias Martinez
@@ -451,7 +453,7 @@ public class DetectorChangePatternInstanceEngine {
         // Scale the parent hierarchy and check types.
         while (currentNodeFromAction != null && i_levels <= parentLevel) {
             String typeOfNode = EntityTypesInfoResolver.getNodeLabelFromCtElement(currentNodeFromAction);
-            String valueOfNode = currentNodeFromAction.toString();
+            String valueOfNode = getSafeStringRepr(currentNodeFromAction);
             String roleInParent = (currentNodeFromAction.getRoleInParent() != null)
                     ? currentNodeFromAction.getRoleInParent().toString().toLowerCase()
                     : "";
