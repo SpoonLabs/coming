@@ -105,15 +105,10 @@ public class GumtreeDiffTest {
 		assertEquals("1", operations.get(0).getDstNode().toString());
 	}
 
-	/**
-	 * This test shows there is bug/limitation in the gumtree diff. Diff exists but
-	 * not found.
-	 * 
-	 * @throws Exception
-	 */
-
 	@Test
-	public void DiffNotFoundTest() throws Exception {
+	public void diffFoundTest() throws Exception {
+		// contract: we can find a diff with cast difference
+
 		/*
 		 * SRC: x0 = 0.5 * (x0 + x1 - FastMath.max(rtol * FastMath.abs(x1), atol));
 		 * TARGET: x0 = 0.5 * ((int)x0 + x1 - FastMath.max(rtol * FastMath.abs(x1),
@@ -127,11 +122,9 @@ public class GumtreeDiffTest {
 		List<Operation> operations = diff.getRootOperations();
 		System.out.println(operations);
 
-		// Delete VariableRead at org.apache.commons.math.analysis.solvers.BaseSecantSolver:188
-		//	x0
-		//, Insert VariableRead at org.apache.commons.math.analysis.solvers.BaseSecantSolver:188
-		//	((int) (x0))
-
+		// [Insert TypeReference at org.apache.commons.math.analysis.solvers.BaseSecantSolver:188
+		//	int
+		//]
 		assertEquals(1, operations.size());
 
 		/*
