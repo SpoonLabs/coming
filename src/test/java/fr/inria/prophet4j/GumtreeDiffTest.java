@@ -132,7 +132,7 @@ public class GumtreeDiffTest {
 		//, Insert VariableRead at org.apache.commons.math.analysis.solvers.BaseSecantSolver:188
 		//	((int) (x0))
 
-		assertEquals(2, operations.size());
+		assertEquals(1, operations.size());
 
 		/*
 		 * SRC: n1n2prod * (n1 + n2 + 1) / 12.0; TARGET: (double) ((double) n1n2prod *
