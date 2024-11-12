@@ -17,8 +17,6 @@ import fr.inria.prophet4j.utility.Structure.FeatureVector;
 import fr.inria.prophet4j.utility.Structure.DiffEntry;
 import fr.inria.prophet4j.utility.Structure.Repair;
 import fr.inria.prophet4j.feature.enhanced.EnhancedFeatureExtractor;
-import fr.inria.prophet4j.feature.extended.ExtendedFeatureExtractor;
-import fr.inria.prophet4j.feature.extended.ExtendedRepairGenerator;
 import fr.inria.prophet4j.feature.original.OriginalFeatureExtractor;
 import fr.inria.prophet4j.feature.original.OriginalRepairGenerator;
 import fr.inria.prophet4j.utility.Option.FeatureOption;
@@ -74,8 +72,7 @@ public class CodeDiffer {
                 featureExtractor = new EnhancedFeatureExtractor();
                 break;
             case EXTENDED:
-                featureExtractor = new ExtendedFeatureExtractor();
-                break;
+                throw new RuntimeException("class removed by Martin for cleaning");
             case ORIGINAL:
                 featureExtractor = new OriginalFeatureExtractor();
                 break;
@@ -94,8 +91,7 @@ public class CodeDiffer {
             case ENHANCED:
                 throw new RuntimeException("class removed by Martin was exact duplicate of ExtendedRepairGenerator");
             case EXTENDED:
-                repairGenerator = new ExtendedRepairGenerator(diffEntry);
-                break;
+                throw new RuntimeException("class removed by Martin for cleaning");
             case ORIGINAL:
                 repairGenerator = new OriginalRepairGenerator(diffEntry);
                 break;
