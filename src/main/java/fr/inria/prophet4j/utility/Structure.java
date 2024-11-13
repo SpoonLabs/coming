@@ -5,7 +5,6 @@ import fr.inria.prophet4j.feature.Feature;
 import fr.inria.prophet4j.feature.FeatureCross;
 import fr.inria.prophet4j.feature.S4R.S4RFeature;
 import fr.inria.prophet4j.feature.enhanced.EnhancedFeature;
-import fr.inria.prophet4j.feature.extended.ExtendedFeature;
 import fr.inria.prophet4j.feature.original.OriginalFeature;
 import fr.inria.prophet4j.utility.Option.FeatureOption;
 import org.apache.commons.io.FileUtils;
@@ -84,8 +83,7 @@ public interface Structure {
                     arraySize = EnhancedFeature.FEATURE_SIZE;
                     break;
                 case EXTENDED:
-                    arraySize = ExtendedFeature.FEATURE_SIZE;
-                    break;
+                    throw new RuntimeException("class removed by Martin for cleaning");
                 case ORIGINAL:
                     arraySize = OriginalFeature.FEATURE_SIZE;
                     break;
@@ -240,8 +238,7 @@ public interface Structure {
                 case ENHANCED:
                     throw new RuntimeException("removed see https://github.com/SpoonLabs/coming/issues/235");
                 case EXTENDED:
-                    this.arraySize = ExtendedFeature.FEATURE_SIZE;
-                    break;
+                    throw new RuntimeException("class removed by Martin for cleaning");
                 case ORIGINAL:
                     this.arraySize = OriginalFeature.FEATURE_SIZE;
                     break;

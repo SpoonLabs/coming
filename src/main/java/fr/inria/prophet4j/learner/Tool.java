@@ -4,7 +4,6 @@ import fr.inria.prophet4j.utility.CodeDiffer;
 import fr.inria.prophet4j.feature.FeatureCross;
 import fr.inria.prophet4j.utility.Structure.FeatureMatrix;
 import fr.inria.prophet4j.utility.Structure.FeatureVector;
-import fr.inria.prophet4j.feature.extended.ExtendedFeatureCross;
 import fr.inria.prophet4j.utility.Option;
 import fr.inria.prophet4j.utility.Option.DataOption;
 import fr.inria.prophet4j.utility.Option.PatchOption;
@@ -55,9 +54,7 @@ public class Tool {
                     header.add(featureCross.getFeatures().toString());
                     break;
                 case EXTENDED:
-                    featureCross = new ExtendedFeatureCross(idx);
-                    header.add(featureCross.getFeatures().toString());
-                    break;
+                    throw new RuntimeException("class removed by Martin for cleaning");
                 default:
                     System.out.println("Out of Expectation");
                     break;
@@ -100,9 +97,7 @@ public class Tool {
                     header.add(featureCross.getFeatures().toString());
                     break;
                 case EXTENDED:
-                    featureCross = new ExtendedFeatureCross(idx);
-                    header.add(featureCross.getFeatures().toString());
-                    break;
+                    throw new RuntimeException("class removed by Martin for cleaning");
                 default:
                     System.out.println("Out of Expectation");
                     break;

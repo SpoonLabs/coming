@@ -5,7 +5,6 @@ import java.util.*;
 import fr.inria.prophet4j.feature.FeatureCross;
 import fr.inria.prophet4j.feature.S4R.S4RFeature;
 import fr.inria.prophet4j.feature.enhanced.EnhancedFeature;
-import fr.inria.prophet4j.feature.extended.ExtendedFeature;
 import fr.inria.prophet4j.feature.original.OriginalFeature;
 import fr.inria.prophet4j.utility.Option;
 import fr.inria.prophet4j.utility.Support;
@@ -45,8 +44,7 @@ public class FeatureLearner {
                 arraySize = EnhancedFeature.FEATURE_SIZE;
                 break;
             case EXTENDED:
-                arraySize = ExtendedFeature.FEATURE_SIZE;
-                break;
+                throw new RuntimeException("class removed by Martin for cleaning");
             case ORIGINAL:
                 arraySize = OriginalFeature.FEATURE_SIZE;
                 break;
