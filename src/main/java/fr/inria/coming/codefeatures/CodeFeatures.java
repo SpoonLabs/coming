@@ -119,7 +119,7 @@ public enum CodeFeatures {
 	
 	/**
 	 * Statement Feature. 
-	 * The type of faulty class. If the faulty class has an exception. Otherwise, the value is "false".
+	 * faultyClassExceptionType: indicates whether the associated method for the faulty line throws exception..
 	 */	
 	S11_FAULTY_CLASS_EXCEPTION_TYPE,
 	
