@@ -89,7 +89,7 @@ public class BinaryOperatorAnalyzer extends AbstractCodeAnalyzer {
 				whethermathroot =false;
 		}
 		
-		writeGroupedInfo(context, Integer.toString(operatorindex)+"_"+getStringRepr(operatorunderstudy), CodeFeatures.O5_IS_MATH_ROOT,
+		writeGroupedInfo(context, Integer.toString(operatorindex)+"_"+ getSafeStringRepr(operatorunderstudy), CodeFeatures.O5_IS_MATH_ROOT,
 				whethermathroot, "FEATURES_BINARYOPERATOR");	
 	}
 	
@@ -122,7 +122,7 @@ public class BinaryOperatorAnalyzer extends AbstractCodeAnalyzer {
 			}
 		}
 		
-		writeGroupedInfo(context, Integer.toString(operatorindex)+"_"+getStringRepr(operatorunderstudy), CodeFeatures.O2_LOGICAL_CONTAIN_NOT,
+		writeGroupedInfo(context, Integer.toString(operatorindex)+"_"+ getSafeStringRepr(operatorunderstudy), CodeFeatures.O2_LOGICAL_CONTAIN_NOT,
 				whethercontainnotoperator, "FEATURES_BINARYOPERATOR");
 		
 	}
@@ -167,7 +167,7 @@ public class BinaryOperatorAnalyzer extends AbstractCodeAnalyzer {
 		for(int index=0; index<binoperatortype.size(); index++) {
 			CodeFeatures cerainfeature = binoperatortype.get(index);
 
-			final String operatorunderstudyStr = getStringRepr(operatorunderstudy);
+			final String operatorunderstudyStr = getSafeStringRepr(operatorunderstudy);
 			if(cerainfeature.toString().endsWith(operatorstring.toUpperCase()))
 				writeGroupedInfo(context,  Integer.toString(operatorindex)+"_"+ operatorunderstudyStr, cerainfeature,
 							true, "FEATURES_BINARYOPERATOR");
@@ -176,7 +176,7 @@ public class BinaryOperatorAnalyzer extends AbstractCodeAnalyzer {
 		}	
 	}
 
-	public static String getStringRepr(CtElement operatorunderstudy) {
+	public static String getSafeStringRepr(CtElement element) {
 		// workaround for
 //		at spoon.support.reflect.reference.CtTypeReferenceImpl.getAccessType(CtTypeReferenceImpl.java:774)
 //		at spoon.reflect.visitor.ImportAnalyzer$ScannerListener.enter(ImportAnalyzer.java:135)
@@ -214,7 +214,7 @@ public class BinaryOperatorAnalyzer extends AbstractCodeAnalyzer {
 //		at java.base/java.lang.StringConcatHelper.stringOf(StringConcatHelper.java:453)
 
 		try {
-			return operatorunderstudy.toString();
+			return element.toString();
 		} catch (Exception e) {
 			// fake string, please open an issue if this is a problem
 			return "FIXME_oefa";
@@ -229,12 +229,12 @@ public class BinaryOperatorAnalyzer extends AbstractCodeAnalyzer {
 			CtExpression leftexpression = operatorunderstudy.getLeftHandOperand();
 			CtExpression rightexpression = operatorunderstudy.getRightHandOperand();
 
-		   final String leftStr = getStringRepr(leftexpression);
-		   final String rightStr = getStringRepr(rightexpression);
+		   final String leftStr = getSafeStringRepr(leftexpression);
+		   final String rightStr = getSafeStringRepr(rightexpression);
 			if(leftStr.trim().equals("null") || rightStr.trim().equals("null"))
 				whethercontainnull = true;
 			
-			writeGroupedInfo(context, Integer.toString(operatorindex)+"_"+getStringRepr(operatorunderstudy), CodeFeatures.O3_CONTAIN_NULL,
+			writeGroupedInfo(context, Integer.toString(operatorindex)+"_"+ getSafeStringRepr(operatorunderstudy), CodeFeatures.O3_CONTAIN_NULL,
 					whethercontainnull, "FEATURES_BINARYOPERATOR");
 			
 		}
@@ -248,8 +248,8 @@ public class BinaryOperatorAnalyzer extends AbstractCodeAnalyzer {
 			CtExpression leftexpression = operatorunderstudy.getLeftHandOperand();
 			CtExpression rightexpression = operatorunderstudy.getRightHandOperand();
 
-		   final String leftStr = getStringRepr(leftexpression);
-		   final String rightStr = getStringRepr(rightexpression);
+		   final String leftStr = getSafeStringRepr(leftexpression);
+		   final String rightStr = getSafeStringRepr(rightexpression);
 		   if(leftStr.trim().equals("0") || leftStr.trim().equals("0.0") ||
 					leftStr.trim().equals("1.0") || leftStr.trim().equals("1")
 					|| rightStr.trim().equals("0") || rightStr.trim().equals("0.0") ||
@@ -257,7 +257,7 @@ public class BinaryOperatorAnalyzer extends AbstractCodeAnalyzer {
 					|| leftStr.trim().endsWith("1") || rightStr.trim().endsWith("1"))
 				whethercontain01 = true;
 			
-			writeGroupedInfo(context, Integer.toString(operatorindex)+"_"+getStringRepr(operatorunderstudy), CodeFeatures.O3_CONTAIN_01,
+			writeGroupedInfo(context, Integer.toString(operatorindex)+"_"+ getSafeStringRepr(operatorunderstudy), CodeFeatures.O3_CONTAIN_01,
 					whethercontain01, "FEATURES_BINARYOPERATOR");
 		}
 	   
@@ -274,7 +274,7 @@ public class BinaryOperatorAnalyzer extends AbstractCodeAnalyzer {
 	    			whethercompareincondition = true;
 	        }
 			
-	        writeGroupedInfo(context, Integer.toString(operatorindex)+"_"+getStringRepr(operatorunderstudy), CodeFeatures.O4_COMPARE_IN_CONDITION,
+	        writeGroupedInfo(context, Integer.toString(operatorindex)+"_"+ getSafeStringRepr(operatorunderstudy), CodeFeatures.O4_COMPARE_IN_CONDITION,
 					whethercompareincondition, "FEATURES_BINARYOPERATOR");
 		}	
 }
